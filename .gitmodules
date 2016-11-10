@@ -1,0 +1,8 @@
+[submodule "Assets/PowerUI/Source/BinaryIO"]
+	path = Assets/PowerUI/Source/BinaryIO
+	url = https://git.kulestar.com/IO/BinaryIO.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Values"]
+	path = Assets/PowerUI/Source/Values
+	url = https://git.kulestar.com/IO/Values.git
+	branch = master
