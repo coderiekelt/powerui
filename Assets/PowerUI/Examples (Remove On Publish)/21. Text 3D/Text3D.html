@@ -1,0 +1,88 @@
+<style type='text/css'>
+
+#screen{
+	text-extrude:4;
+	shader-family:"standard lit";
+	color:white;
+	font-size:30px;
+	height:100%;
+	background-color:rgb(40,40,53);
+	vertical-align:middle;
+	text-align:center;
+	font-family:Hardwood;
+}
+
+</style>
+
+<div id='screen'>
+CENTRAL CITY POLICE
+<br>
+<span style='font-size:10px;' id='message'>
+	Dynamic 3D Text Example
+</span>
+</div>
+
+<script type='text/nitro'>
+
+// The current message:
+var messageID=1;
+
+// Grab the message box (we're caching it for best performance):
+var message=document.getElementById("message");
+
+pause(null);
+
+function goToRed(){
+	
+	// Fades to red. When it's done, it pauses.
+	message.animate("color-overlay:red;",1.4f).onDone(pause);
+	
+}
+
+function pause(a:UIAnimation){
+	
+	// Waits for 1 second, then go blue.
+	setTimeout(goToBlue,1000);
+
+}
+
+function goToBlue(){
+	
+	// Fades to blue. When it's done, it flips the message.
+	message.animate("color-overlay:blue;",1.4f).onDone(wentBlue);
+	
+}
+
+function wentBlue(a:UIAnimation){
+	// Flips the message and fades back to red.
+	
+	if(messageID==1){
+		//  Write the first message:
+		message.innerHTML="TRUTH";
+		
+		// Next message is #2:
+		messageID=2;
+		
+	}else if(messageID==2){
+		
+		// Write the second message:
+		message.innerHTML="LIBERTY";
+		
+		// Next message is #3:
+		messageID=3;
+		
+	}else if(messageID==3){
+		
+		// Write the second message:
+		message.innerHTML="JUSTICE";
+		
+		// Next message is #1:
+		messageID=1;
+	}
+	
+	// Fade to red:
+	goToRed();
+	
+}
+
+</script>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <title>CSS animations: Example 2</title>
+  <style type="text/css">
+    @keyframes slidein {
+      from {
+        left:100%;
+        width:300%;
+      }
+      
+      75% {
+        font-size:300%;
+        left:25%;
+        width:150%;
+      }
+      
+      to {
+		font-size:10px;
+        left:0%;
+        width:100%;
+      }
+    }
+	
+	.test{
+		color:#ff00ff;
+		animation:slidein 3s;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class='test'>Watch me move!</div>
+  <p>This example shows how to use CSS animations to make elements
+  move across the page. Here, we've added an extra keyframe to make the text change size as it goes.</p>
+</body>
+</html>
