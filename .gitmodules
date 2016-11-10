@@ -6,3 +6,11 @@
 	path = Assets/PowerUI/Source/Values
 	url = https://git.kulestar.com/IO/Values.git
 	branch = master
+[submodule "Assets/PowerUI/Source/Loonim"]
+	path = Assets/PowerUI/Source/Loonim
+	url = https://git.kulestar.com/Loonim/Engine.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Blaze"]
+	path = Assets/PowerUI/Source/Blaze
+	url = https://git.kulestar.com/Blaze/Engine.git
+	branch = master
