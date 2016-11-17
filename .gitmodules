@@ -14,3 +14,47 @@
 	path = Assets/PowerUI/Source/Blaze
 	url = https://git.kulestar.com/Blaze/Engine.git
 	branch = master
+[submodule "Assets/PowerUI/Source/SPA"]
+	path = Assets/PowerUI/Source/SPA
+	url = https://git.kulestar.com/PowerUI/SPA.git
+	branch = master
+[submodule "Assets/PowerUI/Source/JSON"]
+	path = Assets/PowerUI/Source/JSON
+	url = https://git.kulestar.com/PowerUI/JSON.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Decompressors/Zlib"]
+	path = Assets/PowerUI/Source/Decompressors/Zlib
+	url = https://git.kulestar.com/Compressors/ZLib.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Decompressors/Brotli"]
+	path = Assets/PowerUI/Source/Decompressors/Brotli
+	url = https://git.kulestar.com/Compressors/Brotli.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Dom"]
+	path = Assets/PowerUI/Source/Dom
+	url = https://git.kulestar.com/Dom/Engine.git
+	branch = master
+[submodule "Assets/PowerUI/Source/GIF"]
+	path = Assets/PowerUI/Source/GIF
+	url = https://git.kulestar.com/PowerUI/GIF.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Http"]
+	path = Assets/PowerUI/Source/Http
+	url = https://git.kulestar.com/PowerUI/Http.git
+	branch = master
+[submodule "Assets/PowerUI/Source/InfiniText"]
+	path = Assets/PowerUI/Source/InfiniText
+	url = https://git.kulestar.com/InfiniText/Engine.git
+	branch = master
+[submodule "Assets/PowerUI/Source/SVG"]
+	path = Assets/PowerUI/Source/SVG
+	url = https://git.kulestar.com/PowerUI/SVG.git
+	branch = master
+[submodule "Assets/PowerUI/Source/Spark"]
+	path = Assets/PowerUI/Source/Spark
+	url = https://git.kulestar.com/Spark/Engine.git
+	branch = master
+[submodule "Assets/PowerUI/Source/JavaScript/NitroV1"]
+	path = Assets/PowerUI/Source/JavaScript/NitroV1
+	url = https://git.kulestar.com/Nitrous/EngineV1.git
+	branch = master
