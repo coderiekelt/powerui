@@ -47,11 +47,11 @@ namespace PowerUI{
 					y=box.Y;
 				}
 				
-				if(box.MaxX<maxX){
+				if(box.MaxX>maxX){
 					maxX=box.MaxX;
 				}
 				
-				if(box.MaxY<maxY){
+				if(box.MaxY>maxY){
 					maxY=box.MaxY;
 				}
 				

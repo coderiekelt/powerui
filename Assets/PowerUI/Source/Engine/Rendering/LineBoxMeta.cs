@@ -26,7 +26,7 @@ namespace PowerUI{
 		/// <summary>The "host" block box.</summary>
 		public BlockBoxMeta HostBlock;
 		/// <summary>The height of the current line being processed.</summary>
-		public float LineHeight_;
+		public float LineHeight;
 		/// <summary>The current font size.</summary>
 		public float FontSize_;
 		/// <summary>A linked list of elements on a line are kept. This is the last element on the current line.</summary>
@@ -41,7 +41,27 @@ namespace PowerUI{
 		public float CssLineHeight_=float.MinValue;
 		/// <summary>The set of active floated elements for the current line being rendered.</summary>
 		internal List<LayoutBox> ActiveFloats;
+		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
+		internal float PenX;
+		/// <summary>The point at which lines begin at.</summary>
+		public float LineStart;
+		/// <summary>The position of the text baseline.</summary>
+		public float Baseline;
+		/// <summary>The current box being worked on.</summary>
+		internal LayoutBox CurrentBox;
+		/// <summary>The next box in the hierarchy.</summary>
+		public LineBoxMeta Parent;
+		/// <summary>The inline element.</summary>
+		public RenderableData RenderData;
 		
+		
+		public LineBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData){
+			
+			Parent=parent;
+			CurrentBox=firstBox;
+			RenderData=renderData;
+			
+		}
 		
 		/// <summary>The value of the CSS line-height property.</summary>
 		public float CssLineHeight{
@@ -75,13 +95,13 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
-		public virtual float PenX{
+		/// <summary>The length of the longest line so far.</summary>
+		public virtual float LargestLineWidth{
 			get{
-				return HostBlock.PenX_;
+				return HostBlock.LargestLineWidth_;
 			}
 			set{
-				HostBlock.PenX_=value;
+				HostBlock.LargestLineWidth_=value;
 			}
 		}
 		
@@ -92,26 +112,6 @@ namespace PowerUI{
 			}
 			set{
 				HostBlock.PenY_=value;
-			}
-		}
-		
-		/// <summary>The height of the current line being processed.</summary>
-		public virtual float LineHeight{
-			get{
-				return LineHeight_;
-			}
-			set{
-				LineHeight_=value;
-			}
-		}
-		
-		/// <summary>The point at which lines begin at.</summary>
-		public virtual float LineStart{
-			get{
-				return HostBlock.LineStart_;
-			}
-			set{
-				HostBlock.LineStart_=value;
 			}
 		}
 		
@@ -135,25 +135,6 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>The position of the text baseline.</summary>
-		public virtual float Baseline{
-			get{
-				return HostBlock.Baseline_;
-			}
-			set{
-				HostBlock.Baseline_=value;
-			}
-		}
-		
-		/// <summary>The length of the longest line so far.</summary>
-		public virtual float LargestLineWidth{
-			get{
-				return HostBlock.LargestLineWidth_;
-			}
-			set{
-				HostBlock.LargestLineWidth_=value;
-			}
-		}
 		/// <summary>The current font family in use.</summary>
 		internal Css.Units.FontFamilyUnit FontFamily_;
 		
@@ -177,7 +158,7 @@ namespace PowerUI{
 		
 		/// <summary>Adds the given style to the current line.</summary>
 		/// <param name="style">The style to add.</param>
-		internal void AddToLine(LayoutBox styleBox,RenderableData parentNode){
+		internal void AddToLine(LayoutBox styleBox){
 			
 			if((styleBox.PositionMode & PositionMode.InFlow)==0){
 				// Out of flow - margins only:
@@ -186,21 +167,222 @@ namespace PowerUI{
 				return;
 			}
 			
-			// Don't call with inline elements - block or inline-block only.
-			LayoutBox parentBox=(parentNode==null)?null:parentNode.FirstBox;
-			
-			if( (styleBox.DisplayMode==DisplayMode.Block && styleBox.FloatMode==FloatMode.None) ){
-				
-				// Break before a block element.
-				CompleteLine();
-				
-			}
-			
+			// Make sure it's safe:
 			styleBox.NextPacked=null;
 			styleBox.NextOnLine=null;
 			
+			if(styleBox.FloatMode==FloatMode.None){
+				
+				// In flow - add to line
+				
+				if(FirstPacked==null){
+					FirstPacked=LastPacked=styleBox;
+				}else{
+					LastPacked=LastPacked.NextPacked=styleBox;
+				}
+				
+				if(FirstOnLine==null){
+					FirstOnLine=LastOnLine=styleBox;
+				}else{
+					LastOnLine=LastOnLine.NextOnLine=styleBox;
+				}
+				
+			}else{
+				
+				// Using float - add to active floaters:
+				
+				if(ActiveFloats==null){
+					ActiveFloats=new List<LayoutBox>(1);
+				}
+				
+				ActiveFloats.Add(styleBox);
+				
+			}
+			
+		}
+		
+		/// <summary>Completes a line, optionally breaking it.</summary>
+		public void CompleteLine(bool breakLine,bool topOfStack){
+			
+			float lineHeight=LineHeight;
+			
+			if(breakLine || topOfStack){
+				
+				// Vertically align all elements on the current line and reset it:
+				LayoutBox currentBox=FirstOnLine;
+				FirstOnLine=null;
+				LastOnLine=null;
+				
+				while(currentBox!=null){
+					// Calculate the offset to where the top left corner is (of the complete box, margin included):
+					
+					// Must be positioned such that the boxes sit on this lines baseline.
+					// the baseline is by default at half the line-height but moves up whenever 
+					// an inline-block element with padding/border/margin is added.
+					
+					float delta=(currentBox.Height+currentBox.Margin.Bottom);
+					
+					if(currentBox.DisplayMode==DisplayMode.Inline){
+						
+						// Must also move it down by padding and border:
+						delta-=currentBox.Border.Bottom + currentBox.Padding.Bottom;
+						
+					}
+					
+					delta=lineHeight-delta;
+					
+					if(currentBox.TEST){
+						Dom.Log.Add("SECONDARY LINE!",delta);
+					}
+					
+					currentBox.ParentOffsetTop=PenY+delta;
+					
+					// Hop to the next one:
+					currentBox=currentBox.NextOnLine;
+				}
+				
+			}
+			
+			// Recurse down to the nearest block root element.
+			
+			if(this is BlockBoxMeta){
+				
+				// Done recursing downwards - we're at the block!
+				
+				if(breakLine || topOfStack){
+					
+					// Move the pen down to the following line:
+					PenY+=lineHeight;
+					
+					if(ActiveFloats!=null){
+						
+						// Are any now cleared?
+						
+						for(int i=ActiveFloats.Count-1;i>=0;i--){
+							
+							// Grab the style:
+							LayoutBox activeFloat=ActiveFloats[i];
+							
+							// Is the current render point now higher than this floating object?
+							// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
+							
+							if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+								
+								// Yep! Cleared. Reduce our size:
+								if(activeFloat.FloatMode==FloatMode.Right){
+									
+									if(GoingLeftwards){
+										
+										// Decrease LineStart:
+										LineStart-=activeFloat.Width;
+										
+									}else{
+										
+										// Increase max x:
+										MaxX+=activeFloat.Width;
+										
+									}
+									
+								}else{
+									
+									if(GoingLeftwards){
+										
+										// Increase max x:
+										MaxX+=activeFloat.Width;
+										
+									}else{
+										
+										// Decrease LineStart:
+										LineStart-=activeFloat.Width;
+										
+									}
+									
+								}
+								
+								// Remove it as an active float:
+								ActiveFloats.RemoveAt(i);
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			}else{
+				
+				// Update line height:
+				if(lineHeight>Parent.LineHeight){
+					Parent.LineHeight=lineHeight;
+				}
+				
+				// Apply valid width/height:
+				LayoutBox box=CurrentBox;
+				
+				box.InnerHeight=lineHeight;
+				box.InnerWidth=PenX-LineStart;
+				box.SetDimensions(false,false);
+				
+				// Update content w/h:
+				box.ContentHeight=box.InnerHeight;
+				box.ContentWidth=box.InnerWidth;
+				
+				// Update dim's:
+				Parent.AdvancePen(box);
+				
+				if(breakLine){
+					
+					// Linebreak the parent:
+					Parent.CompleteLine(breakLine,false);
+					
+					// Create a new box!
+					// (And add it to the parent)
+					LayoutBox styleBox=new LayoutBox();
+					styleBox.Border=box.Border;
+					styleBox.Padding=box.Padding;
+					styleBox.Margin=box.Margin;
+					styleBox.DisplayMode=box.DisplayMode;
+					
+					CurrentBox=styleBox;
+					
+					styleBox.NextInElement=null;
+					
+					// Add to the inline element's render data:
+					RenderData.LastBox.NextInElement=styleBox;
+					RenderData.LastBox=styleBox;
+					
+					styleBox.TEST=true;
+					
+					// Add to line next:
+					Parent.AddToLine(styleBox);
+					
+				}
+				
+			}
+			
+			if(breakLine){
+				
+				// Finally, reset the pen (this is after the recursion call, so we've cleared floats etc):
+				if(this is InlineBoxMeta){
+					LineStart=HostBlock.LineStart;
+				}
+				
+				PenX=LineStart;
+				
+				LineHeight=0;
+				Baseline=0;
+				
+			}
+			
+		}
+		
+		/// <summary>Advances the pen now.</summary>
+		public void AdvancePen(LayoutBox styleBox){
+			
 			if(styleBox.FloatMode==FloatMode.Right){
 				
+				// Float right
 				if(GoingLeftwards){
 					styleBox.ParentOffsetLeft=LineStart;
 					PenX+=styleBox.TotalWidth;
@@ -208,14 +390,21 @@ namespace PowerUI{
 					styleBox.ParentOffsetLeft=MaxX-styleBox.TotalWidth;
 				}
 				
-				if(ActiveFloats==null){
-					ActiveFloats=new List<LayoutBox>(1);
+				if(GoingLeftwards){
+					
+					// Push over where lines start at:
+					LineStart+=styleBox.Width;
+					
+				}else{
+					
+					// Reduce max:
+					MaxX-=styleBox.Width;
+					
 				}
-				
-				ActiveFloats.Add(styleBox);
 				
 			}else if(styleBox.FloatMode==FloatMode.Left){
 				
+				// Float left
 				if(GoingLeftwards){
 					styleBox.ParentOffsetLeft=MaxX-styleBox.TotalWidth;
 				}else{
@@ -223,24 +412,6 @@ namespace PowerUI{
 					PenX+=styleBox.TotalWidth;
 				}
 				
-				if(ActiveFloats==null){
-					ActiveFloats=new List<LayoutBox>(1);
-				}
-				
-				ActiveFloats.Add(styleBox);
-				
-			}else if(GoingLeftwards){
-				PenX+=styleBox.Width+styleBox.Margin.Right;
-				styleBox.ParentOffsetLeft=LineStart*2-PenX;
-				PenX+=styleBox.Margin.Left;
-			}else{
-				PenX+=styleBox.Margin.Left;
-				styleBox.ParentOffsetLeft=PenX;
-				PenX+=styleBox.Width+styleBox.Margin.Right;
-			}
-			
-			if(styleBox.FloatMode==FloatMode.Left){
-				
 				if(GoingLeftwards){
 				
 					// Reduce max:
@@ -253,46 +424,13 @@ namespace PowerUI{
 					
 				}
 				
-			}else if(styleBox.FloatMode==FloatMode.Right){
-				
-				if(GoingLeftwards){
-					
-					// Push over where lines start at:
-					LineStart+=styleBox.Width;
-					
-				}else{
-					
-					// Reduce max:
-					MaxX-=styleBox.Width;
-					
-				}
-				
-			}else{
-				
-				float effectiveHeight=styleBox.TotalHeight;
-				
-				if(effectiveHeight>LineHeight){
-					LineHeight=effectiveHeight;
-				}
-				
-			}
-			
-			if(FirstPacked==null){
-				FirstPacked=LastPacked=styleBox;
-			}else{
-				LastPacked=LastPacked.NextPacked=styleBox;
-			}
-			
-			if(FirstOnLine==null){
-				FirstOnLine=LastOnLine=styleBox;
-			}else{
-				
-				if(styleBox.FloatMode==FloatMode.Left){
+				// If it's not the first on the line then..
+				if(styleBox!=FirstOnLine){
 					
 					// Push over all the elements before this on the line.
 					LayoutBox currentLine=FirstOnLine;
 					
-					while(currentLine!=null){
+					while(currentLine!=styleBox && currentLine!=null){
 						
 						if(currentLine.FloatMode==FloatMode.None){
 							// Move it:
@@ -306,192 +444,35 @@ namespace PowerUI{
 					
 				}
 				
-				LastOnLine=LastOnLine.NextOnLine=styleBox;
-			}
-			
-			if(styleBox.DisplayMode==DisplayMode.Block && styleBox.FloatMode==FloatMode.None){
+			}else if(GoingLeftwards){
+				PenX+=styleBox.Width+styleBox.Margin.Right;
+				styleBox.ParentOffsetLeft=LineStart*2-PenX;
+				PenX+=styleBox.Margin.Left;
 				
-				// A second break after the block too.
-				CompleteLine();
+				float effectiveHeight=styleBox.TotalHeight;
 				
-			}
-			
-		}
-		
-		/// <summary>Lets the renderer know the current line doesn't fit anymore elements
-		/// and has been finished.</summary>
-		public void CompleteLine(){
-			
-			if(PenX>LargestLineWidth){
-				LargestLineWidth=PenX;
-			}
-			
-			// Get the line and clear it out. zone.CompleteLine may add new inline boxes to the next line:
-			LayoutBox currentBox=FirstOnLine;
-			FirstOnLine=null;
-			LastOnLine=null;
-			
-			CompleteLine(true);
-			
-			// Next, apply their top offset.
-			float lineHeight=LineHeight;
-			
-			while(currentBox!=null){
-				// Calculate the offset to where the top left corner is (of the complete box, margin included):
-				
-				// Must be positioned such that the boxes sit on this lines baseline.
-				// the baseline is by default at half the line-height but moves up whenever 
-				// an inline-block element with padding/border/margin is added.
-				
-				float delta=lineHeight-(currentBox.Height+currentBox.Margin.Bottom);
-				
-				currentBox.ParentOffsetTop=PenY+delta;
-				
-				// Hop to the next one:
-				currentBox=currentBox.NextOnLine;
-			}
-			
-			// Move the pen down to the following line:
-			PenY+=lineHeight;
-			
-			if(ActiveFloats!=null){
-				
-				// Are any now going to be "deactivated"?
-				
-				for(int i=ActiveFloats.Count-1;i>=0;i--){
-					
-					// Grab the style:
-					LayoutBox activeFloat=ActiveFloats[i];
-					
-					// Is the current render point now higher than this floating object?
-					// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
-					
-					if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
-						
-						// Yep! Deactivate and reduce our size:
-						if(activeFloat.FloatMode==FloatMode.Right){
-							
-							if(GoingLeftwards){
-								
-								// Decrease LineStart:
-								LineStart-=activeFloat.Width;
-								
-							}else{
-								
-								// Increase max x:
-								MaxX+=activeFloat.Width;
-								
-							}
-							
-						}else{
-							
-							if(GoingLeftwards){
-								
-								// Increase max x:
-								MaxX+=activeFloat.Width;
-								
-							}else{
-								
-								// Decrease LineStart:
-								LineStart-=activeFloat.Width;
-								
-							}
-							
-						}
-						
-						// Remove it as an active float:
-						ActiveFloats.RemoveAt(i);
-						
-					}
-					
+				if(effectiveHeight>LineHeight){
+					LineHeight=effectiveHeight;
 				}
 				
-			}
-			
-			LineHeight=0;
-			Baseline=0;
-			PenX=LineStart;
-			
-		}
-		
-		public void CompleteLine(bool breakLine){
-			
-			InlineBoxMeta inline=this as InlineBoxMeta;
-			float penX=PenX;
-			
-			while(inline!=null){
+			}else{
+				PenX+=styleBox.Margin.Left;
+				styleBox.ParentOffsetLeft=PenX;
+				PenX+=styleBox.Width+styleBox.Margin.Right;
 				
-				// Update line height:
-				if(inline.LineHeight_>inline.Parent.LineHeight){
-					inline.Parent.LineHeight=inline.LineHeight_;
-				}
+				// If it's inline then don't use total height.
+				// If it's a word then we don't check it at all.
+				float effectiveHeight;
 				
-				// Apply valid width/height:
-				LayoutBox box=inline.CurrentBox;
-				
-				box.InnerHeight=inline.LineHeight_;
-				box.InnerWidth=penX-inline.StartPenX;
-				box.SetDimensions(false,false);
-				
-				// Update content h/w:
-				box.ContentHeight=box.InnerHeight;
-				box.ContentWidth=box.InnerWidth;
-				
-				if(breakLine){
-					
-					// Time to create a new box!
-					// (And add it to the inline element this represents)
-					LayoutBox styleBox=new LayoutBox();
-					styleBox.Border=box.Border;
-					styleBox.Padding=box.Padding;
-					styleBox.Margin=box.Margin;
-					styleBox.DisplayMode=box.DisplayMode;
-					
-					inline.CurrentBox=styleBox;
-					
-					RenderableData rd=inline.RenderData;
-					LayoutBox cb=inline.CurrentBox;
-					cb.NextInElement=null;
-					
-					if(rd.FirstBox==null){
-						rd.FirstBox=cb;
-						rd.LastBox=cb;
-					}else{
-						rd.LastBox.NextInElement=cb;
-						rd.LastBox=cb;
-					}
-					
-					// Add to line next:
-					styleBox.NextPacked=null;
-					styleBox.NextOnLine=null;
-					
-					if(GoingLeftwards){
-						styleBox.ParentOffsetLeft=LineStart;
-					}else{
-						styleBox.ParentOffsetLeft=LineStart;
-					}
-					
-					if(FirstPacked==null){
-						FirstPacked=LastPacked=styleBox;
-					}else{
-						LastPacked=LastPacked.NextPacked=styleBox;
-					}
-					
-					if(FirstOnLine==null){
-						FirstOnLine=LastOnLine=styleBox;
-					}else{
-						LastOnLine=LastOnLine.NextOnLine=styleBox;
-					}
-					
+				if(styleBox.DisplayMode==DisplayMode.Inline){
+					effectiveHeight=styleBox.InnerHeight;
 				}else{
-					
-					// End of the element only - don't bother going up the DOM.
-					break;
-					
+					effectiveHeight=styleBox.TotalHeight;
 				}
 				
-				// Next:
-				inline=inline.Parent as InlineBoxMeta;
+				if(effectiveHeight>LineHeight){
+					LineHeight=effectiveHeight;
+				}
 				
 			}
 			
@@ -501,8 +482,6 @@ namespace PowerUI{
 	
 	public class BlockBoxMeta : LineBoxMeta{
 		
-		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
-		internal float PenX_;
 		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
 		internal float PenY_;
 		/// <summary>The point at which lines begin at.</summary>
@@ -511,20 +490,28 @@ namespace PowerUI{
 		internal bool GoingLeftwards_;
 		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
 		internal float MaxX_;
-		/// <summary>The position of the text baseline.</summary>
-		internal float Baseline_;
 		/// <summary>The length of the longest line so far.</summary>
-		internal float LargestLineWidth_;
+		public float LargestLineWidth_;
 		
-		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
-		public override float PenX{
+		
+		public BlockBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
+			
+			Parent=parent;
+			CurrentBox=firstBox;
+			RenderData=renderData;
+			
+		}
+		
+		/// <summary>The length of the longest line so far.</summary>
+		public override float LargestLineWidth{
 			get{
-				return PenX_;
+				return LargestLineWidth_;
 			}
 			set{
-				PenX_=value;
+				LargestLineWidth_=value;
 			}
 		}
+		
 		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
 		public override float PenY{
 			get{
@@ -532,26 +519,6 @@ namespace PowerUI{
 			}
 			set{
 				PenY_=value;
-			}
-		}
-		
-		/// <summary>The height of the current line being processed.</summary>
-		public override float LineHeight{
-			get{
-				return LineHeight_;
-			}
-			set{
-				LineHeight_=value;
-			}
-		}
-		
-		/// <summary>The point at which lines begin at.</summary>
-		public override float LineStart{
-			get{
-				return LineStart_;
-			}
-			set{
-				LineStart_=value;
 			}
 		}
 		
@@ -572,26 +539,6 @@ namespace PowerUI{
 			}
 			set{
 				MaxX_=value;
-			}
-		}
-		
-		/// <summary>The position of the text baseline.</summary>
-		public override float Baseline{
-			get{
-				return Baseline_;
-			}
-			set{
-				Baseline_=value;
-			}
-		}
-		
-		/// <summary>The length of the longest line so far.</summary>
-		public override float LargestLineWidth{
-			get{
-				return LargestLineWidth_;
-			}
-			set{
-				LargestLineWidth_=value;
 			}
 		}
 		
@@ -616,22 +563,10 @@ namespace PowerUI{
 	
 	public class InlineBoxMeta : LineBoxMeta{
 		
-		/// <summary>The starting X coordinate.</summary>
-		public float StartPenX;
-		/// <summary>The current inline box.</summary>
-		internal LayoutBox CurrentBox;
-		/// <summary>The next box in the hierarchy.</summary>
-		public LineBoxMeta Parent;
-		/// <summary>The inline element.</summary>
-		public RenderableData RenderData;
-		
-		
-		public InlineBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData){
+		public InlineBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
 			HostBlock=block;
-			Parent=parent;
-			StartPenX=block.PenX;
-			CurrentBox=firstBox;
-			RenderData=renderData;
+			PenX=parent.PenX + firstBox.InlineStyleOffsetLeft;
+			LineStart=PenX;
 		}
 		
 	}

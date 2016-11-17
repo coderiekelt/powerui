@@ -214,6 +214,7 @@ namespace PowerUI{
 			#warning disabled
 			// -> We'll be using virtuals instead
 			
+			/*
 			// Clear the innerHTML of our dropdown and write in the new content (e.g. the button/dropdown itself).
 			// innerHTML="<span style='height:100%;'></span><ddbutton>";
 			// Next, grab the element we want from our new innerHTML.
@@ -244,6 +245,8 @@ namespace PowerUI{
 			// We'll select the first one by default, if it exists.
 			// -2 Prompts it to not call onchange, then set index 0.
 			SetSelected(-2);
+			*/
+			
 		}
 		
 		/// <summary>Drops this select box down.</summary>

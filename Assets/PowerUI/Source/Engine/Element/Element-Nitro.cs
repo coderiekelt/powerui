@@ -22,25 +22,26 @@ namespace PowerUI{
 		
 		
 		/// <summary>Runs the given function held in the named attribute (e.g. onkeydown) and checks if that function blocked
-		/// the event. In the case of a blocked event, no default action should occur.</summary>
-		/// <param name="attribute">The name of the attribute, e.g. onkeydown.</param>
-		/// <param name="uiEvent">A standard UIEvent containing e.g. key/mouse information.</param>
-		public bool RunBlocked(string attribute,UIEvent uiEvent){
+		/// the event. In the case of a blocked event, no default action should occur. Note that this is called by dispatchEvent
+		/// and the attribute functions run before handlers do (same as Firefox).</summary>
+		/// <param name="e">A standard DomEvent containing e.g. key/mouse information.</param>
+		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
 			
 			// Run the function:
-			object result=Run(attribute,uiEvent);
+			object result=Run("on"+e.EventType,e);
 			
 			if(result!=null && result.GetType()==typeof(bool)){
 				// It returned true/false - was it false?
 				
 				if(!(bool)result){
-					// Returned false - Blocked it.
+					// Explicitly returned false - Blocked it.
 					return true;
 				}
 				
 			}
 			
-			return uiEvent.cancelBubble;
+			return base.HandleLocalEvent(e,bubblePhase);
+			
 		}
 		
 		/// <summary>Runs a nitro function whos name is held in the given attribute.</summary>

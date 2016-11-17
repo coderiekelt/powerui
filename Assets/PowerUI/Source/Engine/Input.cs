@@ -359,6 +359,29 @@ namespace PowerUI{
 		}
 		#endif
 		
+		/// <summary>True if the given element should accept an input event.
+		/// Html and body don't accept input in PowerUI (the event has to pass through)
+		/// unless they have a background.</summary>
+		public static bool AcceptsInput(Element e){
+			
+			if( (e is HtmlBodyElement) || (e is HtmlHtmlElement) ){
+				
+				// Must have a background.
+				if((e as IRenderableNode).RenderData.HasBackground){
+					
+					return true;
+					
+				}
+				
+				return false;
+				
+			}
+			
+			// All other elements are ok:
+			return true;
+			
+		}
+		
 		/// <summary>Finds an element from the given screen location.
 		/// This fires a ray into the scene if the point isn't on the main UI.
 		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
@@ -373,8 +396,8 @@ namespace PowerUI{
 				
 				if(result!=null){
 					
-					// Is it transparent?
-					if((result as IRenderableNode).RenderData.HasBackground){
+					// Is it transparent or not html/body?
+					if(AcceptsInput(result)){
 						// Great, we're done!
 						return result;
 					}
@@ -404,7 +427,7 @@ namespace PowerUI{
 						
 						// Is it transparent?
 						// We're still checking a UI so we might still pass "through" it.
-						if((result as IRenderableNode).RenderData.HasBackground){
+						if(AcceptsInput(result)){
 							
 							// Got a hit! Update x/y:
 							x=point.x;
@@ -662,15 +685,15 @@ namespace PowerUI{
 							// Set the tooltip if we've got one:
 							UI.document.tooltip=newActiveOver["title"];
 							
-						}
-						
-						// And a mouseenter (doesn't bubble).
-						// Only triggered if newActiveOver is *not* a child of oldActiveOver.
-						if(newActiveOver.parentNode_!=oldActiveOver){
-							mouseEvent.Reset();
-							mouseEvent.bubbles=false;
-							mouseEvent.EventType="mouseenter";
-							newActiveOver.dispatchEvent(mouseEvent);
+							// And a mouseenter (doesn't bubble).
+							// Only triggered if newActiveOver is *not* a child of oldActiveOver.
+							if(newActiveOver.parentNode_!=oldActiveOver){
+								mouseEvent.Reset();
+								mouseEvent.bubbles=false;
+								mouseEvent.EventType="mouseenter";
+								newActiveOver.dispatchEvent(mouseEvent);
+							}
+							
 						}
 						
 					}

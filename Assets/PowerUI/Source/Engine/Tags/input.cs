@@ -653,35 +653,42 @@ namespace PowerUI{
 						if(key==KeyCode.V){
 							
 							// Run the onpaste function.
-							if(RunBlocked("onpaste",pressEvent)){
-								// It blocked it.
-								return;
-							}
 							
-							// Paste the text, stripping any newlines:
-							string textToPaste=Clipboard.Paste().Replace("\r","").Replace("\n","");
+							ClipboardEvent ce=new ClipboardEvent("paste",null);
+							ce.SetTrusted();
 							
-							if(!string.IsNullOrEmpty(textToPaste)){
-								// Drop the character in the string at cursorIndex
-								if(value==null){
-									value=""+textToPaste;
-								}else{
-									value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+							if(dispatchEvent(ce)){
+								
+								// Paste the text, stripping any newlines:
+								string textToPaste=Clipboard.Paste().Replace("\r","").Replace("\n","");
+								
+								if(!string.IsNullOrEmpty(textToPaste)){
+									// Drop the character in the string at cursorIndex
+									if(value==null){
+										value=""+textToPaste;
+									}else{
+										value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+									}
+									
+									SetValue(value);
+									MoveCursor(CursorIndex+textToPaste.Length);
 								}
 								
-								SetValue(value);
-								MoveCursor(CursorIndex+textToPaste.Length);
 							}
 							
 						}else if(key==KeyCode.C){
 							
 							// Run the oncopy function.
-							if(RunBlocked("oncopy",pressEvent)){
-								// It blocked it.
-								return;
+							
+							ClipboardEvent ce=new ClipboardEvent("copy",null);
+							ce.SetTrusted();
+							
+							if(dispatchEvent(ce)){
+								
+								Clipboard.Copy(value);
+							
 							}
 							
-							Clipboard.Copy(value);
 						}
 						
 					}

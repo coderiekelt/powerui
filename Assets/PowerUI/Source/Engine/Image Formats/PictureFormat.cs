@@ -98,8 +98,15 @@ namespace PowerUI{
 		}
 		
 		public override bool LoadFromResources(Location path,ImagePackage package){
+			
+			string resUrl=path.Directory+path.Filename;
+			
+			if(resUrl.Length>0 && resUrl[0]=='/'){
+				resUrl=resUrl.Substring(1);
+			}
+			
 			// Get the image:
-			UnityEngine.Object resource=Resources.Load(path.Directory+path.Filename);
+			UnityEngine.Object resource=Resources.Load(resUrl);
 			
 			Image=resource as Texture2D;
 			

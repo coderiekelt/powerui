@@ -243,34 +243,39 @@ namespace PowerUI{
 					if(key==KeyCode.V){
 						
 						// Run the onpaste function.
-						if(RunBlocked("onpaste",pressEvent)){
-							// It blocked it.
-							return;
-						}
+						ClipboardEvent ce=new ClipboardEvent("paste",null);
+						ce.SetTrusted();
 						
-						string textToPaste=Clipboard.Paste();
-						
-						if(!string.IsNullOrEmpty(textToPaste)){
-							// Drop the character in the string at cursorIndex
-							if(value==null){
-								value=""+textToPaste;
-							}else{
-								value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+						if(dispatchEvent(ce)){
+							
+							string textToPaste=Clipboard.Paste();
+							
+							if(!string.IsNullOrEmpty(textToPaste)){
+								// Drop the character in the string at cursorIndex
+								if(value==null){
+									value=""+textToPaste;
+								}else{
+									value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+								}
+								
+								SetValue(value);
+								MoveCursor(CursorIndex+textToPaste.Length,true);
 							}
 							
-							SetValue(value);
-							MoveCursor(CursorIndex+textToPaste.Length,true);
 						}
 						
 					}else if(key==KeyCode.C){
 						
 						// Run the oncopy function.
-						if(RunBlocked("oncopy",pressEvent)){
-							// It blocked it.
-							return;
+						ClipboardEvent ce=new ClipboardEvent("copy",null);
+						ce.SetTrusted();
+						
+						if(dispatchEvent(ce)){
+							
+							Clipboard.Copy(value);
+						
 						}
 						
-						Clipboard.Copy(value);
 					}
 				}else if(key==KeyCode.Return || key==KeyCode.KeypadEnter){
 					

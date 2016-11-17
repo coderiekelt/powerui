@@ -232,7 +232,7 @@ namespace PowerUI{
 			ComputedStyle cs=computedStyle;
 			
 			// Get the box meta:
-			LineBoxMeta boxMeta=renderer.TopOfBoxStack;
+			LineBoxMeta boxMeta=renderer.TopOfStack;
 			
 			// Get the font:
 			text.FontToDraw=boxMeta.FontFamily;
@@ -240,8 +240,10 @@ namespace PowerUI{
 			// Colour too:
 			Color fontColour=cs.Resolve(Css.Properties.ColorProperty.GlobalProperty).GetColour(this,Css.Properties.ColorProperty.GlobalProperty);
 			
-			// Colour:
+			// Colour, style and weight:
 			text.BaseColour=fontColour;
+			text.Style=cs.ResolveInt(Css.Properties.FontStyle.GlobalProperty);
+			text.Weight=cs.ResolveInt(Css.Properties.FontWeight.GlobalProperty);
 			
 			// Font size update:
 			float fontSize=boxMeta.FontSize;
@@ -267,12 +269,10 @@ namespace PowerUI{
 			// Note that things like first-letter are also considered.
 			
 			// Get the top of the stack:
-			LineBoxMeta lbm=renderer.TopOfBoxStack;
+			LineBoxMeta lbm=renderer.TopOfStack;
 			float boxWidth=0f;
 			float max=lbm.MaxX-lbm.PenX;
 			bool first=true;
-			
-			Dom.Log.Add("MAX ",max,lbm.GetType());
 			
 			for(int i=0;i<text.Characters.Length;i++){
 				
@@ -298,7 +298,6 @@ namespace PowerUI{
 				}else if((boxWidth+width)>max){
 					
 					// Nope - break!
-					Dom.Log.Add("BR at "+i);
 					
 					box.InnerWidth=boxWidth;
 					box.TextEnd=i;
@@ -313,10 +312,13 @@ namespace PowerUI{
 						box.SetDimensions(false,false);
 						
 						// Add the box to the line:
-						lbm.AddToLine(box,this);
+						lbm.AddToLine(box);
+						
+						// Update dim's:
+						lbm.AdvancePen(box);
 						
 						// Complete the current line now:
-						lbm.CompleteLine();
+						lbm.CompleteLine(true,true);
 						
 						first=true;
 						boxWidth=0f;
@@ -331,10 +333,13 @@ namespace PowerUI{
 						box.SetDimensions(false,false);
 						
 						// Add the box to the line:
-						lbm.AddToLine(box,this);
+						lbm.AddToLine(box);
+						
+						// Update dim's:
+						lbm.AdvancePen(box);
 						
 						// Complete the current line now:
-						lbm.CompleteLine();
+						lbm.CompleteLine(true,true);
 						
 						// Start the new line width this char:
 						boxWidth=width;
@@ -367,7 +372,10 @@ namespace PowerUI{
 			box.SetDimensions(false,false);
 			
 			// Add the box to the line:
-			lbm.AddToLine(box,this);
+			lbm.AddToLine(box);
+			
+			// Update dim's:
+			lbm.AdvancePen(box);
 			
 		}
 		
