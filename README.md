@@ -1,6 +1,6 @@
 # PowerUI 2 (Bleeding Edge)
 
-Hello! Welcome to the bleeding edge PowerUI 2 project. This repository doesn't currently contain a stable branch - it's simply the absolute latest commits in order to bring you the latest code as fast as possible. One does not simply make an web browser, *but let's do it anyway!*
+Hello! Welcome to the bleeding edge PowerUI 2 project. This repository doesn't currently contain a stable branch - it's simply the absolute latest commits in order to bring you the latest code as fast as possible. One does not simply make a web browser, *but let's do it anyway!*
 
 ## Down Features
 
