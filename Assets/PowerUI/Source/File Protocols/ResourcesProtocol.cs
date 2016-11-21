@@ -39,28 +39,28 @@ namespace PowerUI{
 			// Main thread only:
 			Callback.MainThread(delegate(){
 				
-				// Try loading from resources:
-				if(package.Contents.LoadFromResources(package.location,package)){
-					// Great, stop there:
-					package.Done();
-					return;
+				string resUrl=package.location.Directory+package.location.Filename;
+				
+				if(resUrl.Length>0 && resUrl[0]=='/'){
+					resUrl=resUrl.Substring(1);
 				}
 				
-				// Binary otherwise.
+				// Get the image:
+				UnityEngine.Object resource=Resources.Load(resUrl);
 				
-				// Note: the full file should be called something.bytes for this to work in Unity.
-				TextAsset asset=Resources.Load(package.location.Path) as TextAsset;
-				
-				if(asset!=null){
+				if(resource==null){
 					
-					byte[] binary=asset.bytes;
-				
-					// Apply it now:
-					package.ReceivedData(binary,0,binary.Length);
-					return;
+					// Note: the full file should be called something.bytes for this to work in Unity.
+					resource=Resources.Load(package.location.Path);
+					
 				}
 				
-				package.Failed(404);
+				// Try loading from the asset:
+				if(package.Contents.LoadFromAsset(resource,package)){
+					
+					package.Done();
+					
+				}
 				
 			});
 			

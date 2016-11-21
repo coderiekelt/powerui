@@ -97,24 +97,25 @@ namespace PowerUI{
 			
 		}
 		
-		public override bool LoadFromResources(Location path,ImagePackage package){
+		public override bool LoadFromAsset(UnityEngine.Object asset,ImagePackage package){
 			
-			string resUrl=path.Directory+path.Filename;
+			Image=asset as Texture2D;
 			
-			if(resUrl.Length>0 && resUrl[0]=='/'){
-				resUrl=resUrl.Substring(1);
+			if(Image!=null){
+				return true;
 			}
 			
-			// Get the image:
-			UnityEngine.Object resource=Resources.Load(resUrl);
-			
-			Image=resource as Texture2D;
-			
-			if(Image==null && resource!=null){
-				Dom.Log.Add("That's not an image - Url '"+path.absolute+"' is a '"+resource.GetType()+"'. In Unity this happens if you've got more than one resource with the same name (but different file types).");
+			if(asset!=null && !(asset is TextAsset)){
+				Dom.Log.Add(
+					"That's not an image - Url '"+package.location.absolute+"' is a '"+
+					asset.GetType()+"'. In Unity this happens if you've got more than one resource with the same name (but different file types)."
+				);
+				
+				return false;
 			}
 			
-			return (Image!=null);
+			// Try binary:
+			return base.LoadFromAsset(asset,package);
 		}
 		
 		public override bool LoadData(byte[] data,ImagePackage package){

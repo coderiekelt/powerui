@@ -50,11 +50,16 @@ namespace PowerUI{
 			
 		}
 		
-		public override bool LoadFromResources(Location path,ImagePackage package){
-			// Video
-			Video=Resources.Load(path.Directory+path.Filename,typeof(MovieTexture)) as MovieTexture;
+		public override bool LoadFromAsset(UnityEngine.Object asset,ImagePackage package){
 			
-			return (Video!=null);
+			// Video
+			Video=asset as MovieTexture;
+			
+			if(Video!=null){
+				return true;
+			}
+			
+			return base.LoadFromAsset(asset,package);
 		}
 		
 		public override void GoingOnDisplay(Css.RenderableData context){

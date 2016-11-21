@@ -47,38 +47,38 @@ namespace PowerUI{
 			Callback.MainThread(delegate(){
 				
 				// Try loading from resources:
-				if(package.Contents.LoadFromResources(package.location,package)){
-					
-					PictureFormat pict=package.Contents as PictureFormat;
-					
-					if(pict!=null){
-						// Resize the image:
-						resized=ResizedImages.Add(package.location.Path,pict.Image as Texture2D);
-						
-						// Apply:
-						pict.Image=resized.Image;
-					}
-					
-					// Great, stop there:
-					package.Done();
-					return;
+				string resUrl=package.location.Directory+package.location.Filename;
+				
+				if(resUrl.Length>0 && resUrl[0]=='/'){
+					resUrl=resUrl.Substring(1);
 				}
 				
-				// Binary otherwise.
+				// Get the image:
+				UnityEngine.Object resource=Resources.Load(resUrl);
 				
-				// Note: the full file should be called something.bytes for this to work in Unity.
-				TextAsset text=Resources.Load(package.location.Path) as TextAsset;
-				
-				if(text!=null){
+				if(resource==null){
 					
-					// Apply it now:
-					package.ReceivedHeaders(text.bytes.Length);
-					package.ReceivedData(text.bytes,0,text.bytes.Length);
-					return;
+					// Note: the full file should be called something.bytes for this to work in Unity.
+					resource=Resources.Load(package.location.Path);
 					
 				}
 				
-				package.Failed(404);
+				if(!package.Contents.LoadFromAsset(resource,package)){
+					return;
+				}
+				
+				PictureFormat pict=package.Contents as PictureFormat;
+				
+				if(pict!=null){
+					// Resize the image:
+					resized=ResizedImages.Add(package.location.Path,pict.Image as Texture2D);
+					
+					// Apply:
+					pict.Image=resized.Image;
+				}
+				
+				// Great, stop there:
+				package.Done();
 				
 			});
 			

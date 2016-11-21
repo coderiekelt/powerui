@@ -75,6 +75,9 @@ namespace PowerUI{
 				
 			};
 			
+			// Send now:
+			package.send();
+			
 		}
 		
 		/// <summary>The documents current target. It's the same as location.hash.</summary>

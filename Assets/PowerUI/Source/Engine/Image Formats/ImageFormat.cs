@@ -90,9 +90,28 @@ namespace PowerUI{
 			return false;
 		}
 		
-		/// <summary>Attempt to load the image from Unity resources.</summary>
-		public virtual bool LoadFromResources(Location path,ImagePackage package){
-			return false;
+		/// <summary>Attempt to load the image from a Unity resource.</summary>
+		public virtual bool LoadFromAsset(UnityEngine.Object asset,ImagePackage package){
+			
+			// Note: the full file should be called something.bytes for this to work in Unity.
+			TextAsset text=asset as TextAsset;
+			
+			if(text==null){
+				
+				package.Failed(404);
+				return false;
+				
+			}
+			
+			byte[] binary=text.bytes;
+			
+			package.ReceivedHeaders(binary.Length);
+			
+			// Apply it now:
+			package.ReceivedData(binary,0,binary.Length);
+			
+			return true;
+			
 		}
 		
 		/// <summary>Loads the raw block of data into an object of this format.</summary>
