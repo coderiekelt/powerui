@@ -40,17 +40,20 @@ namespace PowerUI{
 		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			
-			// If we follow a block element, we have height. Otherwise just act like a block element.
-			HtmlElement previousEle=previousSibling as HtmlElement ;
+			// Get meta:
+			LineBoxMeta lbm=renderer.TopOfStackSafe;
 			
-			if(previousEle!=null && previousEle.computedStyle.FirstBox.DisplayMode == Css.DisplayMode.Block){
+			// If the line is empty, set some height:
+			if(lbm.FirstOnLine==null){
 				
-				// We follow a block element. Define some height:
 				heightUndefined=false;
 				box.InnerHeight=Style.Computed.FontSizeX;
+				box.Height=box.InnerHeight;
 				
 			}
 			
+			// Implicit line break:
+			lbm.CompleteLine(true,true);
 			
 		}
 		

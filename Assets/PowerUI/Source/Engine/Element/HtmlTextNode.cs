@@ -260,7 +260,7 @@ namespace PowerUI{
 				
 			}
 			
-			if(text.Characters==null){
+			if(text.Characters==null || text.AllEmpty){
 				return;
 			}
 			

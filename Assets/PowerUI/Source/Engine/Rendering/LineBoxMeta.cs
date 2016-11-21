@@ -33,6 +33,10 @@ namespace PowerUI{
 		internal LayoutBox LastOnLine;
 		/// <summary>A linked list of elements on a line are kept. This is the first element on the current line.</summary>
 		internal LayoutBox FirstOnLine;
+		/// <summary>A linked list of elements on a line are kept. This is the last element on the current out of flow line.</summary>
+		internal LayoutBox LastOutOfFlow;
+		/// <summary>A linked list of elements on a line are kept. This is the first element on the current out of flow line.</summary>
+		internal LayoutBox FirstOutOfFlow;
 		/// <summary>The last child element of an element to be packed onto any line. Tracked for valign.</summary>
 		internal LayoutBox LastPacked;
 		/// <summary>The first child element of an element to be packed onto any line. Tracked for valign.</summary>
@@ -160,16 +164,24 @@ namespace PowerUI{
 		/// <param name="style">The style to add.</param>
 		internal void AddToLine(LayoutBox styleBox){
 			
-			if((styleBox.PositionMode & PositionMode.InFlow)==0){
-				// Out of flow - margins only:
-				styleBox.ParentOffsetLeft=PenX+styleBox.Margin.Left;
-				styleBox.ParentOffsetTop=PenY+styleBox.Margin.Top;
-				return;
-			}
-			
 			// Make sure it's safe:
 			styleBox.NextPacked=null;
 			styleBox.NextOnLine=null;
+			
+			if((styleBox.PositionMode & PositionMode.InFlow)==0){
+				
+				// Out of flow - add it to a special line:
+				if(FirstOutOfFlow==null){
+					FirstOutOfFlow=LastOutOfFlow=styleBox;
+				}else{
+					LastOutOfFlow=LastOutOfFlow.NextOnLine=styleBox;
+				}
+				
+				styleBox.ParentOffsetLeft=PenX+styleBox.Margin.Left;
+				styleBox.ParentOffsetTop=PenY+styleBox.Margin.Top;
+				
+				return;
+			}
 			
 			if(styleBox.FloatMode==FloatMode.None){
 				
@@ -231,11 +243,37 @@ namespace PowerUI{
 					
 					delta=lineHeight-delta;
 					
-					if(currentBox.TEST){
-						Dom.Log.Add("SECONDARY LINE!",delta);
+					currentBox.ParentOffsetTop=PenY+delta;
+					
+					// Hop to the next one:
+					currentBox=currentBox.NextOnLine;
+				}
+				
+				currentBox=FirstOutOfFlow;
+				FirstOutOfFlow=null;
+				LastOutOfFlow=null;
+				
+				while(currentBox!=null){
+					// Calculate the offset to where the top left corner is (of the complete box, margin included):
+					
+					// Just margin for these ones:
+					float delta=(currentBox.Margin.Bottom);
+					
+					if(currentBox.DisplayMode==DisplayMode.Inline){
+						
+						// Must also move it down by padding and border:
+						delta-=currentBox.Border.Bottom + currentBox.Padding.Bottom;
+						
+					}else if(currentBox.DisplayMode==DisplayMode.Block){
+						
+						// Clear x:
+						currentBox.ParentOffsetLeft=LineStart;
+						
 					}
 					
-					currentBox.ParentOffsetTop=PenY+delta;
+					delta=lineHeight-delta;
+					
+					currentBox.ParentOffsetTop=PenY+lineHeight;
 					
 					// Hop to the next one:
 					currentBox=currentBox.NextOnLine;
@@ -312,13 +350,15 @@ namespace PowerUI{
 				
 			}else{
 				
-				// Update line height:
-				if(lineHeight>Parent.LineHeight){
-					Parent.LineHeight=lineHeight;
-				}
-				
 				// Apply valid width/height:
 				LayoutBox box=CurrentBox;
+				
+				bool inFlow=((box.PositionMode & PositionMode.InFlow)!=0);
+				
+				// Update line height:
+				if(inFlow && lineHeight>Parent.LineHeight){
+					Parent.LineHeight=lineHeight;
+				}
 				
 				box.InnerHeight=lineHeight;
 				box.InnerWidth=PenX-LineStart;
@@ -328,10 +368,12 @@ namespace PowerUI{
 				box.ContentHeight=box.InnerHeight;
 				box.ContentWidth=box.InnerWidth;
 				
-				// Update dim's:
-				Parent.AdvancePen(box);
+				if(inFlow){
+					// Update dim's:
+					Parent.AdvancePen(box);
+				}
 				
-				if(breakLine){
+				if(inFlow && breakLine){
 					
 					// Linebreak the parent:
 					Parent.CompleteLine(breakLine,false);
@@ -343,6 +385,7 @@ namespace PowerUI{
 					styleBox.Padding=box.Padding;
 					styleBox.Margin=box.Margin;
 					styleBox.DisplayMode=box.DisplayMode;
+					styleBox.PositionMode=box.PositionMode;
 					
 					CurrentBox=styleBox;
 					
@@ -351,8 +394,6 @@ namespace PowerUI{
 					// Add to the inline element's render data:
 					RenderData.LastBox.NextInElement=styleBox;
 					RenderData.LastBox=styleBox;
-					
-					styleBox.TEST=true;
 					
 					// Add to line next:
 					Parent.AddToLine(styleBox);
