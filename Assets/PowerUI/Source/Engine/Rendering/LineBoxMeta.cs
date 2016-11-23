@@ -28,7 +28,7 @@ namespace PowerUI{
 		/// <summary>The height of the current line being processed.</summary>
 		public float LineHeight;
 		/// <summary>The current font size.</summary>
-		public float FontSize_;
+		public float FontSize_=float.MinValue;
 		/// <summary>A linked list of elements on a line are kept. This is the last element on the current line.</summary>
 		internal LayoutBox LastOnLine;
 		/// <summary>A linked list of elements on a line are kept. This is the first element on the current line.</summary>
@@ -37,10 +37,10 @@ namespace PowerUI{
 		internal LayoutBox LastOutOfFlow;
 		/// <summary>A linked list of elements on a line are kept. This is the first element on the current out of flow line.</summary>
 		internal LayoutBox FirstOutOfFlow;
-		/// <summary>The last child element of an element to be packed onto any line. Tracked for valign.</summary>
-		internal LayoutBox LastPacked;
-		/// <summary>The first child element of an element to be packed onto any line. Tracked for valign.</summary>
-		internal LayoutBox FirstPacked;
+		/// <summary>The last line start. Tracked for alignment.</summary>
+		internal LayoutBox LastLineStart;
+		/// <summary>The first line start. Tracked for alignment.</summary>
+		internal LayoutBox FirstLineStart;
 		/// <summary>The value of the CSS line-height property.</summary>
 		public float CssLineHeight_=float.MinValue;
 		/// <summary>The set of active floated elements for the current line being rendered.</summary>
@@ -129,6 +129,13 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Is this box a flow root?</summary>
+		public virtual bool IsFlowRoot{
+			get{
+				return false;
+			}
+		}
+		
 		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
 		public virtual float MaxX{
 			get{
@@ -165,7 +172,7 @@ namespace PowerUI{
 		internal void AddToLine(LayoutBox styleBox){
 			
 			// Make sure it's safe:
-			styleBox.NextPacked=null;
+			styleBox.NextLineStart=null;
 			styleBox.NextOnLine=null;
 			
 			if((styleBox.PositionMode & PositionMode.InFlow)==0){
@@ -187,14 +194,23 @@ namespace PowerUI{
 				
 				// In flow - add to line
 				
-				if(FirstPacked==null){
-					FirstPacked=LastPacked=styleBox;
-				}else{
-					LastPacked=LastPacked.NextPacked=styleBox;
-				}
-				
 				if(FirstOnLine==null){
 					FirstOnLine=LastOnLine=styleBox;
+					
+					if(FirstLineStart==null){
+						
+						// First child element. Update parent if we've got one:
+						if(Parent!=null && Parent.CurrentBox!=null){
+							
+							Parent.CurrentBox.FirstChild=styleBox;
+							
+						}
+						
+						FirstLineStart=LastLineStart=styleBox;
+					}else{
+						LastLineStart=LastLineStart.NextLineStart=styleBox;
+					}
+					
 				}else{
 					LastOnLine=LastOnLine.NextOnLine=styleBox;
 				}
@@ -234,7 +250,7 @@ namespace PowerUI{
 					
 					float delta=(currentBox.Height+currentBox.Margin.Bottom);
 					
-					if(currentBox.DisplayMode==DisplayMode.Inline){
+					if((currentBox.DisplayMode & DisplayMode.OutsideInline)!=0){
 						
 						// Must also move it down by padding and border:
 						delta-=currentBox.Border.Bottom + currentBox.Padding.Bottom;
@@ -259,12 +275,12 @@ namespace PowerUI{
 					// Just margin for these ones:
 					float delta=(currentBox.Margin.Bottom);
 					
-					if(currentBox.DisplayMode==DisplayMode.Inline){
+					if((currentBox.DisplayMode & DisplayMode.OutsideInline)!=0){
 						
 						// Must also move it down by padding and border:
 						delta-=currentBox.Border.Bottom + currentBox.Padding.Bottom;
 						
-					}else if(currentBox.DisplayMode==DisplayMode.Block){
+					}else if((currentBox.DisplayMode & DisplayMode.OutsideBlock)!=0){
 						
 						// Clear x:
 						currentBox.ParentOffsetLeft=LineStart;
@@ -281,9 +297,9 @@ namespace PowerUI{
 				
 			}
 			
-			// Recurse down to the nearest block root element.
+			// Recurse down to the nearest flow root element.
 			
-			if(this is BlockBoxMeta){
+			if(IsFlowRoot){
 				
 				// Done recursing downwards - we're at the block!
 				
@@ -375,28 +391,47 @@ namespace PowerUI{
 				
 				if(inFlow && breakLine){
 					
-					// Linebreak the parent:
-					Parent.CompleteLine(breakLine,false);
-					
-					// Create a new box!
-					// (And add it to the parent)
-					LayoutBox styleBox=new LayoutBox();
-					styleBox.Border=box.Border;
-					styleBox.Padding=box.Padding;
-					styleBox.Margin=box.Margin;
-					styleBox.DisplayMode=box.DisplayMode;
-					styleBox.PositionMode=box.PositionMode;
-					
-					CurrentBox=styleBox;
-					
-					styleBox.NextInElement=null;
-					
-					// Add to the inline element's render data:
-					RenderData.LastBox.NextInElement=styleBox;
-					RenderData.LastBox=styleBox;
-					
-					// Add to line next:
-					Parent.AddToLine(styleBox);
+					if((CurrentBox.DisplayMode & DisplayMode.FlowRoot)==0){
+						
+						// Linebreak the parent:
+						Parent.CompleteLine(breakLine,false);
+						
+						// Create a new box!
+						// (And add it to the parent)
+						LayoutBox styleBox=new LayoutBox();
+						styleBox.Border=box.Border;
+						styleBox.Padding=box.Padding;
+						styleBox.Margin=box.Margin;
+						
+						// No left margin:
+						styleBox.Margin.Left=0f;
+						
+						styleBox.DisplayMode=box.DisplayMode;
+						styleBox.PositionMode=box.PositionMode;
+						
+						CurrentBox=styleBox;
+						
+						styleBox.NextInElement=null;
+						
+						// Add to the inline element's render data:
+						RenderData.LastBox.NextInElement=styleBox;
+						RenderData.LastBox=styleBox;
+						
+						// Add to line next:
+						Parent.AddToLine(styleBox);
+						
+					}else{
+						
+						// It's a flow root inside. Inline-block here.
+						
+						// Check if it's the only one on the parents line:
+						if(Parent.FirstOnLine!=CurrentBox){
+							
+							//
+							
+						}
+						
+					}
 					
 				}
 				
@@ -505,7 +540,7 @@ namespace PowerUI{
 				// If it's a word then we don't check it at all.
 				float effectiveHeight;
 				
-				if(styleBox.DisplayMode==DisplayMode.Inline){
+				if((styleBox.DisplayMode & DisplayMode.OutsideInline)!=0){
 					effectiveHeight=styleBox.InnerHeight;
 				}else{
 					effectiveHeight=styleBox.TotalHeight;
@@ -537,10 +572,13 @@ namespace PowerUI{
 		
 		public BlockBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
 			
-			Parent=parent;
-			CurrentBox=firstBox;
-			RenderData=renderData;
-			
+		}
+		
+		/// <summary>Is this box a flow root?</summary>
+		public override bool IsFlowRoot{
+			get{
+				return true;
+			}
 		}
 		
 		/// <summary>The length of the longest line so far.</summary>
@@ -605,11 +643,122 @@ namespace PowerUI{
 	public class InlineBoxMeta : LineBoxMeta{
 		
 		public InlineBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
+			
 			HostBlock=block;
 			PenX=parent.PenX + firstBox.InlineStyleOffsetLeft;
 			LineStart=PenX;
+			
 		}
 		
 	}
+	
+	public class InlineBlockBoxMeta : BlockBoxMeta{
+		
+		/// <summary>True when this is acting like a BlockBoxMeta.</summary>
+		public bool BlockMode;
+		
+		
+		public InlineBlockBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
+			
+			HostBlock=block;
+			LineStart=PenX;
+			
+		}
+		
+		/// <summary>The length of the longest line so far.</summary>
+		public override float LargestLineWidth{
+			get{
+				if(BlockMode){
+					return base.LargestLineWidth;
+				}
+				return HostBlock.LargestLineWidth;
+			}
+			set{
+				if(BlockMode){
+					base.LargestLineWidth=value;
+				}else{
+					HostBlock.LargestLineWidth=value;
+				}
+			}
+		}
+		
+		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
+		public override float PenY{
+			get{
+				if(BlockMode){
+					return base.PenY;
+				}
+				return HostBlock.PenY;
+			}
+			set{
+				if(BlockMode){
+					base.PenY=value;
+				}else{
+					HostBlock.PenY=value;
+				}
+			}
+		}
+		
+		/// <summary>True if the rendering direction is left. This originates from the direction: css property.</summary>
+		public override bool GoingLeftwards{
+			get{
+				if(BlockMode){
+					return base.GoingLeftwards;
+				}
+				return HostBlock.GoingLeftwards;
+			}
+			set{
+				if(BlockMode){
+					base.GoingLeftwards=value;
+				}else{
+					HostBlock.GoingLeftwards=value;
+				}
+			}
+		}
+		
+		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
+		public override float MaxX{
+			get{
+				if(BlockMode){
+					return base.MaxX;
+				}
+				return HostBlock.MaxX;
+			}
+			set{
+				if(BlockMode){
+					base.MaxX=value;
+				}else{
+					HostBlock.MaxX=value;
+				}
+			}
+		}
+		
+		/// <summary>It's a flow root when we're in block mode.</summary>
+		public override bool IsFlowRoot{
+			get{
+				return BlockMode;
+			}
+		}
+		
+		/// <summary>The current font family in use.</summary>
+		internal override Css.Units.FontFamilyUnit FontFamily{
+			get{
+				if(BlockMode){
+					return base.FontFamily;
+				}
+				
+				return HostBlock.FontFamily;
+			}
+			set{
+				if(BlockMode){
+					base.FontFamily=value;
+				}else{
+					HostBlock.FontFamily=value;
+				}
+			}
+		}
+		
+	}
+	
 	
 }
