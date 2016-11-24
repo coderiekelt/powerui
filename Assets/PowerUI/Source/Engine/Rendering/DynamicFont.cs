@@ -20,7 +20,8 @@ namespace PowerUI{
 
 	/// <summary>
 	/// Represents a font suitable for displaying text on the screen with.
-	/// There is one of these per <see cref="PowerUI.Renderman"/>.
+	/// There is one of these per document. It's that way because each document can potentially
+	/// name a font-family something different (via @font-face).
 	/// </summary>
 
 	public class DynamicFont{
@@ -67,24 +68,6 @@ namespace PowerUI{
 		public string Name;
 		/// <summary>The underlying InfiniText font family.</summary>
 		public FontFamily Family;
-		/// <summary>The biggest ascender in this font.</summary>
-		public float Ascender=0.8f;
-		/// <summary>The biggest descender in this font.</summary>
-		public float Descender=0.2f;
-		/// <summary>The width of the M character of this font.</summary>
-		public float MWidth=1f;
-		/// <summary>The size of lines in this font.</summary>
-		public float LineHeight=1.2f;
-		/// <summary>The height of the x character of this font.</summary>
-		public float XHeight=1f;
-		/// <summary>The thickness of a strikethrough line.</summary>
-		public float StrikeSize=0.1f;
-		/// <summary>The offset to a strikethrough line.</summary>
-		public float StrikeOffset=0.25f;
-		/// <summary>A font to fallback on, if one is specified in the HTML.</summary>
-		public DynamicFont Fallback;
-		/// <summary>The width of a standard space at 1px.</summary>
-		public float SpaceSize=1/3f;
 		
 		
 		/// <summary>Creates a new displayable font.</summary>
@@ -145,67 +128,8 @@ namespace PowerUI{
 				return false;
 			}
 			
-			Load();
 			return true;
-		}
-		
-		/// <summary>Loads useful values into this font.</summary>
-		public void Load(){
 			
-			// Get the advance width of space:
-			Glyph space=Family.Regular.GetGlyph(' ');
-			
-			if(space!=null){
-				
-				// Grab the advance width:
-				SpaceSize=space.AdvanceWidth;
-				
-			}
-			
-			// Grab the regular face (always will be one):
-			FontFace regular=Family.Regular;
-			
-			// Get some useful values:
-			Descender=regular.Descender;
-			Ascender=regular.Ascender;
-			MWidth=regular.MWidth;
-			LineHeight=regular.BaselineToBaseline;
-			XHeight=regular.ExHeight;
-			StrikeSize=regular.StrikeSize;
-			StrikeOffset=regular.StrikeOffset;
-			
-		}
-		
-		/// <summary>Gets the max descend at the given font size. This is used to define the baseline.</summary>
-		public float GetDescend(float fontSize){
-			return fontSize * Descender;
-		}
-		
-		/// <summary>Gets the line height.</summary>
-		public float GetLineHeight(float fontSize){
-			return fontSize * LineHeight;
-		}
-		
-		/// <summary>Gets the max ascend at the given font size. Positive value.</summary>
-		public float GetAscend(float fontSize){
-			return fontSize * Ascender;
-		}
-		
-		/// <summary>Gets the height of the font at the given font size, using the x-height of the font.</summary>
-		public float GetXHeight(float fontSize){
-			return fontSize * XHeight;
-		}
-		
-		/// <summary>Gets the height of the font at the given font size.</summary>
-		public float GetHeight(float fontSize){
-			return fontSize * MWidth;
-		}
-		
-		/// <summary>Gets the standard size of a space for the given font size.</summary>
-		/// <param name="fontSize">The size of the font.</param>
-		/// <returns>The space size.</returns>
-		public float GetSpaceSize(float fontSize){
-			return fontSize * SpaceSize;
 		}
 		
 	}

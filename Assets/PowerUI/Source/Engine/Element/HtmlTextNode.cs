@@ -42,7 +42,7 @@ namespace PowerUI{
 		/// <summary>This nodes computed style.</summary>
 		public ComputedStyle ComputedStyle{
 			get{
-				return (parentNode as HtmlElement ).Style.Computed;
+				return (parentNode as IRenderableNode).ComputedStyle;
 			}
 		}
 		
@@ -234,16 +234,14 @@ namespace PowerUI{
 			// Get the box meta:
 			LineBoxMeta boxMeta=renderer.TopOfStack;
 			
-			// Get the font:
-			text.FontToDraw=boxMeta.FontFamily;
+			// Get the font face:
+			text.FontToDraw=boxMeta.FontFace;
 			
 			// Colour too:
 			Color fontColour=cs.Resolve(Css.Properties.ColorProperty.GlobalProperty).GetColour(this,Css.Properties.ColorProperty.GlobalProperty);
 			
-			// Colour, style and weight:
+			// Colour:
 			text.BaseColour=fontColour;
-			text.Style=cs.ResolveInt(Css.Properties.FontStyle.GlobalProperty);
-			text.Weight=cs.ResolveInt(Css.Properties.FontWeight.GlobalProperty);
 			
 			// Font size update:
 			float fontSize=boxMeta.FontSize;
@@ -290,9 +288,34 @@ namespace PowerUI{
 				if(first){
 					
 					// The box always has an inner height of 'font size':
-					first=false;
-					box.InnerHeight=fontSize;
-					boxWidth+=width;
+					if(box==FirstBox && renderer.FirstLetter!=null){
+						
+						// Clear FL immediately (so it can't go recursive):
+						SparkInformerNode firstLetter=renderer.FirstLetter;
+						renderer.FirstLetter=null;
+						
+						// Update its internal text node:
+						HtmlTextNode textNode=firstLetter.firstChild as HtmlTextNode;
+						
+						// Note that we have to do it this way as the node might
+						// change the *font*.
+						textNode.characterData_=((char)glyph.Charcode)+"";
+						
+						// Ask it to reflow right now (must ask the node so it correctly takes the style into account):
+						firstLetter.RenderData.Reflow(renderer);
+						
+						// Update max:
+						max=lbm.MaxX-lbm.PenX;
+						
+					}else{
+						
+						first=false;
+						
+						box.TextStart=i;
+						box.InnerHeight=fontSize;
+						boxWidth+=width;
+						
+					}
 					
 				// Does it fit in the current box?
 				}else if((boxWidth+width)>max){
@@ -325,7 +348,6 @@ namespace PowerUI{
 						box=new LayoutBox();
 						box.PositionMode=PositionMode.Static;
 						box.DisplayMode=DisplayMode.Inline;
-						box.TextStart=i+1;
 						
 					}else{
 						

@@ -13,6 +13,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Css;
+using InfiniText;
 
 
 namespace PowerUI{
@@ -146,23 +147,23 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>The current font family in use.</summary>
-		internal Css.Units.FontFamilyUnit FontFamily_;
+		/// <summary>The current font face in use.</summary>
+		internal FontFace FontFace_;
 		
 		/// <summary>The current font family in use.</summary>
-		internal virtual Css.Units.FontFamilyUnit FontFamily{
+		internal virtual FontFace FontFace{
 			get{
 				
-				if(FontFamily_==null){
+				if(FontFace_==null){
 					// Use the block:
-					return HostBlock.FontFamily;
+					return HostBlock.FontFace;
 				}
 				
-				return FontFamily_;
+				return FontFace_;
 				
 			}
 			set{
-				FontFamily_=value;
+				FontFace_=value;
 			}
 		}
 		
@@ -622,19 +623,12 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The current font family in use.</summary>
-		internal override Css.Units.FontFamilyUnit FontFamily{
+		internal override FontFace FontFace{
 			get{
-				
-				if(FontFamily_==null){
-					// Use the default font:
-					return Css.Units.FontFamilyUnit.DefaultUnit;
-				}
-				
-				return FontFamily_;
-				
+				return FontFace_;
 			}
 			set{
-				FontFamily_=value;
+				FontFace_=value;
 			}
 		}
 		
@@ -741,19 +735,19 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The current font family in use.</summary>
-		internal override Css.Units.FontFamilyUnit FontFamily{
+		internal override FontFace FontFace{
 			get{
 				if(BlockMode){
-					return base.FontFamily;
+					return base.FontFace;
 				}
 				
-				return HostBlock.FontFamily;
+				return HostBlock.FontFace;
 			}
 			set{
 				if(BlockMode){
-					base.FontFamily=value;
+					base.FontFace=value;
 				}else{
-					HostBlock.FontFamily=value;
+					HostBlock.FontFace=value;
 				}
 			}
 		}
