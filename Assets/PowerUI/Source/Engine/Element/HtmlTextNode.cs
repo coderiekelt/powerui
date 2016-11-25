@@ -247,6 +247,37 @@ namespace PowerUI{
 			float fontSize=boxMeta.FontSize;
 			text.FontSize=fontSize;
 			
+			// Get the baseline offset:
+			float baseline=fontSize * text.FontToDraw.Descender;
+			box.Baseline=baseline;
+			
+			// Decoration:
+			int decoration=cs.ResolveInt(Css.Properties.TextDecorationLine.GlobalProperty);
+			
+			if(decoration!=0){
+				
+				// Got a line!
+				if(text.TextLine==null){
+					text.TextLine=new TextDecorationInfo(decoration);
+				}
+				
+				// Get the colour:
+				Css.Value lineColour=cs.Resolve(Css.Properties.TextDecorationColor.GlobalProperty);
+				
+				if(lineColour==null || lineColour is Css.Keywords.Initial || lineColour is Css.Keywords.CurrentColor){
+					
+					// No override:
+					text.TextLine.ColourOverride=false;
+					
+				}else{
+					
+					// Set the colour:
+					text.TextLine.SetColour(lineColour.GetColour(this,Css.Properties.TextDecorationColor.GlobalProperty));
+					
+				}
+			
+			}
+			
 			// Step 1. Check if the text is 'dirty'.
 			// If it is, that means we'll need to rebuild the TextRenderingProperty's Glyph array.
 			
@@ -346,8 +377,6 @@ namespace PowerUI{
 						first=true;
 						boxWidth=0f;
 						box=new LayoutBox();
-						box.PositionMode=PositionMode.Static;
-						box.DisplayMode=DisplayMode.Inline;
 						
 					}else{
 						
@@ -366,12 +395,14 @@ namespace PowerUI{
 						// Start the new line width this char:
 						boxWidth=width;
 						box=new LayoutBox();
-						box.PositionMode=PositionMode.Static;
-						box.DisplayMode=DisplayMode.Inline;
 						box.TextStart=i;
 						box.InnerHeight=fontSize;
 						
 					}
+					
+					box.PositionMode=PositionMode.Static;
+					box.DisplayMode=DisplayMode.Inline;
+					box.Baseline=baseline;
 					
 					// Update max (clearing floats could potentially reset it):
 					max=lbm.MaxX-lbm.PenX;

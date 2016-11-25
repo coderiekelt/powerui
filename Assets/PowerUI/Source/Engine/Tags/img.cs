@@ -88,6 +88,9 @@ namespace PowerUI{
 		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			
+			// Replaced:
+			box.OrdinaryInline=false;
+			
 			if(widthUndefined){
 				
 				if(heightUndefined){

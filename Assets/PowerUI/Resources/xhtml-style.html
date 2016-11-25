@@ -1,10 +1,12 @@
 html:-spark-main-ui{
 	font-size:14px;
 	color:white;
+	-spark-specifity:300; /* Makes it such that this can be overriden by just html{} */
 }
 
 body:-spark-main-ui{
 	overflow:hidden;
+	-spark-specifity:300;  /* Makes it such that this can be overriden by just body{} */
 }
 
 input[type="checkbox"]{
@@ -25,14 +27,13 @@ input[type="hidden"],script,style{
 }
 
 sup{
-	display:inline-block;
 	font-size:0.5em;
-	bottom:0.5em;
+	vertical-align:super;
 }
 
 sub{
-	display:inline-block;
 	font-size:0.5em;
+	vertical-align:sub;
 }
 
 font{

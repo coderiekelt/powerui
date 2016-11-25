@@ -50,14 +50,18 @@ namespace PowerUI{
 		internal float PenX;
 		/// <summary>The point at which lines begin at.</summary>
 		public float LineStart;
-		/// <summary>The position of the text baseline.</summary>
-		public float Baseline;
+		/// <summary>The value for vertical-align.</summary>
+		public int VerticalAlign;
+		/// <summary>Vertical-align offset from the baseline.</summary>
+		public float VerticalAlignOffset;
 		/// <summary>The current box being worked on.</summary>
 		internal LayoutBox CurrentBox;
 		/// <summary>The next box in the hierarchy.</summary>
 		public LineBoxMeta Parent;
 		/// <summary>The inline element.</summary>
 		public RenderableData RenderData;
+		/// <summary>An offset to apply to MaxX.</summary>
+		public float MaxOffset;
 		
 		
 		public LineBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData){
@@ -113,10 +117,9 @@ namespace PowerUI{
 		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
 		public virtual float PenY{
 			get{
-				return HostBlock.PenY_;
+				return 0f;
 			}
 			set{
-				HostBlock.PenY_=value;
 			}
 		}
 		
@@ -140,7 +143,7 @@ namespace PowerUI{
 		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
 		public virtual float MaxX{
 			get{
-				return HostBlock.MaxX_;
+				return HostBlock.MaxX_ - MaxOffset;
 			}
 			set{
 				HostBlock.MaxX_=value;
@@ -173,6 +176,7 @@ namespace PowerUI{
 		internal void AddToLine(LayoutBox styleBox){
 			
 			// Make sure it's safe:
+			styleBox.Parent=CurrentBox;
 			styleBox.NextLineStart=null;
 			styleBox.NextOnLine=null;
 			
@@ -239,8 +243,13 @@ namespace PowerUI{
 				
 				// Vertically align all elements on the current line and reset it:
 				LayoutBox currentBox=FirstOnLine;
+				LayoutBox first=currentBox;
 				FirstOnLine=null;
 				LastOnLine=null;
+				
+				// Baseline is default:
+				int verticalAlignMode=VerticalAlign;
+				float baseOffset=VerticalAlignOffset;
 				
 				while(currentBox!=null){
 					// Calculate the offset to where the top left corner is (of the complete box, margin included):
@@ -249,21 +258,79 @@ namespace PowerUI{
 					// the baseline is by default at half the line-height but moves up whenever 
 					// an inline-block element with padding/border/margin is added.
 					
-					float delta=(currentBox.Height+currentBox.Margin.Bottom);
+					float delta=-(currentBox.Height+currentBox.Margin.Bottom);
 					
-					if((currentBox.DisplayMode & DisplayMode.OutsideInline)!=0){
+					bool inline=(currentBox.DisplayMode & DisplayMode.OutsideInline)!=0;
+					
+					if(currentBox.DisplayMode==DisplayMode.Inline){
 						
 						// Must also move it down by padding and border:
-						delta-=currentBox.Border.Bottom + currentBox.Padding.Bottom;
+						delta+=currentBox.Border.Bottom + currentBox.Padding.Bottom;
 						
 					}
 					
-					delta=lineHeight-delta;
+					switch(verticalAlignMode){
+						
+						case VerticalAlignMode.Baseline:
+							
+							if(inline){
+								
+								// Bump the elements so they all sit neatly on the baseline:
+								float baselineShift=(CurrentBox.Baseline-currentBox.Baseline)+baseOffset;
+								delta-=baselineShift;
+								
+								// May need to update the line height:
+								
+								if(baselineShift>0){
+									
+									// (This is where gaps come from below inline images):
+									
+									if(currentBox.DisplayMode==DisplayMode.Inline){
+										
+										// Line height next:
+										baselineShift+=currentBox.InnerHeight;
+										
+									}else{
+										
+										// E.g. inline-block:
+										baselineShift+=currentBox.TotalHeight;
+									}
+									
+									if(baselineShift>LineHeight){
+										
+										LineHeight=baselineShift;
+										lineHeight=baselineShift;
+										
+										// Stalled!
+										
+										// - This happens because we've just found out that an element sitting on the baseline
+										//   has generated a gap and ended up making the line get taller.
+										//   Elements after this one can affect the baseline so we can't "pre test" this condition.
+										//   Line height is important for positioning elements, so we'll need to go again
+										//   on the elements that we've already vertically aligned.
+										
+										// Halt and try again:
+										currentBox=first;
+										goto Stall;
+										
+									}
+									
+								}
+								
+							}
+							
+						break;
+						
+					}
 					
-					currentBox.ParentOffsetTop=PenY+delta;
+					currentBox.ParentOffsetTop=PenY+delta+lineHeight;
 					
 					// Hop to the next one:
 					currentBox=currentBox.NextOnLine;
+					
+					Stall:
+						continue;
+					
 				}
 				
 				currentBox=FirstOutOfFlow;
@@ -372,18 +439,47 @@ namespace PowerUI{
 				
 				bool inFlow=((box.PositionMode & PositionMode.InFlow)!=0);
 				
-				// Update line height:
-				if(inFlow && lineHeight>Parent.LineHeight){
-					Parent.LineHeight=lineHeight;
+				// Update line height and baseline:
+				if(inFlow){
+					
+					if(lineHeight>Parent.LineHeight){
+						Parent.LineHeight=lineHeight;
+					}
+					
+					if(CurrentBox.Baseline>Parent.CurrentBox.Baseline){
+						Parent.CurrentBox.Baseline=CurrentBox.Baseline;
+					}
+					
 				}
 				
-				box.InnerHeight=lineHeight;
-				box.InnerWidth=PenX-LineStart;
-				box.SetDimensions(false,false);
-				
-				// Update content w/h:
-				box.ContentHeight=box.InnerHeight;
-				box.ContentWidth=box.InnerWidth;
+				// Otherwise it explicitly defined them ("inline replaced").
+				if(box.OrdinaryInline){
+					
+					if(this is InlineBlockBoxMeta){
+						
+						if(box.InnerHeight==-1){
+							box.InnerHeight=lineHeight;
+						}
+						
+						if(box.InnerWidth==-1){
+							box.InnerWidth=PenX-LineStart;
+						}
+						
+						box.SetDimensions(false,false);
+						
+					}else{
+						
+						box.InnerHeight=lineHeight;
+						box.InnerWidth=PenX-LineStart;
+						box.SetDimensions(false,false);
+						
+					}
+					
+					// Update content w/h:
+					box.ContentHeight=box.InnerHeight;
+					box.ContentWidth=box.InnerWidth;
+					
+				}
 				
 				if(inFlow){
 					// Update dim's:
@@ -441,14 +537,9 @@ namespace PowerUI{
 			if(breakLine){
 				
 				// Finally, reset the pen (this is after the recursion call, so we've cleared floats etc):
-				if(this is InlineBoxMeta){
-					LineStart=HostBlock.LineStart;
-				}
-				
+				MaxOffset=0f;
 				PenX=LineStart;
-				
-				LineHeight=0;
-				Baseline=0;
+				LineHeight=0f;
 				
 			}
 			
@@ -526,22 +617,11 @@ namespace PowerUI{
 				styleBox.ParentOffsetLeft=LineStart*2-PenX;
 				PenX+=styleBox.Margin.Left;
 				
-				float effectiveHeight=styleBox.TotalHeight;
-				
-				if(effectiveHeight>LineHeight){
-					LineHeight=effectiveHeight;
-				}
-				
-			}else{
-				PenX+=styleBox.Margin.Left;
-				styleBox.ParentOffsetLeft=PenX;
-				PenX+=styleBox.Width+styleBox.Margin.Right;
-				
-				// If it's inline then don't use total height.
+				// If it's not a flow root then don't use total height.
 				// If it's a word then we don't check it at all.
 				float effectiveHeight;
 				
-				if((styleBox.DisplayMode & DisplayMode.OutsideInline)!=0){
+				if(styleBox.DisplayMode==DisplayMode.Inline){
 					effectiveHeight=styleBox.InnerHeight;
 				}else{
 					effectiveHeight=styleBox.TotalHeight;
@@ -549,6 +629,39 @@ namespace PowerUI{
 				
 				if(effectiveHeight>LineHeight){
 					LineHeight=effectiveHeight;
+				}
+				
+				float baseline=styleBox.Baseline;
+				
+				if(baseline>CurrentBox.Baseline){
+					CurrentBox.Baseline=baseline;
+				}
+				
+			}else{
+				
+				PenX+=styleBox.Margin.Left;
+				styleBox.ParentOffsetLeft=PenX;
+				PenX+=styleBox.Width+styleBox.Margin.Right;
+				
+				// If it's not a flow root then don't use total height.
+				// If it's a word then we don't check it at all.
+				float effectiveHeight;
+				
+				if(styleBox.DisplayMode==DisplayMode.Inline){
+				
+					effectiveHeight=styleBox.InnerHeight;
+				}else{
+					effectiveHeight=styleBox.TotalHeight;
+				}
+				
+				if(effectiveHeight>LineHeight){
+					LineHeight=effectiveHeight;
+				}
+				
+				float baseline=styleBox.Baseline;
+				
+				if(baseline>CurrentBox.Baseline){
+					CurrentBox.Baseline=baseline;
 				}
 				
 			}
@@ -638,9 +751,8 @@ namespace PowerUI{
 		
 		public InlineBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
 			
+			MaxOffset=parent.PenX + firstBox.InlineStyleOffsetLeft;
 			HostBlock=block;
-			PenX=parent.PenX + firstBox.InlineStyleOffsetLeft;
-			LineStart=PenX;
 			
 		}
 		
@@ -652,10 +764,16 @@ namespace PowerUI{
 		public bool BlockMode;
 		
 		
-		public InlineBlockBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
+		public InlineBlockBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData,bool hasWidth):base(parent,firstBox,renderData){
 			
 			HostBlock=block;
-			LineStart=PenX;
+			BlockMode=hasWidth;
+			
+			if(hasWidth){
+				MaxX_=firstBox.InnerWidth;
+			}else{
+				MaxOffset=parent.PenX + firstBox.InlineStyleOffsetLeft;
+			}
 			
 		}
 		
@@ -680,15 +798,13 @@ namespace PowerUI{
 		public override float PenY{
 			get{
 				if(BlockMode){
-					return base.PenY;
+					return PenY_;
 				}
-				return HostBlock.PenY;
+				return 0f;
 			}
 			set{
 				if(BlockMode){
-					base.PenY=value;
-				}else{
-					HostBlock.PenY=value;
+					PenY_=value;
 				}
 			}
 		}
@@ -713,17 +829,14 @@ namespace PowerUI{
 		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
 		public override float MaxX{
 			get{
-				if(BlockMode){
-					return base.MaxX;
+				if(MaxX_!=0f){
+					return MaxX_;
 				}
-				return HostBlock.MaxX;
+				return HostBlock.MaxX_ - MaxOffset;
 			}
 			set{
-				if(BlockMode){
-					base.MaxX=value;
-				}else{
-					HostBlock.MaxX=value;
-				}
+				
+				HostBlock.MaxX_=value;
 			}
 		}
 		
