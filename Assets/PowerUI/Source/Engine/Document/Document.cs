@@ -98,6 +98,7 @@ namespace PowerUI{
 		/// <summary>Sets location without navigating to it.</summary>
 		internal void SetRawLocation(Location path){
 			location_=path;
+			path.document=this;
 		}
 		
 		/// <summary>A custom set domain value.</summary>

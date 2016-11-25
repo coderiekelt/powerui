@@ -234,6 +234,75 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Clears left/right/both floats.</summary>
+		public void ClearFloat(int mode){
+			
+			if(ActiveFloats==null){
+				return;
+			}
+			
+			for(int i=ActiveFloats.Count-1;i>=0;i--){
+				
+				// Grab the style:
+				LayoutBox activeFloat=ActiveFloats[i];
+				
+				// Is this on a side we're clearing?
+				if((mode & activeFloat.FloatMode)==0){
+					// Nope!
+					continue;
+				}
+				
+				// Yes - how far down must we go?
+				float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
+				
+				if(PenY<requiredClear){
+					// Clear over it now:
+					PenY=requiredClear;
+				}
+				
+				// Yep! Cleared. Reduce our size:
+				if(activeFloat.FloatMode==FloatMode.Right){
+					
+					if(GoingLeftwards){
+						
+						// Decrease LineStart:
+						LineStart-=activeFloat.TotalWidth;
+						
+					}else{
+						
+						// Increase max x:
+						MaxX+=activeFloat.TotalWidth;
+						
+					}
+					
+				}else{
+					
+					if(GoingLeftwards){
+						
+						// Increase max x:
+						MaxX+=activeFloat.TotalWidth;
+						
+					}else{
+						
+						// Decrease LineStart:
+						LineStart-=activeFloat.TotalWidth;
+						
+					}
+					
+				}
+				
+				// Remove it as an active float:
+				ActiveFloats.RemoveAt(i);
+				
+			}
+			
+			// PenX is always reset during a left clear:
+			if(mode==FloatMode.Left){
+				PenX=LineStart;
+			}
+			
+		}
+		
 		/// <summary>Completes a line, optionally breaking it.</summary>
 		public void CompleteLine(bool breakLine,bool topOfStack){
 			
@@ -341,12 +410,12 @@ namespace PowerUI{
 					// Calculate the offset to where the top left corner is (of the complete box, margin included):
 					
 					// Just margin for these ones:
-					float delta=(currentBox.Margin.Bottom);
+					float delta=-(currentBox.Margin.Bottom);
 					
 					if((currentBox.DisplayMode & DisplayMode.OutsideInline)!=0){
 						
 						// Must also move it down by padding and border:
-						delta-=currentBox.Border.Bottom + currentBox.Padding.Bottom;
+						delta+=currentBox.Border.Bottom + currentBox.Padding.Bottom;
 						
 					}else if((currentBox.DisplayMode & DisplayMode.OutsideBlock)!=0){
 						
@@ -355,9 +424,7 @@ namespace PowerUI{
 						
 					}
 					
-					delta=lineHeight-delta;
-					
-					currentBox.ParentOffsetTop=PenY+lineHeight;
+					currentBox.ParentOffsetTop=PenY+delta+lineHeight;
 					
 					// Hop to the next one:
 					currentBox=currentBox.NextOnLine;
@@ -396,12 +463,12 @@ namespace PowerUI{
 									if(GoingLeftwards){
 										
 										// Decrease LineStart:
-										LineStart-=activeFloat.Width;
+										LineStart-=activeFloat.TotalWidth;
 										
 									}else{
 										
 										// Increase max x:
-										MaxX+=activeFloat.Width;
+										MaxX+=activeFloat.TotalWidth;
 										
 									}
 									
@@ -410,12 +477,12 @@ namespace PowerUI{
 									if(GoingLeftwards){
 										
 										// Increase max x:
-										MaxX+=activeFloat.Width;
+										MaxX+=activeFloat.TotalWidth;
 										
 									}else{
 										
 										// Decrease LineStart:
-										LineStart-=activeFloat.Width;
+										LineStart-=activeFloat.TotalWidth;
 										
 									}
 									
@@ -551,48 +618,73 @@ namespace PowerUI{
 			if(styleBox.FloatMode==FloatMode.Right){
 				
 				// Float right
+				float totalWidth=styleBox.TotalWidth;
+				
+				if((MaxX-totalWidth)<LineStart){
+					
+					// Clear left
+					ClearFloat(FloatMode.Left);
+					
+				}
+				
+				// Always apply top here (no vertical-align and must be after the above clear):
+				styleBox.ParentOffsetTop=PenY;
+				
 				if(GoingLeftwards){
-					styleBox.ParentOffsetLeft=LineStart;
-					PenX+=styleBox.TotalWidth;
+					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
+					PenX+=totalWidth;
 				}else{
-					styleBox.ParentOffsetLeft=MaxX-styleBox.TotalWidth;
+					styleBox.ParentOffsetLeft=MaxX-totalWidth+styleBox.Margin.Left;
 				}
 				
 				if(GoingLeftwards){
 					
 					// Push over where lines start at:
-					LineStart+=styleBox.Width;
+					LineStart+=totalWidth;
 					
 				}else{
 					
 					// Reduce max:
-					MaxX-=styleBox.Width;
+					MaxX-=totalWidth;
 					
 				}
 				
 			}else if(styleBox.FloatMode==FloatMode.Left){
 				
 				// Float left
+				float totalWidth=styleBox.TotalWidth;
+				
+				if((MaxX-totalWidth)<LineStart){
+					
+					// Clear right
+					ClearFloat(FloatMode.Right);
+					
+				}
+				
+				// Always apply top here (no vertical-align and must be after the above clear):
+				styleBox.ParentOffsetTop=PenY;
+				
 				if(GoingLeftwards){
-					styleBox.ParentOffsetLeft=MaxX-styleBox.TotalWidth;
+					styleBox.ParentOffsetLeft=MaxX-totalWidth+styleBox.Margin.Left;
 				}else{
-					styleBox.ParentOffsetLeft=LineStart;
-					PenX+=styleBox.TotalWidth;
+					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
+					PenX+=totalWidth;
 				}
 				
 				if(GoingLeftwards){
 				
 					// Reduce max:
-					MaxX-=styleBox.Width;
+					MaxX-=totalWidth;
 					
 				}else{
 					
 					// Push over where lines start at:
-					LineStart+=styleBox.Width;
+					LineStart+=totalWidth;
 					
 				}
 				
 				// If it's not the first on the line then..
+				
 				if(styleBox!=FirstOnLine){
 					
 					// Push over all the elements before this on the line.
@@ -600,10 +692,8 @@ namespace PowerUI{
 					
 					while(currentLine!=styleBox && currentLine!=null){
 						
-						if(currentLine.FloatMode==FloatMode.None){
-							// Move it:
-							currentLine.ParentOffsetLeft+=styleBox.Width;
-						}
+						// Move it:
+						currentLine.ParentOffsetLeft+=styleBox.Width;
 						
 						// Next one:
 						currentLine=currentLine.NextOnLine;
@@ -613,6 +703,7 @@ namespace PowerUI{
 				}
 				
 			}else if(GoingLeftwards){
+				
 				PenX+=styleBox.Width+styleBox.Margin.Right;
 				styleBox.ParentOffsetLeft=LineStart*2-PenX;
 				PenX+=styleBox.Margin.Left;
