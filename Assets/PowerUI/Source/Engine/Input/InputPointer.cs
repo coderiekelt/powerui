@@ -231,7 +231,7 @@ namespace PowerUI{
 						
 					if(oldActivePressed!=null){
 						// Refresh CSS (active):
-						(oldActivePressed as IRenderableNode).ComputedStyle.RefreshPseudoStyle();
+						(oldActivePressed as IRenderableNode).ComputedStyle.RefreshLocal();
 					}
 					
 					// Trigger up event.
@@ -327,7 +327,7 @@ namespace PowerUI{
 				if(ActivePressed!=null){
 					
 					// Refresh CSS (active):
-					(ActivePressed as IRenderableNode).ComputedStyle.RefreshPseudoStyle();
+					(ActivePressed as IRenderableNode).ComputedStyle.RefreshLocal();
 					
 				}
 			

@@ -1,12 +1,12 @@
-html:-spark-main-ui{
+html:main-ui{
 	font-size:14px;
 	color:white;
-	-spark-specifity:300; /* Makes it such that this can be overriden by just html{} */
+	-spark-specifity:-spark-tag-specifity; /* Makes it such that this can be overriden by just html{} */
 }
 
-body:-spark-main-ui{
+body:main-ui{
 	overflow:hidden;
-	-spark-specifity:300;  /* Makes it such that this can be overriden by just body{} */
+	-spark-specifity:-spark-tag-specifity;  /* Makes it such that this can be overriden by just body{} */
 }
 
 input[type="checkbox"]{
@@ -321,6 +321,14 @@ bdi,bdo,time{
 	display:inline;
 }
 
+q:before{
+	content:open-quote;
+}
+
+q:after{
+	content:close-quote;
+}
+
 a:hover{
 	color:#0000ff;
 }
@@ -472,14 +480,6 @@ col{
 
 q{
 	display: inline;
-}
-
-q:before{
-	content:open-quote;
-}
-
-q:after{
-	content:close-quote;
 }
 
 blockquote,figure{

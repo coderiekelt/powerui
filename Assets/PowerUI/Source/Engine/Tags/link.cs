@@ -111,6 +111,7 @@ namespace PowerUI{
 			styleSheet=htmlDocument.AddStyle(this,null);
 			
 			DataPackage package=new DataPackage(Href,document.basepath);
+			styleSheet.Location=package.location;
 			
 			package.onload=delegate(UIEvent e){
 				

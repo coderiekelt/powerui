@@ -31,8 +31,8 @@ namespace PowerUI{
 			
 			HtmlElement ele=(nd as HtmlElement );
 			
-			// Apply tag style:
-			ele.Style.Computed.RefreshStyle();
+			// Apply styles:
+			ele.Style.Computed.RefreshStructure();
 			
 			return ele;
 			

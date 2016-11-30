@@ -56,6 +56,9 @@ namespace PowerUI{
 		/// <summary>The response text.</summary>
 		public string responseText{
 			get{
+				if(responseBytes==null){
+					return null;
+				}
 				return System.Text.Encoding.UTF8.GetString(responseBytes);
 			}
 		}

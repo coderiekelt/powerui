@@ -449,7 +449,15 @@ namespace PowerUI{
 			RaycastHit worldUIHit;
 			
 			if(CameraFor3DInput==null){
+				
 				CameraFor3DInput=Camera.main;
+				
+				if(CameraFor3DInput==null){
+					// No camera!
+					LatestRayHitSuccess=false;
+					return null;
+				}
+				
 			}
 			
 			// Cast into the scene now:
@@ -637,7 +645,7 @@ namespace PowerUI{
 							pointer.ActiveOver=null;
 							
 							// Update the CSS:
-							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshPseudoStyle();
+							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshLocal();
 							
 							// Trigger a mouseout (bubbles):
 							mouseEvent.EventType="mouseout";
@@ -661,7 +669,7 @@ namespace PowerUI{
 						if(newActiveOver!=null){
 							
 							// Update the CSS (hover)
-							(newActiveOver as IRenderableNode).ComputedStyle.RefreshPseudoStyle();
+							(newActiveOver as IRenderableNode).ComputedStyle.RefreshLocal();
 							
 						}
 						

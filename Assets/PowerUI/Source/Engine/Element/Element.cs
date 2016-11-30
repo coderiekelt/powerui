@@ -78,8 +78,8 @@ namespace PowerUI{
 		
 		public override void OnChildrenLoaded(){
 			
-			// Reload its style:
-			Style.Computed.RefreshStyle();
+			// Construct the selector structure now:
+			Style.Computed.RefreshStructure();
 			
 		}
 		
@@ -580,7 +580,7 @@ namespace PowerUI{
 			}
 			
 			// Reload its style:
-			Style.Computed.RefreshStyle();
+			Style.Computed.RefreshStructure();
 			
 			// Update its css by telling it the parent changed.
 			// This affects inherit, height/width etc.

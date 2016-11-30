@@ -136,10 +136,6 @@ namespace PowerUI{
 			// Iframes generate a new document object for isolation purposes:
 			ContentDocument=new HtmlDocument(htmlDocument.Renderer,htmlDocument.window);
 			
-			// Setup initial viewport:
-			ContentDocument.Viewport.Width=InnerWidth;
-			ContentDocument.Viewport.Height=InnerHeight;
-			
 			// Setup the iframe ref:
 			ContentDocument.window.iframe=this;
 			
