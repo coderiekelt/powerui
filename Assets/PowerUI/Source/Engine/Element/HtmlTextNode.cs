@@ -210,6 +210,27 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
+		public void GetWidthBounds(out float min,out float max){
+			
+			min=0f;
+			max=0f;
+			
+			// Get computed style:
+			ComputedStyle cs=ComputedStyle;
+			
+			// Overflow-wrap mode (only active for 'break-word' which is just '1'):
+			bool overflowWrapActive=( cs.ResolveInt(Css.Properties.OverflowWrap.GlobalProperty) == 1 );
+			
+			if(!overflowWrapActive){
+				// Min required
+			}
+			
+			#warning text width bounds
+			// We need the longest single word (min) and the length of the line if it was totally continuous (max).
+			
+		}
+		
 	}
 	
 	public class TextRenderableData : RenderableData{
@@ -218,12 +239,10 @@ namespace PowerUI{
 		
 		public override void Reflow(Renderman renderer){
 			
-			// Create the first anonymous box and apply it:
-			LayoutBox box=new LayoutBox();
-			box.PositionMode=PositionMode.Static;
-			box.DisplayMode=DisplayMode.Inline;
-			FirstBox=box;
-			LastBox=box;
+			// Clear the blocks:
+			LayoutBox box=null;
+			FirstBox=null;
+			LastBox=null;
 			
 			// Get the text renderer (or create it):
 			Css.TextRenderingProperty text=RequireTextProperty();
@@ -249,7 +268,20 @@ namespace PowerUI{
 			
 			// Get the baseline offset:
 			float baseline=fontSize * text.FontToDraw.Descender;
-			box.Baseline=baseline;
+			
+			// Spacing:
+			float wordSpacing=cs.ResolveDecimal(Css.Properties.WordSpacing.GlobalProperty);
+			float letterSpacing=cs.ResolveDecimal(Css.Properties.LetterSpacing.GlobalProperty);
+			
+			// If word spacing is not 'normal', remove 1em from it (Note that letter spacing is always additive):
+			if(wordSpacing==-1f){
+				wordSpacing=0f;
+			}else{
+				wordSpacing-=fontSize;
+			}
+			
+			text.WordSpacing=wordSpacing;
+			text.LetterSpacing=letterSpacing;
 			
 			// Decoration:
 			int decoration=cs.ResolveInt(Css.Properties.TextDecorationLine.GlobalProperty);
@@ -278,6 +310,9 @@ namespace PowerUI{
 			
 			}
 			
+			// Get the white-space mode:
+			int whiteSpaceMode=cs.WhiteSpaceX;
+			
 			// Step 1. Check if the text is 'dirty'.
 			// If it is, that means we'll need to rebuild the TextRenderingProperty's Glyph array.
 			
@@ -285,7 +320,7 @@ namespace PowerUI{
 				
 				// Setup text now:
 				// (Resets text.Characters based on all the text related CSS properties like variant etc).
-				text.LoadCharacters((Node as HtmlTextNode).characterData_,this);
+				text.LoadCharacters((Node as HtmlTextNode).characterData_,this,whiteSpaceMode);
 				
 			}
 			
@@ -293,33 +328,39 @@ namespace PowerUI{
 				return;
 			}
 			
+			// Overflow-wrap mode (only active for 'break-word' which is just '1'):
+			bool overflowWrapActive=( cs.ResolveInt(Css.Properties.OverflowWrap.GlobalProperty) == 1 );
+			
 			// Compute our line boxes based on text.Characters and the available space.
 			// Safely ignore direction here because either way the selected characters are the same.
 			// Note that things like first-letter are also considered.
 			
 			// Get the top of the stack:
 			LineBoxMeta lbm=renderer.TopOfStack;
+			float wordWidth=0f;
 			float boxWidth=0f;
-			float max=lbm.MaxX-lbm.PenX;
-			bool first=true;
+			bool wrappable=((whiteSpaceMode & WhiteSpaceMode.Wrappable)!=0);
+			int i=0;
+			int latestBreakpoint=-1;
 			
-			for(int i=0;i<text.Characters.Length;i++){
+			while(i<text.Characters.Length){
 				
 				// Get the glyph:
 				InfiniText.Glyph glyph=text.Characters[i];
 				
 				if(glyph==null){
 					// Skip!
+					i++;
 					continue;
 				}
 				
-				// The glyphs width is..
-				float width=glyph.AdvanceWidth * fontSize;
+				// The glyph's width is..
+				float width=(glyph.AdvanceWidth * fontSize)+letterSpacing;
 				
-				if(first){
+				if(box==null){
 					
 					// The box always has an inner height of 'font size':
-					if(box==FirstBox && renderer.FirstLetter!=null){
+					if(renderer.FirstLetter!=null){
 						
 						// Clear FL immediately (so it can't go recursive):
 						SparkInformerNode firstLetter=renderer.FirstLetter;
@@ -335,100 +376,151 @@ namespace PowerUI{
 						// Ask it to reflow right now (must ask the node so it correctly takes the style into account):
 						firstLetter.RenderData.Reflow(renderer);
 						
-						// Update max:
-						max=lbm.MaxX-lbm.PenX;
-						
-					}else{
-						
-						first=false;
-						
-						box.TextStart=i;
-						box.InnerHeight=fontSize;
-						boxWidth+=width;
+						i++;
+						continue;
 						
 					}
 					
-				// Does it fit in the current box?
-				}else if((boxWidth+width)>max){
-					
-					// Nope - break!
-					
-					box.InnerWidth=boxWidth;
-					box.TextEnd=i;
-					
-					if(glyph.Charcode==(int)' '){
-						
-						// If it's a space, we leave it on *this* line.
-						box.TextEnd++;
-						box.InnerWidth+=width;
-						
-						// Ensure dimensions are set:
-						box.SetDimensions(false,false);
-						
-						// Add the box to the line:
-						lbm.AddToLine(box);
-						
-						// Update dim's:
-						lbm.AdvancePen(box);
-						
-						// Complete the current line now:
-						lbm.CompleteLine(true,true);
-						
-						first=true;
-						boxWidth=0f;
-						box=new LayoutBox();
-						
-					}else{
-						
-						// Ensure dimensions are set:
-						box.SetDimensions(false,false);
-						
-						// Add the box to the line:
-						lbm.AddToLine(box);
-						
-						// Update dim's:
-						lbm.AdvancePen(box);
-						
-						// Complete the current line now:
-						lbm.CompleteLine(true,true);
-						
-						// Start the new line width this char:
-						boxWidth=width;
-						box=new LayoutBox();
-						box.TextStart=i;
-						box.InnerHeight=fontSize;
-						
-					}
-					
+					// Create the box now:
+					box=new LayoutBox();
 					box.PositionMode=PositionMode.Static;
 					box.DisplayMode=DisplayMode.Inline;
 					box.Baseline=baseline;
+					box.TextStart=i;
 					
-					// Update max (clearing floats could potentially reset it):
-					max=lbm.MaxX-lbm.PenX;
+					if(FirstBox==null){
+						FirstBox=box;
+						LastBox=box;
+					}else{
+						// add to this element:
+						LastBox.NextInElement=box;
+						LastBox=box;
+					}
 					
-					// add to this element:
-					LastBox.NextInElement=box;
-					LastBox=box;
+					box.InnerHeight=fontSize;
+					boxWidth=0f;
+					wordWidth=0f;
+				}
+				
+				// Got a space?
+				bool space=(glyph.Charcode==(int)' ');
+				
+				if(space){
+					
+					// Advance width:
+					width+=wordSpacing;
+					
+					// Lock in the previous text:
+					latestBreakpoint=i;
+					boxWidth+=wordWidth+width;
+					wordWidth=0f;
 					
 				}else{
-					boxWidth+=width;
+					
+					// Advance word width now:
+					wordWidth+=width;
+					
 				}
+				
+				// Are we breaking this word?
+				int breakMode=(glyph.Charcode==(int)'\n') ? 1 : 0;
+				
+				// Word wrapping next:
+				if(breakMode==0 && wrappable && i!=box.TextStart){
+					
+					// Test if we can break here:
+					breakMode=lbm.GetLineSpace(wordWidth,boxWidth);
+					
+					// Return to the previous space if we should.
+					if(breakMode==2 && overflowWrapActive){
+						
+						// The word doesn't fit at all (2) and we're supposed to break it.
+						boxWidth+=wordWidth-width;
+						wordWidth=0f;
+					
+					}else if(breakMode!=0){
+						
+						if(latestBreakpoint==-1){
+							
+							// Isn't a previous space!
+							
+							if(breakMode==2){
+								
+								// Instead, we'll try and break a parent.
+								// This typically happens with inline elements 
+								// which are right on the end of the host line.
+								lbm.TryBreakParent();
+								
+							}
+							
+							// Don't break the node:
+							breakMode=0;
+							
+						}else{
+							i=latestBreakpoint+1;
+						}
+						
+					}
+					
+				}
+				
+				if(breakMode!=0){
+					
+					// We're breaking!
+					box.InnerWidth=boxWidth;
+					box.TextEnd=i;
+					latestBreakpoint=i;
+					
+					// If the previous glyph is a space, update EndSpaceSize:
+					if(space){
+						// Update ending spaces:
+						box.EndSpaceSize=width;
+					}
+					
+					// Ensure dimensions are set:
+					box.SetDimensions(false,false);
+					
+					// Add the box to the line:
+					lbm.AddToLine(box);
+					
+					// Update dim's:
+					lbm.AdvancePen(box);
+					
+					// Newline:
+					lbm.CompleteLine(true,true);
+					
+					// Clear:
+					box=null;
+					boxWidth=0f;
+					
+					if(glyph.Charcode!=(int)'\n'){
+						// Process it again.
+						continue;
+					}
+					
+				}
+				
+				// Next character:
+				i++;
 				
 			}
 			
-			// Always apply inner w/h:
-			box.InnerWidth=boxWidth;
-			box.TextEnd=text.Characters.Length;
-			
-			// Ensure dimensions are set:
-			box.SetDimensions(false,false);
-			
-			// Add the box to the line:
-			lbm.AddToLine(box);
-			
-			// Update dim's:
-			lbm.AdvancePen(box);
+			if(box!=null){
+				
+				// Always apply inner width:
+				box.InnerWidth=boxWidth+wordWidth;
+				box.TextEnd=text.Characters.Length;
+				
+				// Ensure dimensions are set:
+				box.SetDimensions(false,false);
+				
+				// Add the box to the line:
+				lbm.AddToLine(box);
+				
+				// Update dim's:
+				lbm.AdvancePen(box);
+				
+			}
 			
 		}
 		

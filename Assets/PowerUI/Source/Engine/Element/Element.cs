@@ -83,6 +83,41 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
+		public void GetWidthBounds(out float min,out float max){
+			
+			min=0f;
+			max=0f;
+			
+			// For each child, get its width bounds too.
+			if(childNodes_==null){
+				return;
+			}
+			
+			for(int i=0;i<childNodes_.length;i++){
+				
+				float cMin;
+				float cMax;
+				IRenderableNode renderable=(childNodes_[i] as IRenderableNode);
+				
+				if(renderable==null){
+					continue;
+				}
+				
+				renderable.GetWidthBounds(out cMin,out cMax);
+				
+				if(cMin>min){
+					min=cMin;
+				}
+				
+				if(cMax>max){
+					max=cMax;
+				}
+				
+			}
+			
+		}
+		
 		/// <summary>Focuses this element so it receives events such as keypresses.</summary>
 		public void focus(){
 			

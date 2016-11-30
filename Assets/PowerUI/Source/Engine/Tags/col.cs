@@ -115,13 +115,6 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>True if an implicit end is allowed.</summary>
-		public override bool ImplicitEndAllowed{
-			get{
-				return true;
-			}
-		}
-		
 	}
 	
 }

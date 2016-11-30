@@ -43,6 +43,41 @@ namespace MathML{
 			}
 		}
 		
+		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
+		public void GetWidthBounds(out float min,out float max){
+			
+			min=0f;
+			max=0f;
+			
+			// For each child, get its width bounds too.
+			if(childNodes_==null){
+				return;
+			}
+			
+			for(int i=0;i<childNodes_.length;i++){
+				
+				float cMin;
+				float cMax;
+				IRenderableNode renderable=(childNodes_[i] as IRenderableNode);
+				
+				if(renderable==null){
+					continue;
+				}
+				
+				renderable.GetWidthBounds(out cMin,out cMax);
+				
+				if(cMin>min){
+					min=cMin;
+				}
+				
+				if(cMax>max){
+					max=cMax;
+				}
+				
+			}
+			
+		}
+		
 		/// <summary>Called when an attribute of the element was changed.
 		/// Returns true if the method handled the change to prevent unnecessary checks.</summary>
 		public override bool OnAttributeChange(string property){

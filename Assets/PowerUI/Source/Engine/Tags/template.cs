@@ -107,8 +107,8 @@ namespace PowerUI{
 				// Close a template tag.
 				if(lexer.TagCurrentlyOpen("template")){
 					
-					// Generate implied:
-					lexer.GenerateImpliedEndTags();
+					// Generate implied thoroughly:
+					lexer.GenerateImpliedEndTagsThorough();
 					
 					// Close it:
 					lexer.CloseTemplate();

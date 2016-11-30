@@ -22,9 +22,9 @@ namespace PowerUI{
 	public class HtmlLiElement:HtmlElement{
 		
 		/// <summary>True if an implicit end is allowed.</summary>
-		public override bool ImplicitEndAllowed{
+		public override ImplicitEndMode ImplicitEndAllowed{
 			get{
-				return true;
+				return ImplicitEndMode.Normal;
 			}
 		}
 		

@@ -42,10 +42,14 @@ namespace PowerUI{
 		internal LayoutBox LastLineStart;
 		/// <summary>The first line start. Tracked for alignment.</summary>
 		internal LayoutBox FirstLineStart;
+		/// <summary>The current 'clear zone'. Added to PenY when something is added to the current line.</summary>
+		internal float ClearY_;
 		/// <summary>The value of the CSS line-height property.</summary>
 		public float CssLineHeight_=float.MinValue;
 		/// <summary>The set of active floated elements for the current line being rendered.</summary>
-		internal List<LayoutBox> ActiveFloats;
+		internal LayoutBox FloatsLeft;
+		/// <summary>The set of active floated elements for the current line being rendered.</summary>
+		internal LayoutBox FloatsRight;
 		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
 		internal float PenX;
 		/// <summary>The point at which lines begin at.</summary>
@@ -69,6 +73,81 @@ namespace PowerUI{
 			Parent=parent;
 			CurrentBox=firstBox;
 			RenderData=renderData;
+			
+		}
+		
+		/// <summary>Removes the given box from this line. Must not be the first one.</summary>
+		public void RemoveFromLine(LayoutBox box){
+			
+			if(FirstOnLine==null){
+				return;
+			}
+			
+			LayoutBox prev=null;
+			LayoutBox current=FirstOnLine;
+			
+			while(current!=null){
+				
+				if(current==box){
+					
+					// Got it!
+					if(prev==null){
+						throw new Exception("Can't remove first box from a line.");
+					}
+					
+					prev.NextOnLine=current.NextOnLine;
+					
+					if(current.NextOnLine==null){
+						LastOnLine=prev;
+					}
+					
+					break;
+					
+				}
+				
+				prev=current;
+				current=current.NextOnLine;
+				
+			}
+			
+		}
+		
+		/// <summary>Attempts to break a line for a parent inline node.</summary>
+		public void TryBreakParent(){
+			
+			// If the parent is an inline node, 'this' is the first element on its line.
+			if(Parent==null){
+				return;
+			}
+			
+			if(Parent.FirstOnLine==CurrentBox){
+				
+				// Go another level up if we can:
+				if(Parent is BlockBoxMeta){
+					return;
+				}
+				
+				Parent.TryBreakParent();
+				return;
+				
+			}
+			
+			// We're not the first on the line (but we'll always be the last). Safety check:
+			if(Parent.LastOnLine!=CurrentBox){
+				return;
+			}
+			
+			// Remove current box from the line:
+			Parent.RemoveFromLine(CurrentBox);
+			
+			// Complete it:
+			Parent.CompleteLine(true,true);
+			
+			// Re-add:
+			Parent.AddToLine(CurrentBox);
+			
+			// Clear offset:
+			MaxOffset=0f;
 			
 		}
 		
@@ -104,22 +183,22 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>The length of the longest line so far.</summary>
-		public virtual float LargestLineWidth{
-			get{
-				return HostBlock.LargestLineWidth_;
-			}
-			set{
-				HostBlock.LargestLineWidth_=value;
-			}
-		}
-		
 		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
 		public virtual float PenY{
 			get{
 				return 0f;
 			}
 			set{
+			}
+		}
+		
+		/// <summary>The length of the longest line so far. Used for the content width.</summary>
+		public virtual float LargestLineWidth{
+			get{
+				return HostBlock.LargestLineWidth_;
+			}
+			set{
+				HostBlock.LargestLineWidth_=value;
 			}
 		}
 		
@@ -130,13 +209,6 @@ namespace PowerUI{
 			}
 			set{
 				HostBlock.GoingLeftwards_=value;
-			}
-		}
-		
-		/// <summary>Is this box a flow root?</summary>
-		public virtual bool IsFlowRoot{
-			get{
-				return false;
 			}
 		}
 		
@@ -170,6 +242,40 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Ensures the given amount of space is available by 
+		/// completing the line if needed and potentially clearing floats too.</summary>
+		/// <returns>True if it broke.</returns>
+		public int GetLineSpace(float width,float initialOffset){
+			
+			// If the box no longer fits on the current line..
+			float space=(MaxX-PenX);
+			
+			if((initialOffset+width) <= space){
+				return 0;
+			}
+			
+			// Does it fit on a newline?
+			if(width <= space){
+				return 1;
+			}
+			
+			// Still nope! If we've got any floats, try clearing them:
+			while(TryClearFloat()){
+				
+				if(width <= (MaxX-PenX)){
+					
+					// Great, it'll fit on a newline!
+					return 1;
+					
+				}
+				
+			}
+			
+			// Ok! This one's special because it doesn't actually fit on the line.
+			// Important for words which may need to break internally.
+			return 2;
+			
+		}
 		
 		/// <summary>Adds the given style to the current line.</summary>
 		/// <param name="style">The style to add.</param>
@@ -195,12 +301,21 @@ namespace PowerUI{
 				return;
 			}
 			
-			if(styleBox.FloatMode==FloatMode.None){
+			int floatMode=styleBox.FloatMode;
+			
+			if(floatMode==FloatMode.None){
 				
-				// In flow - add to line
+				// In flow - add to line:
+				
+				// Add the clear zone:
+				if(ClearY_!=0f){
+					PenY+=ClearY_;
+					ClearY_=0f;
+				}
 				
 				if(FirstOnLine==null){
-					FirstOnLine=LastOnLine=styleBox;
+					FirstOnLine=styleBox;
+					LastOnLine=styleBox;
 					
 					if(FirstLineStart==null){
 						
@@ -217,88 +332,183 @@ namespace PowerUI{
 					}
 					
 				}else{
-					LastOnLine=LastOnLine.NextOnLine=styleBox;
+					LastOnLine.NextOnLine=styleBox;
+					LastOnLine=styleBox;
 				}
 				
 			}else{
 				
-				// Using float - add to active floaters:
-				
-				if(ActiveFloats==null){
-					ActiveFloats=new List<LayoutBox>(1);
+				// Adding a float - is this an inline element?
+				if(this is InlineBoxMeta){
+					
+					// Add to nearest block:
+					HostBlock.AddToLine(styleBox);
+					return;
+					
 				}
 				
-				ActiveFloats.Add(styleBox);
+				// Going left?
+				if(GoingLeftwards){
+					// Invert:
+					floatMode=(floatMode==FloatMode.Right)?FloatMode.Left : FloatMode.Right;
+				}
+				
+				if(floatMode==FloatMode.Right){
+					
+					// Push down onto the FR stack:
+					styleBox.NextOnLine=FloatsRight;
+					FloatsRight=styleBox;
+					
+				}else{
+					
+					// Push down onto the FL stack:
+					styleBox.NextOnLine=FloatsLeft;
+					FloatsLeft=styleBox;
+					
+				}
 				
 			}
+			
+		}
+		
+		/// <summary>The float 'clearance' on the left/right. It's basically the bottom of left/right floats.</summary>
+		public float FloatClearance(bool left){
+			
+			LayoutBox activeFloat=left ? FloatsLeft : FloatsRight;
+			
+			float max=0f;
+			
+			while(activeFloat!=null){
+				
+				// Yes - how far down must we go?
+				float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
+				
+				if(requiredClear>max){
+					max=requiredClear;
+				}
+				
+				// Go left:
+				activeFloat=activeFloat.NextOnLine;
+				
+			}
+			
+			return max;
+			
+		}
+		
+		/// <summary>Tries to clear a left/right float (whichever is shortest first).</summary>
+		/// <returns>True if either side was cleared.</returns>
+		public bool TryClearFloat(){
+			
+			if(FloatsLeft==null){
+				
+				if(FloatsRight==null){
+					return false;
+				}
+				
+				// Clear right:
+				ClearFloat(FloatMode.Right);
+				
+				return true;
+				
+			}
+			
+			if(FloatsRight==null){
+				
+				// Clear left:
+				ClearFloat(FloatMode.Left);
+				
+				return true;
+				
+			}
+			
+			// Clear shortest:
+			float clearanceL=FloatClearance(true);
+			float clearanceR=FloatClearance(false);
+			
+			if(clearanceL>clearanceR){
+				
+				// R first.
+				ClearFloat(FloatMode.Right);
+				
+			}else{
+				
+				// L first.
+				ClearFloat(FloatMode.Left);
+				
+			}
+			
+			return true;
 			
 		}
 		
 		/// <summary>Clears left/right/both floats.</summary>
 		public void ClearFloat(int mode){
 			
-			if(ActiveFloats==null){
-				return;
-			}
+			LayoutBox activeFloat;
 			
-			for(int i=ActiveFloats.Count-1;i>=0;i--){
+			if((mode & FloatMode.Left)!=0){
 				
-				// Grab the style:
-				LayoutBox activeFloat=ActiveFloats[i];
+				// Clear left.
+				activeFloat=FloatsLeft;
+				FloatsLeft=null;
 				
-				// Is this on a side we're clearing?
-				if((mode & activeFloat.FloatMode)==0){
-					// Nope!
-					continue;
-				}
-				
-				// Yes - how far down must we go?
-				float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
-				
-				if(PenY<requiredClear){
-					// Clear over it now:
-					PenY=requiredClear;
-				}
-				
-				// Yep! Cleared. Reduce our size:
-				if(activeFloat.FloatMode==FloatMode.Right){
+				while(activeFloat!=null){
 					
-					if(GoingLeftwards){
-						
-						// Decrease LineStart:
-						LineStart-=activeFloat.TotalWidth;
-						
-					}else{
-						
-						// Increase max x:
-						MaxX+=activeFloat.TotalWidth;
-						
+					// Yes - how far down must we go?
+					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
+					
+					if(PenY<requiredClear){
+						// Clear over it now:
+						ClearY_=requiredClear-PenY;
 					}
 					
-				}else{
+					// Decrease LineStart:
+					// LineStart-=activeFloat.TotalWidth;
 					
-					if(GoingLeftwards){
-						
-						// Increase max x:
-						MaxX+=activeFloat.TotalWidth;
-						
-					}else{
-						
-						// Decrease LineStart:
-						LineStart-=activeFloat.TotalWidth;
-						
-					}
+					// Go left:
+					activeFloat=activeFloat.NextOnLine;
 					
 				}
-				
-				// Remove it as an active float:
-				ActiveFloats.RemoveAt(i);
 				
 			}
 			
-			// PenX is always reset during a left clear:
-			if(mode==FloatMode.Left){
-				PenX=LineStart;
+			if((mode & FloatMode.Right)!=0){
+				
+				// Clear right.
+				activeFloat=FloatsRight;
+				InlineBlockBoxMeta ibbm=this as InlineBlockBoxMeta;
+				FloatsRight=null;
+				
+				while(activeFloat!=null){
+					
+					// Yes - how far down must we go?
+					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
+					
+					if(PenY<requiredClear){
+						// Clear over it now:
+						ClearY_=requiredClear-PenY;
+					}
+					
+					// Increase max x:
+					// MaxX+=activeFloat.TotalWidth;
+					
+					// Get the next float:right:
+					LayoutBox next=activeFloat.NextOnLine;
+					
+					if(ibbm!=null){
+						
+						// Cache it:
+						activeFloat.NextOnLine=ibbm.AllFloatsRight;
+						ibbm.AllFloatsRight=activeFloat;
+						
+					}
+					
+					// Go right:
+					activeFloat=next;
+					
+				}
+				
 			}
 			
 		}
@@ -430,76 +640,20 @@ namespace PowerUI{
 					currentBox=currentBox.NextOnLine;
 				}
 				
+				// Update float:right for inline-block:
+				InlineBlockBoxMeta ibbm=this as InlineBlockBoxMeta;
+				
+				if(ibbm!=null && !ibbm.BlockMode && FloatsRight!=null){
+					
+					// Until we clear right, we've got a fixed inner size (up to the leftmost edge of the floats).
+					ibbm.RelocateFloatsRight();
+				}
+				
 			}
 			
 			// Recurse down to the nearest flow root element.
 			
-			if(IsFlowRoot){
-				
-				// Done recursing downwards - we're at the block!
-				
-				if(breakLine || topOfStack){
-					
-					// Move the pen down to the following line:
-					PenY+=lineHeight;
-					
-					if(ActiveFloats!=null){
-						
-						// Are any now cleared?
-						
-						for(int i=ActiveFloats.Count-1;i>=0;i--){
-							
-							// Grab the style:
-							LayoutBox activeFloat=ActiveFloats[i];
-							
-							// Is the current render point now higher than this floating object?
-							// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
-							
-							if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
-								
-								// Yep! Cleared. Reduce our size:
-								if(activeFloat.FloatMode==FloatMode.Right){
-									
-									if(GoingLeftwards){
-										
-										// Decrease LineStart:
-										LineStart-=activeFloat.TotalWidth;
-										
-									}else{
-										
-										// Increase max x:
-										MaxX+=activeFloat.TotalWidth;
-										
-									}
-									
-								}else{
-									
-									if(GoingLeftwards){
-										
-										// Increase max x:
-										MaxX+=activeFloat.TotalWidth;
-										
-									}else{
-										
-										// Decrease LineStart:
-										LineStart-=activeFloat.TotalWidth;
-										
-									}
-									
-								}
-								
-								// Remove it as an active float:
-								ActiveFloats.RemoveAt(i);
-								
-							}
-							
-						}
-						
-					}
-					
-				}
-				
-			}else{
+			if(this is InlineBoxMeta){
 				
 				// Apply valid width/height:
 				LayoutBox box=CurrentBox;
@@ -548,14 +702,16 @@ namespace PowerUI{
 					
 				}
 				
-				if(inFlow){
+				if(inFlow && !(this is InlineBlockBoxMeta)){
 					// Update dim's:
 					Parent.AdvancePen(box);
 				}
 				
 				if(inFlow && breakLine){
 					
-					if((CurrentBox.DisplayMode & DisplayMode.FlowRoot)==0){
+					InlineBlockBoxMeta ibbm=this as InlineBlockBoxMeta;
+					
+					if(ibbm==null){
 						
 						// Linebreak the parent:
 						Parent.CompleteLine(breakLine,false);
@@ -566,6 +722,7 @@ namespace PowerUI{
 						styleBox.Border=box.Border;
 						styleBox.Padding=box.Padding;
 						styleBox.Margin=box.Margin;
+						styleBox.NextInElement=null;
 						
 						// No left margin:
 						styleBox.Margin.Left=0f;
@@ -574,8 +731,6 @@ namespace PowerUI{
 						styleBox.PositionMode=box.PositionMode;
 						
 						CurrentBox=styleBox;
-						
-						styleBox.NextInElement=null;
 						
 						// Add to the inline element's render data:
 						RenderData.LastBox.NextInElement=styleBox;
@@ -588,13 +743,100 @@ namespace PowerUI{
 						
 						// It's a flow root inside. Inline-block here.
 						
+						// Which bound was violated by the joining thing?
+						
+						#warning fill me!
+						
+						// - Tries to fit on the line, then the float gap, then it clears and settles there.
+						// - Clears the 'shortest' side first.
+						
 						// Check if it's the only one on the parents line:
-						if(Parent.FirstOnLine!=CurrentBox){
+						if(Parent.FirstOnLine==CurrentBox){
 							
-							//
+							// -> This only applies if something like a BR wasn't added
+							
+							// Breaks inside like normal from now on.
+							
+						}else{
+							
+							breakLine=false;
 							
 						}
 						
+					}
+					
+				}
+				
+			}else{
+				
+				// Done recursing downwards - we're at the block!
+				
+				if(breakLine || topOfStack){
+					
+					// Update largest line (excludes float right which is actually what we want!):
+					if(PenX>LargestLineWidth){
+						LargestLineWidth=PenX;
+					}
+					
+					// Move the pen down to the following line:
+					PenY+=lineHeight;
+					
+					// Are any floats now cleared?
+					LayoutBox activeFloat=FloatsLeft;
+					
+					while(activeFloat!=null){
+						
+						// Is the current render point now higher than this floating object?
+						// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
+						
+						if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							
+							// Clear!
+							
+							// Pop:
+							FloatsLeft=activeFloat.NextOnLine;
+							
+							// Decrease LineStart:
+							LineStart-=activeFloat.TotalWidth;
+							
+						}else{
+							
+							// Didn't clear - stop there.
+							// (We don't want to clear any further over to the left).
+							break;
+							
+						}
+						
+						activeFloat=activeFloat.NextOnLine;
+					}
+					
+					// Test clear right:
+					activeFloat=FloatsRight;
+					
+					while(activeFloat!=null){
+						
+						// Is the current render point now higher than this floating object?
+						// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
+						
+						if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							
+							// Clear!
+							
+							// Pop:
+							FloatsRight=activeFloat.NextOnLine;
+							
+							// Increase max x:
+							MaxX+=activeFloat.TotalWidth;
+							
+						}else{
+							
+							// Didn't clear - stop there.
+							// (We don't want to clear any further over to the right).
+							break;
+							
+						}
+						
+						activeFloat=activeFloat.NextOnLine;
 					}
 					
 				}
@@ -615,90 +857,91 @@ namespace PowerUI{
 		/// <summary>Advances the pen now.</summary>
 		public void AdvancePen(LayoutBox styleBox){
 			
-			if(styleBox.FloatMode==FloatMode.Right){
+			int floatMode=styleBox.FloatMode;
+			
+			if(floatMode!=FloatMode.None){
 				
-				// Float right
+				// Float (block/inline-block only):
+				BlockBoxMeta bbm=this as BlockBoxMeta;
+				
 				float totalWidth=styleBox.TotalWidth;
 				
-				if((MaxX-totalWidth)<LineStart){
-					
-					// Clear left
-					ClearFloat(FloatMode.Left);
-					
-				}
-				
-				// Always apply top here (no vertical-align and must be after the above clear):
-				styleBox.ParentOffsetTop=PenY;
+				// What's the opposite side?
+				int invertFloat=(floatMode==FloatMode.Right)?FloatMode.Left : FloatMode.Right;
 				
 				if(GoingLeftwards){
-					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
-					PenX+=totalWidth;
-				}else{
-					styleBox.ParentOffsetLeft=MaxX-totalWidth+styleBox.Margin.Left;
+					// Going the other way - flip sides:
+					int a=floatMode;
+					floatMode=invertFloat;
+					invertFloat=a;
 				}
 				
-				if(GoingLeftwards){
-					
-					// Push over where lines start at:
-					LineStart+=totalWidth;
-					
-				}else{
-					
-					// Reduce max:
-					MaxX-=totalWidth;
-					
-				}
+				InlineBlockBoxMeta ibbm=this as InlineBlockBoxMeta;
 				
-			}else if(styleBox.FloatMode==FloatMode.Left){
-				
-				// Float left
-				float totalWidth=styleBox.TotalWidth;
-				
-				if((MaxX-totalWidth)<LineStart){
+				if((bbm.MaxX_-totalWidth)<bbm.LineStart_){
 					
-					// Clear right
-					ClearFloat(FloatMode.Right);
-					
-				}
-				
-				// Always apply top here (no vertical-align and must be after the above clear):
-				styleBox.ParentOffsetTop=PenY;
-				
-				if(GoingLeftwards){
-					styleBox.ParentOffsetLeft=MaxX-totalWidth+styleBox.Margin.Left;
-				}else{
-					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
-					PenX+=totalWidth;
-				}
-				
-				if(GoingLeftwards){
-				
-					// Reduce max:
-					MaxX-=totalWidth;
-					
-				}else{
-					
-					// Push over where lines start at:
-					LineStart+=totalWidth;
-					
-				}
-				
-				// If it's not the first on the line then..
-				
-				if(styleBox!=FirstOnLine){
-					
-					// Push over all the elements before this on the line.
-					LayoutBox currentLine=FirstOnLine;
-					
-					while(currentLine!=styleBox && currentLine!=null){
+					// Force block if needed:
+					if(ibbm!=null && !ibbm.BlockMode){
 						
-						// Move it:
-						currentLine.ParentOffsetLeft+=styleBox.Width;
-						
-						// Next one:
-						currentLine=currentLine.NextOnLine;
+						// Force now:
+						ibbm.BecomeBlock();
 						
 					}
+					
+					// Clear other side:
+					ClearFloat(invertFloat);
+					
+				}
+				
+				// Always apply top here (no vertical-align and must be after the above clear):
+				styleBox.ParentOffsetTop=bbm.PenY_ + bbm.ClearY_;
+				
+				if(floatMode==FloatMode.Left){
+					
+					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
+					PenX+=totalWidth;
+					
+					// Push over where lines start at:
+					bbm.LineStart_+=totalWidth;
+					
+					// If it's not the first on the line then..
+					if(styleBox!=FirstOnLine){
+						
+						// Push over all the elements before this on the line.
+						LayoutBox currentLine=FirstOnLine;
+						
+						while(currentLine!=styleBox && currentLine!=null){
+							
+							// Move it:
+							currentLine.ParentOffsetLeft+=styleBox.Width;
+							
+							// Next one:
+							currentLine=currentLine.NextOnLine;
+							
+						}
+						
+					}
+					
+				}else{
+					
+					// Special case for any inline-block which isn't in block mode.
+					// MaxX is *not* the final position for it - we'll revisit it when we know how much of a 'gap' there is.
+					styleBox.ParentOffsetLeft=bbm.MaxX_-totalWidth+styleBox.Margin.Left;
+					
+					if(styleBox.ParentOffsetLeft<0f){
+						styleBox.ParentOffsetLeft=0f;
+					}
+					
+					if(ibbm!=null){
+						
+						// Simple hack to spot when a float has been dealt with.
+						// -1 is to avoid 0.
+						styleBox.ParentOffsetLeft=-1f-styleBox.ParentOffsetLeft;
+						
+					}
+					
+					// Reduce max:
+					bbm.MaxX_-=totalWidth;
 					
 				}
 				
@@ -775,26 +1018,7 @@ namespace PowerUI{
 		public float LargestLineWidth_;
 		
 		
-		public BlockBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){
-			
-		}
-		
-		/// <summary>Is this box a flow root?</summary>
-		public override bool IsFlowRoot{
-			get{
-				return true;
-			}
-		}
-		
-		/// <summary>The length of the longest line so far.</summary>
-		public override float LargestLineWidth{
-			get{
-				return LargestLineWidth_;
-			}
-			set{
-				LargestLineWidth_=value;
-			}
-		}
+		public BlockBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData):base(parent,firstBox,renderData){}
 		
 		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
 		public override float PenY{
@@ -836,6 +1060,16 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The length of the longest line so far.</summary>
+		public override float LargestLineWidth{
+			get{
+				return LargestLineWidth_;
+			}
+			set{
+				LargestLineWidth_=value;
+			}
+		}
+		
 	}
 	
 	public class InlineBoxMeta : LineBoxMeta{
@@ -853,110 +1087,128 @@ namespace PowerUI{
 		
 		/// <summary>True when this is acting like a BlockBoxMeta.</summary>
 		public bool BlockMode;
+		/// <summary>All float:right boxes.</summary>
+		public LayoutBox AllFloatsRight;
 		
 		
 		public InlineBlockBoxMeta(BlockBoxMeta block,LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData,bool hasWidth):base(parent,firstBox,renderData){
 			
 			HostBlock=block;
 			BlockMode=hasWidth;
+			MaxX_=firstBox.InnerWidth;
+			MaxOffset=parent.PenX + firstBox.InlineStyleOffsetLeft;
 			
-			if(hasWidth){
-				MaxX_=firstBox.InnerWidth;
-			}else{
-				MaxOffset=parent.PenX + firstBox.InlineStyleOffsetLeft;
+		}
+		
+		/// <summary>Repositions float:right.</summary>
+		public void RelocateFloatsRight(){
+			
+			// We'll be moving them over:
+			float gap=MaxX_ - PenX;
+			
+			float totalFloatWidth=0f;
+			
+			LayoutBox currentBox=FloatsRight;
+			
+			while(currentBox!=null){
+				
+				// Is this float a 'new' one? I.e. did it join on this line?
+				if(currentBox.ParentOffsetLeft<0f){
+					
+					// Add float width (incl. margins):
+					totalFloatWidth+=currentBox.TotalWidth;
+					
+					// Invert then shove it over so they're relative to our actual line:
+					currentBox.ParentOffsetLeft=-1f-currentBox.ParentOffsetLeft-gap;
+					
+				}
+				
+				// Next:
+				currentBox=currentBox.NextOnLine;
 			}
 			
+			// Add them to max line length:
+			PenX+=totalFloatWidth;
+			
+		}
+		
+		/// <summary>Applies the maximum possible width. This occurs
+		/// when it wraps and there's nothing on the line and no floats.</summary>
+		public void BecomeBlock(){
+			
+			if(FloatsRight!=null){
+				// Relocate FR:
+				RelocateFloatsRight();
+			}
+			
+			// We're now in block mode:
+			BlockMode=true;
+			
+			// Set inner width, just incase anything reset it:
+			CurrentBox.InnerWidth=MaxX_;
+			LargestLineWidth=MaxX_;
+			
+			// Apply valid width/height:
+			CurrentBox.SetDimensions(false,false);
+			
+			// Ensure space in parent:
+			int breakMode=Parent.GetLineSpace(MaxX_,0f);
+			
+			if(breakMode != 1){
+				return;
+			}
+			
+			// Note we don't do the below if it's mode 2 - it's not needed.
+			
+			// Breaking the line (then remove and re-add):
+			Parent.RemoveFromLine(CurrentBox);
+			
+			// Break:
+			Parent.CompleteLine(true,true);
+			
+			// Re-add:
+			Parent.AddToLine(CurrentBox);
+			
+		}
+		
+		/// <summary>The gap between Max and LargestLineWidth.
+		/// Used to relocate float:right if needed.</summary>
+		public float ContentMaxGap{
+			get{
+				return MaxX_-LargestLineWidth_;
+			}
 		}
 		
 		/// <summary>The length of the longest line so far.</summary>
 		public override float LargestLineWidth{
 			get{
-				if(BlockMode){
-					return base.LargestLineWidth;
-				}
-				return HostBlock.LargestLineWidth;
+				return LargestLineWidth_;
 			}
 			set{
-				if(BlockMode){
-					base.LargestLineWidth=value;
-				}else{
-					HostBlock.LargestLineWidth=value;
-				}
-			}
-		}
-		
-		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
-		public override float PenY{
-			get{
-				if(BlockMode){
-					return PenY_;
-				}
-				return 0f;
-			}
-			set{
-				if(BlockMode){
-					PenY_=value;
-				}
-			}
-		}
-		
-		/// <summary>True if the rendering direction is left. This originates from the direction: css property.</summary>
-		public override bool GoingLeftwards{
-			get{
-				if(BlockMode){
-					return base.GoingLeftwards;
-				}
-				return HostBlock.GoingLeftwards;
-			}
-			set{
-				if(BlockMode){
-					base.GoingLeftwards=value;
-				}else{
-					HostBlock.GoingLeftwards=value;
-				}
+				LargestLineWidth_=value;
 			}
 		}
 		
 		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
 		public override float MaxX{
 			get{
-				if(MaxX_!=0f){
+				
+				// Get host block max (inline):
+				float hostMax=HostBlock.MaxX_ - MaxOffset;
+				
+				// Local max is just MaxX_ (block). Pick smaller of the two:
+				if(MaxX_<hostMax){
 					return MaxX_;
 				}
-				return HostBlock.MaxX_ - MaxOffset;
+				
+				return hostMax;
+				
 			}
 			set{
-				
-				HostBlock.MaxX_=value;
-			}
-		}
-		
-		/// <summary>It's a flow root when we're in block mode.</summary>
-		public override bool IsFlowRoot{
-			get{
-				return BlockMode;
-			}
-		}
-		
-		/// <summary>The current font family in use.</summary>
-		internal override FontFace FontFace{
-			get{
-				if(BlockMode){
-					return base.FontFace;
-				}
-				
-				return HostBlock.FontFace;
-			}
-			set{
-				if(BlockMode){
-					base.FontFace=value;
-				}else{
-					HostBlock.FontFace=value;
-				}
+				MaxX_=value;
 			}
 		}
 		
 	}
-	
 	
 }
