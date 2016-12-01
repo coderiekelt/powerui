@@ -110,6 +110,7 @@ namespace PowerUI{
 			return RenderData.FirstBox.Position.Left;
 		}
 		
+		/*
 		public override void OnMouseMoveEvent(MouseEvent mouseEvent){
 			float deltaX=mouseEvent.clientX-mouseEvent.trigger.DownDocumentX;
 			
@@ -119,6 +120,7 @@ namespace PowerUI{
 			
 			ScrollBy(deltaX,false,true);
 		}
+		*/
 		
 		public override void ScrollTo(float location,bool scrollTarget){
 			

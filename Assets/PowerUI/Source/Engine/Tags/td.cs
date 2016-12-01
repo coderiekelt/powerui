@@ -143,20 +143,6 @@ namespace PowerUI{
 			
 		}
 		
-		
-		public override bool OnAttributeChange(string property){
-			if(base.OnAttributeChange(property)){
-				return true;
-			}
-			
-			if(property=="valign"){
-				Style.vAlign=this["valign"];
-				return true;
-			}
-			
-			return false;
-		}
-		
 		/// <summary>When the given lexer resets, this is called.</summary>
 		public override int SetLexerMode(bool last,Dom.HtmlLexer lexer){
 			
@@ -171,6 +157,7 @@ namespace PowerUI{
 				return;
 			}
 			
+			/*
 			widthUndefined=false;
 			
 			ComputedStyle computed=Style.Computed;
@@ -192,6 +179,8 @@ namespace PowerUI{
 				// No particular element is the max width - use the NoWidthPixels size instead.
 				box.InnerWidth=(Table.NoWidthPixels-styleSize);
 			}
+			*/
+			
 		}
 		
 	}

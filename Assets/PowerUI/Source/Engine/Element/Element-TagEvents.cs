@@ -53,8 +53,8 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Called during a layout event on all elements.</summary>
-		public virtual void OnLayout(){}
+		/// <summary>Called during a global layout event on all elements.</summary>
+		public virtual void OnRender(Renderman renderer){}
 		
 		/// <summary>Called when this element comes into focus.</summary>
 		internal virtual void OnFocusEvent(FocusEvent fe){}
@@ -114,10 +114,17 @@ namespace PowerUI{
 				style.width=width;
 				return true;
 			}else if(property=="align"){
-				style.textAlign="-spark-"+this["align"];
+				
+				string align=this["align"].ToLower();
+				
+				if(align=="center"){
+					align="-moz-center";
+				}
+				
+				style.textAlign=align;
 				return true;
 			}else if(property=="valign"){
-				style.vAlign="-spark-"+this["valign"];
+				style.verticalAlign=this["valign"];
 				return true;
 			}
 			

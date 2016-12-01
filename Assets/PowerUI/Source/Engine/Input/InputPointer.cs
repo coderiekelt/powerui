@@ -257,8 +257,15 @@ namespace PowerUI{
 						
 						if(oldActivePressed==null){
 							Input.Unhandled.dispatchEvent(e);
-						}else{
-							oldActivePressed.dispatchEvent(e);
+						}else if(oldActivePressed.dispatchEvent(e)){
+							
+							// Perform the default:
+							HtmlElement h=(oldActivePressed as HtmlElement);
+							
+							if(h!=null){
+								h.OnClickEvent(e);
+							}
+							
 						}
 						
 					}

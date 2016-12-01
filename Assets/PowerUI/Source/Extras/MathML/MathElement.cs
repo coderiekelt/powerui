@@ -43,6 +43,8 @@ namespace MathML{
 			}
 		}
 		
+		public void OnRender(Renderman renderer){}
+		
 		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
 		public void GetWidthBounds(out float min,out float max){
 			

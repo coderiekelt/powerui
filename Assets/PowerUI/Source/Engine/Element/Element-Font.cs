@@ -26,14 +26,6 @@ namespace PowerUI{
 		/// <summary>Called when a @font-face font is done loading.</summary>
 		public void FontLoaded(DynamicFont font){
 			
-			Css.TextRenderingProperty text=RenderData.Text;
-			
-			if(text!=null){
-				
-				text.FontLoaded(font);
-				
-			}
-			
 			if(childNodes_==null){
 				return;
 			}
@@ -44,7 +36,7 @@ namespace PowerUI{
 				IRenderableNode node=(childNodes_[i] as IRenderableNode);
 				
 				if(node==null){
-					return;
+					continue;
 				}
 				
 				node.FontLoaded(font);

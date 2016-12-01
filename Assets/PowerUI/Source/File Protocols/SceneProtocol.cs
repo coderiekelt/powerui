@@ -37,13 +37,32 @@ namespace PowerUI{
 		}
 		
 		public override void OnFollowLink(HtmlElement linkElement,Location path){
-
-			#if PRE_UNITY5 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
-			Application.LoadLevel(path.Directory+path.File);
-			#else
-			UnityEngine.SceneManagement.SceneManager.LoadScene(path.Directory+path.File);
-			#endif
-
+			
+			string scene=path.Directory+path.File;
+			
+			if(Application.CanStreamedLevelBeLoaded(scene)){
+				
+				#if PRE_UNITY5 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+				Application.LoadLevel(scene);
+				#else
+				UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
+				#endif
+				
+			}else{
+				
+				// Unable to go to this scene. Let's 404 the document so there's an obvious
+				// visual cue that the scene was not added to the build.
+				
+				// Get the doc:
+				Dom.Document doc=linkElement.document;
+				
+				if(doc!=null){
+					// Go to an error page:
+					doc.location.href="about:sceneNotInBuildSettings/"+scene;
+				}
+				
+			}
+			
 		}
 		
 	}

@@ -37,9 +37,9 @@ namespace PowerUI{
 		/// In short, this allows us to correctly set material.renderQueue so there's no nasty flicker.</summary>
 		private DisplayableProperty BatchProperty;
 		/// <summary>The scale of the system.</summary>
-		public Vector3 Scale=Vector3.one;
+		public Vector3 Scale=new Vector3(0.1f,0.1f,0.1f);
 		/// <summary>The rotation of the system.</summary>
-		public Quaternion Rotation=Quaternion.identity;
+		public Quaternion Rotation=Quaternion.AngleAxis(180f,Vector3.up);
 		
 		
 		public override bool IsSelfClosing{
@@ -171,17 +171,20 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Called during the layout pass.</summary>
-		public override void OnLayout(){
+		public override void OnRender(Renderman renderer){
 			
 			if(ParticleTransform==null){
 				return;
 			}
 			
-			#warning check me!
 			// Grab the computed style and the renderer:
 			ComputedStyle computed=Style.Computed;
-			Renderman renderer=htmlDocument.Renderer;
 			LayoutBox box=computed.FirstBox;
+			
+			if(box==null){
+				// display:none.
+				return;
+			}
 			
 			// Get the top left inner corner (inside margin and border):
 			float width=box.PaddedWidth;
@@ -195,6 +198,8 @@ namespace PowerUI{
 			
 			// Map it to our world location:
 			ParticleTransform.localPosition=renderer.PixelToWorldUnit(middleX,middleY,computed.ZIndex);
+			
+			BatchProperty.GotBatchAlready=false;
 			
 			// Setup the batch (so we can get the queue number):
 			renderer.SetupBatch(BatchProperty,null,null);

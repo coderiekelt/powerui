@@ -1,20 +1,19 @@
 <!-- Time for a little CSS! -->
 <style type='text/css'>
 
-.background-noise{
-	
-	position:fixed;
-	height:100%;
-	width:100%;
+html{
 	background:url(noise-background.png);
-	
+}
+
+.padded{
+	padding:20px;
+}
+
+body{
+	overflow-y:auto;
 }
 
 </style>
-
-
-<!-- Background (The blue noise part - PowerUI is actually transparent). Gets its style from the CSS above. -->
-<div class='background-noise'></div>
 
 <!-- The Nitro logo off to the right. We're using direct style here. -->
 <div style='vertical-align:middle;right:2%;width:240px;height:100%;position:fixed;'>
@@ -23,15 +22,6 @@
 	<img src="nitroLogo.png"/>
 
 </div>
-
-<style type='text/css'>
-.padded{
-	padding:20px;
-}
-body{
-	overflow-y:auto;
-}
-</style>
 
 <div style='padding:25px;'>
 	<b><u id='nitro_title'>Nitro Examples</u></b>

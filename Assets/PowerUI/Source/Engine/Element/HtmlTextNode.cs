@@ -127,6 +127,8 @@ namespace PowerUI{
 			RenderData.WentOffScreen();
 		}
 		
+		public void OnRender(Renderman renderer){}
+		
 		public void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			// This one never runs, but it's required by the interface.
 		}

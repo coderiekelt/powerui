@@ -16,6 +16,8 @@
 using System;
 using Css;
 using UnityEngine;
+using Dom;
+
 
 namespace PowerUI{
 	
@@ -219,36 +221,33 @@ namespace PowerUI{
 			Mask.localScale=new Vector3(80f,80f,80f);
 		}
 		
-		#warning see me!
-		/*
-		Fire all mouse/pointer events into the scene
-		
-		public override void OnMouseDownEvent(MouseEvent clickEvent){
+		/// <summary>Fires all events into the scene.</summary>
+		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
 			
-			// Fire it into the scene so we hit WorldUI's.
-			FireIntoScene(clickEvent);
+			// Handle locally:
+			if(base.HandleLocalEvent(e,bubblePhase)){
+				
+				// Fire it in if it's got coords:
+				FireIntoScene(e as UIEvent);
+				
+				return true;
+				
+			}
 			
-		}
-		
-		public override void OnMouseUpEvent(MouseEvent clickEvent){
-			
-			// Fire it into the scene so we hit WorldUI's.
-			FireIntoScene(clickEvent);
-			
-		}
-		
-		public override void OnMouseMoveEvent(MouseEvent clickEvent){
-			
-			// Fire it into the scene so we hit WorldUI's.
-			FireIntoScene(clickEvent);
+			return false;
 			
 		}
 		
-		internal void FireIntoScene(DomEvent e){
+		/// <summary>Fires an event into the scene of the camera.</summary>
+		internal void FireIntoScene(UIEvent e){
+			
+			if(e==null){
+				return;
+			}
 			
 			// Get coords relative to the element. These are non-standard convenience properties:
-			int localX=e.localX;
-			int localY=e.localY;
+			float localX=e.localX;
+			float localY=e.localY;
 			
 			// Flip Y because Unity is upside down relative to input coords:
 			localY=ScreenInfo.ScreenY-1-localY;
@@ -257,20 +256,40 @@ namespace PowerUI{
 			RaycastHit worldUIHit;
 			if(Physics.Raycast(Camera.ScreenPointToRay(new Vector2(localX,localY)),out worldUIHit)){
 				
-				// The ray hit something. WorldUI?
-				HitResult hit=PowerUI.Input.HandleWorldUIHit(worldUIHit);
+				// Did it hit a worldUI?
+				WorldUI worldUI=WorldUI.Find(worldUIHit);
 				
-				if(hit.Success){
-					// We hit a WorldUI! Update the click object so it gets the coords right:
-					e.clientX=e.localX;
-					e.clientY=e.localY;
-					// Let's click on it:
-					hit.RunClick(e);
+				if(worldUI==null){
+					
+					// Nope!
+					return;
 				}
+				
+				// Resolve the hit into a -0.5 to +0.5 point:
+				float x;
+				float y;
+				worldUI.ResolvePoint(worldUIHit,out x,out y);
+				
+				// Map it from a relative point to a 'real' one:
+				Vector2 point=worldUI.RelativePoint(x,y);
+				
+				// Apply to x/y:
+				x=point.x;
+				y=point.y;
+				
+				// Pull an element from that worldUI:
+				Element el=worldUI.document.elementFromPointOnScreen(x,y);
+				
+				if(el!=null){
+					
+					// Fire the event for that element:
+					el.dispatchEvent(e);
+					
+				}
+				
 			}
 			
 		}
-		*/
 		
 		/// <summary>Applies an alpha mask over the camera itself. This can be used to shape the camera
 		/// into e.g. a circle.</summary>
@@ -336,7 +355,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Called during the layout pass.</summary>
-		public override void OnLayout(){
+		public override void OnRender(Renderman renderer){
 			if(Camera==null){
 				return;
 			}
@@ -350,6 +369,10 @@ namespace PowerUI{
 			
 			// Grab the computed style:
 			LayoutBox box=Style.Computed.FirstBox;
+			
+			if(box==null){
+				return;
+			}
 			
 			// Update render texture size:
 			int w=(int)box.InnerWidth;

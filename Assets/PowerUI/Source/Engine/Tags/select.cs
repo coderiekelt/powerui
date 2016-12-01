@@ -441,9 +441,10 @@ namespace PowerUI{
 			
 		}
 		
+		#warning change this - clicking outside a select dropdown closes it
+		
+		/*
 		public override void OnMouseMoveEvent(MouseEvent e){
-			
-			#warning change this - clicking outside a select dropdown closes it
 			
 			if(e.leftMouseDown){
 				// Left mouse button is currently down.
@@ -463,6 +464,7 @@ namespace PowerUI{
 			}
 			
 		}
+		*/
 		
 		/// <summary>Gets or sets the value of this element. Input/Select elements only.</summary>
 		public override string value{

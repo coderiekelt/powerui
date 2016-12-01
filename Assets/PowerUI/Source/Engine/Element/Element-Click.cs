@@ -28,11 +28,6 @@ namespace PowerUI{
 		public virtual void OnClickEvent(MouseEvent clickEvent){
 		}
 		
-		/// <summary>Runs the mouse move functions.</summary>
-		public virtual void OnMouseMoveEvent(MouseEvent moveEvent){
-			
-		}
-		
 		/// <summary>True if the mouse is over this element.</summary>
 		public bool IsMousedOver(){
 			

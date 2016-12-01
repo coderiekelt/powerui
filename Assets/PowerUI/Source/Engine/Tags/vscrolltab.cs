@@ -106,6 +106,7 @@ namespace PowerUI{
 			return RenderData.FirstBox.Position.Top;
 		}
 		
+		/*
 		public override void OnMouseMoveEvent(MouseEvent mouseEvent){
 			float deltaY=mouseEvent.clientY-mouseEvent.trigger.DownDocumentY;
 			
@@ -115,6 +116,7 @@ namespace PowerUI{
 			
 			ScrollBy(deltaY,false,true);
 		}
+		*/
 		
 		public override void ScrollTo(float location,bool scrollTarget){
 			
