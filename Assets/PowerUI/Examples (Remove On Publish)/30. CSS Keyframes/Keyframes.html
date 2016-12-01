@@ -3,30 +3,30 @@
 <head>
   <title>CSS animations: Example 2</title>
   <style type="text/css">
-    @keyframes slidein {
-      from {
-        left:100%;
-        width:300%;
-      }
-      
-      75% {
-        font-size:300%;
-        left:25%;
-        width:150%;
-      }
-      
-      to {
-		font-size:10px;
-        left:0%;
-        width:100%;
-      }
-    }
-	
+  
 	.test{
+		position:relative;
 		color:#ff00ff;
 		animation:slidein 3s;
     }
     
+    @keyframes slidein {
+      from {
+		font-size:1em;
+        left:100%;
+      }
+      
+      75% {
+        font-size:3em;
+        left:25%;
+      }
+      
+      to {
+		font-size:1em;
+        left:0%;
+      }
+    }
+	
   </style>
 </head>
 <body>

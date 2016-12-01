@@ -645,7 +645,7 @@ namespace PowerUI{
 							pointer.ActiveOver=null;
 							
 							// Update the CSS:
-							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshLocal();
+							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
 							
 							// Trigger a mouseout (bubbles):
 							mouseEvent.EventType="mouseout";
@@ -669,7 +669,7 @@ namespace PowerUI{
 						if(newActiveOver!=null){
 							
 							// Update the CSS (hover)
-							(newActiveOver as IRenderableNode).ComputedStyle.RefreshLocal();
+							(newActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
 							
 						}
 						
