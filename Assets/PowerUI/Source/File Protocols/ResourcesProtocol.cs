@@ -51,7 +51,13 @@ namespace PowerUI{
 				if(resource==null){
 					
 					// Note: the full file should be called something.bytes for this to work in Unity.
-					resource=Resources.Load(package.location.Path);
+					resUrl=package.location.Path;
+					
+					if(resUrl.Length>0 && resUrl[0]=='/'){
+						resUrl=resUrl.Substring(1);
+					}
+					
+					resource=Resources.Load(resUrl);
 					
 				}
 				
