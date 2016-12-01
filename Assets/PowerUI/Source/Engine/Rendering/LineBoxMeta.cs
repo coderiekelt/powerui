@@ -446,6 +446,7 @@ namespace PowerUI{
 		public void ClearFloat(int mode){
 			
 			LayoutBox activeFloat;
+			float penY=PenY;
 			
 			if((mode & FloatMode.Left)!=0){
 				
@@ -458,9 +459,9 @@ namespace PowerUI{
 					// Yes - how far down must we go?
 					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
 					
-					if(PenY<requiredClear){
+					if((penY+ClearY_)<requiredClear){
 						// Clear over it now:
-						ClearY_=requiredClear-PenY;
+						ClearY_=requiredClear-penY;
 					}
 					
 					// Decrease LineStart:
@@ -485,9 +486,9 @@ namespace PowerUI{
 					// Yes - how far down must we go?
 					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
 					
-					if(PenY<requiredClear){
+					if((penY+ClearY_)<requiredClear){
 						// Clear over it now:
-						ClearY_=requiredClear-PenY;
+						ClearY_=requiredClear-penY;
 					}
 					
 					// Increase max x:
