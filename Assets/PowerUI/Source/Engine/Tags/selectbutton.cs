@@ -15,11 +15,13 @@ using System;
 namespace PowerUI{
 	
 	/// <summary>
-	/// Dropdown button tag. Used by select internally - when clicked, it displays the dropdown menu.
+	/// Select button. Used by select internally - when clicked, it displays the dropdown menu.
 	/// </summary>
 	
-	[Dom.TagName("ddbutton")]
-	public class HtmlDDButtonElement:HtmlElement{
+	[Dom.TagName("selectbutton")]
+	public class HtmlSelectButtonElement:HtmlElement{
+		
+		public const int Priority=Css.VirtualElements.DURING_ZONE+95;
 		
 		public override bool IsSelfClosing{
 			get{

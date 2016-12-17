@@ -30,10 +30,51 @@ namespace PowerUI{
 		public bool Dropped;
 		/// <summary>The index of the selected option.</summary>
 		public int SelectedIndex=-1;
-		/// <summary>The element that displays the selected option.</summary>
-		private HtmlElement DisplayText;
+		/// <summary>The element that displays the selected option (it's a div; the same as Firefox).</summary>
+		private HtmlDivElement Placeholder{
+			get{
+				
+				if(RenderData.Virtuals==null){
+					return null;
+				}
+				
+				return RenderData.Virtuals.Get(HtmlSelectButtonElement.Priority-1) as HtmlDivElement;
+				
+			}
+		}
+		
+		/// <summary>The button.</summary>
+		private HtmlSelectButtonElement Button{
+			get{
+				
+				if(RenderData.Virtuals==null){
+					return null;
+				}
+				
+				return RenderData.Virtuals.Get(HtmlSelectButtonElement.Priority) as HtmlSelectButtonElement;
+				
+			}
+		}
+		
+		/// <summary>The dropdown.</summary>
+		private HtmlDropdownElement Dropdown{
+			get{
+				
+				if(RenderData.Virtuals==null){
+					return null;
+				}
+				
+				return RenderData.Virtuals.Get(HtmlDropdownElement.Priority) as HtmlDropdownElement;
+				
+			}
+		}
+		
 		/// <summary>The set of options this select provides.</summary>
-		public NodeList Options;
+		public NodeList Options{
+			get{
+				return childNodes_;
+			}
+		}
 		
 		
 		public HtmlSelectElement(){
@@ -133,12 +174,15 @@ namespace PowerUI{
 		/// <param name="node">The node to look for.</param>
 		/// <returns>The index of the node.</returns>
 		public int GetSelectID(Node node){
-			if(Options==null){
+			
+			NodeList opts=Options;
+			
+			if(opts==null){
 				return -1;
 			}
 			
-			for(int i=0;i<Options.length;i++){
-				if(Options[i]==node){
+			for(int i=0;i<opts.length;i++){
+				if(opts[i]==node){
 					return i;
 				}
 			}
@@ -146,86 +190,35 @@ namespace PowerUI{
 			return -1;
 		}
 		
-		public override void OnResetVariable(string name){
-			if(DisplayText!=null){
-				DisplayText.ResetVariable(name);
-			}
-			
-			if(Options==null){
-				return;
-			}
-			
-			foreach(Node option in Options){
-				(option as HtmlElement ).ResetVariable(name);
-			}
-		}
-		
-		public override void OnResetAllVariables(){
-			if(DisplayText!=null){
-				DisplayText.ResetAllVariables();
-			}
-			
-			if(Options==null){
-				return;
-			}
-			
-			foreach(Node option in Options){
-				(option as HtmlElement ).ResetAllVariables();
-			}
-		}
-		
 		/// <summary>Adds an option to this dropdown menu. Element.add() calls this.</summary>
 		public void AddOption(HtmlElement element){
 			
-			// Get as option:
-			HtmlOptionElement optionTag=element as HtmlOptionElement;
-			
-			if(optionTag!=null){
-				
-				// Apply dropdown:
-				optionTag.Dropdown=this;
-				
-			}
-			
-			// Add to the options set:
-			Options.push(element);
-			
-			// Manually update parent:
-			element.ParentNode=this;
-			
-			// And update it's css by telling it the parent changed.
-			// This affects inherit, height/width etc.
-			element.style.Computed.ParentChanged();
-			
-			// If the select menu is already open, it has to be dropped again. This makes it redraw:
-			if(Dropped){
-				Dropped=false;
-				Drop();
-			}
+			// Just add as a child:
+			appendChild(element);
 			
 		}
 	   
 		public override void OnTagLoaded(){
+			
 			// Append the text,dropdown and button.
 			
-			// Grab the options:
-			Options=childNodes_;
+			// Append the special 'placeholder' and dropdown button (virtual elements):
+			ComputedStyle computed=Style.Computed;
 			
-			#warning disabled
-			// -> We'll be using virtuals instead
+			computed.GetOrCreateVirtual(HtmlSelectButtonElement.Priority-1,"div");
+			computed.GetOrCreateVirtual(HtmlSelectButtonElement.Priority,"selectbutton");
 			
-			/*
-			// Clear the innerHTML of our dropdown and write in the new content (e.g. the button/dropdown itself).
-			// innerHTML="<span style='height:100%;'></span><ddbutton>";
-			// Next, grab the element we want from our new innerHTML.
-			// Text, for showing the current selection.
-			DisplayText=childNodes_[0] as HtmlElement ;
+			// Selects are unusual in that they don't draw their own childnodes:
+			RenderData.Virtuals.AllowDrawKids=false;
 			
-			if(Options!=null){
+			NodeList opts=Options;
+			
+			if(opts!=null){
+				
 				// Find the selected option, if there is one:
-				for(int i=Options.length-1;i>=0;i--){
+				for(int i=opts.length-1;i>=0;i--){
 					
-					Node element=Options[i];
+					Node element=opts[i];
 					
 					HtmlOptionElement optionTag=element as HtmlOptionElement;
 					
@@ -235,17 +228,19 @@ namespace PowerUI{
 						SetSelected(optionTag);
 						break;
 					}
+					
 				}
+				
 			}
 			
 			if(SelectedIndex!=-1){
 				return;
 			}
+			
 			// Nothing had the selected attribute (<option .. selected ..>); if it did, it would have SetSelected already.
 			// We'll select the first one by default, if it exists.
 			// -2 Prompts it to not call onchange, then set index 0.
 			SetSelected(-2);
-			*/
 			
 		}
 		
@@ -254,51 +249,44 @@ namespace PowerUI{
 			if(Dropped){
 				return;
 			}
+			
 			Dropped=true;
+			
+			// Focus if it isn't already:
 			focus();
-			HtmlElement ddBox=GetDropdownBox();
 			
-			if(ddBox==null){
-				return;
-			}
-				
-			ddBox.style.display="block";
-			
-			// Locate it to the select:
+			// Get the CS:
 			ComputedStyle computed=Style.Computed;
+			
+			// Get/create it:
+			HtmlDropdownElement dropdown=computed.GetOrCreateVirtual(HtmlDropdownElement.Priority,"dropdown") as HtmlDropdownElement;
+			
+			// Act like the options are kids of the dropdown:
+			dropdown.childNodes_=Options;
+			
+			/*
+			// Locate it to the select:
 			LayoutBox box=computed.FirstBox;
 			
-			ddBox.style.left=box.X+"px";
-			ddBox.style.width=box.InnerWidth+"px";
-			ddBox.style.top=(box.Y+box.PaddedHeight)+"px";
-			
-			ddBox.childNodes_=null;
-			ddBox.innerHTML="";
-			
-			if(Options!=null){
-				
-				foreach(Node child in Options){
-					ddBox.appendChild(child);
-				}
-				
-			}
+			dropdown.style.left=box.X+"px";
+			dropdown.style.width=box.InnerWidth+"px";
+			dropdown.style.top=(box.Y+box.PaddedHeight)+"px";
+			*/
 			
 		}
 		
 		internal override void OnBlurEvent(FocusEvent fe){
-			// Is the new focused element a child of ddbox?
-			/*
-			Node current=fe.focusing;
+			// Is the new focused element a child of dropdown?
+			Dom.Element current=fe.focusing as Dom.Element;
 			
 			while(current!=null){
 				
-				if(current.Tag=="ddbox"){
+				if(current.Tag=="dropdown"){
 					return;
 				}
 				
 				current=current.parentElement;
 			}
-			*/
 			
 			Hide();
 		}
@@ -310,11 +298,9 @@ namespace PowerUI{
 			}
 			
 			Dropped=false;
-			HtmlElement ddBox=GetDropdownBox();
 			
-			if(ddBox!=null){
-				ddBox.style.display="none";
-			}
+			// Remove:
+			ComputedStyle.RemoveVirtual(HtmlDropdownElement.Priority);
 			
 		}
 		
@@ -322,7 +308,12 @@ namespace PowerUI{
 		/// <returns>The dropdown box if it was found; null otherwise.</returns>
 		private HtmlElement GetDropdownBox(){
 			
-			return htmlDocument.window.top.document.getElementByTagName("ddbox") as HtmlElement ;
+			if(RenderData.Virtuals==null){
+				return null;
+			}
+			
+			return RenderData.Virtuals.Get(HtmlDropdownElement.Priority) as HtmlElement;
+			
 		}
 		
 		/// <summary>Gets the currently selected value.</summary>
@@ -364,7 +355,10 @@ namespace PowerUI{
 		/// <summary>Sets the option at the given index as the selected one.</summary>
 		/// <param name="index">The index of the option to select.</param>
 		public void SetSelected(int index){
-			if(Options==null || index>=Options.length){
+			
+			NodeList opts=Options;
+			
+			if(opts==null || index>=opts.length){
 				return;
 			}
 			
@@ -377,9 +371,11 @@ namespace PowerUI{
 			}
 			
 			HtmlElement element=null;
+			
 			if(index>=0){
-				element=Options[index] as HtmlElement ;
+				element=opts[index] as HtmlElement;
 			}
+			
 			SetSelected(index,element,runOnChange);
 		}
 		
@@ -422,9 +418,9 @@ namespace PowerUI{
 				
 				if(index<0||element==null){
 					// Clear the option text:
-					DisplayText.innerHTML="";
+					Placeholder.innerHTML="";
 				}else{
-					DisplayText.innerHTML=element.innerHTML;
+					Placeholder.innerHTML=element.innerHTML;
 				}
 				
 			}
@@ -440,31 +436,6 @@ namespace PowerUI{
 			}
 			
 		}
-		
-		#warning change this - clicking outside a select dropdown closes it
-		
-		/*
-		public override void OnMouseMoveEvent(MouseEvent e){
-			
-			if(e.leftMouseDown){
-				// Left mouse button is currently down.
-				
-				// Grab the dropdown box:
-				HtmlElement dropdown=GetDropdownBox();
-				
-				// Is it outside the select menu and outside the dropdown box?
-				if(	!IsMousedOver() && !dropdown.IsMousedOver() ){
-					// Yep it is - Clicked outside the dropdown menu.
-					
-					// Hide it now:
-					Hide();
-					
-				}
-				
-			}
-			
-		}
-		*/
 		
 		/// <summary>Gets or sets the value of this element. Input/Select elements only.</summary>
 		public override string value{

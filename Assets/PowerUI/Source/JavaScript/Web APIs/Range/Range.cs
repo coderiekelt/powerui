@@ -32,6 +32,8 @@ namespace PowerUI{
 		public Node endContainer;
 		
 		
+		public Range(){}
+		
 		public Range(int s,int e,Node start,Node end){
 			
 			startOffset=s;
@@ -230,7 +232,27 @@ namespace PowerUI{
 			
 		}
 		
-		public string toString(){
+		/// <summary>Gets selected text as a string.</summary>
+		public override string ToString(){
+			
+			if(startContainer is TextNode){
+				
+				// We've got a text node - just a substring:
+				TextNode tn=(startContainer as TextNode);
+				
+				int end=endOffset;
+				int start=startOffset;
+				
+				if(end<start){
+					int t=start;
+					start=end;
+					end=t;
+				}
+				
+				// Get:
+				return tn.data.Substring(start,end-start);
+				
+			}
 			
 			StringBuilder sb=new StringBuilder();
 			
@@ -240,6 +262,21 @@ namespace PowerUI{
 			}
 			
 			return sb.ToString();
+			
+		}
+		
+		/// <summary>True if the given node is within this range.</summary>
+		public bool contains(Node n){
+			
+			foreach(Node node in containedNodes){
+				
+				if(n==node){
+					return true;
+				}
+				
+			}
+			
+			return false;
 			
 		}
 		

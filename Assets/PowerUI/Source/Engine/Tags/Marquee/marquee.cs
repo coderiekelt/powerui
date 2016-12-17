@@ -332,31 +332,8 @@ namespace PowerUI{
 				
 			}
 			
-			// The below block of code comes from inside the scrollTo function:
-			
 			// Request a redraw:
 			style.RequestLayout();
-			
-			// Update the scroll bars next. Get the virtual elements:
-			VirtualElements virts=Style.Computed.RenderData.Virtuals;
-			
-			if(virts!=null){
-				
-				// Get the horizontal scrollbar:
-				HtmlInputElement scrollBar=virts.Get(ComputedStyle.HorizontalScrollPriority) as HtmlInputElement;
-				
-				if(scrollBar!=null){
-					scrollBar.ElementScrolled();
-				}
-				
-				// Get the vertical scrollbar:
-				scrollBar=virts.Get(ComputedStyle.VerticalScrollPriority) as HtmlInputElement;
-				
-				if(scrollBar!=null){
-					scrollBar.ElementScrolled();
-				}
-				
-			}
 			
 		}
 		

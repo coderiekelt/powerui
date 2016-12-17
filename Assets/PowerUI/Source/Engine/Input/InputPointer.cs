@@ -21,6 +21,8 @@ namespace PowerUI{
 		public const int DRAG_NOT_AVAILABLE=1;
 		/// <summary>Dragging something.</summary>
 		public const int DRAGGING=2;
+		/// <summary>Selecting something.</summary>
+		public const int SELECTING=4;
 		
 		/// <summary>To avoid resizing this array repeatedly, we track how many are actually in use.</summary>
 		internal static int PointerCount;
@@ -247,7 +249,7 @@ namespace PowerUI{
 					}
 					
 					// Click if needed:
-					if(oldActivePressed==ActiveOver){
+					if(oldActivePressed==ActiveOver && DragStatus==0){
 						
 						// Click!
 						e.Reset();
@@ -265,6 +267,9 @@ namespace PowerUI{
 							if(h!=null){
 								h.OnClickEvent(e);
 							}
+							
+							// Clear selection if there is one:
+							(oldActivePressed.document as HtmlDocument).clearSelection();
 							
 						}
 						
@@ -298,18 +303,27 @@ namespace PowerUI{
 						de.clientX=ScreenX;
 						de.clientY=ScreenY;
 						
-						if(ActivePressed.dispatchEvent(de)){
+						if(oldActivePressed.dispatchEvent(de)){
 							
 							// Trigger a drop event next:
 							de.Reset();
 							de.EventType="drop";
-							if(ActiveOver.dispatchEvent(de)){
+							if(ActiveOver!=null && ActiveOver.dispatchEvent(de)){
 								
 								// Proceed to try and drop it into the dropzone (ActiveOver).
 								
 							}
 							
 						}
+						
+					}else if(DragStatus==SELECTING){
+						
+						// Finished selection - trigger selectionend:
+						DomEvent sc=new DomEvent("selectionend");
+						sc.SetTrusted();
+						
+						// Dispatch on the element:
+						oldActivePressed.dispatchEvent(sc);
 						
 					}
 					

@@ -30,6 +30,10 @@ namespace PowerUI{
 			HelpBox(message,"warning");
 		}
 		
+		public static void ErrorBox(string message){
+			HelpBox(message,"error");
+		}
+		
 		public static void HelpBox(string message){
 			HelpBox(message,"info");
 		}
@@ -41,6 +45,8 @@ namespace PowerUI{
 			
 			if(type=="info"){
 				mType=MessageType.Info;
+			}else if(type=="error"){
+				mType=MessageType.Error;
 			}else{
 				mType=MessageType.Warning;
 			}

@@ -411,14 +411,12 @@ namespace PowerUI{
 			if(widthPX!=pixelWidth){
 				pixelWidth=widthPX;
 				document.Viewport.Width=widthPX;
-				document.html.style.width=widthPX+"px";
 			}
 			
 			if(heightPX!=pixelHeight){
 				pixelHeight=heightPX;
 				PixelHeightF=(float)pixelHeight;
 				document.Viewport.Height=heightPX;
-				document.html.style.height=heightPX+"px";
 			}
 			
 			// Update ratio:

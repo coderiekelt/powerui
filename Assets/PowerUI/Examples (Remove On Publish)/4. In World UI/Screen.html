@@ -1,5 +1,12 @@
 <style type='text/css'>
+html{
+	height:100%;
+	width:100%;
+}
+
 body{
+	height:100%;
+	width:100%;
 	margin:0;
 	color:#ffffff;
 	overflow:hidden;
@@ -32,10 +39,10 @@ body{
 var messageID=1;
 
 // Grab the message box (we're caching it for best performance):
-var message=document.getElementById("message");
+var message=(document.getElementById("message")):HtmlElement;
 
 // Grab the content box:
-var content=document.getElementById("screenContent");
+var content=(document.getElementById("screenContent")):HtmlElement;
 
 // Lets get things moving! The screen is currently dark, so pretend it was just faded out:
 fadedOut(null);

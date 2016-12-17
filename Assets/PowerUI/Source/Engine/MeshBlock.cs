@@ -44,7 +44,7 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>The buffer that this block is from.</summary>
+		/// <summary>The buffer that the current block is from.</summary>
 		public BlockBuffer Buffer;
 		
 		/// <summary>The colour of the whole block. Applied to vertex colours.</summary>
@@ -53,7 +53,8 @@ namespace PowerUI{
 		public UVBlock TextUV;
 		/// <summary>The UV coordinate for an image off the atlas.</summary>
 		public UVBlock ImageUV;
-		
+		/// <summary>The batch mesh. Used in paint mode instead of Buffer.</summary>
+		private DynamicMesh Mesh;
 		/// <summary>The vertex in the top left corner.</summary>
 		public Vector3 VertexTopLeft;
 		/// <summary>The vertex in the top right corner.</summary>
@@ -62,6 +63,16 @@ namespace PowerUI{
 		public Vector3 VertexBottomLeft;
 		/// <summary>The vertex in the bottom right corner.</summary>
 		public Vector3 VertexBottomRight;
+		
+		
+		/// <summary>Sets an index in a batch. Used in paint mode.</summary>
+		public void SetBatchIndex(UIBatch batch,int blockIndex){
+			
+			Buffer=null;
+			Mesh=batch.Mesh;
+			BlockIndex=blockIndex;
+			
+		}
 		
 		/*
 		public bool Overlaps(MeshBlock block){
@@ -190,13 +201,22 @@ namespace PowerUI{
 		/// <summary>Applies the SDF outline "location", essentially the thickness of an outline, to this block.</summary>
 		public void ApplyOutline(float location){
 			
-			if(Buffer.UV3==null){
-				// UV3 is now required:
-				Buffer.RequireUV3();
-			}
+			Vector2[] buffer;
 			
-			// Apply the values to the tangents:
-			Vector2[] buffer=Buffer.UV3;
+			if(Buffer==null){
+				// Paint mode.
+				buffer=Mesh.UV3.Buffer;
+			}else{
+				
+				if(Buffer.UV3==null){
+					// UV3 is now required:
+					Buffer.RequireUV3();
+				}
+				
+				// Apply the values to the tangents:
+				buffer=Buffer.UV3;
+			
+			}
 			
 			Vector2 tangent=new Vector2(location,location);
 			
@@ -210,7 +230,7 @@ namespace PowerUI{
 		/// <param name="block">The position of the vertices in screen coordinates.</param>
 		/// <param name="renderer">The renderer used when rendering this block.</param>
 		/// <param name="zIndex">The depth of the vertices.</param>
-		private void ApplyVertices(BoxRegion block,Renderman renderer,float zIndex){
+		internal void ApplyVertices(BoxRegion block,Renderman renderer,float zIndex){
 		
 			// Compute the min/max pixels:
 			Vector3 min=renderer.PixelToWorldUnit(block.X,block.Y,zIndex);
@@ -238,12 +258,26 @@ namespace PowerUI{
 			
 			BlockIndex++;
 			
-			if(BlockIndex==MeshDataBufferPool.BlockCount){
+			if(Buffer!=null && BlockIndex==MeshDataBufferPool.BlockCount){
 				
 				// Advance a buffer:
 				Buffer=Buffer.Next;
 				BlockIndex=0;
 				
+			}
+			
+		}
+		
+		/// <summary>Applies the given delta matrix to the verts.</summary>
+		public void TransformVertices(Matrix4x4 delta){
+			
+			int vertexIndex=VertexIndex;
+			
+			// Apply the verts:
+			Vector3[] buffer=(Buffer==null) ? Mesh.Vertices.Buffer : Buffer.Vertices;
+			
+			for(int i=0;i<4;i++){
+				buffer[vertexIndex+i]=delta * buffer[vertexIndex+i];
 			}
 			
 		}
@@ -254,7 +288,7 @@ namespace PowerUI{
 			int vertexIndex=VertexIndex;
 			
 			// Apply the colour:
-			Color[] buffer=Buffer.Colours;
+			Color[] buffer=(Buffer==null) ? Mesh.Colours.Buffer : Buffer.Colours;
 			
 			#if LINEAR
 				colour=colour.linear;
@@ -268,15 +302,42 @@ namespace PowerUI{
 		
 		/// <summary>Writes out the data to the meshes buffers.</summary>
 		public void Done(Transformation transform){
-			// Apply the vertices:
-			Vector3[] verts=Buffer.Vertices;
-			Vector3[] normals=Buffer.Normals;
+			
 			int vertexIndex=VertexIndex;
 			int triangleIndex=TriangleIndex;
-			int[] triangles=Buffer.Triangles;
 			
-			// Write the triangles:
-			int triOffset=Buffer.Offset + vertexIndex;
+			Vector3[] verts;
+			Vector3[] normals;
+			int[] triangles;
+			Color[] colours;
+			Vector2[] uv1;
+			Vector2[] uv2;
+			int triOffset;
+			
+			// Get the raw buffers:
+			if(Buffer==null){
+				
+				// Paint mode.
+				verts=Mesh.Vertices.Buffer;
+				normals=Mesh.Normals.Buffer;
+				triangles=Mesh.Triangles.Buffer;
+				colours=Mesh.Colours.Buffer;
+				uv1=Mesh.UV.Buffer;
+				uv2=Mesh.UV2.Buffer;
+				triOffset=0;
+				
+			}else{
+				
+				// Layout mode.
+				verts=Buffer.Vertices;
+				normals=Buffer.Normals;
+				triangles=Buffer.Triangles;
+				colours=Buffer.Colours;
+				uv1=Buffer.UV1;
+				uv2=Buffer.UV2;
+				triOffset=Buffer.Offset + vertexIndex;
+				
+			}
 			
 			// First triangle - Top left corner:
 			triangles[triangleIndex++]=triOffset;
@@ -362,19 +423,16 @@ namespace PowerUI{
 			
 			// The UVs:
 			if(ImageUV!=null){
-				ImageUV.Write(Buffer.UV1,vertexIndex);
+				ImageUV.Write(uv1,vertexIndex);
 			}else{
-				BlankUV.Write(Buffer.UV1,vertexIndex);
+				BlankUV.Write(uv1,vertexIndex);
 			}
 			
 			if(TextUV!=null){
-				TextUV.Write(Buffer.UV2,vertexIndex);
+				TextUV.Write(uv2,vertexIndex);
 			}else{
-				BlankUV.Write(Buffer.UV2,vertexIndex);
+				BlankUV.Write(uv2,vertexIndex);
 			}
-			
-			// Apply the colour:
-			Color[] buffer=Buffer.Colours;
 			
 			#if LINEAR
 				Color colour=Colour.linear;
@@ -383,7 +441,7 @@ namespace PowerUI{
 			#endif
 			
 			for(int i=0;i<4;i++){
-				buffer[vertexIndex+i]=colour;
+				colours[vertexIndex+i]=colour;
 			}
 			
 		}

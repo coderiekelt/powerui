@@ -22,12 +22,6 @@ namespace PowerUI{
 	[Dom.TagName("th")]
 	public class HtmlThElement:HtmlElement{
 		
-		/// <summary>The column number of this cell in the table.</summary>
-		private int Column;
-		/// <summary>The table this cell belongs to.</summary>
-		private HtmlTableElement Table;
-		
-		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{
@@ -85,64 +79,6 @@ namespace PowerUI{
 		public override int SetLexerMode(bool last,Dom.HtmlLexer lexer){
 			
 			return last ? Dom.HtmlTreeMode.InBody : Dom.HtmlTreeMode.InCell;
-			
-		}
-		
-		public override void OnChildrenLoaded(){
-			// Go up the tree looking for our table.
-			Element parent=parentElement;
-			
-			while(parent!=null){
-				if(parent.Tag=="table"){
-					// Got it!
-					Table=parent as HtmlTableElement;
-					break;
-				}
-				parent=parent.parentElement;
-			}
-			
-			if(Table!=null){
-				
-				// What child number (column) is this element?
-				Column=childIndex;
-				
-			}
-			
-			// Base:
-			base.OnChildrenLoaded();
-			
-		}
-		
-		/// <summary>Makes sure the width of this element matches that of the biggest one in the column.</summary>
-		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
-			
-			if(Table==null || Table.ColumnWidths==null || !widthUndefined){
-				return;
-			}
-			
-			/*
-			widthUndefined=false;
-			
-			ComputedStyle computed=Style.Computed;
-			ComputedStyle column=Table.ColumnWidths[Column];
-			LayoutBox columnBox=column.FirstBox;
-			
-			// How much style does this cell have?
-			float styleSize=box.Width-box.InnerWidth;
-			
-			if(column!=null){
-				
-				if(column!=computed){
-					box.InnerWidth=(columnBox.InnerWidth-styleSize);
-				}else{
-					// What if this cell isn't the widest anymore?
-				}
-				
-			}else{
-				// No particular element is the max width - use the NoWidthPixels size instead.
-				box.InnerWidth=(Table.NoWidthPixels-styleSize);
-			}
-			*/
 			
 		}
 		

@@ -137,6 +137,8 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>A location that the request was redirected to.</summary>
+		public Location redirectedTo;
 		/// <summary>The URI that was requested.</summary>
 		public Location location;
 		/// <summary>E.g. posted data.</summary>

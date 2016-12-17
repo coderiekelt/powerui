@@ -28,7 +28,7 @@ namespace PowerUI{
 		public static void RenameFonts(){
 			
 			// Get the selection:
-			UnityEngine.Object[] assets=Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.Assets);
+			UnityEngine.Object[] assets=UnityEditor.Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.Assets);
 			
 			foreach(UnityEngine.Object obj in assets){
 			

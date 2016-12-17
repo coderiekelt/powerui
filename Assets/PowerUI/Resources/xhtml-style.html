@@ -1,12 +1,522 @@
+/*
+	PowerUI's user agent style sheet
+	--------------------------------
+	
+	Note that this is CSS; Unity doesn't recognise .css as a text file.
+	If you do change this file, make sure you make a note that you did
+	so you don't accidentally lose your changes when you update!
+*/
+
 html:main-ui{
 	font-size:14px;
 	color:white;
-	-spark-specifity:-spark-tag-specifity; /* Makes it such that this can be overriden by just html{} */
+	/* Makes it such that this can be overriden by just html{} */
+	-spark-specifity:-spark-tag-specifity;
 }
 
 body:main-ui{
 	overflow:hidden;
-	-spark-specifity:-spark-tag-specifity;  /* Makes it such that this can be overriden by just body{} */
+	/* Makes it such that this can be overriden by just body{} */
+	-spark-specifity:-spark-tag-specifity;
+}
+
+a{
+	color:#0066cc;
+	text-decoration:underline;
+}
+
+a:hover{
+	color:#0000ff;
+}
+
+/* Built in JS prompts; alert, confirm etc */
+#spark-prompt-background{
+	background:rgba(0,0,0,42%);
+	width:100%;
+	height:100%;
+	position:fixed;
+	text-align:center;
+	vertical-align:middle;
+ }
+ 
+#spark-prompt{
+	width:60%;
+	min-width:180px;
+	color:black;
+	border:1px solid grey;
+	text-align:left;
+}
+
+#spark-prompt-content{
+	padding:10px;
+	background:white;
+}
+
+#spark-prompt-buttons{
+	padding:10px;
+	background:lightgray;
+	text-align:center;
+}
+
+/*
+	-----------------------------------
+	Everything after this point is core CSS which shouldn't be changed
+	
+*/
+
+article, aside, details, div, dt, figcaption, footer, form, header, hgroup, html, main, nav, section, summary {
+    display: block;
+}
+
+body {
+    display: block;
+    margin: 8px;
+}
+
+p, dl, multicol {
+    display: block;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+}
+
+dd {
+	margin-inline-start:40px;
+	display:block;
+}
+
+blockquote, figure {
+    display: block;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    margin-inline-end: 40px;
+    margin-inline-start: 40px;
+}
+
+address {
+    display: block;
+    font-style: italic;
+}
+
+center {
+    display: block;
+    text-align: -moz-center;
+}
+
+blockquote[type="cite"] {
+    border-color: blue;
+    border-inline-start: medium solid;
+    border-width: thin;
+    display: block;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    padding-inline-start: 1em;
+}
+
+h1 {
+	margin-block-start: 0.67em;
+	margin-block-end: 0.67em;
+	font-size: 2.00em;
+	font-weight: bold;
+}
+
+h2, *:matches(article, aside, nav, section) h1 {
+	margin-block-start: 0.83em;
+	margin-block-end: 0.83em;
+	font-size: 1.50em;
+	font-weight: bold;
+}
+
+h3, *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) h1 {
+	margin-block-start: 1.00em;
+	margin-block-end: 1.00em;
+	font-size: 1.17em;
+	font-weight: bold;
+}
+
+h4, *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) h1 {
+	margin-block-start: 1.33em;
+	margin-block-end: 1.33em;
+	font-size: 1.00em;
+	font-weight: bold;
+}
+
+h5, *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) h1 {
+	margin-block-start: 1.67em;
+	margin-block-end: 1.67em;
+	font-size: 0.83em;
+	font-weight: bold;
+}
+
+h6, *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) *:matches(article, aside, nav, section) h1 {
+	margin-block-start: 2.33em;
+	margin-block-end: 2.33em;
+	font-size: 0.67em;
+	font-weight: bold;
+}
+
+camera,img{
+	display:inline-block;
+	background-repeat:no-repeat;
+	background-size:100% 100%;
+}
+
+listing {
+    display: block;
+    font-family: -spark-fixed;
+    font-size: medium;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    white-space: pre;
+}
+
+xmp, pre, plaintext {
+    display: block;
+    font-family: -spark-fixed;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    white-space: pre;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 2px;
+    box-sizing: border-box;
+    display: table;
+    text-indent: 0;
+}
+
+table[align="left"] {
+    float: left;
+}
+
+table[align="right"] {
+    float: right;
+    text-align: start;
+}
+
+caption {
+    display: table-caption;
+    text-align: center;
+}
+
+table[align="center"] > caption {
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+}
+
+table[align="center"] > caption[align="left"]:dir(ltr) {
+    margin-inline-end: 0;
+}
+
+table[align="center"] > caption[align="left"]:dir(rtl) {
+    margin-inline-start: 0;
+}
+
+table[align="center"] > caption[align="right"]:dir(ltr) {
+    margin-inline-start: 0;
+}
+
+table[align="center"] > caption[align="right"]:dir(rtl) {
+    margin-inline-end: 0;
+}
+
+col {
+    display: table-column;
+}
+
+colgroup {
+    display: table-column-group;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+}
+
+tfoot {
+    display: table-footer-group;
+    vertical-align: middle;
+}
+
+table > tr {
+    vertical-align: middle;
+}
+
+td {
+    display: table-cell;
+    padding: 1px;
+    text-align: inherit;
+    vertical-align: inherit;
+}
+
+th {
+    display: table-cell;
+    font-weight: bold;
+    padding: 1px;
+    vertical-align: inherit;
+}
+
+q::before {
+    content: open-quote;
+}
+
+q::after {
+    content: close-quote;
+}
+
+i, cite, em, var, dfn {
+    font-style: italic;
+}
+
+b, strong {
+    font-weight: bolder;
+}
+
+tt, code, kbd, samp {
+    font-family: Arial;
+}
+
+u, ins {
+    text-decoration: underline;
+}
+
+s, strike, del {
+    text-decoration: line-through;
+}
+
+big {
+    font-size: larger;
+}
+
+small {
+    font-size: smaller;
+}
+
+sub {
+    font-size: smaller;
+    line-height: normal;
+    vertical-align: sub;
+}
+
+sup {
+    font-size: smaller;
+    line-height: normal;
+    vertical-align: super;
+}
+
+nobr {
+    white-space: nowrap;
+}
+
+mark {
+    background: yellow none repeat scroll 0 0;
+    color: black;
+}
+
+*:matches(ul, ol, dir, menu, dl) ul, *:matches(ul, ol, dir, menu, dl) ol, *:matches(ul, ol, dir, menu, dl) dir, *:matches(ul, ol, dir, menu, dl) menu, *:matches(ul, ol, dir, menu, dl) dl{
+    margin-block-end: 0;
+    margin-block-start: 0;
+}
+
+*:matches(ol, ul, menu, dir) ul, *:matches(ol, ul, menu, dir) menu, *:matches(ol, ul, menu, dir) dir{
+    list-style-type: circle;
+}
+
+*:matches(ol, ul, menu, dir) *:matches(ol, ul, menu, dir) ul, *:matches(ol, ul, menu, dir) *:matches(ol, ul, menu, dir) menu, *:matches(ol, ul, menu, dir) *:matches(ol, ul, menu, dir) dir{
+    list-style-type: square;
+}
+
+img[usemap], object[usemap] {
+    color: blue;
+}
+
+frameset {
+    border: medium none !important;
+    display: block !important;
+    float: none !important;
+    overflow: hidden;
+    position: static !important;
+}
+
+link {
+    display: none;
+}
+
+frame {
+    border-radius: 0 !important;
+}
+
+noframes {
+    display: none;
+}
+
+spacer {
+    float: none !important;
+    position: static !important;
+}
+
+base, basefont, datalist, head, meta, script, style, title, noembed, param, template {
+    display: none;
+}
+
+area {
+    display: none !important;
+}
+
+marquee {
+    display: inline-block;
+    text-align: start;
+    vertical-align: text-bottom;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+ruby {
+    display: ruby;
+}
+
+rb {
+    display: ruby-base;
+    white-space: nowrap;
+}
+
+rp {
+    display: none;
+}
+
+rt {
+    display: ruby-text;
+}
+
+rtc {
+    display: ruby-text-container;
+}
+
+rtc, rt {
+    font-size: 50%;
+    line-height: 1;
+    white-space: nowrap;
+    text-emphasis: none;
+}
+
+rtc:lang(zh), rt:lang(zh) {
+    ruby-align: center;
+}
+
+rtc:lang(zh-TW), rt:lang(zh-TW) {
+    font-size: 30%;
+}
+
+rtc > rt {
+    font-size: inherit;
+}
+
+ruby, rb, rt, rtc {
+    unicode-bidi: isolate;
+}
+
+details > summary{
+    display: list-item;
+    list-style: inside none disclosure-closed;
+}
+
+details[open] > summary{
+    list-style-type: disclosure-open;
+}
+
+video > .caption-box {
+    overflow: hidden;
+    position: relative;
+}
+
+legend {
+    display: block;
+}
+
+fieldset {
+    border: 2px groove threedlightshadow;
+    display: block;
+    margin-inline-end: 2px;
+    margin-inline-start: 2px;
+    padding-block-end: 0.75em;
+    padding-block-start: 0.35em;
+    padding-inline-end: 0.625em;
+    padding-inline-start: 0.625em;
+}
+
+label {
+    cursor: default;
+}
+
+ul, menu, dir {
+    display: block;
+    list-style-type: disc;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    padding-inline-start: 40px;
+}
+
+menu[type="context"] {
+    display: none !important;
+}
+
+ol {
+    display: block;
+    list-style-type: decimal;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    padding-inline-start: 40px;
+}
+
+li {
+    display: list-item;
+    text-align: match-parent;
+}
+
+hr {
+    border: 1px inset;
+    box-sizing: border-box;
+    color: gray;
+    display: block;
+    margin-block-end: 0.5em;
+    margin-block-start: 0.5em;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+}
+
+hr[size="1"] {
+    border-style: solid none none;
+}
+
+iframe {
+	display:inline-block;
+	width:300px;
+	height:150px;
+	border: 2px inset;
+}
+
+iframe:fullscreen {
+    border: medium none !important;
+    padding: 0 !important;
+}
+
+canvas {
+    -moz-user-select: none;
+	width:300px;
+	height:150px;
+	display:inline-block;
 }
 
 input[type="checkbox"]{
@@ -22,75 +532,13 @@ input[type="checkbox"]{
 	display:inline-block;
 }
 
-input[type="hidden"],script,style{
+
+input[type="hidden"]{
 	display:none;
-}
-
-sup{
-	font-size:0.5em;
-	vertical-align:super;
-}
-
-sub{
-	font-size:0.5em;
-	vertical-align:sub;
 }
 
 font{
 	display:inline;
-}
-
-h1{
-	display:block;
-	font-size:2em;
-	font-weight:bold;
-	margin-top:1.33em;
-	margin-bottom:1.33em;
-}
-
-h2{
-	display:block;
-	font-size:1.5em;
-	font-weight:bold;
-	margin-top:1.24em;
-	margin-bottom:1.24em;
-}
-
-h3{
-	display:block;
-	font-size:1.17em;
-	font-weight:bold;
-	margin-top:1.17em;
-	margin-bottom:1.17em;
-}
-
-h4{
-	display:block;
-	font-weight:bold;
-	margin-top:1.33em;
-	margin-bottom:1.33em;
-}
-
-camera{
-	display:inline-block;
-	background-repeat:no-repeat;
-	background-size:100% 100%;
-}
-
-h5{
-	display:block;
-	font-size:0.83em;
-	font-weight:bold;
-	margin-top:1.38em;
-	margin-bottom:1.38em;
-}
-
-h6{
-	display:block;
-	font-size:0.67em;
-	font-weight:bold;
-	margin-top:1.55em;
-	margin-bottom:1.55em;
 }
 
 input[type="radio"]{
@@ -264,10 +712,6 @@ hscrolltab{
 	display:inline-block;
 }
 
-head{
-	display:none;
-}
-
 ddbox{
 	display:none;
 	overflow-x:hidden;
@@ -308,54 +752,8 @@ input[type="button"]:active,input[type="submit"]:active,button:active{
 	color:#414e75;
 }
 
-a{
-	color:#0066cc;
-	text-decoration:underline;
-}
-
-p{
-	display:block;
-}
-
 bdi,bdo,time{
 	display:inline;
-}
-
-q:before{
-	content:open-quote;
-}
-
-q:after{
-	content:close-quote;
-}
-
-a:hover{
-	color:#0000ff;
-}
-
-table{
-	display:inline-block;
-	width:100%;
-}
-
-td,th{
-	v-align:middle;
-	display:table-cell;
-	padding:2px;
-}
-
-small{
-	font-size:0.83em;
-}
-
-big{
-	font-size:1.33em;
-}
-
-tt,pre,code,samp{
-	font-family:Arial;
-	display:block;
-	margin:1em 0;
 }
 
 .cursor-textarea{
@@ -381,50 +779,6 @@ tt,pre,code,samp{
 	width:0px;
 }
 
-canvas{
-	width:300px;
-	height:150px;
-	display:inline-block;
-}
-
-img{
-	display:inline-block;
-	background-repeat:no-repeat;
-	background-size:100% 100%;
-}
-
-center{
-	display:block;
-	text-align:-moz-center;
-}
-
-word{
-	display:inline-block;
-}
-
-ins,u{
-	text-decoration:underline;
-}
-
-cite,em,var,dfn,i{
-	font-style:italic;
-}
-
-dl{
-	display:block;
-	margin:1em 0;
-}
-
-dd{
-	margin-left:40px;
-	margin-right:40px;
-	display:block;
-}
-
-b,strong{
-	font-weight:bold;
-}
-
 summary{
 	font-weight:bold;
 	display:inline-block;
@@ -435,78 +789,8 @@ br{
 	width:0px;
 }
 
-html{
-	display:block;
-	color-overlay:#ffffffff;
-}
-
-iframe{
-	display:inline-block;
-	width:300px;
-	height:150px;
-}
-
-body {
-  display: block;
-  margin: 8px;
-}
-
-div,li,aside,form,dt,article,header,nav,footer,tr,figcaption,section,tbody,thead,tfoot,dir,legend{
-	display:block;
-}
-
-caption{
-    display:table-caption;
-    text-align:center;
-}
-
-marquee{
-	display:block;
-	overflow:hidden;
-	white-space:nowrap;
-}
-
 abbr,acronym{
 	display:inline;
-}
-
-colgroup{
-    display:table-column-group;
-}
-
-col{
-    display:table-column;
-}
-
-q{
-	display: inline;
-}
-
-blockquote,figure{
-	display:block;
-	margin:1em 40px;
-}
-
-s,strike,del{
-	text-decoration:line-through;
-}
-
-hr{
-	border:1px solid #808080;
-	display:block;
-	height:2px;
-}
-
-address{
-	display:block;
-	font-style:italic;
-}
-
-ul,ol{
-	display:block;
-	padding-left:40px;
-	margin-top:16px;
-	margin-bottom:16px;
 }
 
 details{
@@ -515,16 +799,6 @@ details{
 
 audio,video,progress{
 	display:inline-block;
-}
-
-span,label{
-	display:inline;
-}
-
-mark{
-	display:inline-block;
-	background:#ffff00;
-	color:#000000;
 }
 
 select{
@@ -548,80 +822,4 @@ option{
 	direction:ltr;
 	display:block;
 	width:90%;
-}
-
-ruby {
-    display: ruby;
-}
-
-rb {
-    display: ruby-base;
-    white-space: nowrap;
-}
-
-rp {
-    display: none;
-}
-
-rt {
-    display: ruby-text;
-}
-
-rtc {
-    display: ruby-text-container;
-}
-
-rtc, rt {
-    font-size: 50%;
-    line-height: 1;
-    white-space: nowrap;
-}
-
-rtc, rt {
-    text-emphasis: none;
-}
-
-rtc:lang(zh), rt:lang(zh) {
-    ruby-align: center;
-}
-
-rtc:lang(zh-TW), rt:lang(zh-TW) {
-    font-size: 30%;
-}
-
-rtc > rt {
-    font-size: inherit;
-}
-
-ruby, rb, rt, rtc {
-    unicode-bidi: isolate;
-}
-
-/* alert, confirm etc */
-#spark-prompt-background{
-	background:rgba(0,0,0,42%);
-	width:100%;
-	height:100%;
-	position:fixed;
-	text-align:center;
-	vertical-align:middle;
- }
- 
-#spark-prompt{
-	width:60%;
-	min-width:180px;
-	color:black;
-	border:1px solid grey;
-	text-align:left;
-}
-
-#spark-prompt-content{
-	padding:10px;
-	background:white;
-}
-
-#spark-prompt-buttons{
-	padding:10px;
-	background:lightgray;
-	text-align:center;
 }

@@ -765,7 +765,7 @@ namespace PowerUI{
 				}
 				
 				// Test for dragstart
-				if(pointer.IsDown){
+				if(pointer.IsDown && moved){
 					
 					// How far has it moved since it went down?
 					if(pointer.DragStatus==InputPointer.DRAG_UNKNOWN){
@@ -788,9 +788,6 @@ namespace PowerUI{
 									// We're now dragging!
 									pointer.DragStatus=InputPointer.DRAGGING;
 									
-									// Default:
-									pointer.ActivePressed.OnDragStart(de);
-									
 								}else{
 									
 									// It didn't allow it. This status prevents it from spamming dragstart.
@@ -800,8 +797,83 @@ namespace PowerUI{
 								
 							}else{
 								
-								// This status prevents it from spamming, at least until we release.
-								pointer.DragStatus=InputPointer.DRAG_NOT_AVAILABLE;
+								// Selectable?
+								ComputedStyle cs=(pointer.ActivePressed as IRenderableNode).ComputedStyle;
+								Css.Value userSelect=cs[Css.Properties.UserSelect.GlobalProperty];
+								
+								if(userSelect!=null && !(userSelect.IsType(typeof(Css.Keywords.None))) && !userSelect.IsAuto){
+									
+									// Selectable!
+									Css.Properties.UserSelect.BeginSelect(pointer,userSelect);
+									
+									// Set status:
+									pointer.DragStatus=InputPointer.SELECTING;
+									
+								}else{
+									
+									// This status prevents it from spamming, at least until we release.
+									pointer.DragStatus=InputPointer.DRAG_NOT_AVAILABLE;
+									
+								}
+								
+							}
+							
+						}
+						
+					}else if(pointer.DragStatus==InputPointer.DRAGGING){
+						
+						// Move the dragged element:
+						if(pointer.ActivePressed!=null){
+							
+							DragEvent de=new DragEvent("drag");
+							de.trigger=pointer;
+							de.SetModifiers();
+							de.SetTrusted();
+							de.clientX=pointer.DocumentX;
+							de.clientY=pointer.DocumentY;
+							
+							if(pointer.ActivePressed.dispatchEvent(de)){
+								pointer.ActivePressed.OnDrag(de);
+							}
+							
+						}
+						
+					}else if(pointer.DragStatus==InputPointer.SELECTING){
+						
+						// Update the selection.
+						
+						if(pointer.ActivePressed!=null){
+							
+							DragEvent de=new DragEvent("drag");
+							de.trigger=pointer;
+							de.SetModifiers();
+							de.SetTrusted();
+							de.clientX=pointer.DocumentX;
+							de.clientY=pointer.DocumentY;
+							
+							if(pointer.ActivePressed.dispatchEvent(de)){
+								
+								// Get the current selection:
+								Selection s=(pointer.ActivePressed.document as HtmlDocument).getSelection();
+								
+								// Get the range:
+								Range range=s.Ranges[0];
+								
+								// Get text node:
+								HtmlTextNode htn=(range.startContainer as HtmlTextNode);
+								
+								if(htn!=null){
+									
+									// Get the new end index:
+									int endIndex=htn.LetterIndex(pointer.DocumentX,pointer.DocumentY);
+									
+									// Update:
+									range.endOffset=endIndex;
+									
+									// Flush:
+									s.UpdateSelection(true,range);
+									
+								}
 								
 							}
 							

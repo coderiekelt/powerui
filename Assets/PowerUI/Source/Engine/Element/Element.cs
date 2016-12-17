@@ -94,18 +94,69 @@ namespace PowerUI{
 				return;
 			}
 			
+			// Current line:
+			float cMin=0f;
+			float cMax=0f;
+			
 			for(int i=0;i<childNodes_.length;i++){
 				
-				float cMin;
-				float cMax;
-				IRenderableNode renderable=(childNodes_[i] as IRenderableNode);
+				Node child=childNodes_[i];
+				
+				IRenderableNode renderable=(child as IRenderableNode);
 				
 				if(renderable==null){
 					continue;
 				}
 				
-				renderable.GetWidthBounds(out cMin,out cMax);
+				float bMin;
+				float bMax;
 				
+				if(child is HtmlTextNode){
+					
+					// Always get bounds:
+					bMin=float.MinValue;
+					
+				}else{
+					
+					// Get the first box from the render data:
+					RenderableData rd=renderable.RenderData;
+					
+					if(rd.FirstBox==null){
+						continue;
+					}
+					
+					// If it's inline then it's additive to the current line.
+					if((rd.FirstBox.DisplayMode & DisplayMode.OutsideBlock)!=0){
+						
+						// Line break!
+						cMin=0f;
+						cMax=0f;
+						
+					}
+					
+					// Get an explicit width:
+					bool wasAuto;
+					bMin=rd.GetWidth(true,out wasAuto);
+					
+				}
+				
+				if(bMin==float.MinValue){
+					
+					// Get the bounds:
+					renderable.GetWidthBounds(out bMin,out bMax);
+					
+				}else{
+					
+					// It has an explicit size.
+					bMax=bMin;
+					
+				}
+				
+				// Apply to line:
+				cMin+=bMin;
+				cMax+=bMax;
+				
+				// Longest line?
 				if(cMin>min){
 					min=cMin;
 				}
@@ -196,12 +247,9 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Called when a default scrollwheel event occurs.</summary>
+		/// <summary>Called when a default scrollwheel event occurs (focused element).</summary>
 		/// <param name="clickEvent">The event that represents the wheel scroll.</param>
 		public virtual void OnWheelEvent(WheelEvent e){
-			
-			#warning scrollwheel scroll.
-			// Got scrollbars or is a scrollbar? Move them.
 			
 		}
 		
@@ -378,7 +426,9 @@ namespace PowerUI{
 		/// <summary>The html of this element including the element itself.</summary>
 		public string outerHTML{
 			get{
-				return ToString();
+				System.Text.StringBuilder result=new System.Text.StringBuilder();
+				ToString(result);
+				return result.ToString();
 			}
 			set{
 				

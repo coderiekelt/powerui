@@ -68,6 +68,16 @@ namespace PowerUI{
 				
 				if(package.readyState==4){
 					
+					if(package.redirectedTo!=null){	
+						
+						// Set redir path:
+						location_=package.redirectedTo;
+						
+						// Update its parent document:
+						location_.document=this;
+						
+					}
+					
 					// Apply now:
 					GotDocumentContent(package.responseText,package.statusCode);
 					

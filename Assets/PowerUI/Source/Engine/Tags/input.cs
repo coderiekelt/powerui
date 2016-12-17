@@ -49,12 +49,8 @@ namespace PowerUI{
 		public int CursorIndex;
 		/// <summary>True if the cursor should be located after the next update.</summary>
 		public bool LocateCursor;
-		/// <summary>Used by scrollbars. The tag handler for the scrollbars tab.</summary>
-		public HtmlScrollTabElement ScrollTab;
 		/// <summary>The maximum length of text in this box.</summary>
 		public int MaxLength=int.MaxValue;
-		/// <summary>Set this true in an overriding class to receive scrolling progress. See OnScrolled.</summary>
-		public bool DivertOutput;
 		/// <summary>A placeholder value.</summary>
 		public string Placeholder="";
 		
@@ -70,9 +66,6 @@ namespace PowerUI{
 				return true;
 			}
 		}
-		
-		/// <summary>Used by e.g. sliders. This receives the scrolling progress if DivertOutput is true.</summary>
-		public virtual void OnScrolled(float progress){}
 		
 		public override bool IsSelfClosing{
 			get{
@@ -145,15 +138,8 @@ namespace PowerUI{
 					Type=InputType.Radio;
 				}else if(type=="checkbox"){
 					Type=InputType.Checkbox;
-				}else if(type=="vscroll"){
-					Type=InputType.VScroll;
-					innerHTML="<scrollup><vscrolltab><scrolldown>";
-				}else if(type=="hscroll"){
-					Type=InputType.HScroll;
-					innerHTML="<scrollleft><hscrolltab><scrollright>";
 				}else if(type=="submit"){
 					Type=InputType.Submit;
-					SetValue("Submit");
 				}else if(type=="button"){
 					Type=InputType.Button;
 				}else if(type=="hidden"){
@@ -341,118 +327,6 @@ namespace PowerUI{
 			
 		}
 		
-		public override void OnTagLoaded(){
-			if(IsScrollInput()){
-				RecalculateTab();
-			}
-		}
-		
-		/// <summary>Scrolls a scrollbar by the given number of pixels.
-		/// This may fail if it's already at an end of the bar and can't move any further.</summary>
-		/// <param name="pixels">The number of pixels the scrollbar tab will try to move by.</param>
-		public void ScrollBy(int pixels){
-			if(ScrollTab!=null){
-				ScrollTab.ScrollBy(pixels);
-			}
-		}
-		
-		/// <summary>Scrolls a scrollbar to the given location in pixels.</summary>
-		/// <param name="location">The number of pixels the scrollbar tab will try to locate at.</param>
-		public void ScrollTo(int location){
-			if(ScrollTab!=null){
-				ScrollTab.ScrollTo(location,true);
-			}
-		}
-		
-		/// <summary>Scrolls a scrollbar to the given 0-1 location along the bar.</summary>
-		/// <param name="position">The 0-1 location along the bar that the tab will locate at.</param>
-		public void ScrollTo(float position){
-			if(ScrollTab!=null){
-				ScrollTab.ScrollToPoint(position,true);
-			}
-		}
-		
-		/// <summary>Called when ScrollTop or ScrollLeft has changed.</summary>
-		public void ElementScrolled(){
-			if(ScrollTab!=null){
-				HtmlElement target=scrollTarget;
-				if(target==null){
-					return;
-				}
-				ComputedStyle cs=target.style.Computed;
-				
-				float barProgress=0f;
-				
-				if(Type==InputType.HScroll){
-					barProgress=(float)cs.ScrollLeft / (float)cs.ContentWidth;
-				}else{
-					barProgress=(float)cs.ScrollTop / (float)cs.ContentHeight;
-				}
-				if(barProgress<0f){
-					barProgress=0f;
-				}else if(barProgress>1f){
-					barProgress=1f;
-				}
-				
-				ScrollTab.ElementScrolled(barProgress);
-			}
-		}
-		
-		/// <summary>Recalculates the tab size of a scroll bar.</summary>
-		public virtual void RecalculateTab(){
-			if(ScrollTab==null){
-				if(childNodes_.length>1){
-					Node scrollTab=childNodes_[1];
-					
-					if(scrollTab!=null){
-						ScrollTab=((HtmlScrollTabElement)scrollTab);
-					}
-				}
-			}
-			
-			if(ScrollTab!=null){
-				
-				HtmlElement target=scrollTarget;
-				if(target==null){
-					return;
-				}
-				ComputedStyle computed=target.style.Computed;
-				LayoutBox box=computed.FirstBox;
-				
-				bool useX=ScrollTab.UseX();
-				int overflowMode=useX?box.OverflowX : box.OverflowY;
-				float visible=useX?box.VisiblePercentageX() : box.VisiblePercentageY();
-				
-				if(visible>1f){
-					visible=1f;
-				}else if(visible<0f){
-					visible=0f;
-				}
-				
-				if(overflowMode==OverflowMode.Auto){
-					// Handle AUTO here.
-					// Hide the bar by directly setting its display style if the whole thing is visible - i.e. visible = 1(00%).
-					ComputedStyle barStyle=Style.Computed;
-					LayoutBox barBox=barStyle.FirstBox;
-					
-					#warning this isn't right
-					// don't set displayMode to none here
-					// -> Should instead set Rects to null (and call WentOffScreen)
-					if(visible==1f){
-						barBox.DisplayMode=DisplayMode.None;
-					}else if(barBox==null){
-						// Make it visible again:
-						
-						// ->>> It's null in here; this doesn't work
-						
-						barBox.DisplayMode=DisplayMode.InlineBlock;
-					}
-					
-				}
-				ScrollTab.ApplyTabSize(visible);
-			}
-		}
-		
 		/// <summary>Sets the value of this input box.</summary>
 		/// <param name="value">The value to set.</param>
 		public void SetValue(string value){
@@ -463,9 +337,6 @@ namespace PowerUI{
 		/// <param name="value">The value to set.</param>
 		/// <param name="html">True if the value can safely contain html.</param>
 		public void SetValue(string value,bool html){
-			if(IsScrollInput()){
-				return;
-			}
 			
 			// Trigger onchange:
 			DomEvent e=new DomEvent("change");
@@ -517,20 +388,6 @@ namespace PowerUI{
 					appendChild(Cursor);
 				}
 			}
-		}
-		
-		/// <summary>Used only by scrollbars. Gets the target element to be scrolled.</summary>
-		/// <returns>The target element.</returns>
-		public HtmlElement scrollTarget{
-			get{
-				return parentElement as HtmlElement ;
-			}
-		}
-		
-		/// <summary>Checks if this is a horizontal or vertical scrollbar.</summary>
-		/// <returns>True if it is; false otherwise.</returns>
-		private bool IsScrollInput(){
-			return (Type==InputType.VScroll||Type==InputType.HScroll);
 		}
 		
 		/// <summary>Checks if this is a radio or checkbox input box.</summary>
@@ -858,9 +715,6 @@ namespace PowerUI{
 				if(f!=null){
 					f.submit();
 				}
-			}else if(IsScrollInput()){
-				// Clicked somewhere on a scrollbar:
-				// Figure out where the click was, and scroll there.
 			}else if(Type==InputType.Radio){
 				Select();
 			}else if(Type==InputType.Checkbox){

@@ -86,7 +86,7 @@ public class CSharpExample : MonoBehaviour {
 		// For that, we reccommend using attributes (<h1 thisIsAn="attribute"... note that they are always lowercase from C#!), or the element Data property:
 		
 		// Grab it's category=".." value:
-		Debug.Log("It's 'category' attribute is "+target["category"]);
+		Debug.Log("Its 'category' attribute is "+target["category"]);
 	}
 	
 }

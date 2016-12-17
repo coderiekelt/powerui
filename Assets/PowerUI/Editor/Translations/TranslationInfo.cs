@@ -1,1 +1,194 @@
-//--------------------------------------//               PowerUI////        For documentation or //    if you have any issues, visit//        powerUI.kulestar.com////    Copyright © 2013 Kulestar Ltd//          www.kulestar.com//--------------------------------------using System;using System.IO;using UnityEditor;using Json;using Dom;namespace PowerUI{		/// <summary>A delegate used when a translation is completed.</summary>	/// <param name="translation">Information about the translation.</param>	public delegate void OnTranslated(TranslationInfo translation);			/// <summary>	/// Holds information about a particular translation.	/// </summary>		public class TranslationInfo{				/// <summary>The authentication key to use. Currently obtained from Bing.</summary>		public string Key;		/// <summary>The lower case language code to translate to, e.g. fr.</summary>		public string ToCode;		/// <summary>The language tag to append to the start of the result.</summary>		public string ToName;		/// <summary>The resulting translated text.</summary>		public string Result;		/// <summary>The lower case language code to translate from, e.g. en.</summary>		public string FromCode;		/// <summary>True if the result should be marked left to right.</summary>		public bool LeftToRight;		/// <summary>The variables to be translated.</summary>		public VariableSet Variables;		/// <summary>The path to e.g. the Languages/UI folder.</summary>		public string LanguagePath;		/// <summary>A delegate triggered when the translation is complete.</summary>		public OnTranslated OnComplete;						/// <summary>Holds the given information about a translation.</summary>		/// <param name="languagePath">The path to the Languages/UI folder.</param>		/// <param name="jsonPayload">The JSON payload.</param>		/// <param name="from">The lower case language code to translate from, e.g. en.</param>		/// <param name="to">The lower case language code to translate to, e.g. fr.</param>		/// <param name="toName">The language tag to append to the start of the result.</param>		public TranslationInfo(string languagePath,VariableSet toTranslate,string from,string to,string toName){			LanguagePath=languagePath;			Variables=toTranslate;			FromCode=from;			ToCode=to;			ToName=toName;		}				/// <summary>The JSON to send.</summary>		public JSObject Json{			get{								JSArray arr=new JSArray();				arr["key"]=new JSValue(Key);				arr["from"]=new JSValue(FromCode);				arr["to"]=new JSValue(ToCode);				arr["variables"]=Variables.ToJson();				return arr;							}		}				/// <summary>Gets the language tag. That's the small &gt;language&lt; tag at the top of the resulting file.</summary>		public string LanguageTag{			get{				string result="<language name='"+ToName+"' code='"+ToCode+"'";								if(LeftToRight){					result+="direction='ltr'";				}								result+=">";				return result;			}		}				/// <summary>The path to the newly translated file.</summary>		public string Filepath{			get{				string slash=System.IO.Path.DirectorySeparatorChar+"";				return LanguagePath+slash+ToCode+".xml";			}		}				/// <summary>Called when the translation is complete.</summary>		/// <param name="translation">The translated result.</param>		public void Complete(string translation){			Result=translation;			if(OnComplete!=null){				OnComplete(this);			}		}				/// <summary>Writes this translation result to it's file. Fails if there is no result.</summary>		public void WriteToFile(){			if(string.IsNullOrEmpty(Result)){				return;			}			File.WriteAllText(Filepath,Result);			// Refresh assets:			AssetDatabase.Refresh();		}			}	}
+//--------------------------------------
+//               PowerUI
+//
+//        For documentation or 
+//    if you have any issues, visit
+//        powerUI.kulestar.com
+//
+//    Copyright © 2013 Kulestar Ltd
+//          www.kulestar.com
+//--------------------------------------
+
+using System;
+using System.IO;
+using UnityEditor;
+using Json;
+using Dom;
+using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
+
+namespace PowerUI{
+	
+	/// <summary>A delegate used when a translation is completed.</summary>
+	/// <param name="translation">Information about the translation.</param>
+	public delegate void OnTranslated(TranslationInfo translation);
+	
+	
+	/// <summary>
+	/// Holds information about a particular translation.
+	/// </summary>
+	
+	public class TranslationInfo{
+		
+		/// <summary>An error that occured.</summary>
+		public string Error;
+		/// <summary>The lower case language code to translate to, e.g. fr.</summary>
+		public string ToCode;
+		/// <summary>The lower case language code to translate from, e.g. en.</summary>
+		public string FromCode;
+		/// <summary>A delegate triggered when the translation is complete.</summary>
+		public OnTranslated OnComplete;
+		/// <summary>The groups to translate. Always at least one.</summary>
+		public List<GroupToTranslate> Groups=new List<GroupToTranslate>();
+		
+		
+		/// <summary>Holds the given information about a translation.</summary>
+		/// <param name="from">The lower case language code to translate from, e.g. en.</param>
+		/// <param name="to">The lower case language code to translate to, e.g. fr.</param>
+		public TranslationInfo(string from,string to){
+			FromCode=from;
+			ToCode=to;
+			
+			// Make sure the parser is ready to go:
+			UI.Start(true);
+			
+		}
+		
+		/// <summary>Adds a group to translate.</summary>
+		public void AddGroup(string targetPath,VariableSet toTranslate){
+			
+			// Add the group:
+			Groups.Add(new GroupToTranslate(targetPath,toTranslate));
+			
+		}
+		
+		/// <summary>Adds a group to translate. Returns 1 if it was ok.</summary>
+		public int AddGroupFromFile(string targetPath,string sourcePath){
+			
+			if(!File.Exists(sourcePath)){
+				return 2;
+			}
+			
+			// Read the source text:
+			string sourceText=File.ReadAllText(sourcePath);
+			
+			// And parse it into a language set (of variables):
+			LanguageGroup source=new LanguageGroup(sourceText);
+			
+			if(source.Count==0){
+				return 3;
+			}
+			
+			AddGroup(targetPath,source);
+			return 1;
+			
+		}
+		
+		/// <summary>The JSON to send.</summary>
+		public JSObject Json{
+			get{
+				
+				JSArray arr=new JSArray();
+				arr["from"]=new JSValue(FromCode.ToLower());
+				arr["to"]=new JSValue(ToCode.ToLower());
+				
+				// Build up the groups:
+				JSIndexedArray groups=new JSIndexedArray();
+				
+				for(int i=0;i<Groups.Count;i++){
+					
+					// Add it:
+					groups.push(Groups[i].Variables.ToJson());
+					
+				}
+				
+				arr["groups"]=groups;
+				
+				return arr;
+				
+			}
+		}
+		
+		/// <summary>Called when the translation is complete.</summary>
+		/// <param name="translation">The translated result.</param>
+		public void Complete(JSArray results){
+			
+			// Results contains a block of one or more groups:
+			foreach(KeyValuePair<string,JSObject> kvp in results){
+				
+				// The group it's going into:
+				GroupToTranslate target=Groups[int.Parse(kvp.Key)];
+				
+				// Pass through the value set:
+				target.Complete(kvp.Value as JSArray);
+				
+			}
+			
+			if(OnComplete!=null){
+				
+				// Run the callback:
+				OnComplete(this);
+				
+				// Refresh assets:
+				AssetDatabase.Refresh();
+				
+			}
+			
+		}
+		
+		/// <summary>Called when the translation failed.</summary>
+		public void Errored(string error){
+			
+			Error=error;
+			
+			if(OnComplete!=null){
+				OnComplete(this);
+			}
+			
+		}
+		
+		/// <summary>Performs the translation now.</summary>
+		public void Translate(){
+			
+			// Start a request:
+			XMLHttpRequest request=new XMLHttpRequest();
+			
+			request.open("post","http://translate.kulestar.com/v2/machine");
+			
+			request.onerror=delegate(UIEvent e){
+				
+				// Failed:
+				Errored(request.responseText);
+				
+			};
+			
+			request.onload=delegate(UIEvent e){
+				
+				// Parse the JSON:
+				JSObject json=JSON.Parse(request.responseText);
+				JSArray results=json==null ? null : (json["results"] as JSArray);
+				
+				if(results==null){
+					
+					// Failed:
+					Errored(request.responseText);
+					
+				}else{
+					
+					// Let it know it completed:
+					Complete(results);
+					
+				}
+				
+			};
+			
+			// Send it off:
+			request.send(Json);
+			
+		}
+		
+	}
+	
+}

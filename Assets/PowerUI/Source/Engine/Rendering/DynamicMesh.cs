@@ -101,12 +101,14 @@ namespace PowerUI{
 				// Only one:
 				buffer.Previous=null;
 				buffer.Offset=0;
+				buffer.BlocksBefore=0;
 				FirstBuffer=LastBuffer=buffer;
 			}else{
 				
 				// Filled one:
 				FullBufferCount++;
 				buffer.Offset=FullBufferCount * MeshDataBufferPool.VertexBufferSize;
+				buffer.BlocksBefore=FullBufferCount * MeshDataBufferPool.BlockCount;
 				
 				// Add to end:
 				buffer.Previous=LastBuffer;

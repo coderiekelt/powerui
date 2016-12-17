@@ -40,32 +40,58 @@ namespace PowerUI{
 	
 	public class AutoTranslate : EditorWindow{
 		
-		/// <summary>True when the target language file is found, and we'd like to check if overwriting it is ok.</summary>
-		public static bool FileExists;
 		/// <summary>True if the API key section is visible.</summary>
-		private static bool ShowAPIKey;
+		// private static bool ShowAPIKey;
 		/// <summary>Set to true if a translation is in progress.</summary>
 		public static bool Translating;
 		/// <summary>The selected source file index in the AvailableSource array.</summary>
-		public static int SelectedSource;
+		private static UnityEngine.Object SelectedFile;
 		/// <summary>The path to PowerUI.</summary>
 		public static string PowerUIPath;
-		/// <summary>The selected target langauge index in the AvailableTargets array.</summary>
-		public static int SelectedTarget;
-		/// <summary>The path to the Languages/UI folder.</summary>
-		public static string LanguagePath;
+		/// <summary>The selected target language index in the AvailableTargets array.</summary>
+		private static int SelectedTarget;
 		/// <summary>The access key to use when translating.</summary>
-		public static string TranslationKey;
-		/// <summary>The available source languages.</summary>
-		public static string[] AvailableSource;
+		// public static string TranslationKey;
 		/// <summary>The available target languages. Loaded from the languages.txt file.</summary>
 		public static string[] AvailableTargets;
 		/// <summary>The last opened translate window.</summary>
 		public static EditorWindow TranslateWindow;
 		/// <summary>The available target language codes. Loaded from the languages.txt file.</summary>
 		public static string[] AvailableTargetCodes;
+		/// <summary>The 2 char source language code, lowercase.</summary>
+		private static string SourceLanguage;
+		/// <summary>The target basepath. E.g. Assets/Langs/Resources/Login/</summary>
+		private static string TargetBasepath;
+		/// <summary>Set if the latest translate attempt failed.</summary>
+		public static string LatestError;
+		/// <summary>Set if the latest translate attempt failed.</summary>
+		public static string LatestMessage;
 		
 		
+		/// <summary>The target file path.</summary>
+		public static string TargetPath{
+			get{
+				return TargetBasepath+TargetLanguage+".xml";
+			}
+		}
+		
+		/// <summary>The target language code.</summary>
+		public static string TargetLanguage{
+			get{
+				return AvailableTargetCodes[SelectedTarget];
+			}
+		}
+		
+		/// <summary>The filepath to the source file.</summary>
+		public static string SourcePath{
+			get{
+				if(SelectedFile==null){
+					return null;
+				}
+				
+				return AssetDatabase.GetAssetPath(SelectedFile);
+			}
+		}
 		
 		// Add menu item named "Auto Translate" to the PowerUI menu:
 		[MenuItem("Window/PowerUI/Auto Translate")]
@@ -81,98 +107,152 @@ namespace PowerUI{
 			title.text="Auto Translate";
 			TranslateWindow.titleContent=title;
 			#endif
-
-			// Get the path to the Languages/UI folder:
-			LanguagePath=GetLanguagePath();
+			
+			Setup();
+		
+		}
+		
+		public static void Setup(){
 			
 			Translating=false;
-			FileExists=false;
 			
 			// Get the translation key, if we have one:
-			TranslationKey=GetTranslationKey();
+			// TranslationKey=GetTranslationKey();
 			// Setup the foldout:
-			ShowAPIKey=(TranslationKey=="");
+			// ShowAPIKey=(TranslationKey=="");
 			
 			// Setup the PowerUI path:
 			PowerUIPath=PowerUIEditor.GetPowerUIPath();
-			
-			if(LanguagePath!=""){
-				// Grab the language files:
-				string[] files=Directory.GetFiles(LanguagePath);
-				// Setup the available source array:
-				AvailableSource=new string[files.Length];
-				
-				for(int i=0;i<files.Length;i++){
-					// Get the file name:
-					string[] pieces=files[i].Replace("\\","/").Split('/');
-					string fileName=pieces[pieces.Length-1];
-					// Drop the type:
-					pieces=fileName.Split('.');
-					// And put it as an available source language:
-					AvailableSource[i]=pieces[0];
-				}
-			}
 			
 			// Load the target languages:
 			LoadAvailableLanguages();
 			
 		}
 		
-		void Update(){
+		public void OnInspectorUpdate(){	
 			// Update HTTP services:
 			Web.Flush();
 		}
 		
 		void OnGUI(){
-			PowerUIEditor.HelpBox("This simplifies translating your game by sending off any language file for auto translation. Please note that you will need to quality check the results.");
 			
-			if(AvailableSource==null){
-				PowerUIEditor.WarnBox("No language folder found; Create a Resources/Languages/UI folder for use with localisation first.");
-			}else if(AvailableSource.Length==0){
-				PowerUIEditor.WarnBox("No source languages found. To translate, you must have at least one language in your Resources/Languages/UI folder.");
-			}else{
+			if(AvailableTargets==null){
+				Setup();
+			}
 			
-				ShowAPIKey = EditorGUILayout.Foldout(ShowAPIKey,"API Key");
-				
-				if(ShowAPIKey){
-					if(GUILayout.Button("Get Free API Key")){
-						Application.OpenURL("http://help.kulestar.com/translate-powerui/#getAKey");
-					}
-					
-					// The translation key (Bing API Key):
-					string result=EditorGUILayout.TextField("API Key",TranslationKey);
-					
-					if(result!=TranslationKey){
-						TranslationKey=result;
-						SaveTranslationKey();
-					}
+			PowerUIEditor.HelpBox("This simplifies translating your project by sending off any language file for auto translation. Please note that you will need to quality check the results.");
+			
+			/*
+			ShowAPIKey = EditorGUILayout.Foldout(ShowAPIKey,"API Key");
+			
+			if(ShowAPIKey){
+				if(GUILayout.Button("Get Free API Key")){
+					Application.OpenURL("http://help.kulestar.com/translate-powerui/#getAKey");
 				}
 				
-				// Translate from language:
-				GUILayout.Label("Translate From",EditorStyles.boldLabel);
-				SelectedSource=EditorGUILayout.Popup(SelectedSource,AvailableSource);
-				// Translate to language:
-				GUILayout.Label("Translate To",EditorStyles.boldLabel);
-				SelectedTarget=EditorGUILayout.Popup(SelectedTarget,AvailableTargets);
+				// The translation key (Bing API Key):
+				string result=EditorGUILayout.TextField("API Key",TranslationKey);
 				
-				if(Translating){
-					GUILayout.Label("Translating..",EditorStyles.boldLabel);
-				}else if(FileExists){
-					GUILayout.Label("Target file exists - would you like to overwrite it?");
-					
-					if(GUILayout.Button("Yes")){
-						FileExists=false;
-						Perform(true);
-					}
-					
-					if(GUILayout.Button("Cancel")){
-						FileExists=false;
-					}
-					
-				}else if(GUILayout.Button("Translate Now")){
-					Perform(false);
+				if(result!=TranslationKey){
+					TranslationKey=result;
+					SaveTranslationKey();
 				}
 			}
+			*/
+			
+			// Translate from:
+			GUILayout.Label("Variables File",EditorStyles.boldLabel);
+			
+			UnityEngine.Object o=SelectedFile;
+			
+			SelectedFile=EditorGUILayout.ObjectField(o, typeof(TextAsset), false);
+			
+			if(SelectedFile!=o){
+				
+				// They changed the file. Discover which language it is now.
+				FindInformation();
+				
+			}
+			
+			// Translate to language:
+			GUILayout.Label("Translate To",EditorStyles.boldLabel);
+			SelectedTarget=EditorGUILayout.Popup(SelectedTarget,AvailableTargets);
+			
+			if(Translating){
+				GUILayout.Label("Translating..",EditorStyles.boldLabel);
+			}else if(SelectedFile==null){
+				
+				PowerUIEditor.WarnBox("Please select the file you'd like to translate.");
+				
+			}else if(TargetBasepath==null){
+				
+				PowerUIEditor.WarnBox("The file you've selected isn't a suitable language file. It must be named with a 2 character language code, such as 'en.xml'.");
+				
+			}else{
+				
+				if(GUILayout.Button("Translate Now")){
+					Perform();
+				}
+				
+				string path=TargetPath;
+				
+				PowerUIEditor.HelpBox("From "+SourceLanguage+" into file "+path);
+				
+				if(File.Exists(path)){
+					
+					PowerUIEditor.WarnBox("The target file exists and will be overwritten.");
+					
+				}
+				
+			}
+			
+			if(LatestError!=null){
+				
+				PowerUIEditor.ErrorBox(LatestError);
+				
+			}else if(LatestMessage!=null){
+				
+				PowerUIEditor.HelpBox(LatestMessage);
+				
+			}
+			
+		}
+		
+		/// <summary>Finds the info such as source language.</summary>
+		private static void FindInformation(){
+			
+			string srcLanguage=null;
+			string targetBasepath=null;
+			
+			// First, is it an xml file?
+			string assetPath=SourcePath;
+			
+			if(assetPath!=null){
+				
+				if(assetPath.EndsWith(".xml")){
+					
+					// Get the filename:
+					string fileName=System.IO.Path.GetFileName(assetPath);
+					
+					// Src language is always the filename:
+					srcLanguage=fileName.Split('.')[0].Trim().ToLower();
+					
+					if(srcLanguage.Length==2){
+						
+						// Get basepath (Unity always uses /):
+						targetBasepath=System.IO.Path.GetDirectoryName(assetPath)+"/";
+						
+					}else{
+						srcLanguage=null;
+					}
+					
+				}
+				
+			}
+			
+			SourceLanguage=srcLanguage;
+			TargetBasepath=targetBasepath;
+			
 		}
 		
 		/// <summary>Loads the set of translate to languages from the languages.txt file.</summary>
@@ -221,132 +301,60 @@ namespace PowerUI{
 			AvailableTargets=languageNames.ToArray();
 		}
 		
-		/// <summary>Attempts to find the Languages/UI folder.</summary>
-		/// <returns>The path, relative to the project, if it was found.</returns>
-		public static string GetLanguagePath(){
-			return GetLanguagePath("Assets");
-		}
-		
-		/// <summary>Attempts to find the Languages/UI folder within the given directory.</summary>
-		/// <param name="relativeTo">The directory to search from.</param>
-		/// <returns>The path, relative to the project, if it was found.</returns>
-		public static string GetLanguagePath(string relativeTo){
-			// Grab the path separator:
-			string slash=Path.DirectorySeparatorChar+"";
-			
-			// Get sub directories inside the directory we're after:
-			string[] subDirectories=Directory.GetDirectories(relativeTo);
-			
-			for(int i=0;i<subDirectories.Length;i++){
-				// Grab it's full name:
-				string fullPath=subDirectories[i];
-				
-				if(fullPath.EndsWith(slash+"Languages")){
-					// So far so good - how about Languages/UI?
-					if(Directory.Exists(fullPath+slash+"UI")){
-						// Got it!
-						return fullPath+slash+"UI";
-					}
-				}else{
-					string path=GetLanguagePath(fullPath);
-					if(path!=""){
-						return path;
-					}
-				}
-			}
-			
-			return "";
-		}
-		
 		/// <summary>Performs the translation using options selected in the open window.</summary>
-		/// <param name="allowExists">True if we can safely overwrite the file if it exists.</param>
-		public static void Perform(bool allowExists){
+		public static void Perform(){
+			
 			if(Translating){
 				return;
 			}
 			
-			if(Perform(AvailableSource[SelectedSource],AvailableTargetCodes[SelectedTarget],AvailableTargets[SelectedTarget],allowExists)){
-				Translating=true;
-			}
-		}
-		
-		/// <summary>Performs the translation.</summary>
-		/// <param name="from">The filename of the file in the Languages/UI folder, without it's type.</param>
-		/// <param name="to">The language code that will be translated to, e.g. "fr".</param>
-		/// <param name="toName">The language name that will be translated to, e.g. "French".</param>
-		/// <param name="allowExists">True if we can safely overwrite the file if it exists.</param>
-		public static bool Perform(string from,string to,string toName,bool allowExists){
+			// Get settings:
+			string sourcePath=SourcePath;
 			
-			// Make sure the parser is ready to go:
-			UI.Start(true);
-			
-			// 1. Parse the original file:
-			string slash=System.IO.Path.DirectorySeparatorChar+"";
-			string sourceLanguageFile=LanguagePath+slash+from+".xml";
-			
-			if(!File.Exists(sourceLanguageFile)){
-				Debug.LogError("Translate source file not found: "+sourceLanguageFile);
-				return false;
-			}
-			
-			// Read the source text:
-			string sourceFile=File.ReadAllText(sourceLanguageFile);
-			
-			// And parse it into a language set (of variables):
-			LanguageGroup source=new LanguageGroup(sourceFile);
-			
-			return Perform(source,from,to,toName,allowExists);
-		}
-		
-		/// <summary>Performs the translation.</summary>
-		/// <param name="languageText">The text to be translated. &lt;v&gt; should be used here.</param>
-		/// <param name="from">The language code to translate from, e.g. EN.</param>
-		/// <param name="to">The language code to translate to, e.g. FR.</param>
-		/// <param name="toName">The language name that will be translated to, e.g. "French".</param>
-		/// <param name="allowExists">True if we can safely overwrite the file if it exists.</param>
-		public static bool Perform(VariableSet vars,string from,string to,string toName,bool allowExists){
-			from=from.ToLower();
-			to=to.ToLower();
 			// Create the info object:
-			TranslationInfo info=new TranslationInfo(LanguagePath,vars,from,to,toName);
+			TranslationInfo info=new TranslationInfo(SourceLanguage,TargetLanguage);
 			
-			if(string.IsNullOrEmpty(TranslationKey)){
-				Debug.LogError("API Key missing! Please click on the Get Free API key button to see where you get one from.");
-				return false;
+			// Add a group to translate:
+			int state=info.AddGroupFromFile(TargetPath,sourcePath);
+			
+			if(state!=1){
+				
+				if(state==2){
+					LatestError="Translate source file not found: "+sourcePath;
+				}else{
+					LatestError="Translation file '"+sourcePath+"' contained no variables!";
+				}
+				
+				return;
 			}
 			
-			// Apply the key:
-			info.Key=TranslationKey;
-			
-			if(!allowExists && File.Exists(info.Filepath)){
-				// Overwrite warning
-				FileExists=true;
-				return false;
-			}
+			// We're good to go!
+			Translating=true;
+			LatestMessage=null;
+			LatestError=null;
 			
 			// Hook up it's callback:
 			info.OnComplete=OnTranslationDone;
-			// Start translating:
-			Translations.Translate(info);
 			
-			return true;
+			// Start translating:
+			info.Translate();
+			
 		}
 		
 		private static void OnTranslationDone(TranslationInfo info){
 			Translating=false;
 			
-			if(info.Result==""){
-				Debug.LogError("No translation result available.");
-				return;
+			if(info.Error==null){
+				LatestError=null;
+				LatestMessage="Success!";
+			}else{
+				LatestMessage=null;
+				LatestError="No translation result available. "+info.Error;
 			}
-			
-			Debug.Log("Translation successful!");
-			
-			// Write the result:
-			info.WriteToFile();
 			
 			// Repaint the Window:
 			TranslateWindow.Repaint();
+			
 		}
 		
 		/// <summary>The filepath to the Translations editor folder.</summary>
@@ -356,6 +364,7 @@ namespace PowerUI{
 			}
 		}
 		
+		/*
 		/// <summary>The filepath to the file that holds the translation key.</summary>
 		public static string TranslationKeyFile{
 			get{
@@ -383,6 +392,7 @@ namespace PowerUI{
 			
 			return "";
 		}
+		*/
 		
 	}
 	

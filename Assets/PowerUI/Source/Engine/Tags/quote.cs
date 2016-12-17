@@ -15,7 +15,7 @@ namespace PowerUI{
 	/// Handles the quote tag.
 	/// </summary>
 
-	[Dom.TagName("quote")]
+	[Dom.TagName("q")]
 	public class HtmlQuoteElement:HtmlElement{
 		
 	}
