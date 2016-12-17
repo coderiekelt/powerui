@@ -66,7 +66,7 @@ namespace PowerUI{
 			}else if(mode==HtmlTreeMode.InTableBody){
 				
 				// [Table component] - Close to table if in a table body context and reprocess:
-				lexer.CloseToTableIfBody(this,null);
+				lexer.CloseToTableBodyIfBody(this,null);
 				
 			}else if(mode==HtmlTreeMode.InRow){
 				

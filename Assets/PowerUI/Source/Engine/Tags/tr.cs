@@ -39,6 +39,13 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>True if this element is a table row context.</summary>
+		public override bool IsTableRowContext{
+			get{
+				return true;
+			}
+		}
+		
 		/// <summary>True if this element is part of table structure, except for td.</summary>
 		public override bool IsTableStructure{
 			get{
@@ -80,7 +87,7 @@ namespace PowerUI{
 				
 			}else if(mode==HtmlTreeMode.InTableBody){
 				
-				lexer.CloseToTableContext();
+				lexer.CloseToTableBodyContext();
 				
 				lexer.Push(this,true);
 				
@@ -147,7 +154,15 @@ namespace PowerUI{
 				
 			}else if(mode==HtmlTreeMode.InRow){
 				
-				lexer.TableBodyIfTrInScope(null,null);
+				if(lexer.IsInTableScope("tr")){
+					// Ignore otherwise.
+					
+					lexer.CloseToTableRowContext();
+					
+					lexer.CloseCurrentNode();
+					lexer.CurrentMode=HtmlTreeMode.InTableBody;
+					
+				}
 				
 			}else if(mode==HtmlTreeMode.InCell){
 				
@@ -160,53 +175,6 @@ namespace PowerUI{
 			}
 			
 			return true;
-			
-		}
-		
-		public override void OnChildrenLoaded(){
-			HtmlTableElement table=parentElement as HtmlTableElement;
-			if(table==null){
-				return;
-			}
-			
-			int columnCount=childElementCount;
-			
-			if(table.ColumnWidths==null){
-				table.ColumnWidths=new List<ComputedStyle>(columnCount);
-			}
-			
-			int tableColumns=table.ColumnWidths.Count;
-			
-			if(columnCount>tableColumns){
-				int delta=columnCount-tableColumns;
-				
-				for(int i=0;i<delta;i++){
-					table.ColumnWidths.Add(null);
-				}
-			}
-			
-			#warning disabled
-			/*
-			for(int i=0;i<columnCount;i++){
-				ComputedStyle activeWidest=table.ColumnWidths[i];
-				ComputedStyle childColumn=childNodes_[i].Style.Computed;
-				
-				if(!childColumn.FixedWidth){
-					continue;
-				}
-				
-				if(activeWidest==null){
-					// Must be widest - this is the first and only row so far.
-					table.ColumnWidths[i]=childColumn;
-				}else{
-					// Is my child column wider?
-					if(childColumn.PixelWidth>activeWidest.PixelWidth){
-						// New wider column - use that.
-						table.ColumnWidths[i]=childColumn;
-					}
-				}
-			}
-			*/
 			
 		}
 		

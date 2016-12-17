@@ -25,12 +25,6 @@ namespace PowerUI{
 	[Dom.TagName("table")]
 	public class HtmlTableElement:HtmlElement{
 		
-		/// <summary>The size of a column if there is no particular max element.</summary>
-		public float NoWidthPixels;
-		/// <summary>The set of styles from the widest elements in each column.</summary>
-		public List<ComputedStyle> ColumnWidths;
-		
-		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{
@@ -110,7 +104,7 @@ namespace PowerUI{
 			}else if(mode==HtmlTreeMode.InTableBody){
 				
 				// Close to table if in a table body context and reprocess:
-				lexer.CloseToTableIfBody(null,"table");
+				lexer.CloseToTableBodyIfBody(null,"table");
 				
 			}else if(mode==HtmlTreeMode.InRow){
 				
@@ -154,36 +148,6 @@ namespace PowerUI{
 		public override int SetLexerMode(bool last,Dom.HtmlLexer lexer){
 			
 			return Dom.HtmlTreeMode.InTable;
-			
-		}
-		
-		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
-			
-			if(ColumnWidths==null){
-				// No rows.
-				return;
-			}
-			
-			// First, how many columns have no set width, and how much space is left for them?
-			// That's the amount of nulls in the ColumnWidths list.
-			float noWidth=0;
-			float spaceLeft=box.InnerWidth;
-			
-			for(int i=0;i<ColumnWidths.Count;i++){
-				ComputedStyle column=ColumnWidths[i];
-				if(column==null){
-					noWidth++;
-				}else{
-					spaceLeft-=column.PixelWidth;
-				}
-			}
-			
-			if(spaceLeft>0 && noWidth>0){
-				// Spread it evenly:
-				NoWidthPixels=spaceLeft/noWidth;
-			}else{
-				NoWidthPixels=0;
-			}
 			
 		}
 		

@@ -60,6 +60,13 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>True if this element is a table body context.</summary>
+		public override bool IsTableBodyContext{
+			get{
+				return true;
+			}
+		}
+		
 		/// <summary>True if an implicit end is allowed.</summary>
 		public override ImplicitEndMode ImplicitEndAllowed{
 			get{

@@ -60,6 +60,13 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>True if this element is a table body context.</summary>
+		public override bool IsTableBodyContext{
+			get{
+				return true;
+			}
+		}
+		
 		/// <summary>True if an implicit end is allowed.</summary>
 		public override ImplicitEndMode ImplicitEndAllowed{
 			get{
@@ -90,10 +97,13 @@ namespace PowerUI{
 				if(lexer.IsInTableScope(close) && lexer.IsInTableScope("tr")){
 					// Ignore otherwise.
 					
-					lexer.CloseToTableContext();
+					lexer.CloseToTableRowContext();
 					
 					lexer.CloseCurrentNode();
 					lexer.CurrentMode=HtmlTreeMode.InTableBody;
+					
+					// Reprocess:
+					lexer.Process(null,close);
 					
 				}
 				
@@ -102,10 +112,13 @@ namespace PowerUI{
 				if(lexer.IsInTableScope(close)){
 					// Ignore otherwise.
 					
-					lexer.CloseToTableContext();
+					lexer.CloseToTableBodyContext();
 					
 					lexer.CloseCurrentNode();
 					lexer.CurrentMode=HtmlTreeMode.InTable;
+					
+					// Reprocess:
+					lexer.Process(null,close);
 					
 				}
 				
@@ -134,6 +147,7 @@ namespace PowerUI{
 			// Most common case:
 			if(mode==HtmlTreeMode.InTable){
 				
+				// Clear back to table context:
 				lexer.CloseToTableContext();
 				
 				lexer.Push(node,true);
@@ -157,7 +171,7 @@ namespace PowerUI{
 			}else if(mode==HtmlTreeMode.InTableBody){
 				
 				// [Table component] - Close to table if in a table body context and reprocess:
-				lexer.CloseToTableIfBody(node,null);
+				lexer.CloseToTableBodyIfBody(node,null);
 				
 			}else if(mode==HtmlTreeMode.InRow){
 				

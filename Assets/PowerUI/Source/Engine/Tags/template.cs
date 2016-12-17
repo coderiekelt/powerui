@@ -42,6 +42,20 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>True if this element is a table row context.</summary>
+		public override bool IsTableRowContext{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>True if this element is a table body context.</summary>
+		public override bool IsTableBodyContext{
+			get{
+				return true;
+			}
+		}
+		
 		/// <summary>True if this element is a table context.</summary>
 		public override bool IsTableContext{
 			get{

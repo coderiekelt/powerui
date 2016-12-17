@@ -82,6 +82,7 @@ namespace PowerUI{
 					// Clear to marker:
 					lexer.ClearFormatting();
 					
+					// Back in row mode:
 					lexer.CurrentMode=HtmlTreeMode.InRow;
 					
 				}

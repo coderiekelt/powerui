@@ -89,7 +89,7 @@ namespace PowerUI{
 			// Most common:
 			if(mode==HtmlTreeMode.InRow){
 				
-				lexer.CloseToTableContext();
+				lexer.CloseToTableRowContext();
 				
 				lexer.Push(node,true);
 				
@@ -99,7 +99,7 @@ namespace PowerUI{
 			
 			}else if(mode==HtmlTreeMode.InTableBody){
 				
-				lexer.CloseToTableContext();
+				lexer.CloseToTableBodyContext();
 				
 				Element el=lexer.CreateTag("tr",true);
 				lexer.Push(el,true);
