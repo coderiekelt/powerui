@@ -103,6 +103,7 @@ namespace PowerUI{
 				
 				Element el=lexer.CreateTag("tr",true);
 				lexer.Push(el,true);
+				lexer.CurrentMode=HtmlTreeMode.InRow;
 				
 				// Reproc:
 				lexer.Process(node,null);
