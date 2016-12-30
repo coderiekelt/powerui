@@ -290,7 +290,7 @@ namespace PowerUI{
 		/// <summary>True if rayHit was successful and hit something.</summary>
 		public bool raySuccess{
 			get{
-				return PowerUI.Input.LatestRayHitSuccess;
+				return trigger.LatestHitSuccess;
 			}
 		}
 		
@@ -298,7 +298,7 @@ namespace PowerUI{
 		/// It's default(RaycastHit) if it didn't hit anything (see raySuccess).</summary>
 		public RaycastHit rayHit{
 			get{
-				return PowerUI.Input.LatestRayHit;
+				return trigger.LatestHit;
 			}
 		}
 		

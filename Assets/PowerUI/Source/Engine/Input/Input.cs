@@ -35,6 +35,10 @@ using Dom;
 
 namespace PowerUI{
 	
+	/// <summary>Used to resolve gameObjects to eventTargets.
+	/// Optionally avoids checking MonoBehaviours by cancelling the event.</summary>
+	public delegate IEventTarget TargetResolveDelegate(GameObject go,out bool cancelEvent);
+	
 	/// <summary>
 	/// This class manages input such as clicking, hovering and keypresses.
 	/// </summary>
@@ -64,13 +68,23 @@ namespace PowerUI{
 		public static MousePointer SystemMouse;
 		/// <summary>The latest document that got focused.</summary>
 		public static HtmlDocument LastFocusedDocument;
-		/// <summary>If WorldUI's receive input, a ray must be fired from CameraFor3DInput to attempt input.
-		/// This is the lastest ray result. UI.MouseOver updates this immediately; it's updated at the UI rate otherwise.</summary>
-		public static RaycastHit LatestRayHit;
-		/// <summary>True if LatestRayHit is valid (because it hit something).</summary>
-		public static bool LatestRayHitSuccess;
 		/// <summary>The camera used for 3D input. Defaults to Camera.main if this is null.</summary>
-		public static Camera CameraFor3DInput;
+		private static Camera CameraFor3DInput_;
+		/// <summary>The camera used for 3D input. Defaults to Camera.main if this is null.</summary>
+		public static Camera CameraFor3DInput{
+			get{
+				
+				if(CameraFor3DInput_==null){
+					CameraFor3DInput_=Camera.main;
+				}
+				
+				return CameraFor3DInput_;
+			}
+			set{
+				CameraFor3DInput_=value;
+			}
+		}
+		
 		/// <summary>True if a system mouse should be created when on desktops.</summary>
 		public static bool CreateSystemMouse=true;
 		#if HANDLE_UNITY_UI
@@ -383,9 +397,16 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Finds an element from the given screen location.
-		/// This fires a ray into the scene if the point isn't on the main UI.
+		/// This fires a ray into the scene if the point isn't on the main UI and caches the hit in the given pointer.
 		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
 		public static Element ElementFromPoint(ref float x,ref float y){
+			return ElementFromPoint(ref x,ref y,null);
+		}
+		
+		/// <summary>Finds an element from the given screen location.
+		/// This fires a ray into the scene if the point isn't on the main UI and caches the hit in the given pointer.
+		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
+		public static Element ElementFromPoint(ref float x,ref float y,InputPointer pointer){
 			
 			Element result=null;
 			
@@ -399,6 +420,11 @@ namespace PowerUI{
 					// Is it transparent or not html/body?
 					if(AcceptsInput(result)){
 						// Great, we're done!
+						
+						if(pointer!=null){
+							pointer.LatestHitSuccess=false;
+						}
+						
 						return result;
 					}
 					
@@ -433,6 +459,10 @@ namespace PowerUI{
 							x=point.x;
 							y=point.y;
 							
+							if(pointer!=null){
+								pointer.LatestHitSuccess=false;
+							}
+							
 							return result;
 							
 						}
@@ -447,31 +477,36 @@ namespace PowerUI{
 			
 			// Go after WorldUI's next.
 			RaycastHit worldUIHit;
+			Camera cam=CameraFor3DInput;
 			
-			if(CameraFor3DInput==null){
+			if(cam==null){
+				// No camera!
 				
-				CameraFor3DInput=Camera.main;
-				
-				if(CameraFor3DInput==null){
-					// No camera!
-					LatestRayHitSuccess=false;
-					return null;
+				if(pointer!=null){
+					pointer.LatestHitSuccess=false;
 				}
 				
+				return null;
 			}
 			
 			// Cast into the scene now:
-			if(!Physics.Raycast(CameraFor3DInput.ScreenPointToRay(new Vector2(x,y)),out worldUIHit)){
+			if(!Physics.Raycast(cam.ScreenPointToRay(new Vector2(x,y)),out worldUIHit)){
 				
 				// Nothing hit.
-				LatestRayHitSuccess=false;
+				
+				if(pointer!=null){
+					pointer.LatestHitSuccess=false;
+				}
+				
 				return null;
 				
 			}
 			
 			// Cache it:
-			LatestRayHit=worldUIHit;
-			LatestRayHitSuccess=true;
+			if(pointer!=null){
+				pointer.LatestHit=worldUIHit;
+				pointer.LatestHitSuccess=false;
+			}
 			
 			// Did it hit a worldUI?
 			WorldUI worldUI=WorldUI.Find(worldUIHit);
@@ -497,6 +532,57 @@ namespace PowerUI{
 			return worldUI.document.elementFromPointOnScreen(x,y);
 			
 		}
+		
+		/// <summary>Used to resolve GameObjects to an IEventTarget.
+		/// This typically happens if you have e.g. some instance that represents
+		/// items/ players and you want that object to receive the event.</summary>
+		public static TargetResolveDelegate TargetResolver;
+		
+		/// <summary>Attempts to resolve a Gameobject to an event target. Prefers to use Input.TargetResolver but falls back searching for 
+		/// a script on the gameobject which implements it. Will search up the hierarchy too.</summary>
+		public static IEventTarget ResolveTarget(GameObject toResolve){
+			
+			// Got a target resolver?
+			IEventTarget result=null;
+			
+			if(TargetResolver!=null){
+				
+				// Great - try resolving now:
+				bool cancelEvent;
+				result=TargetResolver(toResolve,out cancelEvent);
+				
+				if(cancelEvent || result!=null){
+					return result;
+				}
+				
+			}
+			
+			// Look for a MonoBehaviour on the GameObject which implements IEventTarget instead:
+			while(toResolve!=null){
+				
+				// Try getting it:
+				result=toResolve.GetComponent<IEventTarget>();
+				
+				if(result!=null){
+					break;
+				}
+				
+				// Try the parent:
+				Transform parent=toResolve.transform.parent;
+				
+				if(parent==null){
+					break;
+				}
+				
+				// Next in the hierarchy:
+				toResolve=parent.gameObject;
+				
+			}
+			
+			return result;
+			
+		}
+		
 		
 		/// <summary>True if the pointers are invalid.
 		/// The things underneath them all will be recomputed on the next update.</summary>
@@ -616,7 +702,7 @@ namespace PowerUI{
 					// to one which is relative to the document (used by e.g. a WorldUI).
 					float documentX=pointer.ScreenX;
 					float documentY=pointer.ScreenY;
-					Element newActiveOver=ElementFromPoint(ref documentX,ref documentY);
+					Element newActiveOver=ElementFromPoint(ref documentX,ref documentY,pointer);
 					
 					// Update docX/Y:
 					if(newActiveOver!=null){

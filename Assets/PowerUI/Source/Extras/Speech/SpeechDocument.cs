@@ -3,28 +3,28 @@ using System.Collections;
 using Dom;
 using Css;
 
-namespace MathML{
+namespace Speech{
 	
 	/// <summary>
-	/// A MathML document is used when MathML is displayed standalone (i.e. not inline inside a web page)
+	/// A Speech markup document is used when speech is generated standalone.
 	/// </summary>
 	
-	public class MathDocument : ReflowDocument{
+	public class SpeechDocument : ReflowDocument{
 		
-		/// <summary>Cached reference for the MathML namespace.</summary>
-		private static MLNamespace _MathMLNamespace;
+		/// <summary>Cached reference for the Speech namespace.</summary>
+		private static MLNamespace _SpeechNamespace;
 		
-		/// <summary>The XML namespace for MathML.</summary>
-		public static MLNamespace MathMLNamespace{
+		/// <summary>The XML namespace for speech markup language.</summary>
+		public static MLNamespace SpeechNamespace{
 			get{
-				if(_MathMLNamespace==null){
+				if(_SpeechNamespace==null){
 					
 					// Setup the namespace (Doesn't request the URL; see XML namespaces for more info):
-					_MathMLNamespace=Dom.MLNamespaces.Get("http://www.w3.org/1998/Math/MathML","mml");
+					_SpeechNamespace=Dom.MLNamespaces.Get("http://www.w3.org/2001/10/synthesis","ssml");
 					
 				}
 				
-				return _MathMLNamespace;
+				return _SpeechNamespace;
 			}
 		}
 		
@@ -40,26 +40,27 @@ namespace MathML{
 				CurrentTitle=value;
 			}
 		}
-		/// <summary>The root math element.</summary>
-		public MathMathElement math;
+		
+		/// <summary>The root speak element.</summary>
+		public SpeechSpeakElement speak;
 		
 		
-		public MathDocument():base(null){
+		public SpeechDocument():base(null){
 			
 			// Apply namespace:
-			Namespace=MathMLNamespace;
+			Namespace=SpeechNamespace;
 			
 		}
 		
 		/// <summary>The root style node.</summary>
 		public override Node RootStyleNode{
 			get{
-				return math;
+				return speak;
 			}
 		}
 		
-		/// <summary>Gets or sets the innerMML of this document.</summary>
-		public string innerMML{
+		/// <summary>Gets or sets the innerSSML of this document.</summary>
+		public string innerSSML{
 			get{
 				return innerML;
 			}
@@ -68,7 +69,7 @@ namespace MathML{
 			}
 		}
 		
-		/// <summary>Gets or sets the innerML of this document.</summary>
+		/// <summary>Gets or sets the innerSSML of this document.</summary>
 		public override string innerML{
 			get{
 				System.Text.StringBuilder builder=new System.Text.StringBuilder();
@@ -128,7 +129,7 @@ namespace MathML{
 		/// <summary>Clears the document of all it's content, including scripts and styles.</summary>
 		public void clear(){
 			
-			math=null;
+			speak=null;
 			
 			// Gracefully clear the innerHTML:
 			empty();

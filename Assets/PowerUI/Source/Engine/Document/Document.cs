@@ -38,6 +38,9 @@ namespace PowerUI{
 		internal bool IsOpen;
 		/// <summary>The window that this document belongs to.</summary>
 		public Window window;
+		/// <summary>An event called after clear but before the new content is set.
+		/// Allows hooking up of various events.</summary>
+		public DomEventDelegate AfterClearBeforeSet;
 		
 		/// <summary>Don't use this directly; use location instead.</summary>
 		internal override void SetLocation(Location value,bool addHistory){
@@ -60,6 +63,13 @@ namespace PowerUI{
 			
 			// Update its parent document:
 			location_.document=this;
+			
+			if(AfterClearBeforeSet!=null){
+				
+				// Invoke during load now:
+				AfterClearBeforeSet(createEvent("duringload"));
+				
+			}
 			
 			// Load the html:
 			DataPackage package=new DataPackage(location_.absolute,null);
@@ -318,7 +328,7 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>Clears the document of all it's content, including scripts and styles.</summary>
+		/// <summary>Clears the document of all its content, including scripts and styles.</summary>
 		public void clear(){
 			
 			html=null;

@@ -117,6 +117,12 @@ namespace PowerUI{
 		public float Pressure;
 		/// <summary>The latest button that went down.</summary>
 		public int ButtonID;
+		/// <summary>True if LatestRayHit is valid (because it hit something).</summary>
+		public bool LatestHitSuccess;
+		/// <summary>If WorldUI's receive input, a ray must be fired from CameraFor3DInput to attempt input.
+		/// This is the lastest ray result. UI.MouseOver updates this immediately; it's updated at the UI rate otherwise.</summary>
+		public UnityEngine.RaycastHit LatestHit;
+		
 		/// <summary>True if this input is currently down.</summary>
 		public bool IsDown{
 			get{
@@ -206,6 +212,14 @@ namespace PowerUI{
 			
 			// Clear pressure:
 			SetPressure(0f);
+			
+		}
+		
+		/// <summary>Attempts to resolve LatestHit to an event target. Prefers to use Input.TargetResolver but falls back searching for 
+		/// a script on the gameobject which implements it. Will search up the hierarchy too.</summary>
+		public IEventTarget ResolveTarget(){
+			
+			return Input.ResolveTarget(LatestHit.transform.gameObject);
 			
 		}
 		

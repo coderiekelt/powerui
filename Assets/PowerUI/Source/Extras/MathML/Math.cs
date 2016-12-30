@@ -48,6 +48,16 @@ namespace MathML{
 			}
 		}
 		
+		/// <summary>Gets or sets the innerMML of this document.</summary>
+		public string innerMML{
+			get{
+				return innerML;
+			}
+			set{
+				innerML=value;
+			}
+		}
+		
 		/// <summary>The innerML of this MathML.</summary>
 		public string innerML{
 			get{
