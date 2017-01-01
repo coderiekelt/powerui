@@ -429,6 +429,7 @@ namespace ContextMenus{
 		public void add(Option option){
 			
 			// Add to the set:
+			option.index=options.Count;
 			options.Add(option);
 			option.parent=this;
 			

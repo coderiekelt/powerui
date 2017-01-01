@@ -73,6 +73,42 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Looks out for paste events.</summary>
+		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
+			
+			// Handle locally:
+			if(base.HandleLocalEvent(e,bubblePhase)){
+				
+				if(e is ClipboardEvent && IsTextInput() && e.type=="paste"){
+					
+					// Paste the data at the cursor index (must be text only).
+					string textToPaste=(e as ClipboardEvent).text;
+					
+					if(textToPaste!=null){
+						
+						string value=Value;
+						
+						if(value==null){
+							value=""+textToPaste;
+						}else{
+							value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+						}
+						
+						SetValue(value);
+						MoveCursor(CursorIndex+textToPaste.Length);
+						
+					}
+					
+				}
+				
+				return true;
+				
+			}
+			
+			return false;
+			
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
 		/// Closely related to Element.OnLexerCloseNode.</summary>
 		/// <returns>True if this element handled itself.</returns>
@@ -488,12 +524,7 @@ namespace PowerUI{
 						// Hop to the start:
 						
 						MoveCursor(0,true);
-							
-					}else if(key==KeyCode.Tab){
-						
-						// Tab - hop to next input:
-						htmlDocument.TabNext();
-						
+					
 					}else if(key==KeyCode.End){
 						// Hop to the end:
 						
@@ -504,49 +535,6 @@ namespace PowerUI{
 						}
 						
 						MoveCursor(maxCursor,true);
-						
-					}else if(pressEvent.ctrlKey){
-						
-						if(key==KeyCode.V){
-							
-							// Run the onpaste function.
-							
-							ClipboardEvent ce=new ClipboardEvent("paste",null);
-							ce.SetTrusted();
-							
-							if(dispatchEvent(ce)){
-								
-								// Paste the text, stripping any newlines:
-								string textToPaste=Clipboard.Paste().Replace("\r","").Replace("\n","");
-								
-								if(!string.IsNullOrEmpty(textToPaste)){
-									// Drop the character in the string at cursorIndex
-									if(value==null){
-										value=""+textToPaste;
-									}else{
-										value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
-									}
-									
-									SetValue(value);
-									MoveCursor(CursorIndex+textToPaste.Length);
-								}
-								
-							}
-							
-						}else if(key==KeyCode.C){
-							
-							// Run the oncopy function.
-							
-							ClipboardEvent ce=new ClipboardEvent("copy",null);
-							ce.SetTrusted();
-							
-							if(dispatchEvent(ce)){
-								
-								Clipboard.Copy(value);
-							
-							}
-							
-						}
 						
 					}
 					
@@ -560,9 +548,7 @@ namespace PowerUI{
 					// Grab the keycode:
 					KeyCode key=pressEvent.unityKeyCode;
 					
-					if(key==KeyCode.Tab){
-						htmlDocument.TabNext();
-					}else if(key==KeyCode.Return || key==KeyCode.KeypadEnter){
+					if(key==KeyCode.Return || key==KeyCode.KeypadEnter){
 						
 						// Find the form and then attempt to submit it.
 						HtmlFormElement f=form;
@@ -573,22 +559,11 @@ namespace PowerUI{
 						
 					}
 					
-				}else{
-					
-					if(!char.IsControl(pressEvent.character) && pressEvent.character!='\0'){
-						return;
-					}
-					
-					// Grab the keycode:
-					KeyCode key=pressEvent.unityKeyCode;
-					
-					if(key==KeyCode.Tab){
-						htmlDocument.TabNext();
-					}
-					
 				}
 				
 			}
+			
+			base.OnKeyPress(pressEvent);
 			
 		}
 		

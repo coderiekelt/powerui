@@ -46,6 +46,9 @@ namespace Windows{
 				return;
 			}
 			
+			// The root node (must only be one node at the root):
+			builder.Append("<div>");
+			
 			// Generate the menu now!
 			foreach(Option option in List.options){
 				
@@ -53,6 +56,8 @@ namespace Windows{
 				BuildOption(builder,option);
 				
 			}
+			
+			builder.Append("</div>");
 			
 		}
 		

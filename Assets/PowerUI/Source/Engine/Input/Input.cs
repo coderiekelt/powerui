@@ -301,9 +301,67 @@ namespace PowerUI{
 			// Dispatch the event to the focused element:
 			if(target.dispatchEvent(e)){
 				
-				// Run the default:
+				// Run the tag keypress method:
 				if(target is HtmlElement){
 					(target as HtmlElement).OnKeyPress(e);
+				}
+				
+				// Handle the defaults now:
+				
+				if(e.heldDown){
+					
+					// Get the HTML document:
+					HtmlDocument htmlDoc=(target is Node) ? ((target as Node).document) as HtmlDocument : UI.document;
+					
+					// Grab the keycode:
+					KeyCode key=e.unityKeyCode;
+					
+					if(key==KeyCode.Tab && htmlDoc!=null){
+						
+						// Tab - hop to next input:
+						htmlDoc.TabNext();
+						
+					}else if(e.ctrlKey){
+						
+						if(key==KeyCode.V){
+							
+							// Run the onpaste function.
+							
+							// Get the pasted text:
+							string textToPaste=Clipboard.Paste();
+							
+							// Fire the event now:
+							ClipboardEvent ce=new ClipboardEvent("paste",null);
+							ce.clipboardData.setData("text/plain",textToPaste);
+							ce.SetTrusted();
+							target.dispatchEvent(ce);
+							
+						}else if(key==KeyCode.C && htmlDoc!=null){
+							
+							// Run the oncopy function.
+							
+							// Get the selection:
+							string selection=htmlDoc.window.getSelection().ToString();
+							
+							if(selection==null){
+								return;
+							}
+							
+							ClipboardEvent ce=new ClipboardEvent("copy",null);
+							ce.clipboardData.setData("text/plain",selection);
+							ce.SetTrusted();
+							
+							if(target.dispatchEvent(ce)){
+								
+								// Copy to the clipboard now:
+								Clipboard.Copy(selection);
+								
+							}
+							
+						}
+						
+					}
+					
 				}
 				
 			}

@@ -30,6 +30,72 @@ namespace PowerUI{
 		/// <suummary>All ranges (oddly, it's required to be exactly 1, but addRange exists)</summary>
 		public List<Range> Ranges=new List<Range>();
 		
+		/// <summary>Returns the Node in which the selection ends.</summary>
+		public Node focusNode{
+			get{
+				if(Ranges.Count==0){
+					return null;
+				}
+				
+				return Ranges[0].endContainer;
+			}
+		}
+		
+		/// <summary>Returns the number of ranges in the selection</summary>
+		public int rangeCount{
+			get{
+				return Ranges.Count;
+			}
+		}
+		
+		/// <summary>Returns the Node in which the selection starts.</summary>
+		public Node anchorNode{
+			get{
+				if(Ranges.Count==0){
+					return null;
+				}
+				
+				return Ranges[0].startContainer;
+			}
+		}
+		
+		/// <summary>Returns a number representing the offset of the selection's anchor within the anchorNode.
+		/// If anchorNode is a text node, this is the number of characters within anchorNode preceding the anchor.
+		/// If anchorNode is an element, this is the number of child nodes of the anchorNode preceding the anchor.</summary>
+		public int anchorOffset{
+			get{
+				if(Ranges.Count==0){
+					return 0;
+				}
+				
+				return Ranges[0].startOffset;
+			}
+		}
+		
+		/// <summary>Returns a number representing the offset of the selection's anchor within the focusNode.
+		/// If focusNode is a text node, this is the number of characters within focusNode preceding the focus.
+		/// If focusNode is an element, this is the number of child nodes of the focusNode preceding the focus.</summary>
+		public int focusOffset{
+			get{
+				if(Ranges.Count==0){
+					return 0;
+				}
+				
+				return Ranges[0].endOffset;
+			}
+		}
+		
+		/// <summary>Returns a Boolean indicating whether the selection's start and end points are at the same position.</summary>
+		public bool isCollapsed{
+			get{
+				if(Ranges.Count==0){
+					return true;
+				}
+				
+				return Ranges[0].isCollapsed;
+			}
+		}
+		
 		/// <summary>Removes a range from the selection.</summary>
 		public void removeRange(Range r){
 			

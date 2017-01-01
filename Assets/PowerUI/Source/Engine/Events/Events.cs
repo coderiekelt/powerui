@@ -105,6 +105,7 @@ namespace PowerUI{
 	
 	public class ClipboardEvent : DomEvent{
 		
+		/// <summary>The raw clipboard data. Always non-null.</summary>
 		private DataTransfer _ClipboardData;
 		
 		
@@ -114,15 +115,18 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>A shortcut to textual clipboard data. Null if it's not textual.</summary>
+		public string text{
+			get{
+				return _ClipboardData.getData("text/plain");
+			}
+		}
+		
 		public ClipboardEvent(){}
 		
 		public ClipboardEvent(string type,object init):base(type,init){}
 		
 		public override void Setup(object init){
-			
-			if(init==null){
-				return;
-			}
 			
 			// string init.data
 			// string init.dataType

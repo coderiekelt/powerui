@@ -54,6 +54,42 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Looks out for paste events.</summary>
+		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
+			
+			// Handle locally:
+			if(base.HandleLocalEvent(e,bubblePhase)){
+				
+				if(e is ClipboardEvent && e.type=="paste"){
+					
+					// Paste the data at the cursor index (must be text only).
+					string textToPaste=(e as ClipboardEvent).text;
+					
+					if(textToPaste!=null){
+						
+						string value=this.value;
+						
+						if(value==null){
+							value=""+textToPaste;
+						}else{
+							value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+						}
+						
+						SetValue(value);
+						MoveCursor(CursorIndex+textToPaste.Length,true);
+						
+					}
+					
+				}
+				
+				return true;
+				
+			}
+			
+			return false;
+			
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			
@@ -222,11 +258,6 @@ namespace PowerUI{
 					
 					MoveCursor(0,true);
 				
-				}else if(key==KeyCode.Tab){
-					
-					// Tab - hop to next input:
-					htmlDocument.TabNext();
-					
 				}else if(key==KeyCode.End){
 					// Hop to the end:
 					
@@ -238,45 +269,6 @@ namespace PowerUI{
 					
 					MoveCursor(maxCursor,true);
 				
-				}else if(pressEvent.ctrlKey){
-						
-					if(key==KeyCode.V){
-						
-						// Run the onpaste function.
-						ClipboardEvent ce=new ClipboardEvent("paste",null);
-						ce.SetTrusted();
-						
-						if(dispatchEvent(ce)){
-							
-							string textToPaste=Clipboard.Paste();
-							
-							if(!string.IsNullOrEmpty(textToPaste)){
-								// Drop the character in the string at cursorIndex
-								if(value==null){
-									value=""+textToPaste;
-								}else{
-									value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
-								}
-								
-								SetValue(value);
-								MoveCursor(CursorIndex+textToPaste.Length,true);
-							}
-							
-						}
-						
-					}else if(key==KeyCode.C){
-						
-						// Run the oncopy function.
-						ClipboardEvent ce=new ClipboardEvent("copy",null);
-						ce.SetTrusted();
-						
-						if(dispatchEvent(ce)){
-							
-							Clipboard.Copy(value);
-						
-						}
-						
-					}
 				}else if(key==KeyCode.Return || key==KeyCode.KeypadEnter){
 					
 					// Add a newline
@@ -291,6 +283,9 @@ namespace PowerUI{
 				}
 				
 			}
+			
+			base.OnKeyPress(pressEvent);
+			
 		}
 		
 		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>

@@ -379,27 +379,6 @@ namespace PowerUI{
 			SetSelected(index,element,runOnChange);
 		}
 		
-		public override void OnKeyPress(KeyboardEvent pressEvent){
-			
-			if(this["readonly"]!=null){
-				return;
-			}
-			
-			if(pressEvent.heldDown){
-				
-				// Get the key:
-				UnityEngine.KeyCode key=pressEvent.unityKeyCode;
-				
-				if(key==UnityEngine.KeyCode.Tab){
-					
-					// Tab - hop to next input:
-					htmlDocument.TabNext();
-					
-				}
-				
-			}
-		}
-		
 		/// <summary>Sets the option at the given index as the selected one.</summary>
 		/// <param name="index">The index of the option to select.</param>
 		/// <param name="element">The element at the given index.</param>

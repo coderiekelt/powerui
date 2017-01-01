@@ -47,6 +47,13 @@ namespace PowerUI{
 			startContainer=endContainer=doc;
 		}
 		
+		/// <summary>Returns a Boolean indicating whether the selection's start and end points are at the same position.</summary>
+		public bool isCollapsed{
+            get {
+				return startContainer==endContainer && startOffset==endOffset;
+			}
+        }
+		
 		public Node rootNode{
             get { return startContainer.rootNode; }
         }
