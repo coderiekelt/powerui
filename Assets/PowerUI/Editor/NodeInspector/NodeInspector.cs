@@ -130,7 +130,19 @@ namespace PowerUI{
 				foreach(KeyValuePair<CssProperty,Css.Value> kvp in cs.Properties){
 					
 					// kvp.Key (a CSS property) is set to kvp.Value (a CSS value)
-					result+=kvp.Key.Name+": "+kvp.Value+"\r\n";
+					result+=kvp.Key.Name+": ";
+					
+					if(kvp.Value is Css.Keywords.Inherit){
+						
+						result+=(kvp.Value as Css.Keywords.Inherit).From+" (inherit)";
+						
+					}else{
+						
+						result+=kvp.Value;
+						
+					}
+					
+					result+="\r\n";
 					
 				}
 				
