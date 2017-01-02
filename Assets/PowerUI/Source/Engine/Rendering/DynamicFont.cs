@@ -87,6 +87,11 @@ namespace PowerUI{
 		/// <returns>True if at least one font face was loaded.</returns>
 		public bool LoadFaces(){
 			
+			if(string.IsNullOrEmpty(Name)){
+				// This case results in every text asset being checked otherwise!
+				return false;
+			}
+			
 			// Load all .ttf/.otf files:
 			object[] faces=Resources.LoadAll(Name,typeof(TextAsset));
 			

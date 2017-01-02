@@ -100,12 +100,32 @@ namespace PowerUI{
 				name="(Unnamed node)";
 			}
 			
+			string idAttr=node["id"];
+			
+			if(idAttr!=null){
+				name+=" id='"+idAttr+"'";
+			}
+			
+			Rect zone;
+			
 			if(node.childCount==0){
 				
 				// Leaf node of the DOM:
 				GUILayout.BeginHorizontal();
 				GUILayout.Space(EditorGUI.indentLevel * 20);
 				GUILayout.Label(name);
+				
+				zone=GUILayoutUtility.GetLastRect();
+				
+				if(zone.Contains(Event.current.mousePosition)){
+					
+					// Mark as the node with the mouse over it:
+					MouseOverNode=node;
+					RedrawNodeInspector();
+					
+				}
+				
+				
 				GUILayout.EndHorizontal();
 				return;
 				
@@ -113,6 +133,17 @@ namespace PowerUI{
 			
 			bool unfolded=ActiveUnfolded.ContainsKey(node);
 			bool status=EditorGUILayout.Foldout(unfolded, name);
+			
+			// Check mouse (Doesn't work unfortunately!):
+			zone=GUILayoutUtility.GetLastRect();
+			
+			if(zone.Contains(Event.current.mousePosition)){
+				
+				// Mark as the node with the mouse over it:
+				MouseOverNode=node;
+				RedrawNodeInspector();
+				
+			}
 			
 			if(status!=unfolded){
 				
@@ -125,17 +156,6 @@ namespace PowerUI{
 				
 				MouseOverNode=node;
 				
-				RedrawNodeInspector();
-				
-			}
-			
-			// Check mouse (Doesn't work unfortunately!):
-			Rect zone=GUILayoutUtility.GetLastRect();
-			
-			if(zone.Contains(Event.current.mousePosition)){
-				
-				// Mark as the node with the mouse over it:
-				MouseOverNode=node;
 				RedrawNodeInspector();
 				
 			}

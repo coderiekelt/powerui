@@ -71,6 +71,20 @@ namespace PowerUI{
 			ComputedDataFor=node;
 			string result="";
 			
+			if(node.Properties!=null && node.Properties.Count>0){
+				
+				result+="Attributes:\r\n";
+				
+				foreach(KeyValuePair<string,string> kvp in node.Properties){
+					
+					result+=kvp.Key+": "+kvp.Value+"\r\n";
+					
+				}
+				
+				result+="\r\n";
+				
+			}
+			
 			// Is the node renderable?
 			IRenderableNode renderable=(node as IRenderableNode);
 			
