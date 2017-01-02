@@ -81,6 +81,17 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Redraws the node inspector.</summary>
+		void RedrawNodeInspector(){
+			
+			if(NodeInspector.Window!=null){
+				
+				NodeInspector.Window.Repaint();
+				
+			}
+			
+		}
+		
 		void DrawNode(Node node){
 			
 			string name=node.nodeName;
@@ -112,15 +123,20 @@ namespace PowerUI{
 					ActiveUnfolded.Remove(node);
 				}
 				
+				MouseOverNode=node;
+				
+				RedrawNodeInspector();
+				
 			}
 			
-			// Check mouse:
+			// Check mouse (Doesn't work unfortunately!):
 			Rect zone=GUILayoutUtility.GetLastRect();
 			
 			if(zone.Contains(Event.current.mousePosition)){
 				
 				// Mark as the node with the mouse over it:
 				MouseOverNode=node;
+				RedrawNodeInspector();
 				
 			}
 			

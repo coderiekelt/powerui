@@ -63,30 +63,20 @@ namespace PowerUI{
 			
 		}
 		
-		void OnGUI(){
+		private Node ComputedDataFor;
+		private string ComputedNodeData;
+		
+		internal void BuildString(Node node){
 			
-			// This is always null - if you can get a node in here then great; see the comment below!
-			Node node=DomInspector.MouseOverNode;
-			
-			if(node==null){
-				PowerUIEditor.HelpBox("Currently unavailable - check back later! This will display applied CSS rules, computed style, attached JS events etc. (If you're interested, see the source of this editor UI at PowerUI/Editor/NodeInspector/NodeInspector.cs).");
-				return;
-			}
-			
-			string name=node.nodeName;
-			
-			if(name==null){
-				name="(Unnamed node)";
-			}
-			
-			GUILayout.Label(name);
-			
-			/*
+			ComputedDataFor=node;
+			string result="";
 			
 			// Is the node renderable?
 			IRenderableNode renderable=(node as IRenderableNode);
 			
 			if(renderable!=null){
+				
+				result+="Applied Selectors:\r\n";
 				
 				// Get the computed style:
 				ComputedStyle cs=renderable.ComputedStyle;
@@ -110,7 +100,7 @@ namespace PowerUI{
 							Selector selector=rule.Selector;
 							
 							// Note that this builds the selector text - avoid calling from OnGUI!
-							// string str=selector.selectorText;
+							result+=selector.selectorText+"\r\n";
 							
 						}
 						
@@ -118,29 +108,108 @@ namespace PowerUI{
 					
 				}
 				
+				result+="\r\n";
+				
+				result+="Computed style:\r\n";
+				
 				// Computed values:
 				foreach(KeyValuePair<CssProperty,Css.Value> kvp in cs.Properties){
 					
 					// kvp.Key (a CSS property) is set to kvp.Value (a CSS value)
+					result+=kvp.Key.Name+": "+kvp.Value+"\r\n";
 					
 				}
+				
+				result+="\r\n";
+				result+="Computed boxes:\r\n";
+				
+				// Computed values:
+				RenderableData renderData=renderable.RenderData;
+				
+				if(renderData.FirstBox==null){
+					
+					result+="There's no boxes. The element isn't visible.\r\n";
+					
+				}else{
+				
+					LayoutBox box=renderData.FirstBox;
+					
+					while(box!=null){
+						result+=box.ToString()+"\r\n";
+						box=box.NextInElement;
+					}
+					
+				}
+				
+				result+="\r\n";
 				
 			}
 			
 			// JS event hooks:
 			EventTarget target=(node as EventTarget);
 			
-			if(target!=null && target.Events!=null){
+			if(target!=null){
 				
-				// Grab the JS event handlers:
-				Dictionary<string,List<EventListener>> allHandlers=target.Events.Handlers;
+				result+="Events:\r\n";
 				
-				// Key is e.g. "mousedown"
-				// Value is all the things that'll run when the event triggers.
+				if(target.Events==null || target.Events.Handlers==null || target.Events.Handlers.Count==0){
+					
+					result+="No events hooked up to this element.\r\n";
+					
+				}else{
+					
+					// Grab the JS event handlers:
+					Dictionary<string,List<EventListener>> allHandlers=target.Events.Handlers;
+					
+					// Key is e.g. "mousedown"
+					// Value is all the things that'll run when the event triggers.
+					foreach(KeyValuePair<string,List<EventListener>> kvp in allHandlers){
+						
+						int count=kvp.Value.Count;
+						
+						string plural=count==1?"":"s";
+						
+						result+=kvp.Key+": ("+count+" listener"+plural+")\r\n";
+						
+					}
+					
+				}
 				
 			}
 			
-			*/
+			ComputedNodeData=result;
+			
+		}
+		
+		void OnGUI(){
+			
+			// This is always null - if you can get a node in here then great; see the comment below!
+			Node node=DomInspector.MouseOverNode;
+			
+			if(node==null){
+				PowerUIEditor.HelpBox("No node selected. Click on a node in the DOM inspector.");
+				return;
+			}
+			
+			string name=node.nodeName;
+			
+			if(name==null){
+				name="(Unnamed node)";
+			}
+			
+			GUILayout.Label(name);
+			
+			if(ComputedDataFor!=node || ComputedNodeData==null){
+				
+				try{
+					BuildString(node);
+				}catch(Exception e){
+					ComputedNodeData="<b>Error whilst building node data</b>\r\n"+e.ToString();
+				}
+				
+			}
+			
+			GUILayout.Label(ComputedNodeData);
 			
 		}
 		
