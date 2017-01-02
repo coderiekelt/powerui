@@ -164,12 +164,11 @@ namespace PowerUI{
 		public override void OnTagLoaded(){
 			HtmlDocument doc=htmlDocument;
 			
-			if(doc==null){
+			if(doc==null || doc.html!=null){
 				return;
 			}
 			
 			doc.html=this;
-			
 		}
 		
 		/// <summary>When the given lexer resets, this is called.</summary>

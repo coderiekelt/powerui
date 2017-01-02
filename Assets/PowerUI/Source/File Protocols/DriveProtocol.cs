@@ -26,6 +26,11 @@ namespace PowerUI{
 			// Path without the protocol:
 			string rawPath=package.location.Path;
 			
+			// If it contains a : and starts with / then chop it off:
+			if(rawPath!=null && rawPath.IndexOf(':')!=-1 && rawPath[0]=='/'){
+				rawPath=rawPath.Substring(1);
+			}
+			
 			if(File.Exists(rawPath)){
 				
 				// Partial?

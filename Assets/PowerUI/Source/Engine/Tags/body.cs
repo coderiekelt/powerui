@@ -163,7 +163,13 @@ namespace PowerUI{
 		}
 		
 		public override void OnTagLoaded(){
-			htmlDocument.body=this;
+			HtmlDocument doc=htmlDocument;
+			
+			if(doc==null || doc.body!=null){
+				return;
+			}
+			
+			doc.body=this;
 		}
 		
 	}
