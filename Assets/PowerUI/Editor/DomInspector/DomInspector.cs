@@ -94,7 +94,7 @@ namespace PowerUI{
 		
 		void DrawNode(Node node){
 			
-			string name=node.nodeName;
+			string name=(node is DocumentType)?"#doctype":node.nodeName;
 			
 			if(name==null){
 				name="(Unnamed node)";
