@@ -26,7 +26,8 @@ namespace PowerUI{
 		Hidden,
 		Number,
 		Email,
-		Url
+		Url,
+		Undefined
 	}
 	
 }

@@ -763,10 +763,8 @@ namespace PowerUI{
 					Element newActiveOver=ElementFromPoint(ref documentX,ref documentY,pointer);
 					
 					// Update docX/Y:
-					if(newActiveOver!=null){
-						pointer.DocumentX=documentX;
-						pointer.DocumentY=documentY;
-					}
+					pointer.DocumentX=documentX;
+					pointer.DocumentY=documentY;
 					
 					// Get the old one:
 					Element oldActiveOver=pointer.ActiveOver;

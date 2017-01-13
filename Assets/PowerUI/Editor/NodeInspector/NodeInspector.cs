@@ -161,7 +161,7 @@ namespace PowerUI{
 					LayoutBox box=renderData.FirstBox;
 					
 					while(box!=null){
-						result+=box.ToString()+"\r\n";
+						result+=box.ToString()+" (Scroll: "+box.Scroll.Left+", "+box.Scroll.Top+")\r\n";
 						box=box.NextInElement;
 					}
 					

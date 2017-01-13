@@ -19,6 +19,7 @@ namespace PowerUI{
 	/// Handles the thumb of a scrollbar.
 	/// </summary>
 	
+	[Dom.TagName("scrollthumb")]
 	public class HtmlScrollThumbElement:HtmlElement{
 		
 		/// <summary>The starting X/Y coordinate that the thumb was located at when it was clicked on.</summary>
@@ -95,7 +96,7 @@ namespace PowerUI{
 				}
 				
 				// Get its box:
-				LayoutBox box=(firstChild as HtmlElement).style.Computed.FirstBox;
+				LayoutBox box=(lastChild as HtmlElement).style.Computed.FirstBox;
 				
 				return IsVertical ? box.Height : box.Width;
 			}
@@ -145,7 +146,7 @@ namespace PowerUI{
 			
 		}
 		
-		public override void OnTagLoaded(){
+		public override void OnChildrenLoaded(){
 			
 			// We're always draggable:
 			this["draggable"]="1";

@@ -24,7 +24,7 @@ namespace PowerUI{
 	/// This route performs much worse than it otherwise could do.
 	/// </summary>
 	
-	public class HtmlUIPanel : PoweruiManager
+	public class HtmlUIPanel : PowerUI.Manager
 	{
 		
 		/// <summary>The PowerUI UI itself. Use this to get through to document etc.</summary>

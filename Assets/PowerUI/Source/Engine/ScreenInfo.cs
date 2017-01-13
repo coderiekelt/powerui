@@ -36,12 +36,8 @@ namespace PowerUI{
 		public static float ScreenYFloat;
 		/// <summary>How many pixels are gained/lost per unit depth on screen size. Varies with field of view.</summary>
 		public static float DepthDepreciation;
-		/// <summary>The current resolution scale of the UI.</summary>
-		public static float ResolutionScale=1f;
 		/// <summary>The height/width of the screen in world units at zero depth.</summary>
 		public static Vector2 WorldSize=Vector2.zero;
-		/// <summary>The current resolution of this document.</summary>
-		private static ResolutionInfo CurrentResolution;
 		/// <summary>The amount of world units per screen pixel at zero depth.</summary>
 		public static Vector2 WorldPerPixel=Vector2.zero;
 		/// <summary>The location of the screen origin (top left corner) in world units at zero depth.</summary>
@@ -177,7 +173,7 @@ namespace PowerUI{
 			// Resize:
 			if(changedX){
 				
-				int w=((int)(ScreenXFloat/ResolutionScale));
+				int w=(int)ScreenXFloat;
 				
 				document.RequestLayout();
 				
@@ -190,7 +186,7 @@ namespace PowerUI{
 			
 			if(changedY){
 				
-				int h=((int)(ScreenYFloat/ResolutionScale));
+				int h=(int)ScreenYFloat;
 				
 				document.RequestLayout();
 				
@@ -215,22 +211,6 @@ namespace PowerUI{
 				
 				return dpi;
 				
-			}
-		}
-		
-		/// <summary>The current resolution of the UI.</summary>
-		public static ResolutionInfo Resolution{
-			get{
-				return CurrentResolution;
-			}
-			set{
-				CurrentResolution=value;
-				
-				if(value==null){
-					ResolutionScale=1f;
-				}else{
-					ResolutionScale=value.Scale;
-				}
 			}
 		}
 		

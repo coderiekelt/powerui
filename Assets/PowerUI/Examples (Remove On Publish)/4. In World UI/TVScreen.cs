@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using PowerUI;
 
-public class TVScreen : PoweruiManager {
+public class TVScreen : PowerUI.Manager {
 	
 	/// <summary>Is input enabled for WorldUI's?</summary>
 	[Tooltip("Disable input for extra performance")]

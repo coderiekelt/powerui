@@ -24,7 +24,7 @@ namespace PowerUI{
 	public class CreateSimpleUIContext:MonoBehaviour{
 	
 		/// <summary>Creates a new HTML file.</summary>
-		[MenuItem("GameObject/Create Other/Simple Main UI")]
+		[MenuItem("GameObject/UI/PowerUI/Simple Main UI")]
 		[MenuItem("Assets/PowerUI/Create Simple Main UI")]
 		public static void CreateSimpleUI(){
 			
@@ -41,7 +41,7 @@ namespace PowerUI{
 			mainUI.name="main-ui";
 			
 			// Attach a simple UI manager to it:
-			mainUI.AddComponent<PoweruiManager>();
+			mainUI.AddComponent<PowerUI.Manager>();
 			
 		}
 		

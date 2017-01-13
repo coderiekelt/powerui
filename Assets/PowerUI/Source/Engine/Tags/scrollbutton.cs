@@ -28,7 +28,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void OnTagLoaded(){
+		public override void OnChildrenLoaded(){
 			
 			IsStart=(this==parentNode.firstChild);
 			

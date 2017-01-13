@@ -16,6 +16,9 @@ using Dom;
 
 namespace PowerUI{
 	
+	/// <summary>A delegate for dealing with event targets.</summary>
+	public delegate void InternalEventHandler(EventTarget et);
+	
 	/// <summary>
 	/// Represents a custom protocol:// as used by PowerUI files.
 	/// For example, if you wish to deliver content in a custom way to PowerUI, implement a new FileProtocol (e.g. 'cdn')
@@ -23,6 +26,10 @@ namespace PowerUI{
 	/// </summary>
 	
 	public class FileProtocol{
+		
+		/// <summary>An event called when any request is started.
+		/// Useful for debugging networking (and is used by the network inspector).</summary>
+		public static InternalEventHandler OnRequestStarted;
 		
 		/// <summary>Returns all protocol names:// that can be used for this protocol.
 		/// e.g. new string[]{"cdn","net"}; => cdn://file.png or net://file.png</summary>

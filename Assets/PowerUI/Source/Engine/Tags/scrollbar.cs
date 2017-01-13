@@ -34,8 +34,14 @@ namespace PowerUI{
 		
 		public override void OnChildrenLoaded(){
 			
+			if(childNodes_!=null){
+				// Setting innerHTML calls OnChildrenLoaded again.
+				// Block that!
+				return;
+			}
+			
 			// Set innerHTML:
-			innerHTML="<scrollbutton><scrollthumb><scrollbutton>";
+			innerHTML="<scrollbutton/><scrollthumb/><scrollbutton/>";
 			
 			// Recalc thumb:
 			RecalculateThumb();
@@ -162,6 +168,11 @@ namespace PowerUI{
 				
 				ComputedStyle computed=target.style.Computed;
 				LayoutBox box=computed.FirstBox;
+				
+				if(box==null){
+					// Not visible or hasn't been drawn yet.
+					return;
+				}
 				
 				int overflowMode=IsVertical?box.OverflowY : box.OverflowX;
 				float visible=IsVertical?box.VisiblePercentageY() : box.VisiblePercentageX();

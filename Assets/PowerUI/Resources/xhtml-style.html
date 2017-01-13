@@ -29,6 +29,11 @@ a:hover{
 	color:#0000ff;
 }
 
+iframe{
+	/* UA default background */
+	background:white;
+}
+
 /* Built in JS prompts; alert, confirm etc */
 #spark-prompt-background{
 	background:rgba(0,0,0,42%);
@@ -500,7 +505,8 @@ hr[size="1"] {
     border-style: solid none none;
 }
 
-iframe {
+iframe{
+	box-sizing:border-box;
 	display:inline-block;
 	width:300px;
 	height:150px;
@@ -578,6 +584,7 @@ input[type="submit"]{
 }
 
 input[type="password"]{
+	box-sizing:border-box;
 	border:1px solid #6f7cab;
 	padding:1px;
 	width:150px;
@@ -594,6 +601,8 @@ input[type="password"]{
 }
 
 input[type="text"],input[type="number"],input[type="url"],input[type="email"]{
+	-moz-user-select:text;
+	box-sizing:border-box;
 	border:1px solid #6f7cab;
 	padding:1px;
 	font-size:14px;
@@ -610,6 +619,7 @@ input[type="text"],input[type="number"],input[type="url"],input[type="email"]{
 }
 
 textarea{
+	-moz-user-select:text;
 	border:1px solid #6f7cab;
 	padding:1px;
 	font-size:14px;
@@ -624,91 +634,67 @@ textarea{
 	overflow-y:auto;
 }
 
-scrollup{
-	top:0px;
-	position:absolute;
-	border:1px solid #e5e5e5;
-	width:12px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	display:inline-block;
+scrollbar{
+	display:block;
+	border:1px solid rgb(248,248,248);
+	background:rgb(248,248,248);
+	box-sizing:border-box;
 }
 
-scrolldown{
-	bottom:0px;
-	position:absolute;
-	border:1px solid #e5e5e5;
-	width:12px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	display:inline-block;
-}
-
-scrollleft{
-	left:0px;
-	top:0px;
-	position:absolute;
-	border:1px solid #e5e5e5;
-	width:12px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	display:inline-block;
-}
-
-scrollright{
-	right:0px;
-	position:absolute;
-	border:1px solid #e5e5e5;
-	width:12px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	display:inline-block;
-}
-
-input[type="vscroll"]{
-	display:inline-block;
-	position:absolute;
-	right:0px;
+scrollbar[orient="vertical"]{
+	width:17px;
 	height:100%;
-	width:14px;
-	border:1px solid #999999;
-	background:#cccccc;
-	color-overlay:#ffffffff;
 }
 
-input[type="hscroll"]{
-	display:inline-block;
-	position:absolute;
-	bottom:0px;
+scrollbar[orient="horizontal"]{
+	height:17px;
 	width:100%;
-	height:14px;
-	border:1px solid #999999;
-	background:#cccccc;
 }
 
-vscrolltab{
-	top:14px;
-	position:absolute;
-	border:1px solid #e5e5e5;
-	width:12px;
-	height:20px;
-	background-color:#6074bd;
-	background-image:url(resources://vscrollBG.png);
+scrollbutton:hover{
+	border-color:rgb(60,127,177);
+	background-color:rgb(220,240,251);
+}
+
+scrollthumb:hover{
+	border-color:rgb(60,127,177);
+	background:rgb(220,240,251);
+}
+
+scrollbutton{
+	border-radius:6px;
+	border:1px solid white;
+	width:13px;
+	height:13px;
+	background:#dddddd url("resources://scroll-arrow.png") no-repeat center;
 	display:inline-block;
+	position:absolute;
 }
 
-hscrolltab{
-	left:14px;
+scrollbutton[orient="right"]{
+	right:0px;
+}
+
+scrollbutton[orient="left"]{
+	transform:rotate(180deg);
+}
+
+scrollbutton[orient="down"]{
+	bottom:0px;
+	transform:rotate(90deg);
+}
+
+scrollbutton[orient="up"]{
+	transform:rotate(270deg);
+}
+
+scrollthumb{
+	border-radius:6px;
+	border:1px solid white;
 	position:absolute;
-	border:1px solid #e5e5e5;
-	width:20px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
+	width:13px;
+	height:13px;
+	background:#dddddd;
 	display:inline-block;
 }
 

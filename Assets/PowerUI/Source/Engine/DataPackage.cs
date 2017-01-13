@@ -113,6 +113,18 @@ namespace PowerUI{
 			set{
 				readyState_=value;
 				
+				if(value==1){
+					
+					// Trigger the request init handle:
+					if(FileProtocol.OnRequestStarted!=null){
+						
+						// Invoke it now:
+						FileProtocol.OnRequestStarted(this);
+						
+					}
+					
+				}
+				
 				UIEvent e=new UIEvent();
 				e.SetTrusted();
 				e.EventType="readystatechange";

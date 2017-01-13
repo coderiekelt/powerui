@@ -2,7 +2,7 @@
 using System.Collections;
 using PowerUI;
 
-public class FlatInWorldUI : PoweruiManager {
+public class FlatInWorldUI : PowerUI.Manager {
 	
 	/// <summary>Is input enabled for WorldUI's?</summary>
 	[Tooltip("Disable input for extra performance")]
@@ -15,7 +15,7 @@ public class FlatInWorldUI : PoweruiManager {
 		// Next, generate a new UI using the given virtual screen dimensions (the name is optional):
 		FlatWorldUI ui=new FlatWorldUI("BillboardContent",600,400);
 		
-		// Use PoweruiManager's Navigate function (which reads either Url or HtmlFile depending on which you set):
+		// Use PowerUI.Manager's Navigate function (which reads either Url or HtmlFile depending on which you set):
 		Navigate(ui.document);
 		
 		// Optionally accept input:

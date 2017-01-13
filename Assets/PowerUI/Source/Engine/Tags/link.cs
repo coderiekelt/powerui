@@ -124,6 +124,9 @@ namespace PowerUI{
 				// Load it now:
 				styleSheet.ParseCss(package.responseText);
 				
+				// Redraw:
+				htmlDocument.RequestLayout();
+				
 			};
 			
 			package.send();

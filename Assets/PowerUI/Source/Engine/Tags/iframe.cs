@@ -105,13 +105,7 @@ namespace PowerUI{
 		public float InnerWidth{
 			get{
 				
-				ComputedStyle computed=Style.Computed;
-				
-				Css.Value value=computed[Css.Properties.Width.GlobalProperty];
-				
-				// Note: Value is never null.
-				
-				return value.GetDecimal(RenderData,Css.Properties.Width.GlobalProperty);
+				return Style.Computed.ResolveDecimal(Css.Properties.Width.GlobalProperty);
 				
 			}
 		}
@@ -119,13 +113,7 @@ namespace PowerUI{
 		public float InnerHeight{
 			get{
 				
-				ComputedStyle computed=Style.Computed;
-				
-				Css.Value value=computed[Css.Properties.Height.GlobalProperty];
-				
-				// Note: Value is never null.
-				
-				return value.GetDecimal(RenderData,Css.Properties.Height.GlobalProperty);
+				return Style.Computed.ResolveDecimal(Css.Properties.Height.GlobalProperty);
 				
 			}
 		}

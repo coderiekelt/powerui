@@ -351,17 +351,6 @@ public static class UI{
 		camera.cullingMask&=layer;
 	}
 	
-	/// <summary>The current UI resolution, used for pixel perfect clarity if you target both high and low resolution screens. 
-	/// Note that this should only be changed before you apply any HTML to your UI's.</summary>
-	public static ResolutionInfo Resolution{
-		get{
-			return ScreenInfo.Resolution;
-		}
-		set{
-			ScreenInfo.Resolution=value;
-		}
-	}
-	
 	/// <summary>What sort of camera should PowerUI use to render the main UI? Perspective is the default.</summary>
 	public static CameraMode CameraMode{
 		get{

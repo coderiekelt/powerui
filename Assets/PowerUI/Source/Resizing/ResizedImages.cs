@@ -22,7 +22,8 @@ namespace PowerUI{
 	
 	public static class ResizedImages{
 		
-		
+		/// <summary>The scale amount.</summary>
+		public static float Scale=0.5f;
 		/// <summary>All resized images.</summary>
 		public static Dictionary<string,ResizedImage> Images=new Dictionary<string,ResizedImage>();
 		
@@ -44,7 +45,7 @@ namespace PowerUI{
 			int originalWidth=originalImage.width;
 			
 			// Resize it:
-			Texture2D resized=ImageResizer.Resize(originalImage,ScreenInfo.ResolutionScale);
+			Texture2D resized=ImageResizer.Resize(originalImage,Scale);
 			
 			// Create and add:
 			ResizedImage image=new ResizedImage(resized);

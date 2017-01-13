@@ -44,7 +44,7 @@ namespace PowerUI{
 		/// <summary>For text or password input boxes, this is the cursor.</summary>
 		public HtmlElement Cursor;
 		/// <summary>The type of input that this is; e.g. text/password/radio etc.</summary>
-		public InputType Type;
+		public InputType Type=InputType.Undefined;
 		/// <summary>The current location of the cursor.</summary>
 		public int CursorIndex;
 		/// <summary>True if the cursor should be located after the next update.</summary>
@@ -58,6 +58,15 @@ namespace PowerUI{
 		public HtmlInputElement(){
 			// Make sure this tag is focusable:
 			IsFocusable=true;
+		}
+		
+		public override void OnTagLoaded(){
+			
+			if(Type==InputType.Undefined){
+				// Specify as text:
+				this["type"]="text";
+			}
+			
 		}
 		
 		/// <summary>True if this element has special parsing rules.</summary>
@@ -199,6 +208,19 @@ namespace PowerUI{
 				innerHTML=Placeholder;
 				
 				return true;
+			
+			}else if(property=="size"){
+				
+				// A rough font size based width:
+				int size;
+				if(int.TryParse(this["size"],out size)){
+					
+					// Don't apply if it's a button:
+					if(Type!=InputType.Submit && Type!=InputType.Button){
+						style.width=(size*10)+"px";
+					}
+					
+				}
 				
 			}else if(property=="maxlength"){
 				
