@@ -24,8 +24,8 @@ namespace PowerUI{
 	public class CreateSimpleUIContext:MonoBehaviour{
 	
 		/// <summary>Creates a new HTML file.</summary>
-		[MenuItem("GameObject/UI/PowerUI/Simple Main UI")]
-		[MenuItem("Assets/PowerUI/Create Simple Main UI")]
+		[MenuItem("GameObject/UI/PowerUI/Main UI (One per scene)")]
+		[MenuItem("Assets/PowerUI/Create Main UI (One per scene)")]
 		public static void CreateSimpleUI(){
 			
 			// Already got one?

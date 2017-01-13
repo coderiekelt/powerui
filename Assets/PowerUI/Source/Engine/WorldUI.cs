@@ -55,18 +55,18 @@ namespace PowerUI{
 			
 			Transform transform=hit.transform;
 			
-			// We're looking for a box collider with the following name.
-			if(transform.name!="PowerUI-BatchBox"){
-				
+			if(transform==null){
 				return null;
-				
 			}
 			
-			// We got one! Which WorldUI is it?
-			WorldUI found=Find(transform.parent);
+			// Try the transform or it's parent:
+			WorldUI found=Find(transform);
 			
-			if(found==null){
-				found=Find(transform);
+			if(found==null && transform.parent!=null){
+				
+				// Try the parent instead:
+				found=Find(transform.parent);
+				
 			}
 			
 			// Found is now just our result:
