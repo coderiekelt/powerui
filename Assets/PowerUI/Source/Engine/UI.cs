@@ -773,6 +773,9 @@ public static class UI{
 		
 	}
 	
+	/// <summary>The latest real time since startup. Used to make sure PowerUI keeps going when the game is 'paused'.</summary>
+	// private static float LastRealTime=0f;
+	
 	/// <summary>Updates the UI. Don't call this - PowerUI knows when it's needed; This is done from Start and WorldUI constructors.</summary>
 	public static void InternalUpdate(){
 		
@@ -781,17 +784,20 @@ public static class UI{
 			Callbacks.RunAll();
 		}
 		
+		// Get a deltaTime unaffected by timeScale:
+		float deltaTime=Time.unscaledDeltaTime;
+		
 		// Update animations:
-		Spa.SPA.Update();
+		Spa.SPA.Update(deltaTime);
 		
 		// Update any Http requests:
-		Web.Update();
+		Web.Update(deltaTime);
 		
 		if(WorldUI.LiveUpdatablesAvailable){
 			WorldUI.UpdateAll();
 		}
 		
-		RedrawTimer+=Time.deltaTime;
+		RedrawTimer+=deltaTime;
 		
 		if(RedrawTimer<RedrawRate){
 			return;

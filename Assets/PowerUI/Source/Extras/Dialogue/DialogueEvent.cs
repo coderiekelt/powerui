@@ -12,6 +12,8 @@
 using System;
 using UnityEngine;
 using Dom;
+using System.Collections;
+using System.Collections.Generic;
 
 
 namespace Dialogue{
@@ -30,6 +32,39 @@ namespace Dialogue{
 		public Card card;
 		/// <summary>The current action. Can be null if this is a train/card event.</summary>
 		public Action action;
+		/// <summary>An optional set of globals to pass to the target.</summary>
+		public Dictionary<string,object> globals;
+		
+		/// <summary>A convenience approach for getting/setting globals to pass through during a cue event.</summary>
+		public object this[string global]{
+			get{
+				if(globals==null){
+					return null;
+				}
+				
+				object result;
+				globals.TryGetValue(global,out result);
+				return result;
+			}
+			set{
+				if(globals==null){
+					globals=new Dictionary<string,object>();
+				}
+				
+				globals[global]=value;
+			}
+		}
+		
+		/// <summary>The document that this dialogue event originated from.</summary>
+		public PowerUI.HtmlDocument document{
+			get{
+				if(manager==null){
+					return null;
+				}
+				
+				return manager.document;
+			}
+		}
 		
 		/// <summary>A custom action ref.</summary>
 		public string actionID{
@@ -39,6 +74,14 @@ namespace Dialogue{
 		}
 		
 		public DialogueEvent(string type,object init):base(type,init){}
+		
+		/// <summary>Opens a window with the given template and URL. Globals originate from this event.
+		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
+		public void open(string template,string url){
+			
+			document.sparkWindows.open(template,url,globals);
+			
+		}
 		
 	}
 	

@@ -21,6 +21,7 @@ namespace Dialogue{
 	
 	/// <summary>
 	/// A raw dialogue action. E.g. "start cutscene x" or "open door y". These are mapped as event listeners.
+	/// Note that the DialogueEvent can hold extra parameters to pass through to your target.
 	/// </summary>
 	
 	public class Action{

@@ -425,6 +425,14 @@ namespace ContextMenus{
 			}
 		}
 		
+		/// <summary>Adds the given option to the list. Typically the markup would be a HTML variable.
+		/// Note that you can also create your own option class (inherit from Option) and add that instead.</summary>
+		public Option add(string markup,OptionEventMethod method){
+			Option option=new Option(markup,method);
+			add(option);
+			return option;
+		}
+		
 		/// <summary>Adds the given option to the list.</summary>
 		public void add(Option option){
 			

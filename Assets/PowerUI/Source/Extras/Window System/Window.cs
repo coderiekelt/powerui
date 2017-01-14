@@ -58,6 +58,13 @@ namespace Windows{
 		internal HtmlDocument contentDocument;
 		
 		
+		/// <summary>The document this window is in.</summary>
+		public HtmlDocument document{
+			get{
+				return Manager.Document;
+			}
+		}
+		
 		/// <summary>Closes the window and its kids.</summary>
 		public void close(){
 			close(true);
@@ -289,6 +296,11 @@ namespace Windows{
 					
 					foreach(KeyValuePair<string,object> kvp in globals){
 						
+						// Skip if it starts with -spark-
+						if(kvp.Key.StartsWith("-spark-")){
+							continue;
+						}
+						
 						// Set it:
 						contentDocument.setJsVariable(kvp.Key,kvp.Value);
 						
@@ -311,11 +323,50 @@ namespace Windows{
 		public void trigger(string name){
 			
 			// Create the event:
-			Dom.DomEvent e=Manager.Document.createEvent("window"+name);
+			Dom.DomEvent e=document.createEvent("window"+name);
 			e.SetTrusted();
 			
 			// Trigger it now:
-			Manager.Document.dispatchEvent(e);
+			document.dispatchEvent(e);
+			
+			// On this object (which is an event target):
+			dispatchEvent(e);
+			
+		}
+		
+		/// <summary>Triggers a '{name}' event on the window itself, and optionally on the source element.</summary>
+		public void trigger(string name,Dictionary<string,object> globals){
+			
+			if(element==null){
+				return;
+			}
+			
+			// Create the event:
+			Dom.DomEvent e=document.createEvent(name);
+			e.SetTrusted();
+			
+			// Trigger it now on the element:
+			element.dispatchEvent(e);
+			
+			// On this object (which is an event target):
+			dispatchEvent(e);
+			
+			// Try on the original anchor element too:
+			HtmlElement source=GetAnchor(globals);
+			
+			if(source!=null){
+				
+				// Trigger there too:
+				source.dispatchEvent(e);
+				
+			}
+			
+		}
+		
+		/// <summary>The anchor element that triggered a window to open. Null if there wasn't one.</summary>
+		public HtmlElement GetAnchor(Dictionary<string,object> globals){
+			
+			return Get<HtmlElement>("-spark-anchor",globals);
 			
 		}
 		
@@ -336,6 +387,94 @@ namespace Windows{
 			}
 			
 			return this;
+			
+		}
+		
+		/// <summary>Gets a global of the given name as a colour.</summary>
+		public UnityEngine.Color GetColour(string name,Dictionary<string,object> globals,UnityEngine.Color defaultValue){
+			
+			// Get the raw value:
+			object value=Get<object>(name,globals);
+			
+			UnityEngine.Color result=defaultValue;
+			
+			if(value!=null){
+				
+				if(value is string){
+					
+					// Map it to an actual colour:
+					result=Css.ColourMap.GetColour((string)value);
+					
+				}else if(value is UnityEngine.Color){
+					
+					result=(UnityEngine.Color)value;
+					
+				}else if(value is UnityEngine.Color32){
+					
+					result=(UnityEngine.Color32)value;
+					
+				}else{
+					
+					Ignored(name,"colour");
+					
+				}
+				
+			}
+			
+			return result;
+			
+		}
+		
+		/// <summary>Gets a global of the given name as an integer.</summary>
+		public int GetInteger(string name,Dictionary<string,object> globals,int defaultValue){
+			return (int)GetDecimal(name,globals,defaultValue);
+		}
+		
+		/// <summary>Gets a global of the given name as a decimal.</summary>
+		public double GetDecimal(string name,Dictionary<string,object> globals,double defaultValue){
+			
+			object value=Get<object>(name,globals);
+			
+			double result=defaultValue;
+		
+			if( value!=null ){
+				
+				if(value is string){
+					
+					// Parse it as a CSS value:
+					Css.Value unit=Css.Value.Load((string)value);
+					
+					// Get as a decimal:
+					result=unit.GetDecimal(null,null);
+					
+				}else if(value is int){
+					
+					result=(double)((int)value);
+					
+				}else if(value is float){
+					
+					result=(double)((float)value);
+					
+				}else if(value is double){
+					
+					result=(double)value;
+					
+				}else{
+					
+					Ignored(name,"number");
+					
+				}
+				
+			}
+			
+			return result;
+			
+		}
+		
+		/// <summary>Called when a window parameter value was ignored.</summary>
+		private void Ignored(string name,string type){
+			
+			Dom.Log.Add("Warning: Ignored a window parameter called '"+name+"' - expected some kind of "+type+".");
 			
 		}
 		

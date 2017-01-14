@@ -60,12 +60,10 @@ namespace PowerUI{
 			// Any query string is passed in as extras:
 			Dictionary<string,string> searchParams=path.searchParams;
 			
-			// Remap them to string/object pairs:
-			Dictionary<string,object> globals=null;
+			Dictionary<string,object> globals=new Dictionary<string,object>();
 			
+			// Remap them to string/object pairs:
 			if(searchParams!=null){
-				
-				globals=new Dictionary<string,object>();
 				
 				foreach(KeyValuePair<string,string> kvp in searchParams){
 					
@@ -74,6 +72,9 @@ namespace PowerUI{
 				}
 				
 			}
+			
+			// Add the anchor:
+			globals["-spark-anchor"]=linkElement;
 			
 			// Cycle the window (closes it if it's open):
 			doc.sparkWindows.cycle(windowType,url,globals);

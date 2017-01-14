@@ -31,7 +31,7 @@ namespace PowerUI{
 		public float deltaTime{
 			get{
 				if(Limit==0f){
-					return Time.deltaTime;
+					return Time.unscaledDeltaTime;
 				}
 				
 				return Limit;
@@ -81,7 +81,7 @@ namespace PowerUI{
 			
 			// Rate check.
 			if(Limit!=0f){
-				Counter+=Time.deltaTime;
+				Counter+=Time.unscaledDeltaTime;
 				
 				if(Counter<Limit){
 					return;

@@ -32,6 +32,16 @@ namespace ContextMenus{
 		/// <summary>The method to run.</summary>
 		public OptionEventMethod method;
 		
+		
+		public Option(){}
+		
+		public Option(string markup,OptionEventMethod method){
+			
+			this.markup=markup;
+			this.method=method;
+			
+		}
+		
 		/// <summary>Two attributes (optindex='index' and onclick='OptionList.ResolveOptionFromClick') which make an option clickable.</summary>
 		public string mouseRef{
 			get{

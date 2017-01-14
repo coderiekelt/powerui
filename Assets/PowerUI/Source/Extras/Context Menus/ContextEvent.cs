@@ -47,6 +47,18 @@ namespace ContextMenus{
 		public string window="menulist";
 		
 		
+		/// <summary>Adds the given option to the list. Typically the markup would be a HTML variable.
+		/// Note that you can also create your own option class (inherit from Option) and add that instead.</summary>
+		public Option add(string markup,OptionEventMethod method){
+			return list.add(markup,method);
+		}
+		
+		/// <summary>Adds the given option to the list. 
+		/// Note that you can also create your own option class (inherit from Option) and add that instead.</summary>
+		public void add(Option option){
+			list.add(option);
+		}
+		
 		public ContextEvent(string type,object init):base(type,init){
 		}
 		

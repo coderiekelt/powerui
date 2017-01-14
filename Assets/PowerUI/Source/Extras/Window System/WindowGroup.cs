@@ -23,7 +23,7 @@ namespace Windows{
 	/// <summary>
 	/// A group of windows.
 	/// </summary>
-	public class WindowGroup{
+	public class WindowGroup:EventTarget{
 		
 		/// <summary>The window manager.</summary>
 		public Manager Manager;

@@ -1,13 +1,4 @@
-//--------------------------------------
-//               PowerUI
-//
-//        For documentation or 
-//    if you have any issues, visit
-//        powerUI.kulestar.com
-//
-//    Copyright © 2013 Kulestar Ltd
-//          www.kulestar.com
-//--------------------------------------
+// MIT license (Free to do whatever you want with)
 
 using System;
 using PowerUI;
