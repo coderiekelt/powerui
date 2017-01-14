@@ -35,7 +35,7 @@ namespace PowerUI{
 		public float LengthScale = 1f;
 		
 		/// <summary>Sets zoom:auto to being equal to the devices pixel ratio.</summary>
-		[Tooltip("PowerUI will attempt to scale your UI so it's the same physical size.")]
+		[Tooltip("PowerUI will attempt to scale your UI so it's the same physical size. On desktops we can't know the screen DPI (multiple monitors etc) so be careful!")]
 		public bool AutomaticallyHandleDpi = true;
 		
 		#if UNITY_EDITOR

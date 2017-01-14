@@ -26,6 +26,8 @@ namespace PowerUI{
 
 	public static class ScreenInfo{
 		
+		/// <summary>The DPI of a CSS pixel.</summary>
+		public const int CssPixelDpi=96;
 		/// <summary>The screen width in pixels.</summary> 
 		public static int ScreenX;
 		/// <summary>The screen height in pixels.</summary>
@@ -205,8 +207,8 @@ namespace PowerUI{
 				int dpi=(int)UnityEngine.Screen.dpi;
 				
 				if(dpi==0){
-					// Assume 72:
-					return 72;
+					// Assume CSS DPI:
+					return ScreenInfo.CssPixelDpi;
 				}
 				
 				return dpi;

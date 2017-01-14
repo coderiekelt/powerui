@@ -62,7 +62,7 @@ namespace PowerUI{
 		/// <summary>Clicks, taps and keypresses that pass through the UI and don't hit any WorldUI's will end up being received here.
 		/// Note that PowerUI already does raycasting so use the MouseEvent.rayHit property.</summary>
 		public static EventTarget Unhandled=new EventTarget();
-		/// <summary>Varies based on DPI. On a 72dpi screen, this is 20px. (0.2777 * DPI).</summary>
+		/// <summary>Varies based on DPI. On a 96dpi screen, this is 20px. (0.2777 * DPI).</summary>
 		public static float MinimumDragStartDistance=20f;
 		/// <summary>The system mouse pointer if there is one. Edit this to e.g. fix the mouse in a particular position.</summary>
 		public static MousePointer SystemMouse;
