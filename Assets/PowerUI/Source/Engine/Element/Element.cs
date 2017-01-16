@@ -975,6 +975,24 @@ namespace PowerUI{
 		
 		/// <summary>Animates css properties on this element.</summary>
 		/// <param name="css">A set of target css properties, e.g. "rotate-x:45deg;scale-y:110%;".</param>
+		/// <param name="duration">The time, in seconds, to take animating the properties.</param>
+		/// <returns>An animation instance which can be used to track progress.</returns>
+		public UIAnimation animate(string css,float duration){
+			return new UIAnimation(this,css,duration,null);
+		}
+		
+		/// <summary>Animates css properties on this element.</summary>
+		/// <param name="css">A set of target css properties, e.g. "rotate-x:45deg;scale-y:110%;".</param>
+		/// <param name="duration">The time, in seconds, to take animating the properties.</param>
+		/// <param name="timeFunction">A (0,0) to (1,1) graph which describes the timing function.
+		/// Linear is the default.</param>
+		/// <returns>An animation instance which can be used to track progress.</returns>
+		public UIAnimation animate(string css,float duration,Blaze.VectorPath timeFunction){
+			return new UIAnimation(this,css,duration,timeFunction);
+		}
+		
+		/// <summary>Animates css properties on this element.</summary>
+		/// <param name="css">A set of target css properties, e.g. "rotate-x:45deg;scale-y:110%;".</param>
 		/// <param name="constantSpeedTime">The time, in seconds, to take animating the properties at a constant speed.</param>
 		/// <param name="timeToAccelAndDecel">The time, in seconds, to take accelerating and decelerating.</param>
 		/// <returns>An animation instance which can be used to track progress.</returns>
@@ -985,19 +1003,31 @@ namespace PowerUI{
 		/// <summary>Animates css properties on this element.</summary>
 		/// <param name="css">A set of target css properties, e.g. "rotate-x:45deg;scale-y:110%;".</param>
 		/// <param name="constantSpeedTime">The time, in seconds, to take animating the properties at a constant speed.</param>
-		/// <returns>An animation instance which can be used to track progress.</returns>
-		public UIAnimation animate(string css,float constantSpeedTime){
-			return animate(css,constantSpeedTime,0f,0f);
-		}
-		
-		/// <summary>Animates css properties on this element.</summary>
-		/// <param name="css">A set of target css properties, e.g. "rotate-x:45deg;scale-y:110%;".</param>
-		/// <param name="constantSpeedTime">The time, in seconds, to take animating the properties at a constant speed.</param>
 		/// <param name="timeToAccelerate">The time, in seconds, to take accelerating.</param>
 		/// <param name="timeToDecelerate">The time, in seconds, to take decelerating.</param>
 		/// <returns>An animation instance which can be used to track progress.</returns>
 		public UIAnimation animate(string css,float constantSpeedTime,float timeToAccelerate,float timeToDecelerate){
-			return new UIAnimation(this,css,constantSpeedTime,timeToAccelerate,timeToDecelerate);
+			
+			// Increase total duration:
+			constantSpeedTime+=timeToAccelerate+timeToDecelerate;
+			
+			// The graph is an ease curve (cubic bezier):
+			Blaze.VectorPath path=new Blaze.VectorPath();
+			
+			path.CurveTo(
+				
+				// First control point (on the left):
+				timeToAccelerate/constantSpeedTime,0f,
+				
+				// Second control point (on the right):
+				1f-(timeToDecelerate/constantSpeedTime),1f,
+				
+				// End point:
+				1f,1f
+				
+			);
+			
+			return new UIAnimation(this,css,constantSpeedTime,path);
 		}
 		
 		/// <summary>Gets or sets if this element is focused.</summary>

@@ -802,6 +802,10 @@ public static class UI{
 		if(RedrawTimer<RedrawRate){
 			return;
 		}
+		
+		// Currently, RedrawTimer is exactly the amount of time we took:
+		float frameTime=RedrawTimer;
+		
 		RedrawTimer=0f;
 		
 		if(GUICamera==null){
@@ -818,7 +822,7 @@ public static class UI{
 		PowerUI.Input.Update();
 		
 		// Animations:
-		UIAnimation.Update();
+		UIAnimation.Update(frameTime);
 		
 		// Dynamic graphics:
 		DynamicTexture.Update();
@@ -854,7 +858,7 @@ public static class UI{
 				}
 				
 				if(current.Expires){
-					current.ExpiresIn-=RedrawRate;
+					current.ExpiresIn-=frameTime;
 					
 					if(current.ExpiresIn<=0f){
 						
@@ -884,7 +888,7 @@ public static class UI{
 		}
 		
 		// Draw characters:
-		Blaze.TextureCameras.Update(RedrawRate);
+		Blaze.TextureCameras.Update(frameTime);
 		
 		// Flush any atlases:
 		AtlasStacks.Flush();
