@@ -42,8 +42,6 @@ namespace PowerUI{
 		internal LayoutBox FirstLineStart;
 		/// <summary>The current 'clear zone'. Added to PenY when something is added to the current line.</summary>
 		internal float ClearY_;
-		/// <summary>The value of the CSS line-height property.</summary>
-		public float CssLineHeight_=float.MinValue;
 		/// <summary>The set of active floated elements for the current line being rendered.</summary>
 		internal FloatingElements Floats;
 		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
@@ -148,20 +146,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The value of the CSS line-height property.</summary>
-		public float CssLineHeight{
-			get{
-				
-				if(CssLineHeight_==float.MinValue){
-					// Parent:
-					return HostBlock.CssLineHeight_;
-				}
-				
-				return CssLineHeight_;
-			}
-			set{
-				CssLineHeight_=value;
-			}
-		}
+		public float CssLineHeight;
 		
 		/// <summary>The current y location of the renderer in screen pixels from the top.</summary>
 		public virtual float PenY{
@@ -762,7 +747,8 @@ namespace PowerUI{
 			
 			if(breakLine){
 				
-				// Finally, reset the pen (this is after the recursion call, so we've cleared floats etc):
+				// Finally, reset the pen 
+				// (this is after the recursion call, so we've cleared floats etc):
 				MaxOffset=0f;
 				PenX=LineStart;
 				LineHeight=0f;
