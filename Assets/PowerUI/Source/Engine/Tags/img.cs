@@ -33,6 +33,10 @@ namespace PowerUI{
 		public float RawHeight=0f;
 		/// <summary>The inverse aspect ratio of this image (height/width).</summary>
 		public float InverseAspectRatio;
+		/// <summary>The SRC set, if there is one.</summary>
+		public ContentGroup SrcSet;
+		/// <summary>True when the tag has been fully parsed.</summary>
+		private bool Loaded;
 		
 		
 		public override bool IsSelfClosing{
@@ -67,6 +71,42 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Re-applies the src.</summary>
+		public void UpdateSrc(){
+			
+			string src=null;
+			
+			// Do we have an srcset?
+			if(SrcSet!=null){
+				
+				// Select best src from the srcset (by density only for now):
+				ContentEntry ce=SrcSet.BestByDensity;
+				
+				if(ce!=null){
+					src=ce.Src;
+				}
+				
+			}else{
+				
+				// Use src:
+				src=this["src"];
+				
+			}
+			
+			if(src!=null){
+				src=src.Trim();
+			}
+			
+			if(!string.IsNullOrEmpty(src)){
+				// Build it as a CSS url:
+				src="url(\""+src.Replace("\"","\\\"")+"\")";
+			}
+			
+			// Set it now:
+			Style.Computed.ChangeTagProperty("background-image",src);
+			
+		}
+		
 		public override bool OnAttributeChange(string property){
 			if(base.OnAttributeChange(property)){
 				return true;
@@ -79,11 +119,73 @@ namespace PowerUI{
 					src="";
 				}
 				
-				ComputedStyle computed=Style.Computed;
-				computed.ChangeTagProperty("background-image","url(\""+src.Replace("\"","\\\"")+"\")");
+				if(SrcSet!=null){
+					
+					// Add an SRC to it:
+					SrcSet.AddSrc(src);
+					
+				}
+				
+				if(Loaded){
+					UpdateSrc();
+				}
+				
 				return true;
+			}else if(property=="srcset"){
+				
+				string srcset=this["srcset"];
+				
+				if(string.IsNullOrEmpty(srcset)){
+					SrcSet=null;
+				}else{
+					
+					// Create the group:
+					SrcSet=new ContentGroup();
+					
+					// Add 'src'
+					string srcValue=this["src"];
+					
+					if(srcValue!=null){
+						SrcSet.AddSrc(srcValue);
+					}
+					
+					// Load each value from the set. Split by comma:
+					string[] srcs=srcset.Split(',');
+					
+					for(int i=0;i<srcs.Length;i++){
+						
+						// Get the row:
+						string[] srcEntry=srcs[i].Trim().Split(' ');
+						
+						// Descriptor (e.g. '2x' or '100w')
+						string descriptor=(srcEntry.Length==1) ? null : srcEntry[1];
+						
+						// Add it:
+						SrcSet.Add(srcEntry[0],descriptor);
+						
+					}
+					
+				}
+				
+				if(Loaded){
+					UpdateSrc();
+				}
+				
+				return true;
+			}else if(property=="sizes"){
+				
+				// TODO
+				
 			}
+			
 			return false;
+		}
+		
+		public override void OnChildrenLoaded(){
+			
+			Loaded=true;
+			UpdateSrc();
+		
 		}
 		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){

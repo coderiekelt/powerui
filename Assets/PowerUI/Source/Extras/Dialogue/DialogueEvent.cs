@@ -55,8 +55,8 @@ namespace Dialogue{
 			}
 		}
 		
-		/// <summary>The document that this dialogue event originated from.</summary>
-		public PowerUI.HtmlDocument document{
+		/// <summary>The HTML document that this dialogue event originated from.</summary>
+		public PowerUI.HtmlDocument htmlDocument{
 			get{
 				if(manager==null){
 					return null;
@@ -79,7 +79,7 @@ namespace Dialogue{
 		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
 		public void open(string template,string url){
 			
-			document.sparkWindows.open(template,url,globals);
+			htmlDocument.sparkWindows.open(template,url,globals);
 			
 		}
 		

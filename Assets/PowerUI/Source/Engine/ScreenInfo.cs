@@ -65,6 +65,13 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>The device's DPI / ScreenInfo.CssPixelDPI.</summary>
+		public static float DevicePixelRatio{
+			get{
+				return (float)ScreenInfo.Dpi / (float)ScreenInfo.CssPixelDpi;
+			}
+		}
+		
 		/// <summary>Causes all settings here to be refreshed on the next update.</summary>
 		public static void Clear(){
 			ScreenX=ScreenY=0;
