@@ -61,7 +61,11 @@ namespace PowerUI{
 		public override void OnChildrenLoaded(){
 			
 			// Add to the documents style:
-			htmlDocument.AddStyle(this,firstChild.textContent);
+			Node node=firstChild;
+			
+			if(node!=null){
+				htmlDocument.AddStyle(this,node.textContent);
+			}
 			
 		}
 		

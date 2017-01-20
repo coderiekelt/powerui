@@ -45,7 +45,7 @@ public static class UI{
 	/// <summary>The minor version number of PowerUI.</summary>
 	public const int Minor=0;
 	/// <summary>The revision number.</summary>
-	public const int Revision=542;
+	public const int Revision=628;
 	
 	/// <summary>The user agent that PowerUI uses.</summary>
 	public static string UserAgent{

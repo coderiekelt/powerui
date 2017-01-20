@@ -742,7 +742,7 @@ namespace PowerUI{
 		/// <summary>Applies to iframes. The document contained in the iframe itself.</summary>
 		public HtmlDocument contentDocument{
 			get{
-				return firstChild as HtmlDocument;
+				return lastChild as HtmlDocument;
 			}
 		}
 		
