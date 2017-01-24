@@ -243,6 +243,10 @@ namespace PowerUI{
 					MoveCursor(CursorIndex-1,true);
 				}else if(key==KeyCode.RightArrow){
 					MoveCursor(CursorIndex+1,true);
+				}else if(key==KeyCode.UpArrow){
+					MoveCursor(FindNewline(-1),true);
+				}else if(key==KeyCode.DownArrow){
+					MoveCursor(FindNewline(1),true);
 				}else if(key==KeyCode.Backspace){
 					
 					// Delete the character before the cursor (or the selection, if we have one).
@@ -307,6 +311,55 @@ namespace PowerUI{
 			}
 			
 			base.OnKeyPress(pressEvent);
+			
+		}
+		
+		/// <summary>Gets the next/previous suitable newline index.</summary>
+		public int FindNewline(int direction){
+			
+			// Get the text content:
+			HtmlTextNode htn=TextHolder;
+			
+			if(htn==null || htn.RenderData.Text==null || htn.RenderData.Text.Characters==null){
+				return CursorIndex;
+			}
+			
+			// Get the renderer so we can access the chars:
+			TextRenderingProperty trp=htn.RenderData.Text;
+			
+			// First index to check is..
+			int index=CursorIndex+direction;
+			
+			// Safety check:
+			int max=trp.Characters.Length;
+			
+			if(index>=max){
+				index=max-1;
+			}else if(index<0){
+				index=0;
+			}
+			
+			while(index>0 && index<max){
+				
+				// Check if char[index] is a newline:
+				InfiniText.Glyph glyph=trp.Characters[index];
+				
+				if(glyph!=null && glyph.Charcode==(int)'\n'){
+					
+					// Got it!
+					if(direction==1){
+						index++;
+					}
+					break;
+					
+				}
+				
+				// Next one:
+				index+=direction;
+				
+			}
+			
+			return index;
 			
 		}
 		

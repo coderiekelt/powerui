@@ -475,18 +475,6 @@ namespace PowerUI{
 				return;
 			}
 			
-			// How long is the current value?
-			int length=0;
-			
-			if(Value!=null){
-				length=Value.Length;
-			}
-			
-			// Is the cursor too far over?
-			if(CursorIndex>length){
-				MoveCursor(0);
-			}
-			
 			if(Type==InputType.Number){
 				
 				if( !char.IsNumber(pressEvent.character) && pressEvent.character!='.' && !char.IsControl(pressEvent.character) ){

@@ -31,11 +31,56 @@ namespace PowerUI{
 		/// <summary>True if the cursor should be relocated after the next update.</summary>
 		public bool Locate;
 		
+		
 		/// <summary>The host input element. Either a textarea or input.</summary>
 		public HtmlElement Input{
 			get{
 				return parentElement as HtmlElement;
 			}
+		}
+		
+		/// <summary>Scrolls the input box if the given position is out of bounds.</summary>
+		private void ScrollIfBeyond(ref Vector2 position){
+			
+			// Scroll input if the cursor is beyond the end of the box:
+			ComputedStyle inputCS=Input.Style.Computed;
+			
+			LayoutBox input=inputCS.FirstBox;
+			
+			float boxSize=input.InnerWidth;
+			float scrollLeft=input.Scroll.Left;
+			
+			float scrolledPosition=position.x-scrollLeft;
+			
+			if(scrolledPosition>boxSize){
+				
+				// Cursor is beyond the right edge.
+				// Scroll it such that the cursor is positioned just on that right edge:
+				scrollLeft+=(scrolledPosition-boxSize)+3f;
+				
+			}else if(scrolledPosition<0f){
+				
+				// Cursor is beyond the left edge.
+				// Scroll it such that the cursor is positioned just on that left edge:
+				scrollLeft+=scrolledPosition;
+				
+			}
+			
+			// Clamp the scrolling:
+			if(scrollLeft<0f){
+				scrollLeft=0f;
+			}
+			
+			// Update scroll left:
+			if(scrollLeft!=input.Scroll.Left){
+				
+				// For this pass:
+				input.Scroll.Left=scrollLeft;
+				
+				// For future passes:
+				inputCS.ChangeTagProperty("scroll-left",scrollLeft+"px");
+			}
+			
 		}
 		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
@@ -53,11 +98,19 @@ namespace PowerUI{
 					position=Vector2.zero;
 					
 				}else{
-				
+					
+					// Clip:
+					if(Index>=htn.length){
+						Index=htn.length;
+					}
+					
 					// Get the position of the given letter:
 					position=TextHolder.GetPosition(Index);
 				
 				}
+				
+				// Scroll it if position is out of range:
+				ScrollIfBeyond(ref position);
 				
 				// Set it in for this pass:
 				box.Position.Top=position.y;

@@ -211,22 +211,35 @@ namespace PowerUI{
 				return Vector2.zero;
 			}
 			
+			LayoutBox previous=null;
+			
 			while(box!=null){
 				
 				// Note that start is inclusive, end is not.
-				if(box.TextStart<=index && box.TextEnd>index){
-					// Got it!
+				if(index<box.TextStart){
+					
+					// Use the previous box (this allows us to catch newlines):
+					if(previous!=null){
+						box=previous;
+					}
+					
 					break;
 				}
 				
 				// Next one:
+				previous=box;
 				box=box.NextInElement;
 			}
 			
 			if(box==null){
-				// Index was too high. Trim it down to being the last one.
+				// Use the last box:
 				box=RenderData.LastBox;
-				index=box.TextEnd;
+				
+				// Check if index goes beyond the end:
+				if(index>box.TextEnd){
+					index=box.TextEnd;
+				}
+				
 			}
 			
 			// Relative to the given box:
@@ -257,7 +270,6 @@ namespace PowerUI{
 			
 			// Done!
 			return new Vector2(left,top);
-			
 		}
 		
 		/// <summary>Called when a @font-face font is done loading.</summary>
