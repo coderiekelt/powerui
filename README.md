@@ -4,25 +4,43 @@ Hello! Welcome to the bleeding edge PowerUI 2 project. This repository doesn't c
 
 ## Down Features
 
-As PowerUI 2 is a whole series of huge changes, this means quite a lot of features are currently down or unstable. Here's a quick list of things that are known to be not working with the reasons why; note that in general it's usually not as bad as it looks, as most things depend on core functionality which has seen the most changes (and is now getting close to completion).
+Here's the list of things that are known to be not working with the reasons why.
 
-* Partial selectors
+* Example scenes
 
-> These are any selectors which 'partially' match an element, then completely match later based on the hierarchy or e.g. mouse events. :hover, a>b and so on.
+> Patchy example scene coverage
 
-They're currently down as we're changing the way they work to reduce memory usage a little bit.
+The example scenes are gradually being revisited as various features are being worked on.
 
-* Most input elements
+* Float
+
+> float:left in particular can display strange behaviour
+
+Float is very difficult to get right without massively impacting the performance. It's one of the only CSS properties which can directly affect the kids of its siblings. At the moment, some test cases work and some don't.
+
+* Scrollbars
+
+> Automatic scrollbars aren't appearing correctly
+
+You can manually use the new scrollbar element, but this is being worked on at the moment so it's not expected to be down for much longer.
+
+* Justify
+
+> text-align:justify
+
+Previously PowerUI generated a box per word, which made justify relatively straight forward, but it prevented word breaking - that was challenging for Chinese. It now generates a box per line which prevents justification; a hybrid approach will be added to enable justify to work correctly again.
+
+* Input elements
 
 > Select, input and textarea
 
-Input elements have been down for a little while now as we're transitioning to using pseudo-elements to style them as browsers do. Getting that to work required considerable changes to the DOM and CSS engine; all of which are now largely complete, so they should be coming back online soon.
+We're transitioning to using pseudo-elements to style them as browsers do. The new cursor element and select displaying is also being worked on at the moment.
 
 * Tables
 
 > HTML tables including the caption element
 
-Tables aren't actively being checked at the moment. More than likely, expect them to crash. This was because of the transition to the HTML5 parser as well as transitioning to using the complete standard (and complex) table layout algorithms. 
+Tables aren't actively being checked at the moment. The new functionality required for display:table is in place but hasn't been connected together yet.
 
 * SVG
 
@@ -35,18 +53,6 @@ SVG is currently a work in progress. Loonim can currently draw the paths for us 
 > The WOFF and WOFF2 font formats
 
 PowerUI is now extremely close to supporting these. It's currently unknown what will happen if you try to load one though!
-
-* Line formatting (Priority)
-
-> Word-wrap, line-height and friends
-
-For the last week or so, PowerUI no longer treats each word as an element. The fallout of this is the temporary loss of various line formatting CSS properties, but the major pluses are that we can now wrap at letters with ease (and this is what PowerUI is now doing) and handle pseudo elements like first-letter.
-
-* Auto-translate
-
-> Please avoid using auto translate!
-
-The translate API has been changed into something more modern and easier to extend. Due to the way how this particular feature works, just expect it to ruin your text if you do try to use it. 
 
 ## Modules
 
