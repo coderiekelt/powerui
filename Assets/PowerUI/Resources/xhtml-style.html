@@ -526,18 +526,16 @@ canvas {
 }
 
 input[type="checkbox"]{
-	border:1px solid #e5e5e5;
-	text-align:center;
-	v-align:middle;
-	width:12px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	color:#ffffff;
-	font-size:10px;
+	border:1px solid rgb(190,192,197);
+	width:14px;
+	height:14px;
+	background:white;
 	display:inline-block;
 }
 
+input[type="checkbox"]:checked{
+	background:white url("resources://checkbox.png") no-repeat center;
+}
 
 input[type="hidden"]{
 	display:none;
@@ -548,58 +546,41 @@ font{
 }
 
 input[type="radio"]{
-	border:1px solid #e5e5e5;
+	border-radius:7px;
+	border:1px solid rgb(190,192,197);
+	width:14px;
+	height:14px;
+	background:white;
+	display:inline-block;
+}
+
+input[type="radio"]:checked{
+	background:white url("resources://radio-bullet.png") no-repeat center;
+}
+
+input[type="button"],button,input[type="submit"]{
+	border:1px solid white;
+	padding:4px;
+	background-color:rgb(190,192,197);
+	color:black;
+	font-size:14px;
+	display:inline-block;
 	text-align:center;
-	v-align:middle;
-	width:12px;
-	height:12px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	color:#ffffff;
-	font-size:10px;
-	display:inline-block;
-	border-radius:6px;
 }
 
-input[type="button"],button{
-	border:1px solid #e5e5e5;
-	padding:4px;
-	background-color:#6074bd;
-	color:#ffffff;
-	font-size:14px;
-	display:inline-block;
-	text-align:left;
+input[type="button"]:hover,input[type="submit"]:hover,button:hover{
+	background-color:rgb(177,209,208);
+	border:1px solid #66e2e7;
 }
 
-input[type="submit"]{
-	border:1px solid #e5e5e5;
-	padding:4px;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	color:#ffffff;
-	font-size:14px;
-	display:inline-block;
-	text-align:left;
+input[type="button"]:active,input[type="submit"]:active,button:active{
+	background-color:rgb(165,218,222);
+	border:1px solid black;
+	position:relative;
+	left:2px;
 }
 
-input[type="password"]{
-	box-sizing:border-box;
-	border:1px solid #6f7cab;
-	padding:1px;
-	width:150px;
-	height:20px;
-	background-color:#e5e5e5;
-	text-align:left;
-	v-align:middle;
-	display:inline-block;
-	color:#000000;
-	white-space:nowrap;
-	font-size:18px;
-	overflow:hidden;
-	direction:ltr;
-}
-
-input[type="text"],input[type="number"],input[type="url"],input[type="email"]{
+input[type="text"],input[type="number"],input[type="url"],input[type="email"],input[type="password"]{
 	-moz-user-select:text;
 	box-sizing:border-box;
 	border:1px solid rgb(190,192,197);
@@ -728,16 +709,6 @@ ddbutton{
 	font-size:14px;
 	position:absolute;
 	right:0px;
-}
-
-input[type="button"]:hover,input[type="submit"]:hover,button:hover{
-	background-color:#a6baf7;
-	color:#414e75;
-}
-
-input[type="button"]:active,input[type="submit"]:active,button:active{
-	background-color:#a6bac7;
-	color:#414e75;
 }
 
 bdi,bdo,time{

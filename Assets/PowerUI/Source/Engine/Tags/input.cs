@@ -284,6 +284,9 @@ namespace PowerUI{
 					
 				}
 				
+				// Refresh local selectors:
+				Style.Computed.RefreshLocal(true);
+				
 				RequestLayout();
 				return true;
 			}else if(property=="value"){
@@ -343,7 +346,6 @@ namespace PowerUI{
 				SetValue(null);
 			}
 			
-			innerHTML="";
 		}
 		
 		/// <summary>Used by boolean inputs (checkbox/radio). Selects this as the active one.</summary>
@@ -360,9 +362,20 @@ namespace PowerUI{
 				// Firstly, unselect all other radio elements with this same name:
 				string name=this["name"];
 				
-				if(form!=null){
+				HTMLCollection allInputs;
+				
+				if(form==null){
 					
-					HTMLCollection allInputs=form.GetAllInputs();
+					// Find all inputs with the same name:
+					allInputs=document.getElementsByTagName("input");
+					
+				}else{
+					
+					allInputs=form.GetAllInputs();
+					
+				}
+				
+				if(allInputs!=null){
 					
 					foreach(Element element in allInputs){
 						
@@ -371,14 +384,9 @@ namespace PowerUI{
 							continue;
 						}
 						
-						if(element["type"]=="radio"){
-							// Great, got one - same name?
-							
-							if(element["name"]==name){
-								// Yep; unselect it.
-								((HtmlInputElement)element).Unselect();
-							}
-							
+						if(element["type"]=="radio" && element["name"]==name){
+							// Yep; unselect it.
+							((HtmlInputElement)element).Unselect();
 						}
 						
 					}
@@ -389,12 +397,8 @@ namespace PowerUI{
 				e.SetTrusted(true);
 				dispatchEvent(e);
 				
-				innerHTML="<div style='width:60%;height:60%;background:#ffffff;border-radius:4px;'></div>";
-				
 			}else if(Type==InputType.Checkbox){
 				SetValue("1");
-				
-				innerHTML="x";
 			}
 			
 		}

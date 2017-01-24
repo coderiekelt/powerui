@@ -80,6 +80,10 @@ namespace PowerUI{
 			// First, find which box the y point is in:
 			LayoutBox box=RenderData_.FirstBox;
 			
+			if(box==null){
+				return null;
+			}
+			
 			if(y<box.Y){
 				return box;
 			}
