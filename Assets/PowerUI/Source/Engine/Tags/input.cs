@@ -42,17 +42,31 @@ namespace PowerUI{
 		/// <summary>For boolean (radio or checkbox) inputs, this is true if this one is checked.</summary>
 		private bool Checked_;
 		/// <summary>For text or password input boxes, this is the cursor.</summary>
-		public HtmlElement Cursor;
+		public HtmlCursorElement Cursor;
 		/// <summary>The type of input that this is; e.g. text/password/radio etc.</summary>
 		public InputType Type=InputType.Undefined;
-		/// <summary>The current location of the cursor.</summary>
-		public int CursorIndex;
-		/// <summary>True if the cursor should be located after the next update.</summary>
-		public bool LocateCursor;
 		/// <summary>The maximum length of text in this box.</summary>
 		public int MaxLength=int.MaxValue;
 		/// <summary>A placeholder value.</summary>
 		public string Placeholder="";
+		
+		/// <summary>The current location of the cursor.</summary>
+		public int CursorIndex{
+			get{
+				if(Cursor==null){
+					return 0;
+				}
+				
+				return Cursor.Index;
+			}
+		}
+		
+		/// <summary>The container holding the text.</summary>
+		public HtmlTextNode TextHolder{
+			get{
+				return firstChild as HtmlTextNode;
+			}
+		}
 		
 		
 		public HtmlInputElement(){
@@ -441,11 +455,6 @@ namespace PowerUI{
 				}
 			}
 			
-			if(IsTextInput()){
-				if(Cursor!=null){
-					appendChild(Cursor);
-				}
-			}
 		}
 		
 		/// <summary>Checks if this is a radio or checkbox input box.</summary>
@@ -517,6 +526,12 @@ namespace PowerUI{
 						MoveCursor(CursorIndex+1,true);
 					}else if(key==KeyCode.Backspace){
 						// Delete the character before the cursor.
+						
+						// Got a selection?
+						if(Cursor!=null && Cursor.TryDeleteSelection()){
+							return;
+						}
+						
 						if(string.IsNullOrEmpty(value)||CursorIndex==0){
 							return;
 						}
@@ -526,6 +541,12 @@ namespace PowerUI{
 						MoveCursor(index-1);
 					}else if(key==KeyCode.Delete){
 						// Delete the character after the cursor.
+						
+						// Got a selection?
+						if(Cursor!=null && Cursor.TryDeleteSelection()){
+							return;
+						}
+						
 						if(string.IsNullOrEmpty(value)||CursorIndex==value.Length){
 							return;
 						}
@@ -589,85 +610,6 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
-		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
-		public void MoveCursor(int index){
-			MoveCursor(index,false);
-		}
-		
-		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
-		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
-		/// <param name="immediate">True if the cursor should be moved right now.</param>
-		public void MoveCursor(int index,bool immediate){
-			if(index<0||Value==null){
-				index=0;
-			}else if(index>Value.Length){
-				// Inclusive - we can be positioned before or after it.
-				index=Value.Length;
-			}
-			
-			if(index==CursorIndex){
-				return;
-			}
-			
-			CursorIndex=index;
-			
-			if(Cursor==null){
-				return;
-			}
-			
-			LocateCursor=true;
-
-			if(immediate){
-				// We have enough info to place the cursor already.
-				// Request a layout.
-				RequestLayout();
-			}
-			// Otherwise locating the cursor is delayed until after the new value has been rendered.
-			// This is used immediately after we set the value.
-		}
-		
-		/// <summary>Positions the cursor immediately.</summary>
-		private void LocateCursorNow(){
-			LocateCursor=false;
-			// Position the cursor - we need to locate the letter's exact position first:
-			// ..Which will be in the text element:
-			float position=0f;
-			
-			if(childNodes_.length>1){
-				// Note: If it's equal to 1, ele[0] is the cursor.
-				HtmlTextNode text=(HtmlTextNode)(childNodes_[0]);
-				int index=CursorIndex;
-				
-				if(text!=null){
-					Vector2 fullPosition=text.GetPosition(ref index);
-					position=fullPosition.x;
-				}
-			}
-			
-			// Scroll it if the cursor is beyond the end of the box:
-			LayoutBox box=Style.Computed.FirstBox;
-			
-			float boxSize=box.InnerWidth;
-			
-			#warning should be going into computed[scroll]
-			if(position>boxSize){
-				box.Scroll.Left=position-box.InnerWidth;
-			}else{
-				box.Scroll.Left=0;
-			}
-			
-			LayoutBox cBox=Cursor.Style.Computed.FirstBox;
-			
-			if(position>boxSize){
-				
-				cBox.Position.Left=boxSize-1;
-			}else{
-				cBox.Position.Left=position;
-			}
-			
-		}
-		
 		/// <summary>Called when the element is focused.</summary>
 		internal override void OnFocusEvent(FocusEvent fe){
 			if(!IsTextInput()||Cursor!=null){
@@ -679,10 +621,8 @@ namespace PowerUI{
 			}
 			
 			// Add a cursor.
-			Cursor=document.createElement("div") as HtmlElement ;
-			Cursor.className="cursor";
-			appendChild(Cursor);
-			CursorIndex=0;
+			Cursor=Style.Computed.GetOrCreateVirtual(HtmlCursorElement.Priority,"cursor") as HtmlCursorElement;
+			
 		}
 		
 		/// <summary>Called when the element is unfocused/blurred.</summary>
@@ -692,13 +632,31 @@ namespace PowerUI{
 			}
 			
 			// Remove the cursor:
-			Cursor.parentNode.removeChild(Cursor);
+			Style.Computed.RemoveVirtual(HtmlCursorElement.Priority);
 			Cursor=null;
 			
 			if(innerHTML=="" && Placeholder!=""){
 				innerHTML=Placeholder;
 			}
 			
+		}
+		
+		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
+		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
+		public void MoveCursor(int index){
+			MoveCursor(index,false);
+		}
+		
+		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
+		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
+		/// <param name="immediate">True if the cursor should be moved right now.</param>
+		public void MoveCursor(int index,bool immediate){
+			
+			if(Cursor==null){
+				return;
+			}
+			
+			Cursor.Move(index,immediate);
 		}
 		
 		public override void OnClickEvent(MouseEvent clickEvent){
@@ -726,20 +684,20 @@ namespace PowerUI{
 				
 				// Move the cursor to the clicked point.
 				
-				int index=0;
+				// Get the text content:
+				HtmlTextNode htn=TextHolder;
 				
-				if(childNodes_.length>1){
-					
-					// Note: If it's equal to 1, ele[0] is the cursor.
-					HtmlTextNode text=(HtmlTextNode)(childNodes_[0]);
-					
-					if(text!=null){
-						index=text.LetterIndex(clickEvent.localX,clickEvent.localY);
-					}
-					
+				if(htn==null){
+					// Index is just 0.
+					return;
 				}
 				
+				// Get the letter index:
+				int index=htn.LetterIndex(clickEvent.clientX,clickEvent.clientY);
+				
+				// Move the cursor there (requesting a redraw):
 				MoveCursor(index,true);
+				
 			}
 			
 		}

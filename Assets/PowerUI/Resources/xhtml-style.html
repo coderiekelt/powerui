@@ -602,14 +602,13 @@ input[type="password"]{
 input[type="text"],input[type="number"],input[type="url"],input[type="email"]{
 	-moz-user-select:text;
 	box-sizing:border-box;
-	border:1px solid #6f7cab;
+	border:1px solid rgb(190,192,197);
 	padding:1px;
 	font-size:14px;
 	direction:ltr;
 	width:150px;
 	height:20px;
-	v-align:middle;
-	background-color:#e5e5e5;
+	background-color:white;
 	text-align:left;
 	display:inline-block;
 	color:#000000;
@@ -619,18 +618,22 @@ input[type="text"],input[type="number"],input[type="url"],input[type="email"]{
 
 textarea{
 	-moz-user-select:text;
-	border:1px solid #6f7cab;
+	border:1px solid rgb(190,192,197);
 	padding:1px;
 	font-size:14px;
 	direction:ltr;
 	width:150px;
 	height:40px;
-	v-align:top;
-	background-color:#e5e5e5;
+	background-color:white;
 	text-align:left;
 	display:inline-block;
-	color:#000000;
+	color:black;
 	overflow-y:auto;
+	white-space:pre-wrap;
+}
+
+textarea:hover,input:hover{
+	border-color:rgb(87,148,191);
 }
 
 scrollbar{
@@ -753,13 +756,13 @@ bdi,bdo,time{
 }
 
 cursor{
-	position:absolute;
-	top:0.1em;
 	left:0px;
+	top:0px;
+	position:-spark-absolute;
 	display:inline-block;
 	margin-left:1px;
 	border-left:1px solid black;
-	height:1.2em;
+	height:1em;
 	width:0px;
 }
 

@@ -38,6 +38,28 @@ namespace PowerUI{
 			RenderData_=new TextRenderableData(this);
 		}
 		
+		/// <summary>Enables the various TextNode API's.</summary>
+		public override string data{
+			get{
+				return characterData_;
+			}
+			set{
+				characterData_=value;
+				
+				// Get the text renderer:
+				TextRenderingProperty trp=RenderData_.Text;
+				
+				// Mark as dirty:
+				if(trp!=null){
+					trp.Dirty=true;
+				}
+				
+				// Request a layout:
+				(document as ReflowDocument).RequestLayout();
+				
+			}
+		}
+		
 		/// <summary>This nodes render data.</summary>
 		public RenderableData RenderData{
 			get{
@@ -56,7 +78,7 @@ namespace PowerUI{
 		public LayoutBox BestBox(float y){
 			
 			// First, find which box the y point is in:
-			LayoutBox box=RenderData.FirstBox;
+			LayoutBox box=RenderData_.FirstBox;
 			
 			if(y<box.Y){
 				return box;
@@ -74,7 +96,7 @@ namespace PowerUI{
 				
 			}
 			
-			return RenderData.LastBox;
+			return RenderData_.LastBox;
 			
 		}
 		
@@ -101,7 +123,7 @@ namespace PowerUI{
 			}
 			
 			// Get the text renderer:
-			TextRenderingProperty trp=RenderData.Text;
+			TextRenderingProperty trp=RenderData_.Text;
 			
 			if(trp==null){
 				// It's not been rendered at all yet.
@@ -173,21 +195,21 @@ namespace PowerUI{
 			// This one never runs, but it's required by the interface.
 		}
 		
-		/// <summary>Gets the relative position in pixels of the letter at the given index.</summary>
+		/// <summary>Gets the relative position (relative to parent) in pixels of the letter at the given index.</summary>
 		/// <param name="index">The index of the letter in this text element.</param>
 		/// <returns>The number of pixels from the left and top edges of this text element the letter is as a vector.</returns>
-		public Vector2 GetPosition(ref int index){
+		public Vector2 GetPosition(int index){
 			
 			// Get the text renderer:
 			TextRenderingProperty trp=RenderData.Text;
 			
-			if(trp==null){
+			// Get the box that contains the given text index.
+			LayoutBox box=RenderData.FirstBox;
+			
+			if(trp==null || box==null || trp.Characters==null){
 				// It's not been rendered at all yet.
 				return Vector2.zero;
 			}
-			
-			// Get the box that contains the given text index.
-			LayoutBox box=RenderData.FirstBox;
 			
 			while(box!=null){
 				
@@ -202,37 +224,36 @@ namespace PowerUI{
 			}
 			
 			if(box==null){
-				// Not found - index is out of range.
-				return Vector2.zero;
+				// Index was too high. Trim it down to being the last one.
+				box=RenderData.LastBox;
+				index=box.TextEnd;
 			}
 			
-			// Relative to the given box.
+			// Relative to the given box:
+			float top=box.ParentOffsetTop+box.Border.Top;
+			float left=box.ParentOffsetLeft+box.Border.Left;
+			float fs=trp.FontSize;
 			
-			// We'll target the very middle of the line on Y:
-			float top=box.InnerStartY+(box.InnerHeight/2f);
-			
-			// And the middle of the character on X.
-			
-			float left=box.InnerStartX;
-			float fontSize=trp.FontSize;
-			
-			// For each character, excluding the one at 'index'..
 			for(int i=box.TextStart;i<index;i++){
 				
-				// Get the char:
-				InfiniText.Glyph glyph=trp.Characters[i];
+				InfiniText.Glyph character=trp.Characters[i];
 				
-				if(glyph==null){
+				if(character==null){
 					continue;
 				}
 				
-				// Advance x over the whole character and spacing:
-				left+=(glyph.AdvanceWidth * fontSize)+trp.LetterSpacing;
+				// Advance over the glyph:
+				if(trp.Kerning!=null){
+					left+=trp.Kerning[i] * fs;
+				}
+				
+				left+=(character.AdvanceWidth * fs)+trp.LetterSpacing;
+				
+				if(character.Charcode==(int)' '){
+					left+=trp.WordSpacing;
+				}
 				
 			}
-			
-			// Advance by half the character:
-			left+=trp.Characters[index].AdvanceWidth * fontSize/2f;
 			
 			// Done!
 			return new Vector2(left,top);
