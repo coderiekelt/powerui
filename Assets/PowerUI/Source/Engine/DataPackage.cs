@@ -263,14 +263,14 @@ namespace PowerUI{
 		/// <summary>True if there is no error and the text is ok.</summary>
 		public bool ok{
 			get{
-				return (statusCode>=200 && statusCode<300);
+				return (statusCode>=200 && statusCode<300) || statusCode==304;
 			}
 		}
 		
 		/// <summary>True if there was an error and the text is not ok.</summary>
 		public bool errored{
 			get{
-				return (statusCode<200 || statusCode>=300);
+				return !ok;
 			}
 		}
 		
@@ -411,8 +411,7 @@ namespace PowerUI{
 			}
 			
 			// Redirect?
-			return (statusCode>=300 && statusCode<400);
-			
+			return (statusCode>=300 && statusCode<400) && statusCode!=304;
 		}
 		
 		/// <summary>All headers are ready. Returns true if we're redirecting.</summary>
@@ -448,11 +447,39 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>A 304 not modified response.</summary>
+		public void NotModified(CachedContent cacheEntry){
+			
+			long age=(long)( (DateTime.UtcNow-cacheEntry.SavedAt).TotalSeconds );
+			
+			statusCode=304;
+			responseHeaders.status="HTTP/2.0 304 Not Modified";
+			responseHeaders["Age"]=age.ToString();
+			responseHeaders["Date"]=cacheEntry.SavedAt.ToString(Cookie.DateTimePattern);
+			
+			if(cacheEntry.HasExpiry){
+				responseHeaders["Expires"]=cacheEntry.Expiry.ToString(Cookie.DateTimePattern);
+			}
+			
+			if(!string.IsNullOrEmpty(cacheEntry.ETag)){
+				
+				responseHeaders["ETag"]=cacheEntry.ETag;
+				
+			}
+			
+			responseHeaders["X-Spark-Cache"]="OK";
+			
+			// Received:
+			byte[] data=cacheEntry.Data;
+			ReceivedData(data,0,data.Length);
+			
+		}
+		
 		/// <summary>Sets the Content-Range response.</summary>
 		public void SetPartialResponse(int start,int end,int total){
 			
 			statusCode=206;
-			responseHeaders.status="HTTP/1.1 206 Partial Content";
+			responseHeaders.status="HTTP/2.0 206 Partial Content";
 			responseHeaders["Content-Range"]=start+"-"+end+"/"+total;
 			
 		}

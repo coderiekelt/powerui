@@ -21,7 +21,7 @@ namespace PowerUI{
         }
 		
 		/// <summary>Get the raw file data.</summary>
-		public override void OnGetData(ContentPackage package){
+		public override void OnGetDataNow(ContentPackage package){
 			
 			// Path without the protocol:
 			string rawPath=package.location.Path;

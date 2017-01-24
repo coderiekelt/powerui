@@ -762,7 +762,7 @@ namespace PowerUI{
 			
 			int floatMode=styleBox.FloatMode;
 			
-			if(floatMode!=FloatMode.None){
+			if(floatMode!=FloatMode.None && this is BlockBoxMeta){
 				
 				// Float (block/inline-block only):
 				BlockBoxMeta bbm=this as BlockBoxMeta;

@@ -69,6 +69,7 @@ namespace PowerUI{
 		/// <summary>A ring buffer of the requests caught by this inspector.</summary>
 		public int Fill;
 		public int Progress;
+		public Vector2 ScrollPosition;
 		public ContentPackage[] Requests;
 		
 		public void Clear(){
@@ -122,6 +123,8 @@ namespace PowerUI{
 				return;
 			}
 			
+			ScrollPosition=EditorGUILayout.BeginScrollView(ScrollPosition);
+			
 			// For each record..
 			int index=Progress-Fill;
 			
@@ -169,6 +172,8 @@ namespace PowerUI{
 				}
 				
 			}
+			
+			EditorGUILayout.EndScrollView();
 			
 		}
 		

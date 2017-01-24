@@ -72,7 +72,7 @@ namespace PowerUI{
 			
 		}
 		
-		public override void OnGetData(ContentPackage package){
+		public override void OnGetDataNow(ContentPackage package){
 			
 			// Main thread only:
 			Callback.MainThread(delegate(){

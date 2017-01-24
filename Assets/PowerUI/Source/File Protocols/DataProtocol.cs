@@ -17,7 +17,7 @@ namespace PowerUI{
         }
 		
 		// Raw binary data
-		public override void OnGetData(ContentPackage package){
+		public override void OnGetDataNow(ContentPackage package){
 			
 			// Content type header is segments[0]:
 			string contentType=package.location.Segments[0];

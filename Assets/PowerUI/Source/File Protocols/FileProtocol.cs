@@ -31,6 +31,61 @@ namespace PowerUI{
 		/// Useful for debugging networking (and is used by the network inspector).</summary>
 		public static InternalEventHandler OnRequestStarted;
 		
+		/// <summary>Attempts to get cached data for the given location. Used to enable caching (off by default).</summary>
+		public virtual CachedContent GetCached(Dom.Location location){
+			
+			return null;
+			
+		}
+		
+		/// <summary>Gets the domain data for the given location.</summary>
+		public virtual DomainData GetDomain(Dom.Location location){
+			
+			return Cache.GetDomain(location.host);
+			
+		}
+		
+		/// <summary>Gets the relative path for the given location.</summary>
+		public virtual string GetRelative(Dom.Location location){
+			
+			return location.relative;
+			
+		}
+		
+		/// <summary>Attempts to get cached data for the given location.</summary>
+		public CachedContent GetCached(Dom.Location location,bool create){
+			
+			// Get the cache domain data (never null):
+			DomainData domain=GetDomain(location);
+			
+			if(domain.Content==null){
+				
+				if(create){
+					// Create the content set:
+					domain.Content=new CachedContentSet(domain);
+				}else{
+					return null;
+				}
+				
+			}
+			
+			// Get the entry:
+			string path=GetRelative(location);
+			
+			CachedContent e;
+			if(!domain.Content.Entries.TryGetValue(path,out e) && create){
+				
+				// Create the entry:
+				e=new CachedContent(domain.Content, path);
+				
+				// Add it:
+				domain.Content.Add(path,e);
+				
+			}
+			
+			return e;
+		}
+		
 		/// <summary>Returns all protocol names:// that can be used for this protocol.
 		/// e.g. new string[]{"cdn","net"}; => cdn://file.png or net://file.png</summary>
 		public virtual string[] GetNames(){
@@ -50,9 +105,42 @@ namespace PowerUI{
 			return false;
 		}
 		
+		/// <summary>Gets binary data, checking the cache first.</summary>
+		public void OnGetData(ContentPackage package){
+			
+			// Attempt to hit the cache:
+			CachedContent e=GetCached(package.location);
+			
+			if(e!=null){
+				
+				if(e.Expired){
+					
+					// Expire it!
+					e.Set.Entries.Remove(e.Path);
+					
+					// Save the set:
+					e.Set.Save();
+					
+				}else{
+					
+					// Successful hit - respond with a 304 (not modified):
+					package.NotModified(e);
+					
+					return;
+					
+				}
+				
+			}
+			
+			// Ordinary request:
+			OnGetDataNow(package);
+			
+		}
+		
 		/// <summary>Get generic binary at the given path using this protocol. Used for e.g. fonts.
-		/// Once it's been retrieved, this must call package.GotData(theText) internally.</summary>
-		public virtual void OnGetData(ContentPackage package){}
+		/// Once it's been retrieved, this must call package.GotData(theText) internally.
+		/// Note that you can call this directly to avoid all cache checking.</summary>
+		public virtual void OnGetDataNow(ContentPackage package){}
 		
 		/// <summary>Get the file at the given path as a MovieTexture (Unity Pro only!), Texture2D,
 		/// SPA Animation or DynamicTexture using this protocol.

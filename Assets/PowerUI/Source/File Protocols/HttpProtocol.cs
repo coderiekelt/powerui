@@ -83,7 +83,15 @@ namespace PowerUI{
 			
 		}
 		
-		public override void OnGetData(ContentPackage package){
+		/// <summary>Attempts to get cached data for the given location.</summary>
+		public override CachedContent GetCached(Dom.Location location){
+			
+			// Standard cached data:
+			return GetCached(location,false);
+			
+		}
+		
+		public override void OnGetDataNow(ContentPackage package){
 			
 			// Pass straight through to a HttpRequest:
 			HttpRequest req=new HttpRequest(package);

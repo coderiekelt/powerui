@@ -44,13 +44,162 @@ namespace PowerUI{
 		
 		/// <summary>The node with the mouse over it.</summary>
 		public static Node MouseOverNode;
-		/// <summary>The document being viewed.</summary>
-		public static Document Document;
+		/// <summary>The document entry being viewed.</summary>
+		public static DocumentEntry Entry;
 		/// <summary>The last opened window.</summary>
 		public static EditorWindow Window;
 		/// <summary>All unfolded nodes.</summary>
 		public static Dictionary<Node,bool> ActiveUnfolded;
+		/// <summary>Cached names for all documents.</summary>
+		private static string[] AllDocumentNames_;
+		/// <summary>All available docs.</summary>
+		private static List<DocumentEntry> AllDocuments_;
 		
+		
+		/// <summary>Makes a path safe for displaying on the Editor UI.</summary>
+		public static string ListableName(string path){
+			
+			if(path!=null){
+				path=path.Trim();
+			}
+			
+			if(string.IsNullOrEmpty(path)){
+				return "(No suitable name)";
+			}
+			
+			return path.Replace("/","\u2044");
+		}
+		
+		/// <summary>True if any docs are available.</summary>
+		public static bool DocumentsAvailable{
+			get{
+				return AllDocuments_!=null && AllDocuments_.Count!=0;
+			}
+		}
+		
+		/// <summary>Collects all available documents from the main UI and any WorldUI's.</summary>
+		public static List<DocumentEntry> GetDocuments(bool refresh){
+			
+			if(AllDocuments_!=null && !refresh){
+				return AllDocuments_;
+			}
+			
+			List<DocumentEntry> results=new List<DocumentEntry>();
+			AllDocuments_=results;
+			
+			// First, search UI.document:
+			Search(UI.document,"Main UI",results);
+			
+			// Search every WorldUI:
+			WorldUI current=UI.LastWorldUI;
+			
+			while(current!=null){
+				
+				// Search it too:
+				Search(current.document,current.Name,results);
+				
+				current=current.UIBefore;
+			}
+			
+			// Cache names:
+			AllDocumentNames_=new string[results.Count];
+			
+			for(int i=0;i<results.Count;i++){
+				
+				results[i].Index=i;
+				
+				string name=results[i].Name;
+				
+				if(string.IsNullOrEmpty(name)){
+					
+					// Using doc.location:
+					Dom.Location loc=results[i].Document.location;
+					
+					if(loc==null){
+						name="about:blank";
+					}else{
+						name=loc.absolute;
+					}
+					
+				}
+				
+				name=ListableName(name);
+				
+				// Set into names:
+				AllDocumentNames_[i]=name;
+				
+			}
+			
+			return results;
+			
+		}
+		
+		/// <summary>Draws a document dropdown (using GetDocuments).</summary>
+		public static DocumentEntry DocumentDropdown(DocumentEntry selected){
+			
+			if(AllDocumentNames_==null){
+				// Load docs:
+				GetDocuments(true);
+			}
+			
+			if(AllDocuments_.Count==0){
+				
+				// Waiting for valid doc.
+				PowerUIEditor.HelpBox("Waiting for documents (click this window after hitting play).");
+				return null;
+				
+			}
+			
+			// Draw a refresh button:
+			if(GUILayout.Button("Refresh documents")){
+				
+				// Refresh now:
+				GetDocuments(true);
+				
+			}
+			
+			// Get index:
+			int index=(selected==null) ? 0 : selected.Index;
+			
+			// Draw dropdown list now!
+			int selectedIndex=EditorGUILayout.Popup(index,AllDocumentNames_);
+			
+			// Must always pull from all docs (as a refresh may result in the object changing).
+			return AllDocuments_[selectedIndex];
+			
+		}
+		
+		/// <summary>Searches a document for any sub-documents (inside iframes).</summary>
+		public static void Search(Document doc,string name,List<DocumentEntry> results){
+			
+			if(doc==null){
+				return;
+			}
+			
+			// Add it:
+			results.Add(new DocumentEntry(doc,name));
+			
+			// Search for iframe's:
+			Dom.HTMLCollection set=doc.getElementsByTagName("iframe");
+			
+			foreach(Element node in set){
+				
+				// Get as a HTML element:
+				HtmlElement htmlElement=node as HtmlElement;
+				
+				// Double check it's not some evil iframe twin:
+				if(htmlElement!=null){
+					
+					string src=htmlElement["src"];
+					
+					// Search content doc:
+					Search(htmlElement.contentDocument,src,results);
+					
+				}
+				
+			}
+			
+		}
 		
 		// Add menu item named "DOM Inspector" to the PowerUI menu:
 		[MenuItem("Window/PowerUI/DOM Inspector")]
@@ -72,10 +221,10 @@ namespace PowerUI{
 		// Called at 100fps.
 		void Update(){
 			
-			if(Document==null){
+			if(!DocumentsAvailable){
 				
-				// Grab the main UI document (may still be null):
-				Document=UI.document;
+				// Reload:
+				GetDocuments(true);
 				
 			}
 			
@@ -188,8 +337,10 @@ namespace PowerUI{
 		
 		void OnGUI(){
 			
-			if(Document==null){
-				PowerUIEditor.HelpBox("Waiting for a suitable document (click this window after hitting play). Open the node inspector to view a particular node's properties.");
+			// Doc dropdown:
+			Entry=DocumentDropdown(Entry);
+			
+			if(Entry==null){
 				return;
 			}
 			
@@ -200,8 +351,22 @@ namespace PowerUI{
 			EditorGUI.indentLevel=0;
 			
 			// For each node in the document..
-			DrawNode(Document);
+			DrawNode(Entry.Document);
 			
+		}
+		
+	}
+	
+	public class DocumentEntry{
+		
+		public int Index;
+		public Document Document;
+		public string Name;
+		
+		
+		public DocumentEntry(Document doc,string name){
+			Document=doc;
+			Name=name;
 		}
 		
 	}

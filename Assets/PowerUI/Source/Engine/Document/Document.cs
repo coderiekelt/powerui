@@ -62,7 +62,7 @@ namespace PowerUI{
 			}
 			
 			// Update its parent document:
-			location_.document=this;
+			value.document=this;
 			
 			if(AfterClearBeforeSet!=null){
 				
@@ -72,7 +72,7 @@ namespace PowerUI{
 			}
 			
 			// Load the html:
-			DataPackage package=new DataPackage(location_.absolute,null);
+			DataPackage package=new DataPackage(value.absolute,null);
 			
 			package.onreadystatechange=delegate(UIEvent e){
 				
@@ -81,10 +81,10 @@ namespace PowerUI{
 					if(package.redirectedTo!=null){	
 						
 						// Set redir path:
-						location_=package.redirectedTo;
+						value=package.redirectedTo;
 						
 						// Update its parent document:
-						location_.document=this;
+						value.document=this;
 						
 					}
 					
