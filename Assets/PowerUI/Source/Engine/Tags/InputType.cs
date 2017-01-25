@@ -19,8 +19,6 @@ namespace PowerUI{
 		Text,
 		Radio,
 		Checkbox,
-		VScroll,
-		HScroll,
 		Submit,
 		Button,
 		Hidden,

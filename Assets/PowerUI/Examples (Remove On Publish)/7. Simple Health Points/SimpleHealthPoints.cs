@@ -7,7 +7,10 @@ public class SimpleHealthPoints : MonoBehaviour {
 	
 	// My current points:
 	public int Points;
-	
+	// My current health:
+	public float Health;
+	// The green bar:
+	private HtmlElement GreenBar;
 	
 	// Update is called once per frame
 	void Update () {
@@ -18,11 +21,21 @@ public class SimpleHealthPoints : MonoBehaviour {
 		
 		
 		// Basic health bar.
-		// Note that this could all be done in C#/ UnityJS if you wish; just use UI.document.
-		// Let's talk to Nitro!
-		// A function called "IncreaseBasicBarHealth" has been defined in the document.
-		// It sets the basic bar, and we call it like this:
-		UI.document.Run("IncreaseBasicBarHealth",0.2f*Time.deltaTime);
+		// Update current health:
+		Health+=20f * Time.deltaTime;
+		
+		// Make sure it doesn't go higher than 100%:
+		if(Health>100f){
+			Health=100f;
+		}
+		
+		// Get the green bit of the bar:
+		if(GreenBar==null){
+			GreenBar=(UI.document.getElementById("basic-bar-internal") as HtmlElement);
+		}
+		
+		// Set the health (as the width of the green part of the bar):
+		GreenBar.style.width=Health+"%";
 		
 	}
 	
@@ -32,7 +45,7 @@ public class SimpleHealthPoints : MonoBehaviour {
 		// Bump it up by the points to add:
 		Points+=pointsToAdd;
 		
-		// Write it out to the UI:
+		// Write it out to the UI (as a variable - you could also just use innerHTML if you wanted):
 		UI.Variables["Points"]=Points.ToString();
 		
 	}
