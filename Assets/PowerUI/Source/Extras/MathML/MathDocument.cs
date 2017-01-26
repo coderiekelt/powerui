@@ -88,11 +88,6 @@ namespace MathML{
 			}
 		}
 		
-		/// <summary>Requests the document to re-layout.</summary>
-		public override void RequestLayout(){
-			// Renderer.RequestLayout();
-		}
-		
 		/// <summary>Closes the document.</summary>
 		public void close(){
 			

@@ -209,7 +209,7 @@ namespace PowerUI{
 		
 		void OnGUI(){
 			
-			// This is always null - if you can get a node in here then great; see the comment below!
+			// Use the node from the DOM inspector:
 			Node node=DomInspector.MouseOverNode;
 			
 			if(node==null){
@@ -223,9 +223,11 @@ namespace PowerUI{
 				name="(Unnamed node)";
 			}
 			
+			bool refresh=GUILayout.Button("Refresh");
+			
 			GUILayout.Label(name);
 			
-			if(ComputedDataFor!=node || ComputedNodeData==null){
+			if(refresh || ComputedDataFor!=node || ComputedNodeData==null){
 				
 				try{
 					BuildString(node);

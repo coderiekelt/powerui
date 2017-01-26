@@ -22,6 +22,8 @@ namespace PowerUI{
 	[Dom.TagName("scrollthumb")]
 	public class HtmlScrollThumbElement:HtmlElement{
 		
+		/// <summary>True if the thumb should recalc its size during the next layout.</summary>
+		public bool RecalculateNext;
 		/// <summary>The starting X/Y coordinate that the thumb was located at when it was clicked on.</summary>
 		public float Start;
 		/// <summary>True if this is a vertical thumb.</summary>
@@ -42,6 +44,115 @@ namespace PowerUI{
 				// Scrollbars start dragging immediately:
 				return 1f;
 			}
+		}
+		
+		public override void OnComputeBox(Renderman renderer,Css.LayoutBox thumbBox,ref bool widthUndefined,ref bool heightUndefined){
+			
+			if(IsVertical){
+				
+				if(thumbBox.Position.Top==float.MaxValue){
+					
+					// Initial push over the first arrow:
+					thumbBox.Position.Top=StartArrowSize;
+					
+				}
+				
+			}else if(thumbBox.Position.Left==float.MaxValue){
+				
+				// Initial push over the first arrow:
+				thumbBox.Position.Left=StartArrowSize;
+				
+			}
+			
+			// Get the target:
+			HtmlElement target=ScrollBar.scrollTarget;
+			
+			if(target==null){
+				return;
+			}
+			
+			ComputedStyle computed=target.style.Computed;
+			LayoutBox box=computed.FirstBox;
+			
+			if(box==null){
+				// Not visible or hasn't been drawn yet.
+				return;
+			}
+			
+			int overflowMode=IsVertical?box.OverflowY : box.OverflowX;
+			float visible=IsVertical?box.VisiblePercentageY() : box.VisiblePercentageX();
+			
+			if(visible>1f){
+				visible=1f;
+			}else if(visible<0f){
+				visible=0f;
+			}
+			
+			if(overflowMode==OverflowMode.Auto){
+				// Handle auto here.
+				
+				// Hide the bar by directly setting its display style 
+				// if the whole thing is visible - i.e. visible = 1(00%).
+				ComputedStyle barStyle=ScrollBar.Style.Computed;
+				LayoutBox barBox=barStyle.FirstBox;
+				
+				
+				
+				/*
+				if(visible==1f){
+					
+					// Hide it:
+					ScrollBar.Style.display="none";
+					
+				}else if(barBox==null){
+					
+					// Make it visible again:
+					ScrollBar.Style.display="block";
+					
+				}
+				*/
+				
+			}
+			
+			ApplyTabSize(visible,thumbBox);
+			
+		}
+		
+		/// <summary>Makes the thumb a percentage size relative to the length of the bar.</summary>
+		/// <param name="percentSize">A value from 0->1 that represents how visible the content
+		/// is and as a result how long the thumb is.</param>
+		public void ApplyTabSize(float percentSize,LayoutBox box){
+			
+			// How wide is the border/padding of the thumb?
+			float styleSize=StyleSize;
+			
+			// How big should the new thumb be?
+			float newSize=(percentSize*BarSize)-styleSize;
+			
+			if(newSize==ThumbSize){
+				// It didn't change.
+				return;
+			}
+			
+			// Apply the new thumb size:
+			if(IsVertical){
+				
+				// For this pass:
+				box.InnerHeight=newSize;
+				
+				// Future passes:
+				style.Computed.ChangeTagProperty("height",new Css.Units.DecimalUnit(newSize),false);
+				
+			}else{
+				
+				// This pass:
+				box.InnerWidth=newSize;
+				
+				// Future passes:
+				style.Computed.ChangeTagProperty("width",new Css.Units.DecimalUnit(newSize),false);
+				
+			}
+			
 		}
 		
 		protected override bool HandleLocalEvent(Dom.DomEvent e,bool bubblePhase){
@@ -109,7 +220,7 @@ namespace PowerUI{
 				LayoutBox box=RenderData.FirstBox;
 				
 				// Return the h/v style size. That's:
-				return IsVertical ? box.Height-box.InnerHeight : box.Width-box.InnerWidth;
+				return IsVertical ? box.BorderedHeight-box.InnerHeight : box.BorderedWidth-box.InnerWidth;
 			}
 		}
 		
@@ -170,14 +281,28 @@ namespace PowerUI{
 		public float BarSize{
 			get{
 				if(ScrollBar==null){
-					return 0;
+					return 0f;
 				}
 				
 				LayoutBox barBox=ScrollBar.RenderData.FirstBox;
 				
+				if(barBox==null){
+					// Not visible.
+					return 0f;
+				}
+				
 				float result=IsVertical ? barBox.InnerHeight : barBox.InnerWidth;
 				
-				return result-StartArrowSize-EndArrowSize;
+				float arrowSizes=EndArrowSize;
+				
+				if(arrowSizes==0f){
+					// Use start twice (we haven't computed the box of the end arrow yet).
+					arrowSizes=StartArrowSize * 2f;
+				}else{
+					arrowSizes+=StartArrowSize;
+				}
+				
+				return result-arrowSizes;
 			}
 		}
 		
@@ -279,9 +404,9 @@ namespace PowerUI{
 					
 					// Update CSS:
 					if(IsVertical){
-						targetCs.ChangeTagProperty("scroll-top",(progress * box.ContentHeight)+"px");
+						targetCs.ChangeTagProperty("scroll-top",new Css.Units.DecimalUnit(progress * box.ContentHeight));
 					}else{
-						targetCs.ChangeTagProperty("scroll-left",(progress * box.ContentWidth)+"px");
+						targetCs.ChangeTagProperty("scroll-left",new Css.Units.DecimalUnit(progress * box.ContentWidth));
 					}
 					
 					// And request a redraw:
@@ -293,35 +418,7 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Makes the thumb a percentage size relative to the length of the bar.</summary>
-		/// <param name="percentSize">A value from 0->1 that represents how visible the content
-		/// is and as a result how long the thumb is.</param>
-		public void ApplyTabSize(float percentSize){
-			
-			// How wide is the border/padding of the thumb?
-			float styleSize=StyleSize;
-			
-			// How big should the new thumb be?
-			float newSize=(percentSize*BarSize)-styleSize;
-			
-			if(newSize==ThumbSize){
-				// It didn't change.
-				return;
-			}
-			
-			// Apply the new thumb size:
-			if(IsVertical){
-				style.height=newSize+"fpx";
-			}else{
-				style.width=newSize+"fpx";
-			}
-			
-			ScrollBy(0,true,true);
-			
-		}
-		
 		/// <summary>Scrolls this thumb to the specific percentage along the bar. 0-1. Optionally scrolls the target element.</summary>
-		
 		public void ScrollToPoint(float percent,bool scrollTarget){
 			ScrollTo(percent * BarSize,scrollTarget);
 		}

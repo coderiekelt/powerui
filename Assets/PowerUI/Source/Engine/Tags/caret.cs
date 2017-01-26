@@ -17,18 +17,18 @@ using UnityEngine;
 namespace PowerUI{
 	
 	/// <summary>
-	/// A cursor element. Used internally by textarea's/ input elements.
+	/// A caret element. Used internally by textarea's/ input elements.
 	/// </summary>
 	
-	[Dom.TagName("cursor")]
-	public class HtmlCursorElement:HtmlElement{
+	[Dom.TagName("caret")]
+	public class HtmlCaretElement:HtmlElement{
 		
-		/// <summary>The virtual cursor element draws after everything.</summary>
+		/// <summary>The virtual caret element draws after everything.</summary>
 		public const int Priority=VirtualElements.AFTER_ZONE+10;
 		
-		/// <summary>Text index of the cursor.</summary>
+		/// <summary>Text index of the caret.</summary>
 		public int Index;
-		/// <summary>True if the cursor should be relocated after the next update.</summary>
+		/// <summary>True if the caret should be relocated after the next update.</summary>
 		public bool Locate;
 		
 		
@@ -42,7 +42,7 @@ namespace PowerUI{
 		/// <summary>Scrolls the input box if the given position is out of bounds.</summary>
 		private void ScrollIfBeyond(ref Vector2 position){
 			
-			// Scroll input if the cursor is beyond the end of the box:
+			// Scroll input if the caret is beyond the end of the box:
 			ComputedStyle inputCS=Input.Style.Computed;
 			
 			LayoutBox input=inputCS.FirstBox;
@@ -54,14 +54,14 @@ namespace PowerUI{
 			
 			if(scrolledPosition>boxSize){
 				
-				// Cursor is beyond the right edge.
-				// Scroll it such that the cursor is positioned just on that right edge:
+				// Beyond the right edge.
+				// Scroll it such that the caret is positioned just on that right edge:
 				scrollLeft+=(scrolledPosition-boxSize)+3f;
 				
 			}else if(scrolledPosition<0f){
 				
-				// Cursor is beyond the left edge.
-				// Scroll it such that the cursor is positioned just on that left edge:
+				// Beyond the left edge.
+				// Scroll it such that the caret is positioned just on that left edge:
 				scrollLeft+=scrolledPosition;
 				
 			}
@@ -78,14 +78,14 @@ namespace PowerUI{
 				input.Scroll.Left=scrollLeft;
 				
 				// For future passes:
-				inputCS.ChangeTagProperty("scroll-left",scrollLeft+"px");
+				inputCS.ChangeTagProperty("scroll-left",new Css.Units.DecimalUnit(scrollLeft),false);
 			}
 			
 		}
 		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			
-			// Locate the cursor if we need to:
+			// Locate the caret if we need to:
 			if(Locate){
 				Locate=false;
 				
@@ -117,8 +117,8 @@ namespace PowerUI{
 				box.Position.Left=position.x;
 				
 				// Write it out:
-				Style.Computed.ChangeTagProperty("left",position.x+"px");
-				Style.Computed.ChangeTagProperty("top",position.y+"px");
+				Style.Computed.ChangeTagProperty("left",new Css.Units.DecimalUnit(position.x),false);
+				Style.Computed.ChangeTagProperty("top",new Css.Units.DecimalUnit(position.y),false);
 				
 			}
 			
@@ -157,9 +157,9 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
-		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
-		/// <param name="immediate">True if the cursor should be moved right now.</param>
+		/// <summary>For text and password inputs, this relocates the caret to the given index.</summary>
+		/// <param name="index">The character index to move the caret to, starting at 0.</param>
+		/// <param name="immediate">True if the caret should be moved right now.</param>
 		public void Move(int index,bool immediate){
 			
 			if(index<0){
@@ -175,12 +175,12 @@ namespace PowerUI{
 			Locate=true;
 
 			if(immediate){
-				// We have enough info to place the cursor already.
+				// We have enough info to place the caret already.
 				// Request a layout.
 				RequestLayout();
 			}
 			
-			// Otherwise locating the cursor is delayed until after the new value has been rendered.
+			// Otherwise locating the caret is delayed until after the new value has been rendered.
 			// This is used immediately after we set the value.
 		}
 		

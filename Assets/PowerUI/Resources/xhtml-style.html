@@ -626,12 +626,10 @@ scrollbar{
 
 scrollbar[orient="vertical"]{
 	width:17px;
-	height:100%;
 }
 
 scrollbar[orient="horizontal"]{
 	height:17px;
-	width:100%;
 }
 
 scrollbutton:hover{
@@ -644,6 +642,16 @@ scrollthumb:hover{
 	background:rgb(220,240,251);
 }
 
+resizer{
+	display:block;
+	position:-spark-absolute-fixed;
+	width:17px;
+	height:17px;
+	background:rgb(248,248,248);
+	bottom:0px;
+	right:0px;
+}
+
 scrollbutton{
 	border-radius:6px;
 	border:1px solid white;
@@ -651,19 +659,23 @@ scrollbutton{
 	height:13px;
 	background:#dddddd url("resources://scroll-arrow.png") no-repeat center;
 	display:inline-block;
-	position:absolute;
+	position:-spark-absolute-fixed;
 }
 
 scrollbutton[orient="right"]{
 	right:0px;
+	top:0px;
 }
 
 scrollbutton[orient="left"]{
 	transform:rotate(180deg);
+	left:2px;
+	top:2px;
 }
 
 scrollbutton[orient="down"]{
 	bottom:0px;
+	left:2px;
 	transform:rotate(90deg);
 }
 
@@ -674,7 +686,7 @@ scrollbutton[orient="up"]{
 scrollthumb{
 	border-radius:6px;
 	border:1px solid white;
-	position:absolute;
+	position:-spark-absolute-fixed;
 	width:13px;
 	height:13px;
 	background:#dddddd;
@@ -715,7 +727,7 @@ bdi,bdo,time{
 	display:inline;
 }
 
-cursor{
+caret{
 	left:0px;
 	top:0px;
 	position:-spark-absolute;

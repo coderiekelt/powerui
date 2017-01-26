@@ -27,8 +27,8 @@ namespace PowerUI{
 	[Dom.TagName("textarea")]
 	public class HtmlTextareaElement:HtmlElement{
 		
-		/// <summary>This is the cursor element.</summary>
-		public HtmlCursorElement Cursor;
+		/// <summary>This is the caret element.</summary>
+		public HtmlCaretElement Caret;
 		/// <summary>The maximum length of text in this box.</summary>
 		public int MaxLength=int.MaxValue;
 		/// <summary>A placeholder value.</summary>
@@ -58,7 +58,7 @@ namespace PowerUI{
 				
 				if(e is ClipboardEvent && e.type=="paste"){
 					
-					// Paste the data at the cursor index (must be text only).
+					// Paste the data at the caret index (must be text only).
 					string textToPaste=(e as ClipboardEvent).text;
 					
 					if(textToPaste!=null){
@@ -68,11 +68,11 @@ namespace PowerUI{
 						if(value==null){
 							value=""+textToPaste;
 						}else{
-							value=value.Substring(0,CursorIndex)+textToPaste+value.Substring(CursorIndex,value.Length-CursorIndex);
+							value=value.Substring(0,CaretIndex)+textToPaste+value.Substring(CaretIndex,value.Length-CaretIndex);
 						}
 						
 						SetValue(value);
-						MoveCursor(CursorIndex+textToPaste.Length,true);
+						MoveCaret(CaretIndex+textToPaste.Length,true);
 						
 					}
 					
@@ -109,14 +109,14 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>The current location of the cursor.</summary>
-		public int CursorIndex{
+		/// <summary>The current location of the caret.</summary>
+		public int CaretIndex{
 			get{
-				if(Cursor==null){
+				if(Caret==null){
 					return 0;
 				}
 				
-				return Cursor.Index;
+				return Caret.Index;
 			}
 		}
 		
@@ -194,8 +194,8 @@ namespace PowerUI{
 				}
 			}
 			
-			if(CursorIndex>newValue.Length){
-				MoveCursor(0);
+			if(CaretIndex>newValue.Length){
+				MoveCaret(0);
 			}
 			
 			if(newValue=="" && Placeholder!=""){
@@ -222,15 +222,15 @@ namespace PowerUI{
 				
 				if(!char.IsControl(pressEvent.character) && pressEvent.character!='\0'){
 					
-					// Drop the character in the string at cursorIndex
+					// Drop the character in the string at caretIndex
 					if(value==null){
 						value=""+pressEvent.character;
 					}else{
-						value=value.Substring(0,CursorIndex)+pressEvent.character+value.Substring(CursorIndex,value.Length-CursorIndex);
+						value=value.Substring(0,CaretIndex)+pressEvent.character+value.Substring(CaretIndex,value.Length-CaretIndex);
 					}
 					
 					SetValue(value);
-					MoveCursor(CursorIndex+1);
+					MoveCaret(CaretIndex+1);
 					
 					return;
 				}
@@ -240,60 +240,60 @@ namespace PowerUI{
 				KeyCode key=((KeyCode)pressEvent.keyCode);
 				
 				if(key==KeyCode.LeftArrow){
-					MoveCursor(CursorIndex-1,true);
+					MoveCaret(CaretIndex-1,true);
 				}else if(key==KeyCode.RightArrow){
-					MoveCursor(CursorIndex+1,true);
+					MoveCaret(CaretIndex+1,true);
 				}else if(key==KeyCode.UpArrow){
-					MoveCursor(FindNewline(-1),true);
+					MoveCaret(FindNewline(-1),true);
 				}else if(key==KeyCode.DownArrow){
-					MoveCursor(FindNewline(1),true);
+					MoveCaret(FindNewline(1),true);
 				}else if(key==KeyCode.Backspace){
 					
-					// Delete the character before the cursor (or the selection, if we have one).
+					// Delete the character before the caret (or the selection, if we have one).
 					
 					// Got a selection?
-					if(Cursor!=null && Cursor.TryDeleteSelection()){
+					if(Caret!=null && Caret.TryDeleteSelection()){
 						return;
 					}
 					
-					if(string.IsNullOrEmpty(value) || CursorIndex==0){
+					if(string.IsNullOrEmpty(value) || CaretIndex==0){
 						return;
 					}
 					
-					int index=CursorIndex;
+					int index=CaretIndex;
 					value=value.Substring(0,index-1)+value.Substring(index,value.Length-index);
 					SetValue(value);
-					MoveCursor(index-1);
+					MoveCaret(index-1);
 				}else if(key==KeyCode.Delete){
-					// Delete the character after the cursor.
+					// Delete the character after the caret.
 					
 					// Got a selection?
-					if(Cursor!=null && Cursor.TryDeleteSelection()){
+					if(Caret!=null && Caret.TryDeleteSelection()){
 						return;
 					}
 					
-					if(string.IsNullOrEmpty(value)||CursorIndex==value.Length){
+					if(string.IsNullOrEmpty(value)||CaretIndex==value.Length){
 						return;
 					}
 					
-					int index=CursorIndex;
+					int index=CaretIndex;
 					value=value.Substring(0,index)+value.Substring(index+1,value.Length-index-1);
 					SetValue(value);
 				}else if(key==KeyCode.Home){
 					// Hop to the start:
 					
-					MoveCursor(0,true);
+					MoveCaret(0,true);
 				
 				}else if(key==KeyCode.End){
 					// Hop to the end:
 					
-					int maxCursor=0;
+					int maxCaret=0;
 					
 					if(value!=null){
-						maxCursor=value.Length;
+						maxCaret=value.Length;
 					}
 					
-					MoveCursor(maxCursor,true);
+					MoveCaret(maxCaret,true);
 				
 				}else if(key==KeyCode.Return || key==KeyCode.KeypadEnter){
 					
@@ -301,10 +301,10 @@ namespace PowerUI{
 					if(value==null){
 						value=""+pressEvent.character;
 					}else{
-						value=value.Substring(0,CursorIndex)+'\n'+value.Substring(CursorIndex,value.Length-CursorIndex);
+						value=value.Substring(0,CaretIndex)+'\n'+value.Substring(CaretIndex,value.Length-CaretIndex);
 					}
 					SetValue(value);
-					MoveCursor(CursorIndex+1);
+					MoveCaret(CaretIndex+1);
 					
 				}
 				
@@ -321,14 +321,14 @@ namespace PowerUI{
 			HtmlTextNode htn=TextHolder;
 			
 			if(htn==null || htn.RenderData.Text==null || htn.RenderData.Text.Characters==null){
-				return CursorIndex;
+				return CaretIndex;
 			}
 			
 			// Get the renderer so we can access the chars:
 			TextRenderingProperty trp=htn.RenderData.Text;
 			
 			// First index to check is..
-			int index=CursorIndex+direction;
+			int index=CaretIndex+direction;
 			
 			// Safety check:
 			int max=trp.Characters.Length;
@@ -366,7 +366,7 @@ namespace PowerUI{
 		/// <summary>Called when the element is focused.</summary>
 		internal override void OnFocusEvent(FocusEvent fe){
 			
-			if(Cursor!=null){
+			if(Caret!=null){
 				return;
 			}
 			
@@ -374,20 +374,20 @@ namespace PowerUI{
 				innerHTML="";
 			}
 			
-			// Add a cursor.
-			Cursor=Style.Computed.GetOrCreateVirtual(HtmlCursorElement.Priority,"cursor") as HtmlCursorElement;
+			// Add a caret.
+			Caret=Style.Computed.GetOrCreateVirtual(HtmlCaretElement.Priority,"caret") as HtmlCaretElement;
 			
 		}
 		
 		/// <summary>Called when the element is unfocused/blurred.</summary>
 		internal override void OnBlurEvent(FocusEvent fe){
-			if(Cursor==null){
+			if(Caret==null){
 				return;
 			}
 			
-			// Remove the cursor:
-			Style.Computed.RemoveVirtual(HtmlCursorElement.Priority);
-			Cursor=null;
+			// Remove the caret:
+			Style.Computed.RemoveVirtual(HtmlCaretElement.Priority);
+			Caret=null;
 			
 			if(innerHTML=="" && Placeholder!=""){
 				innerHTML=Placeholder;
@@ -395,22 +395,22 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
-		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
-		public void MoveCursor(int index){
-			MoveCursor(index,false);
+		/// <summary>For text and password inputs, this relocates the caret to the given index.</summary>
+		/// <param name="index">The character index to move the caret to, starting at 0.</param>
+		public void MoveCaret(int index){
+			MoveCaret(index,false);
 		}
 		
-		/// <summary>For text and password inputs, this relocates the cursor to the given index.</summary>
-		/// <param name="index">The character index to move the cursor to, starting at 0.</param>
-		/// <param name="immediate">True if the cursor should be moved right now.</param>
-		public void MoveCursor(int index,bool immediate){
+		/// <summary>For text and password inputs, this relocates the caret to the given index.</summary>
+		/// <param name="index">The character index to move the caret to, starting at 0.</param>
+		/// <param name="immediate">True if the caret should be moved right now.</param>
+		public void MoveCaret(int index,bool immediate){
 			
-			if(Cursor==null){
+			if(Caret==null){
 				return;
 			}
 			
-			Cursor.Move(index,immediate);
+			Caret.Move(index,immediate);
 		}
 		
 		public override void OnClickEvent(MouseEvent clickEvent){
@@ -429,8 +429,8 @@ namespace PowerUI{
 			// Get the letter index:
 			int index=htn.LetterIndex(clickEvent.clientX,clickEvent.clientY);
 			
-			// Move the cursor there (requesting a redraw):
-			MoveCursor(index,true);
+			// Move the caret there (requesting a redraw):
+			MoveCaret(index,true);
 			
 		}
 		

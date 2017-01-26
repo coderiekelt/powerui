@@ -122,6 +122,19 @@ namespace PowerUI{
 			
 			RenderTexture renderTexture=null;
 			
+			#if UNITY_5_5_OR_NEWER
+			
+			// Create a render texture:
+			renderTexture=new RenderTexture(widthPX,heightPX,16,RenderTextureFormat.ARGB32);
+			
+			// Apply it to the texture:
+			Texture=(Texture)renderTexture;
+			
+			// Hook it up:
+			SourceCamera.targetTexture=renderTexture;
+			
+			#else
+			
 			if(SystemInfo.supportsRenderTextures){
 				
 				// Create a render texture:
@@ -146,6 +159,8 @@ namespace PowerUI{
 				Texture=(Texture)texture;
 				
 			}
+			
+			#endif
 			
 			// Change the layer of the gameobject and also the camera.
 			

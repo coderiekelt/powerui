@@ -22,10 +22,16 @@ namespace PowerUI{
 	[Dom.TagName("scrollbar")]
 	public class HtmlScrollbarElement:HtmlElement{
 		
+		/// <summary>0 means unset, 1 is horizontal, 2 is vertical.</summary>
+		private int OrientState=0;
 		/// <summary>A custom targeted ID.</summary>
 		private string TargetID;
 		/// <summary>Is this a vertical scrollbar?</summary>
-		public bool IsVertical;
+		public bool IsVertical{
+			get{
+				return OrientState==2;
+			}
+		}
 		/// <summary>A custom target.</summary>
 		public HtmlElement Target;
 		/// <summary>The tag handler for the scrollbars thumb.</summary>
@@ -37,6 +43,12 @@ namespace PowerUI{
 			if(childNodes_!=null){
 				// Setting innerHTML calls OnChildrenLoaded again.
 				// Block that!
+				return;
+			}
+			
+			if(OrientState<=0){
+				// Not set orient yet.
+				OrientState=-1;
 				return;
 			}
 			
@@ -131,7 +143,22 @@ namespace PowerUI{
 			
 			if(property=="orient"){
 				
-				IsVertical=(this["orient"]=="vertical");
+				// Sometimes this happens after OnChildrenLoaded.
+				// We use OrientState to check for that
+				// (it'll be -1 if OnChildrenLoaded ran before this did).
+				
+				int os=OrientState;
+				
+				if(this["orient"]=="vertical"){
+					OrientState=2;
+				}else{
+					OrientState=1;
+				}
+				
+				if(os==-1){
+					// Try on children loaded again:
+					OnChildrenLoaded();
+				}
 				
 				return true;
 			
@@ -159,56 +186,10 @@ namespace PowerUI{
 			}
 			
 			if(Thumb!=null){
-				
-				HtmlElement target=scrollTarget;
-				
-				if(target==null){
-					return;
-				}
-				
-				ComputedStyle computed=target.style.Computed;
-				LayoutBox box=computed.FirstBox;
-				
-				if(box==null){
-					// Not visible or hasn't been drawn yet.
-					return;
-				}
-				
-				int overflowMode=IsVertical?box.OverflowY : box.OverflowX;
-				float visible=IsVertical?box.VisiblePercentageY() : box.VisiblePercentageX();
-				
-				if(visible>1f){
-					visible=1f;
-				}else if(visible<0f){
-					visible=0f;
-				}
-				
-				if(overflowMode==OverflowMode.Auto){
-					// Handle auto here.
-					
-					// Hide the bar by directly setting its display style 
-					// if the whole thing is visible - i.e. visible = 1(00%).
-					ComputedStyle barStyle=Style.Computed;
-					LayoutBox barBox=barStyle.FirstBox;
-					
-					if(visible==1f){
-						
-						// Hide it:
-						Style.display="none";
-						
-					}else if(barBox==null){
-						
-						// Make it visible again:
-						Style.display="block";
-						
-					}
-					
-				}
-				
-				Thumb.ApplyTabSize(visible);
+				Thumb.RecalculateNext=true;
 			}
+			
 		}
-		
 		
 	}
 	

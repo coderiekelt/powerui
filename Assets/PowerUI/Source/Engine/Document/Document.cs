@@ -123,8 +123,6 @@ namespace PowerUI{
 		
 		/// <summary>A custom set domain value.</summary>
 		public string domain_;
-		/// <summary>The renderer which will render this document.</summary>
-		public Renderman Renderer;
 		/// <summary>True if we're done parsing and setting the innerHTML of the body tag.
 		/// Used to guage when the code should be compiled.</summary>
 		public bool FinishedParsing;
@@ -181,16 +179,6 @@ namespace PowerUI{
 			get{
 				return html;
 			}
-		}
-		
-		/// <summary>Requests the document to re-layout.</summary>
-		public override void RequestLayout(){
-			Renderer.RequestLayout();
-		}
-		
-		/// <summary>Requests the given renderable data to repaint.</summary>
-		public override void RequestPaint(Css.RenderableData data){
-			Renderer.RequestPaint(data);
 		}
 		
 		/// <summary>The head element if there is one.</summary>

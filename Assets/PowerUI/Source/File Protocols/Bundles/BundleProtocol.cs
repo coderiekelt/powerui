@@ -68,7 +68,8 @@ namespace PowerUI{
 					
 					package.addEventListener("onload",delegate(UIEvent e){
 						
-						#if UNITY_5_4_1_OR_NEWER
+						// 5.4.1 onwards
+						#if !UNITY_5_4_0 && UNITY_5_4_OR_NEWER
 						AssetBundleCreateRequest request=AssetBundle.LoadFromMemoryAsync(package.responseBytes);
 						#else
 						AssetBundleCreateRequest request=AssetBundle.CreateFromMemory(package.responseBytes);
