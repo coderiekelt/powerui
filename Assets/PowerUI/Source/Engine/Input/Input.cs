@@ -952,6 +952,13 @@ namespace PowerUI{
 									// Set status:
 									pointer.DragStatus=InputPointer.SELECTING;
 									
+									// Focus it if needed:
+									HtmlElement html=(pointer.ActivePressed as HtmlElement);
+									
+									if(html!=null){
+										html.focus();
+									}
+									
 								}else{
 									
 									// This status prevents it from spamming, at least until we release.
@@ -999,22 +1006,27 @@ namespace PowerUI{
 								// Get the current selection:
 								Selection s=(pointer.ActivePressed.document as HtmlDocument).getSelection();
 								
-								// Get the range:
-								Range range=s.Ranges[0];
-								
-								// Get text node:
-								HtmlTextNode htn=(range.startContainer as HtmlTextNode);
-								
-								if(htn!=null){
+								// Safety check:
+								if(s.Ranges.Count>0){
 									
-									// Get the new end index:
-									int endIndex=htn.LetterIndex(pointer.DocumentX,pointer.DocumentY);
+									// Get the range:
+									Range range=s.Ranges[0];
 									
-									// Update:
-									range.endOffset=endIndex;
+									// Get text node:
+									HtmlTextNode htn=(range.startContainer as HtmlTextNode);
 									
-									// Flush:
-									s.UpdateSelection(true,range);
+									if(htn!=null){
+										
+										// Get the new end index:
+										int endIndex=htn.LetterIndex(pointer.DocumentX,pointer.DocumentY);
+										
+										// Update:
+										range.endOffset=endIndex;
+										
+										// Flush:
+										s.UpdateSelection(true,range);
+										
+									}
 									
 								}
 								

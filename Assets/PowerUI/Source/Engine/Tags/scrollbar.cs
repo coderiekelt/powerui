@@ -22,6 +22,8 @@ namespace PowerUI{
 	[Dom.TagName("scrollbar")]
 	public class HtmlScrollbarElement:HtmlElement{
 		
+		/// <summary>True if this bar is hidden.</summary>
+		internal bool Hidden;
 		/// <summary>0 means unset, 1 is horizontal, 2 is vertical.</summary>
 		private int OrientState=0;
 		/// <summary>A custom targeted ID.</summary>

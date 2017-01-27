@@ -105,7 +105,7 @@ namespace PowerUI{
 					}
 					
 					// Get the position of the given letter:
-					position=TextHolder.GetPosition(Index);
+					position=htn.GetPosition(Index);
 				
 				}
 				
@@ -144,6 +144,13 @@ namespace PowerUI{
 			string value=Input.value;
 			int start=s.anchorOffset;
 			int end=s.focusOffset;
+			
+			if(end<start){
+				int t=end;
+				end=start;
+				start=t;
+			}
+			
 			value=value.Substring(0,start)+value.Substring(end,value.Length-end);
 			
 			// Apply now:

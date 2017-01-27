@@ -92,25 +92,30 @@ namespace PowerUI{
 				visible=0f;
 			}
 			
-			if(overflowMode==OverflowMode.Auto){
-				// Handle auto here.
+			// Handle auto next:
+			if(overflowMode==OverflowMode.Auto && visible==1f){
 				
-				// Hide the bar by directly setting its display style 
-				// if the whole thing is visible - i.e. visible = 1(00%).
-				ComputedStyle barStyle=ScrollBar.Style.Computed;
-				LayoutBox barBox=barStyle.FirstBox;
+				// Hide it:
+				ScrollBar.Style.display="none";
 				
-				if(visible==1f){
+				// Make sure it's not scrolled:
+				if(IsVertical && box.Scroll.Top!=0f){
 					
-					// Hide it:
-					ScrollBar.Style.display="none";
+					if(box.Scroll.Top!=0f){
+						// Clear it:
+						computed.ChangeTagProperty("scroll-top",new Css.Units.DecimalUnit(0f));
+					}
 					
-				}else if(barBox==null){
+				}else if(box.Scroll.Left!=0f){
 					
-					// Make it visible again:
-					ScrollBar.Style.display="block";
+					computed.ChangeTagProperty("scroll-left",new Css.Units.DecimalUnit(0f));
 					
 				}
+				
+				// Mark as hidden so the informer can watch out for it:
+				ScrollBar.Hidden=true;
+				
+				return;
 				
 			}
 			
