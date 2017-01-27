@@ -20,24 +20,30 @@ public static class DragScroller{
 	/// <summary>This gets called when the element is clicked on.
 	/// It's onmousedown points at this method.</summary>
 	public static void StartScroll(UIEvent e){
+		
 		if(!e.isLeftMouse){
 			// Not a left click.
 			return;
 		}
 		
+		// Store the element being scrolled:
+		Scrolling=(e.currentTarget as HtmlElement);
+		
 		// Store the current position of the mouse, and the current scroll offset.
 		// We want to find how many pixels it's moved by since it went down:
-		StartY=e.clientY + e.htmlTarget.scrollTop;
+		StartY=e.clientY + Scrolling.scrollTop;
 		
-		// Store the element being scrolled:
-		Scrolling=e.htmlTarget;
-		
-		// Focus the element - this will cause onmousemove to run:
 		Scrolling.focus();
+		
 	}
 	
 	/// <summary>Called when the element scrolls.</summary>
 	public static void ScrollNow(UIEvent e){
+		
+		if(Scrolling==null){
+			return;
+		}
+		
 		// How much has the mouse moved by?
 		float scrollTo=StartY-e.clientY;
 		
@@ -69,9 +75,6 @@ public static class DragScroller{
 		
 		// Check if the mouse went up:
 		if(!e.leftMouseDown){
-			// Left button isn't down - unfocus the element.
-			// This will prevent any further mousemove's:
-			Scrolling.blur();
 			
 			// -- Inertial Scrolling --
 			
@@ -82,14 +85,17 @@ public static class DragScroller{
 			
 			/*
 			// Get the px value to scroll to:
-			int targetScroll=top + scrolledBy;
+			float targetScroll=top + scrolledBy;
 			
 			// Animate the scrolling there:
 			// -> Note that the last '1' means decelerate for 1 second.
-			Scrolling.animate("scroll-top:"+targetScroll+"px;",0f,0f,1f);
+			Scrolling.animate("scroll-top:"+targetScroll+"px",1f);
 			*/
 			
 			// Alternatively, delay the unfocus and have a speed value, then affect the speed from this function to have the same effect.
+			
+			// Left button isn't down - clear it:
+			Scrolling=null;
 			
 		}
 		

@@ -27,15 +27,19 @@ namespace PowerUI{
 		/// <param name="e">A standard DomEvent containing e.g. key/mouse information.</param>
 		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
 			
-			// Run the function:
-			object result=Run("on"+e.EventType,e);
-			
-			if(result!=null && result.GetType()==typeof(bool)){
-				// It returned true/false - was it false?
+			if(bubblePhase){
 				
-				if(!(bool)result){
-					// Explicitly returned false - Blocked it.
-					return true;
+				// Run the function:
+				object result=Run("on"+e.type,e);
+				
+				if(result!=null && result.GetType()==typeof(bool)){
+					// It returned true/false - was it false?
+					
+					if(!(bool)result){
+						// Explicitly returned false - Blocked it.
+						return true;
+					}
+					
 				}
 				
 			}
@@ -60,6 +64,7 @@ namespace PowerUI{
 		/// <exception cref="NullReferenceException">Thrown if the function does not exist.</exception>
 		public object RunLiteral(string attribute,object[] args){
 			string methodName=this[attribute];
+			
 			if(methodName==null){
 				return null;
 			}

@@ -64,6 +64,10 @@ namespace PowerUI{
 				
 			}
 			
+		}
+		
+		public override void OnRender(Renderman renderer){
+			
 			// Get the target:
 			HtmlElement target=ScrollBar.scrollTarget;
 			
@@ -96,9 +100,6 @@ namespace PowerUI{
 				ComputedStyle barStyle=ScrollBar.Style.Computed;
 				LayoutBox barBox=barStyle.FirstBox;
 				
-				
-				
-				/*
 				if(visible==1f){
 					
 					// Hide it:
@@ -110,11 +111,10 @@ namespace PowerUI{
 					ScrollBar.Style.display="block";
 					
 				}
-				*/
 				
 			}
 			
-			ApplyTabSize(visible,thumbBox);
+			ApplyTabSize(visible,Style.Computed.FirstBox);
 			
 		}
 		

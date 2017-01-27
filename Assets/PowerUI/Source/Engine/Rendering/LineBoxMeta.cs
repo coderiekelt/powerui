@@ -40,6 +40,8 @@ namespace PowerUI{
 		internal LayoutBox LastLineStart;
 		/// <summary>The first line start. Tracked for alignment.</summary>
 		internal LayoutBox FirstLineStart;
+		/// <summary>This boxes whitespace mode.</summary>
+		internal int WhiteSpace;
 		/// <summary>The current 'clear zone'. Added to PenY when something is added to the current line.</summary>
 		internal float ClearY_;
 		/// <summary>The set of active floated elements for the current line being rendered.</summary>

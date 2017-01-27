@@ -242,9 +242,6 @@ namespace PowerUI{
 					
 				}
 				
-				// Scroll now:
-				scrollTo(scrollLeft,scrollTop);
-				
 			}else{
 				
 				// Horizontal scroll:
@@ -331,6 +328,9 @@ namespace PowerUI{
 				}
 				
 			}
+			
+			// Scroll now:
+			scrollTo(scrollLeft,scrollTop);
 			
 			// Request a redraw:
 			style.RequestLayout();

@@ -498,18 +498,19 @@ namespace PowerUI{
 			if(UnityUICaster!=null){
 				
 				// Try hitting the Unity UI first.
-				point=new Vector2(x,y);
+				point=new Vector2(x,ScreenInfo.ScreenY-1-y);
 				
 				HtmlUIPanel panel=MapToUIPanel(ref point);
 				
 				if(panel!=null){
 					
 					// Test for an element there:
-					result=panel.document.elementFromPointOnScreen(x,y);
+					result=panel.document.elementFromPointOnScreen(point.x,point.y);
 					
 					if(result!=null){
 						
 						// Is it transparent?
+						
 						// We're still checking a UI so we might still pass "through" it.
 						if(AcceptsInput(result)){
 							
