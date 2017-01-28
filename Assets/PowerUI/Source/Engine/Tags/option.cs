@@ -24,8 +24,6 @@ namespace PowerUI{
 		
 		/// <summary>True if this is the selected option.</summary>
 		public bool Selected;
-		/// <summary>True if this tag has been fully loaded. False if it's still being parsed.</summary>
-		private bool FullyLoaded;
 		/// <summary>The select dropdown that this option belongs to.</summary>
 		public HtmlSelectElement Dropdown;
 		
@@ -106,10 +104,12 @@ namespace PowerUI{
 			if(property=="selected"){
 				string isSelected=this["selected"];
 				Selected=(string.IsNullOrEmpty(isSelected) || isSelected=="1" || isSelected=="true" || isSelected=="yes");
-				if(FullyLoaded){
+				
+				if(Dropdown!=null){
 					// Tell the select:
 					Dropdown.SetSelected(this);
-				}	
+				}
+				
 				return true;
 			}else if(property=="text"){
 				
@@ -122,9 +122,16 @@ namespace PowerUI{
 			return false;
 		}
 		
-		public override void OnTagLoaded(){
-			FullyLoaded=true;
+		public override void OnChildrenLoaded(){
+			
+			// Get the dropdown:
 			Dropdown=GetSelect(parentElement);
+			
+			if(Selected && Dropdown!=null){
+				// Tell the select:
+				Dropdown.SetSelected(this);
+			}
+			
 		}
 		
 		/// <summary>Gets or finds the parent select tag that this option belongs to.</summary>
@@ -134,20 +141,36 @@ namespace PowerUI{
 			if(element==null){
 				return null;
 			}
+			
 			if(element.Tag=="select"){
 				return (HtmlSelectElement)(element);
 			}
+			
 			return GetSelect(element.parentElement);
 		}
 		
-		public override void OnClickEvent(MouseEvent clickEvent){
+		/// <summary>the index of this option element.</summary>
+		public int index{
+			get{
+				if(Dropdown==null){
+					// Datalist
+					return 0;
+				}
+				return Dropdown.GetOptionIndex(this);
+			}
+		}
+		
+		protected override bool HandleLocalEvent(Dom.DomEvent e,bool bubblePhase){
 			
-			if(Dropdown==null){
-				return;
+			if(bubblePhase && Dropdown!=null && e.type=="mouseup"){
+				
+				Dropdown.SetSelected(this);
+				Dropdown.Hide();
+				
 			}
 			
-			Dropdown.SetSelected(this);
-			Dropdown.Hide();
+			// Handle locally:
+			return base.HandleLocalEvent(e,bubblePhase);
 			
 		}
 		

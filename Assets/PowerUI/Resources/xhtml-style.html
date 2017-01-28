@@ -33,6 +33,206 @@ iframe{
 	background:white;
 }
 
+/* Input elements */
+
+input[type="checkbox"]{
+	border:1px solid rgb(190,192,197);
+	width:14px;
+	height:14px;
+	background:white;
+	display:inline-block;
+}
+
+input[type="checkbox"]:checked{
+	background:white url("resources://checkbox.png") no-repeat center;
+}
+
+input[type="radio"]{
+	border-radius:7px;
+	border:1px solid rgb(190,192,197);
+	width:14px;
+	height:14px;
+	background:white;
+	display:inline-block;
+}
+
+input[type="radio"]:checked{
+	background:white url("resources://radio-bullet.png") no-repeat center;
+}
+
+input[type="button"],button,input[type="submit"]{
+	border:1px solid white;
+	padding:4px;
+	background-color:rgb(190,192,197);
+	color:black;
+	font-size:14px;
+	display:inline-block;
+	text-align:center;
+}
+
+input[type="button"]:hover,input[type="submit"]:hover,button:hover{
+	background-color:rgb(177,209,208);
+	border:1px solid #66e2e7;
+}
+
+input[type="button"]:active,input[type="submit"]:active,button:active{
+	background-color:rgb(165,218,222);
+	border:1px solid black;
+	position:relative;
+	left:2px;
+}
+
+input[type="text"],input[type="number"],input[type="url"],input[type="email"],input[type="password"]{
+	-moz-user-select:text;
+	box-sizing:border-box;
+	border:1px solid rgb(190,192,197);
+	padding:1px;
+	font-size:14px;
+	direction:ltr;
+	width:150px;
+	height:20px;
+	background-color:white;
+	text-align:left;
+	display:inline-block;
+	color:black;
+	white-space:nowrap;
+	overflow:hidden;
+}
+
+textarea{
+	-moz-user-select:text;
+	border:1px solid rgb(190,192,197);
+	padding:1px;
+	font-size:14px;
+	direction:ltr;
+	width:150px;
+	height:40px;
+	background-color:white;
+	text-align:left;
+	display:inline-block;
+	color:black;
+	overflow-y:auto;
+	white-space:pre-wrap;
+}
+
+textarea:hover,input:hover,select:hover{
+	border-color:rgb(87,148,191);
+}
+
+scrollbar{
+	display:block;
+	border:1px solid rgb(248,248,248);
+	background:rgb(248,248,248);
+	box-sizing:border-box;
+}
+
+scrollbar[orient="vertical"]{
+	width:17px;
+}
+
+scrollbar[orient="horizontal"]{
+	height:17px;
+}
+
+resizer{
+	display:block;
+	position:-spark-absolute-fixed;
+	width:17px;
+	height:17px;
+	background:rgb(248,248,248);
+	bottom:0px;
+	right:0px;
+}
+
+scrollbutton,selectbutton{
+	border-radius:6px;
+	border:1px solid white;
+	width:13px;
+	height:13px;
+	background:#dddddd url("resources://scroll-arrow.png") no-repeat center;
+	display:inline-block;
+	position:-spark-absolute-fixed;
+}
+
+selectbutton{
+	top:0px;
+	right:0px;
+	transform:rotate(90deg);
+}
+
+scrollbutton[orient="right"]{
+	right:0px;
+	top:0px;
+}
+
+scrollbutton[orient="left"]{
+	transform:rotate(180deg);
+	left:2px;
+	top:2px;
+}
+
+scrollbutton[orient="down"]{
+	bottom:0px;
+	left:2px;
+	transform:rotate(90deg);
+}
+
+scrollbutton[orient="up"]{
+	transform:rotate(270deg);
+}
+
+scrollbutton:hover{
+	border-color:rgb(60,127,177);
+	background-color:rgb(220,240,251);
+}
+
+scrollthumb{
+	border-radius:6px;
+	border:1px solid white;
+	position:-spark-absolute-fixed;
+	width:13px;
+	height:13px;
+	background:#dddddd;
+	display:inline-block;
+}
+
+scrollthumb:hover{
+	border-color:rgb(60,127,177);
+	background:rgb(220,240,251);
+}
+
+select{
+	-moz-user-select:none;
+	box-sizing:border-box;
+	border:1px solid rgb(190,192,197);
+	padding:1px;
+	font-size:14px;
+	direction:ltr;
+	width:150px;
+	height:20px;
+	background-color:white;
+	text-align:left;
+	display:inline-block;
+	color:black;
+	white-space:nowrap;
+	overflow:hidden;
+}
+
+select option:hover{
+	background:blue;
+	color:white;
+}
+
+/* This is the box that pops up when you open a select menu */
+dropdown{
+	display:block;
+	max-height:200px;
+	color:black;
+	position:fixed;
+	background:white;
+	border:1px solid rgb(190,192,197);
+}
+
 /* Built in JS prompts; alert, confirm etc */
 #spark-prompt-background{
 	background:rgba(0,0,0,42%);
@@ -526,202 +726,12 @@ canvas {
 	display:inline-block;
 }
 
-input[type="checkbox"]{
-	border:1px solid rgb(190,192,197);
-	width:14px;
-	height:14px;
-	background:white;
-	display:inline-block;
-}
-
-input[type="checkbox"]:checked{
-	background:white url("resources://checkbox.png") no-repeat center;
-}
-
 input[type="hidden"]{
 	display:none;
 }
 
 font{
 	display:inline;
-}
-
-input[type="radio"]{
-	border-radius:7px;
-	border:1px solid rgb(190,192,197);
-	width:14px;
-	height:14px;
-	background:white;
-	display:inline-block;
-}
-
-input[type="radio"]:checked{
-	background:white url("resources://radio-bullet.png") no-repeat center;
-}
-
-input[type="button"],button,input[type="submit"]{
-	border:1px solid white;
-	padding:4px;
-	background-color:rgb(190,192,197);
-	color:black;
-	font-size:14px;
-	display:inline-block;
-	text-align:center;
-}
-
-input[type="button"]:hover,input[type="submit"]:hover,button:hover{
-	background-color:rgb(177,209,208);
-	border:1px solid #66e2e7;
-}
-
-input[type="button"]:active,input[type="submit"]:active,button:active{
-	background-color:rgb(165,218,222);
-	border:1px solid black;
-	position:relative;
-	left:2px;
-}
-
-input[type="text"],input[type="number"],input[type="url"],input[type="email"],input[type="password"]{
-	-moz-user-select:text;
-	box-sizing:border-box;
-	border:1px solid rgb(190,192,197);
-	padding:1px;
-	font-size:14px;
-	direction:ltr;
-	width:150px;
-	height:20px;
-	background-color:white;
-	text-align:left;
-	display:inline-block;
-	color:#000000;
-	white-space:nowrap;
-	overflow:hidden;
-}
-
-textarea{
-	-moz-user-select:text;
-	border:1px solid rgb(190,192,197);
-	padding:1px;
-	font-size:14px;
-	direction:ltr;
-	width:150px;
-	height:40px;
-	background-color:white;
-	text-align:left;
-	display:inline-block;
-	color:black;
-	overflow-y:auto;
-	white-space:pre-wrap;
-}
-
-textarea:hover,input:hover{
-	border-color:rgb(87,148,191);
-}
-
-scrollbar{
-	display:block;
-	border:1px solid rgb(248,248,248);
-	background:rgb(248,248,248);
-	box-sizing:border-box;
-}
-
-scrollbar[orient="vertical"]{
-	width:17px;
-}
-
-scrollbar[orient="horizontal"]{
-	height:17px;
-}
-
-scrollbutton:hover{
-	border-color:rgb(60,127,177);
-	background-color:rgb(220,240,251);
-}
-
-scrollthumb:hover{
-	border-color:rgb(60,127,177);
-	background:rgb(220,240,251);
-}
-
-resizer{
-	display:block;
-	position:-spark-absolute-fixed;
-	width:17px;
-	height:17px;
-	background:rgb(248,248,248);
-	bottom:0px;
-	right:0px;
-}
-
-scrollbutton{
-	border-radius:6px;
-	border:1px solid white;
-	width:13px;
-	height:13px;
-	background:#dddddd url("resources://scroll-arrow.png") no-repeat center;
-	display:inline-block;
-	position:-spark-absolute-fixed;
-}
-
-scrollbutton[orient="right"]{
-	right:0px;
-	top:0px;
-}
-
-scrollbutton[orient="left"]{
-	transform:rotate(180deg);
-	left:2px;
-	top:2px;
-}
-
-scrollbutton[orient="down"]{
-	bottom:0px;
-	left:2px;
-	transform:rotate(90deg);
-}
-
-scrollbutton[orient="up"]{
-	transform:rotate(270deg);
-}
-
-scrollthumb{
-	border-radius:6px;
-	border:1px solid white;
-	position:-spark-absolute-fixed;
-	width:13px;
-	height:13px;
-	background:#dddddd;
-	display:inline-block;
-}
-
-ddbox{
-	display:none;
-	overflow-x:hidden;
-	overflow-y:auto;
-	max-height:200px;
-	position:fixed;
-	background:#ffffff;
-	border:1px solid #6f7cab;
-}
-
-ddbutton:hover{
-	background-color:#a6baf7;
-	color:#414e75;
-}
-
-ddbutton{
-	display:inline-block;
-	width:13px;
-	height:95%;
-	border:1px solid #6f7cab;
-	background-color:#6074bd;
-	background-image:url(resources://buttonBG.png);
-	color:#ffffff;
-	v-align:middle;
-	text-align:center;
-	font-size:14px;
-	position:absolute;
-	right:0px;
 }
 
 bdi,bdo,time{
@@ -761,25 +771,35 @@ audio,video,progress{
 	display:inline-block;
 }
 
-select{
-	border:1px solid #6f7cab;
-	padding:1px;
-	width:150px;
-	height:20px;
-	background-color:#e5e5e5;
-	text-align:left;
-	direction:ltr;
-	v-align:middle;
-	display:inline-block;
-	color:#000000;
-	white-space:nowrap;
-	font-size:14px;
-	overflow:hidden;
-}
-
 option{
 	text-align:left;
 	direction:ltr;
 	display:block;
 	width:90%;
+}
+
+optgroup {
+  display: block;
+  float: none !important;
+  position: static !important;
+  font: -moz-list;
+  line-height: normal !important;
+  font-style: italic;
+  font-weight: bold;
+  font-size: inherit;
+  -moz-user-select: none;
+  text-indent: 0;
+  white-space: nowrap !important;
+  word-wrap: normal !important;
+}
+
+optgroup > option {
+  padding-inline-start: 20px;
+  font-style: normal;
+  font-weight: normal;
+}
+
+optgroup:before {
+  display: block;
+  content: attr(label);
 }

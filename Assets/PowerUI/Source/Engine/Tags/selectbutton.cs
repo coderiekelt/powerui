@@ -29,9 +29,17 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void OnTagLoaded(){
-			innerHTML="v";
+		/// <summary>The parent select element.</summary>
+		public HtmlSelectElement Select{
+			get{
+				return parentNode as HtmlSelectElement;
+			}
 		}
+		
+		/*
+		This button actually does nothing at all - it's the parent select element that actually handles clicks.
+		(Because people click on any part of it)
+		*/
 		
 	}
 	

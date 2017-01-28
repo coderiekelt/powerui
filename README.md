@@ -18,29 +18,55 @@ The example scenes are gradually being revisited as various features are being w
 
 Float is very difficult to get right without massively impacting the performance. It's one of the only CSS properties which can directly affect the kids of its siblings. At the moment, some test cases work and some don't.
 
-* Scrollbars
-
-> Automatic scrollbars aren't appearing correctly
-
-You can manually use the new scrollbar element, but this is being worked on at the moment so it's not expected to be down for much longer.
-
 * Justify
 
 > text-align:justify
 
 Previously PowerUI generated a box per word, which made justify relatively straight forward, but it prevented word breaking - that was challenging for Chinese. It now generates a box per line which prevents justification; a hybrid approach will be added to enable justify to work correctly again.
 
-* Input elements
-
-> Select, input and textarea
-
-We're transitioning to using pseudo-elements to style them as browsers do. The new cursor element and select displaying is also being worked on at the moment.
-
 * Tables
 
 > HTML tables including the caption element
 
 Tables aren't actively being checked at the moment. The new functionality required for display:table is in place but hasn't been connected together yet.
+
+## Testing required
+
+These are parts of PowerUI which are currently under tested.
+
+* The new window manager
+
+> And it's derived systems; dialogue trees and context menus
+
+* @Keyframes and CSS transform
+
+> E.g. transform:rotate(90deg); inside @keyframes.
+
+* Writing modes
+
+> Left-to-right and vertical text
+
+Vertical text gained basic support but hasn't been tested yet. Similarly, left-to-right hasn't been tested in PowerUI 2 yet.
+
+* Img tag additions
+
+> Img tag gained srcset
+
+* The new input system
+
+> Touch, VR and similar input modes
+
+The input system was rebuilt, but is currently under tested. Needs to be tested out on a multitouch screen and in VR with the new [VR camera modes](http://powerui.kulestar.com/wiki/index.php?title=Virtual_Reality_Cameras).
+
+## Down features to be worked on post release
+
+These are all new in PowerUI 2 and have easy workarounds so they're considered minor.
+
+* Positioning edge cases
+
+> position:absolute;height:100%; where the ancestors height is defined by the normal flow.
+
+These edge cases require 2+ reflow passes to handle correctly. It needs to figure out the height of the ancestor first then revisit the positioned element. PowerUI has long avoided supporting this case for this double pass reason. Slightly related is stacking contexts; the two together make reflow considerably more complex and *much* slower. However, it's very clear that these do get used in the wild, so the plan is to implement them (post MVP) in a way that it can be turned off so you can know when you're using something that's excessively slow.
 
 * SVG
 

@@ -15,9 +15,8 @@ using System;
 namespace PowerUI{
 	
 	/// <summary>
-	/// Dropdown boxes used by select. It's a virtual element and can be targeted with CSS selectors.
+	/// Dropdown boxes used by select. It's a virtual element (of the HTML node) and can be targeted with CSS selectors.
 	/// Its childNode set is the same object as the childNode set from the select element.
-	/// To target a specific one, use e.g. .mySelect dropdown{}
 	/// </summary>
 	
 	[Dom.TagName("dropdown")]

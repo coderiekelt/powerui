@@ -27,9 +27,18 @@ namespace PowerUI{
 	public class HtmlSelectElement:HtmlElement{
 		
 		/// <summary>True if this select is currently dropped down.</summary>
-		public bool Dropped;
+		public bool Dropped{
+			get{
+				return Dropdown!=null;
+			}
+		}
+		
+		/// <summary>The selected node.</summary>
+		private HtmlOptionElement SelectedNode_;
+		/// <summary>The currently open dropdown.</summary>
+		public HtmlDropdownElement Dropdown;
 		/// <summary>The index of the selected option.</summary>
-		public int SelectedIndex=-1;
+		private int SelectedIndex_=-1;
 		/// <summary>The element that displays the selected option (it's a div; the same as Firefox).</summary>
 		private HtmlDivElement Placeholder{
 			get{
@@ -40,6 +49,28 @@ namespace PowerUI{
 				
 				return RenderData.Virtuals.Get(HtmlSelectButtonElement.Priority-1) as HtmlDivElement;
 				
+			}
+		}
+		
+		/// <summary>The current selected option.</summary>
+		public HtmlOptionElement SelectedOption{
+			get{
+				return SelectedNode_;
+			}
+		}
+		
+		/// <summary>The current selected index.</summary>
+		public int SelectedIndex{
+			get{
+				
+				if(SelectedIndex_==-2){
+					
+					// Figure it out now:
+					SelectedIndex_=GetOptionIndex(SelectedNode_);
+					
+				}
+				
+				return SelectedIndex_;
 			}
 		}
 		
@@ -56,21 +87,8 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>The dropdown.</summary>
-		private HtmlDropdownElement Dropdown{
-			get{
-				
-				if(RenderData.Virtuals==null){
-					return null;
-				}
-				
-				return RenderData.Virtuals.Get(HtmlDropdownElement.Priority) as HtmlDropdownElement;
-				
-			}
-		}
-		
 		/// <summary>The set of options this select provides.</summary>
-		public NodeList Options{
+		public NodeList RawOptions{
 			get{
 				return childNodes_;
 			}
@@ -170,24 +188,112 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Gets an option by its index.</summary>
+		public HtmlOptionElement GetOption(int index){
+			if(index<0){
+				return null;
+			}
+			
+			// Go through all options that are kids of this select menu:
+			return GetOption(this,ref index);
+		}
+		
+		/// <summary>Searches parent (which must be a parent) for the given node.
+		/// Each time an option element is encountered, currentIndex is increased.</summary>
+		private HtmlOptionElement GetOption(Node parent,ref int targetIndex){
+			
+			// For each child node..
+			for(int i=0;i<parent.childNodes_.length;i++){
+				
+				// Get it:
+				Node child=parent.childNodes_[i];
+				
+				// Might be an optgroup containing it. Check if it is:
+				if(child is HtmlOptionElement){
+					
+					// Is it the one we're after?
+					if(targetIndex<=0){
+						// Yes!
+						return child as HtmlOptionElement;
+					}
+					
+					// Just decrease index:
+					targetIndex--;
+					continue;
+				}
+				
+				if(child.childNodes_!=null){
+					
+					// Go recursive:
+					HtmlOptionElement inChild=GetOption(child,ref targetIndex);
+					
+					if(inChild!=null){
+						return inChild;
+					}
+					
+				}
+				
+			}
+			
+			// Not found here.
+			return null;
+		}
+		
 		/// <summary>Gets the index for the given node.</summary>
 		/// <param name="node">The node to look for.</param>
 		/// <returns>The index of the node.</returns>
-		public int GetSelectID(Node node){
+		public int GetOptionIndex(Node node){
 			
-			NodeList opts=Options;
-			
-			if(opts==null){
+			// Go through all options that are kids of this select menu.
+			if(childNodes_==null){
 				return -1;
 			}
 			
-			for(int i=0;i<opts.length;i++){
-				if(opts[i]==node){
-					return i;
-				}
+			int currentIndex=0;
+			
+			if(GetOptionIndex(this,node,ref currentIndex)){
+				return currentIndex;
 			}
 			
 			return -1;
+		}
+		
+		/// <summary>Searches parent (which must be a parent) for the given node.
+		/// Each time an option element is encountered, currentIndex is increased.</summary>
+		private bool GetOptionIndex(Node parent,Node node,ref int currentIndex){
+			
+			// For each child node..
+			for(int i=0;i<parent.childNodes_.length;i++){
+				
+				// Get it:
+				Node child=parent.childNodes_[i];
+				
+				// Match?
+				if(child==node){
+					// Got it!
+					return true;
+				}
+				
+				// Might be an optgroup containing it. Check if it is:
+				if(child is HtmlOptionElement){
+					// Got an option - just bump up the index:
+					currentIndex++;
+					continue;
+				}
+				
+				if(child.childNodes_!=null){
+					
+					// Go recursive:
+					if(GetOptionIndex(child,node,ref currentIndex)){
+						return true;
+					}
+					
+				}
+				
+			}
+			
+			// Not found here.
+			return false;
 		}
 		
 		/// <summary>Adds an option to this dropdown menu. Element.add() calls this.</summary>
@@ -211,36 +317,17 @@ namespace PowerUI{
 			// Selects are unusual in that they don't draw their own childnodes:
 			RenderData.Virtuals.AllowDrawKids=false;
 			
-			NodeList opts=Options;
+		}
+		
+		public override void OnChildrenLoaded(){
 			
-			if(opts!=null){
-				
-				// Find the selected option, if there is one:
-				for(int i=opts.length-1;i>=0;i--){
-					
-					Node element=opts[i];
-					
-					HtmlOptionElement optionTag=element as HtmlOptionElement;
-					
-					if(optionTag!=null && optionTag.Selected){
-						// Found the selected option. The last option is used (thus we go through it backwards).
-						// Must be done like this because this tags innerHTML won't be available until this occurs for the select to display.
-						SetSelected(optionTag);
-						break;
-					}
-					
-				}
-				
+			if(SelectedNode_==null){
+				// Nothing had the selected attribute (<option .. selected ..>).
+				// If it did, it would have SetSelected already.
+				// Select the first one by default, if it exists.
+				// -3 Prompts it to not call onchange, then set index 0.
+				SetSelected(-3);
 			}
-			
-			if(SelectedIndex!=-1){
-				return;
-			}
-			
-			// Nothing had the selected attribute (<option .. selected ..>); if it did, it would have SetSelected already.
-			// We'll select the first one by default, if it exists.
-			// -2 Prompts it to not call onchange, then set index 0.
-			SetSelected(-2);
 			
 		}
 		
@@ -250,28 +337,27 @@ namespace PowerUI{
 				return;
 			}
 			
-			Dropped=true;
-			
 			// Focus if it isn't already:
 			focus();
 			
-			// Get the CS:
-			ComputedStyle computed=Style.Computed;
+			// Get the CS of the HTML node:
+			ComputedStyle computed=htmlDocument.html.Style.Computed;
 			
 			// Get/create it:
-			HtmlDropdownElement dropdown=computed.GetOrCreateVirtual(HtmlDropdownElement.Priority,"dropdown") as HtmlDropdownElement;
+			Dropdown=computed.GetOrCreateVirtual(HtmlDropdownElement.Priority,"dropdown") as HtmlDropdownElement;
 			
 			// Act like the options are kids of the dropdown:
-			dropdown.childNodes_=Options;
+			Dropdown.childNodes_=RawOptions;
 			
-			/*
+			// Get my computed style:
+			computed=Style.Computed;
+			
 			// Locate it to the select:
 			LayoutBox box=computed.FirstBox;
 			
-			dropdown.style.left=box.X+"px";
-			dropdown.style.width=box.InnerWidth+"px";
-			dropdown.style.top=(box.Y+box.PaddedHeight)+"px";
-			*/
+			Dropdown.style.left=box.X+"px";
+			Dropdown.style.width=box.Width+"px";
+			Dropdown.style.top=(box.Y+box.PaddedHeight)+"px";
 			
 		}
 		
@@ -297,85 +383,48 @@ namespace PowerUI{
 				return;
 			}
 			
-			Dropped=false;
+			// Clear the child nodes (we don't want them to think they've been removed from the DOM):
+			Dropdown.childNodes_=null;
+			Dropdown=null;
+			
+			// Get the CS of the HTML node:
+			ComputedStyle computed=htmlDocument.html.Style.Computed;
 			
 			// Remove:
-			ComputedStyle.RemoveVirtual(HtmlDropdownElement.Priority);
-			
-		}
-		
-		/// <summary>Attempts to get the box that will show the options.</summary>
-		/// <returns>The dropdown box if it was found; null otherwise.</returns>
-		private HtmlElement GetDropdownBox(){
-			
-			if(RenderData.Virtuals==null){
-				return null;
-			}
-			
-			return RenderData.Virtuals.Get(HtmlDropdownElement.Priority) as HtmlElement;
+			computed.RemoveVirtual(HtmlDropdownElement.Priority);
 			
 		}
 		
 		/// <summary>Gets the currently selected value.</summary>
 		/// <returns>The currently selected value.</returns>
 		public string GetValue(){
-			if(SelectedIndex==-1 || Options==null){
+			if(SelectedNode_==null){
 				return "";
 			}
 			
-			HtmlElement selected=Options[SelectedIndex] as HtmlElement ;
-			
-			if(selected==null){
-				return "";
-			}
-			
-			string result=selected["value"];
-			
-			if(result==null){
-				return "";
-			}
-			
-			return result;
+			return SelectedNode_["value"];
 		}
 		
 		/// <summary>Sets the given element as the selected option.</summary>
 		/// <param name="element">The option to set as the selected value.</param>
-		public void SetSelected(HtmlElement element){
-			// Find which option # the element is.
-			// And set the innerHTML text to the option text. 
-			int index=GetSelectID(element);
-			
-			if(index==SelectedIndex){
-				return;
-			}
-			
-			SetSelected(index,element,true);
+		public void SetSelected(HtmlOptionElement element){
+			SetSelected(-2,element,true);
 		}
 		
 		/// <summary>Sets the option at the given index as the selected one.</summary>
 		/// <param name="index">The index of the option to select.</param>
 		public void SetSelected(int index){
 			
-			NodeList opts=Options;
-			
-			if(opts==null || index>=opts.length){
-				return;
-			}
-			
 			bool runOnChange=true;
 			
-			if(index==-2){
+			if(index==-3){
 				// Setup/ auto selected when the tag has just been parsed.
 				runOnChange=false;
 				index=0;
 			}
 			
-			HtmlElement element=null;
-			
-			if(index>=0){
-				element=opts[index] as HtmlElement;
-			}
-			
+			// Get and set:
+			HtmlOptionElement element=GetOption(index);
 			SetSelected(index,element,runOnChange);
 		}
 		
@@ -383,8 +432,9 @@ namespace PowerUI{
 		/// <param name="index">The index of the option to select.</param>
 		/// <param name="element">The element at the given index.</param>
 		/// <param name="runOnChange">True if the onchange event should run.</param>
-		private void SetSelected(int index,HtmlElement element,bool runOnChange){
-			if(index==SelectedIndex){
+		private void SetSelected(int index,HtmlOptionElement element,bool runOnChange){
+			
+			if(element==SelectedNode_){
 				return;
 			}
 			
@@ -393,26 +443,35 @@ namespace PowerUI{
 			
 			if(!runOnChange || dispatchEvent(e)){
 				
-				SelectedIndex=index;
-				
-				if(index<0||element==null){
+				if(element==null){
 					// Clear the option text:
 					Placeholder.innerHTML="";
+					index=-1;
 				}else{
 					Placeholder.innerHTML=element.innerHTML;
 				}
+				
+				SelectedIndex_=index;
+				SelectedNode_=element;
 				
 			}
 			
 		}
 		
-		public override void OnClickEvent(MouseEvent clickEvent){
+		protected override bool HandleLocalEvent(Dom.DomEvent e,bool bubblePhase){
 			
-			if(Dropped){
-				Hide();
-			}else{
-				Drop();
+			if(e.type=="mousedown" && bubblePhase){
+				
+				if(Dropped){
+					Hide();
+				}else{
+					Drop();
+				}
+				
 			}
+			
+			// Handle locally:
+			return base.HandleLocalEvent(e,bubblePhase);
 			
 		}
 		
