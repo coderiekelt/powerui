@@ -93,7 +93,7 @@ namespace PowerUI{
 			}
 			
 			// Handle auto next:
-			if(overflowMode==OverflowMode.Auto && visible==1f){
+			if(overflowMode==VisibilityMode.Auto && visible==1f){
 				
 				// Hide it:
 				ScrollBar.Style.display="none";
