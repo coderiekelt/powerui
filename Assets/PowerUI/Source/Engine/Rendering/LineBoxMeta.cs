@@ -48,8 +48,6 @@ namespace PowerUI{
 		internal FloatingElements Floats;
 		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
 		internal float PenX;
-		/// <summary>The point at which lines begin at.</summary>
-		public float LineStart;
 		/// <summary>The value for vertical-align.</summary>
 		public int VerticalAlign;
 		/// <summary>Vertical-align offset from the baseline.</summary>
@@ -179,6 +177,16 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The start position of a line.</summary>
+		public virtual float LineStart{
+			get{
+				return HostBlock.LineStart_;
+			}
+			set{
+				HostBlock.LineStart_=value;
+			}
+		}
+		
 		/// <summary>The x value that must not be exceeded by elements on a line. Used if the parent has fixed width.</summary>
 		public virtual float MaxX{
 			get{
@@ -202,14 +210,14 @@ namespace PowerUI{
 			}
 			
 			// Does it fit on a newline?
-			if(width <= space){
+			if(width <= (MaxX-LineStart)){
 				return 1;
 			}
 			
 			// Still nope! If we've got any floats, try clearing them:
 			while(TryClearFloat()){
 				
-				if(width <= (MaxX-PenX)){
+				if(width <= (MaxX-LineStart)){
 					
 					// Great, it'll fit on a newline!
 					return 1;
@@ -300,6 +308,54 @@ namespace PowerUI{
 					floatMode=(floatMode==FloatMode.Right)?FloatMode.Left : FloatMode.Right;
 				}
 				
+				// The total width is..
+				float totalWidth=styleBox.TotalWidth;
+				
+				// Got enough space for this float?
+				if((MaxX-PenX)<totalWidth){
+					
+					// Not enough space on the line for this floating block.
+					bool cls=true;
+					
+					if(PenX!=LineStart){
+						
+						// Line break:
+						CompleteLine(true,true);
+						
+						// Clear line space only if the test is still true:
+						cls=((MaxX-PenX)<totalWidth);
+						
+					}
+					
+					if(cls){
+						
+						// Try clearing space for it:
+						if(ClearLineSpace(floatMode)){
+							
+							// Test again:
+							if((MaxX-PenX)<totalWidth){
+								
+								// Potentially clear the other side this time:
+								if(!ClearLineSpace(floatMode) || (MaxX-PenX)<totalWidth){
+									
+									// Line break.
+									CompleteLine(true,true);
+									
+								}
+								
+							}
+							
+						}else{
+							
+							// Line break.
+							CompleteLine(true,true);
+							
+						}
+						
+					}
+					
+				}
+				
 				if(Floats==null){
 					Floats=new FloatingElements();
 				}
@@ -310,11 +366,44 @@ namespace PowerUI{
 					styleBox.NextOnLine=Floats.Right;
 					Floats.Right=styleBox;
 					
+					// Special case for any inline-block which isn't in block mode.
+					// MaxX is *not* the final position for it.
+					// We'll revisit it when we know how much of a 'gap' there is.
+					styleBox.ParentOffsetLeft=MaxX-totalWidth+styleBox.Margin.Left;
+					
+					if(styleBox.ParentOffsetLeft<0f){
+						styleBox.ParentOffsetLeft=0f;
+					}
+					
+					// Reduce maxX:
+					MaxX-=totalWidth;
+					
 				}else{
 					
 					// Push down onto the FL stack:
 					styleBox.NextOnLine=Floats.Left;
 					Floats.Left=styleBox;
+					
+					// Update left offset:
+					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
+					
+					// Push over where lines start at:
+					LineStart+=totalWidth;
+					
+					// Push over all the elements before this on the line.
+					// (Note: A float will only join a line if it fits on it; 
+					// this won't push something beyond the end).
+					LayoutBox currentLine=FirstOnLine;
+					
+					while(currentLine!=null){
+						
+						// Move it:
+						currentLine.ParentOffsetLeft+=totalWidth;
+						
+						// Next one:
+						currentLine=currentLine.NextOnLine;
+						
+					}
 					
 				}
 				
@@ -435,6 +524,44 @@ namespace PowerUI{
 					
 				}
 				
+				if((mode & FloatMode.Right)==0){
+					
+					// Check if the right side has been cleared too.
+					
+					// Test clear right:
+					activeFloat=Floats.Right;
+					
+					while(activeFloat!=null){
+						
+						// Is the current render point now higher than this floating object?
+						// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
+						
+						if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							
+							// Clear!
+							
+							// Pop:
+							Floats.Right=activeFloat.NextOnLine;
+							
+							// Increase max x:
+							MaxX+=activeFloat.TotalWidth;
+							
+						}else{
+							
+							// Didn't clear - stop there.
+							// (We don't want to clear any further over to the right).
+							break;
+							
+						}
+						
+						activeFloat=activeFloat.NextOnLine;
+					}
+					
+				}
+				
+				// Reset PenX:
+				PenX=LineStart;
+				
 			}
 			
 			if((mode & FloatMode.Right)!=0){
@@ -456,11 +583,44 @@ namespace PowerUI{
 					// Increase max x:
 					MaxX+=activeFloat.TotalWidth;
 					
-					// Get the next float:right:
-					LayoutBox next=activeFloat.NextOnLine;
-					
 					// Go right:
-					activeFloat=next;
+					activeFloat=activeFloat.NextOnLine;
+					
+				}
+				
+				if((mode & FloatMode.Left)==0){
+					
+					// Check if any left floats were cleared.
+					activeFloat=Floats.Left;
+					
+					while(activeFloat!=null){
+						
+						// Is the current render point now higher than this floating object?
+						// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
+						
+						if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							
+							// Clear!
+							
+							// Pop:
+							Floats.Left=activeFloat.NextOnLine;
+							
+							// Decrease LineStart:
+							LineStart-=activeFloat.TotalWidth;
+							
+							// Must reset PenX:
+							PenX=LineStart;
+							
+						}else{
+							
+							// Didn't clear - stop there.
+							// (We don't want to clear any further over to the left).
+							break;
+							
+						}
+						
+						activeFloat=activeFloat.NextOnLine;
+					}
 					
 				}
 				
@@ -691,7 +851,7 @@ namespace PowerUI{
 							// Is the current render point now higher than this floating object?
 							// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
 							
-							if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
 								
 								// Clear!
 								
@@ -700,6 +860,9 @@ namespace PowerUI{
 								
 								// Decrease LineStart:
 								LineStart-=activeFloat.TotalWidth;
+								
+								// Must reset PenX:
+								PenX=LineStart;
 								
 							}else{
 								
@@ -720,7 +883,7 @@ namespace PowerUI{
 							// Is the current render point now higher than this floating object?
 							// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
 							
-							if(PenY>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
 								
 								// Clear!
 								
@@ -759,6 +922,60 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Attempts to clear left or right. If they're both the same height
+		/// then it will clear the given side.</summary>
+		private bool ClearLineSpace(int floatMode){
+			
+			if(Floats!=null){
+				
+				if(Floats.Right!=null){
+					
+					if(Floats.Left==null){
+						
+						// Clear right:
+						ClearFloat(FloatMode.Right);
+						
+					}else{
+						
+						// Clear shortest:
+						float clearanceL=FloatClearance(true);
+						float clearanceR=FloatClearance(false);
+						
+						if(clearanceL>clearanceR){
+							
+							// R first.
+							ClearFloat(FloatMode.Right);
+							
+						}else if(clearanceR>clearanceL){
+							
+							// L first.
+							ClearFloat(FloatMode.Left);
+							
+						}else{
+							
+							// They're the same. Clear *this* side:
+							ClearFloat(floatMode);
+							
+						}
+						
+					}
+					
+				}else if(Floats.Left!=null){
+					
+					// Clear left:
+					ClearFloat(FloatMode.Left);
+					
+				}else{
+					return false;
+				}
+				
+			}else{
+				return false;
+			}
+			
+			return true;
+		}
+		
 		/// <summary>Advances the pen now.</summary>
 		public void AdvancePen(LayoutBox styleBox){
 			
@@ -769,66 +986,27 @@ namespace PowerUI{
 				// Float (block/inline-block only):
 				BlockBoxMeta bbm=this as BlockBoxMeta;
 				
-				float totalWidth=styleBox.TotalWidth;
-				
-				// What's the opposite side?
-				int invertFloat=(floatMode==FloatMode.Right)?FloatMode.Left : FloatMode.Right;
-				
-				if(GoingLeftwards){
-					// Going the other way - flip sides:
-					int a=floatMode;
-					floatMode=invertFloat;
-					invertFloat=a;
-				}
-				
-				if((bbm.MaxX_-totalWidth)<bbm.LineStart_){
-					
-					// Clear other side:
-					ClearFloat(invertFloat);
-					
-				}
-				
 				// Always apply top here (no vertical-align and must be after the above clear):
 				styleBox.ParentOffsetTop=bbm.PenY_ + bbm.ClearY_;
 				
-				if(floatMode==FloatMode.Left){
+				// Pen only advances for left:
+				if(
+					(floatMode==FloatMode.Left && !GoingLeftwards) || 
+					(floatMode==FloatMode.Right && GoingLeftwards)
+				){
 					
-					styleBox.ParentOffsetLeft=LineStart+styleBox.Margin.Left;
-					PenX+=totalWidth;
-					
-					// Push over where lines start at:
-					bbm.LineStart_+=totalWidth;
-					
-					// If it's not the first on the line then..
-					if(styleBox!=FirstOnLine){
+					// Same as below (but x only)
+					if(GoingLeftwards){
 						
-						// Push over all the elements before this on the line.
-						LayoutBox currentLine=FirstOnLine;
+						PenX+=styleBox.Width+styleBox.Margin.Right;
+						PenX+=styleBox.Margin.Left;
 						
-						while(currentLine!=styleBox && currentLine!=null){
-							
-							// Move it:
-							currentLine.ParentOffsetLeft+=styleBox.Width;
-							
-							// Next one:
-							currentLine=currentLine.NextOnLine;
-							
-						}
+					}else{
 						
+						PenX+=styleBox.Margin.Left;
+						PenX+=styleBox.Width+styleBox.Margin.Right;
+				
 					}
-					
-				}else{
-					
-					// Special case for any inline-block which isn't in block mode.
-					// MaxX is *not* the final position for it - we'll revisit it when we know how much of a 'gap' there is.
-					styleBox.ParentOffsetLeft=bbm.MaxX_-totalWidth+styleBox.Margin.Left;
-					
-					if(styleBox.ParentOffsetLeft<0f){
-						styleBox.ParentOffsetLeft=0f;
-					}
-					
-					// Reduce max:
-					bbm.MaxX_-=totalWidth;
 					
 				}
 				
@@ -936,6 +1114,16 @@ namespace PowerUI{
 			}
 			set{
 				MaxX_=value;
+			}
+		}
+		
+		/// <summary>The starting line point.</summary>
+		public override float LineStart{
+			get{
+				return LineStart_;
+			}
+			set{
+				LineStart_=value;
 			}
 		}
 		
