@@ -277,18 +277,18 @@ namespace PowerUI{
 				// We gained or lost some blocks - resize our buffers:
 				UV.Resize(total);
 				UV2.Resize(total);
-				
-				if(Normals!=null){
-					Normals.Resize(total);
-				}
-				
-				if(UV3!=null){
-					UV3.Resize(total);
-				}
-				
 				Colours.Resize(total);
 				Vertices.Resize(total);
 				Triangles.Resize(total);
+			}
+			
+			// Always make sure UV3 and Normals are valid:
+			if(Normals!=null){
+				Normals.ResizeMatch(total,Vertices.Buffer.Length);
+			}
+			
+			if(UV3!=null){
+				UV3.ResizeMatch(total,Vertices.Buffer.Length);
 			}
 			
 			LastBlockCount=total;
@@ -399,7 +399,9 @@ namespace PowerUI{
 			OutputMesh.vertices=Vertices.Buffer;
 			OutputMesh.colors=Colours.Buffer;
 			
-			if(UV3!=null){
+			if(UV3==null){
+				OutputMesh.uv3=null;
+			}else{
 				OutputMesh.uv3=UV3.Buffer;
 			}
 			

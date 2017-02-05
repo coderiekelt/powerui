@@ -29,7 +29,7 @@ namespace PowerUI{
 		/// <summary>Text index of the caret.</summary>
 		public int Index;
 		/// <summary>True if the caret should be relocated after the next update.</summary>
-		public bool Locate;
+		public bool Locate=true;
 		
 		
 		/// <summary>The host input element. Either a textarea or input.</summary>

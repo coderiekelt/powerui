@@ -109,7 +109,7 @@ namespace Css{
 				if(Renderer!=null){
 					
 					// Update it now:
-					Filter.Set("source1",Renderer.Texture);
+					Filter.Set("source0",Renderer.Texture);
 					
 					// Note that the next draw will update Output for us.
 					
@@ -174,7 +174,7 @@ namespace Css{
 					
 				}else{
 					
-					Filter.Set("source1",Renderer.Texture);
+					Filter.Set("source0",Renderer.Texture);
 					// Output will be updated shortly.
 					
 					// Always mark as changed:
@@ -261,7 +261,7 @@ namespace Css{
 				
 				if(Filter!=null){
 					// Set source:
-					Filter.Set("source1",Renderer.Texture);
+					Filter.Set("source0",Renderer.Texture);
 				}
 				
 				// Grab the output texture:

@@ -36,7 +36,7 @@ namespace Css.Properties{
 			if(value is Css.Functions.UrlFunction){
 				
 				// - (A URL to an SVG filter) (not supported yet here)
-				// - A URL to a Loonim filter (with a property called source1)
+				// - A URL to a Loonim filter (with a property called source0)
 				
 				// Load it now!
 				DataPackage dp=new DataPackage(value.Text,context.Document.basepath);
@@ -105,9 +105,9 @@ namespace Css.Properties{
 					
 					// Create the texture:
 					st=new SurfaceTexture();
-					st["source1"]=new Values.TextureValue(null);
+					st["source0"]=new Values.TextureValue(null);
 					st.Root=first;
-					first.Sources[0]=new Loonim.Property(st,"source1");
+					first.Sources[0]=new Loonim.Property(st,"source0");
 				}
 				
 				// Run the callback now!
