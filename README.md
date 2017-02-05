@@ -6,51 +6,35 @@ Hello! Welcome to the bleeding edge PowerUI 2 project. This repository doesn't c
 
 Here's the list of things that are known to be not working with the reasons why.
 
-* Example scenes
-
-> Patchy example scene coverage
-
-The example scenes are gradually being revisited as various features are being worked on.
-
-* Float
-
-> float:left in particular can display strange behaviour
-
-Float is very difficult to get right without massively impacting the performance. It's one of the only CSS properties which can directly affect the kids of its siblings. At the moment, some test cases work and some don't.
-
-* Justify
-
-> text-align:justify
-
-Previously PowerUI generated a box per word, which made justify relatively straight forward, but it prevented word breaking - that was challenging for Chinese. It now generates a box per line which prevents justification; a hybrid approach will be added to enable justify to work correctly again.
-
 * Tables
 
 > HTML tables including the caption element
 
-Tables aren't actively being checked at the moment. The new functionality required for display:table is in place but hasn't been connected together yet.
+Tables are now the top priority. The new functionality required for display:table is in place but hasn't been connected together yet.
+
+* text-shadow and text-stroke
+
+> Both are new in PowerUI 2 but are currently incomplete
+
+They exhibit some unstable behaviour, and text-shadow only accepts one shadow at the moment (however, the code required to allow multiple text-shadows and multiple background images is already in place).
 
 ## Testing required
 
-These are parts of PowerUI which are currently under tested.
+These are parts of PowerUI which are currently under tested. Use at your own risk!
 
 * The new window manager
 
-> And it's derived systems; dialogue trees and context menus
+> And its derived systems; dialogue trees and context menus
 
 * @Keyframes and CSS transform
 
 > E.g. transform:rotate(90deg); inside @keyframes.
 
-* Writing modes
-
-> Left-to-right and vertical text
-
-Vertical text gained basic support but hasn't been tested yet. Similarly, left-to-right hasn't been tested in PowerUI 2 yet.
+@keyframes currently also needs more broad testing - particularly with the new transition functions.
 
 * Img tag additions
 
-> Img tag gained srcset
+> Img tag gained srcset which replaces UI.Resolution (along with CSS zoom).
 
 * The new input system
 
@@ -61,6 +45,18 @@ The input system was rebuilt, but is currently under tested. Needs to be tested 
 ## Down features to be worked on post release
 
 These are all new in PowerUI 2 and have easy workarounds so they're considered minor.
+
+* Float edge cases
+
+> float has some complex inheritance behaviour
+
+* Writing modes
+
+> Vertical text
+
+Vertical text gained basic support but needs to be finished off.
+
+Float is now expected to work correctly in the general case but it has complex behaviour whenever floating objects extend beyond their parent. This isn't supported just yet but will be in the future.
 
 * Positioning edge cases
 
