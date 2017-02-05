@@ -63,7 +63,12 @@ namespace PowerUI{
 		public Vector3 VertexBottomLeft;
 		/// <summary>The vertex in the bottom right corner.</summary>
 		public Vector3 VertexBottomRight;
+		/// <summary>The renderer used by this meshblock.</summary>
+		public readonly Renderman Renderer;
 		
+		public MeshBlock(Renderman renderer){
+			Renderer=renderer;
+		}
 		
 		/// <summary>Sets an index in a batch. Used in paint mode.</summary>
 		public void SetBatchIndex(UIBatch batch,int blockIndex){
@@ -199,7 +204,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Applies the SDF outline "location", essentially the thickness of an outline, to this block.</summary>
-		public void ApplyOutline(float location){
+		public void ApplyOutline(){
 			
 			Vector2[] buffer;
 			
@@ -208,20 +213,20 @@ namespace PowerUI{
 				buffer=Mesh.UV3.Buffer;
 			}else{
 				
-				if(Buffer.UV3==null){
+				if(Buffer.Mesh.UV3==null){
 					// UV3 is now required:
-					Buffer.RequireUV3();
+					Buffer.Mesh.RequireUV3();
 				}
 				
-				// Apply the values to the tangents:
+				// Apply the values to the 3rd UV set:
 				buffer=Buffer.UV3;
 			
 			}
 			
-			Vector2 tangent=new Vector2(location,location);
+			Vector2 uv=new Vector2(Renderer.FontAliasingBottom,Renderer.FontAliasingTop);
 			
 			for(int i=0;i<4;i++){
-				buffer[VertexIndex+i]=tangent;
+				buffer[VertexIndex+i]=uv;
 			}
 			
 		}

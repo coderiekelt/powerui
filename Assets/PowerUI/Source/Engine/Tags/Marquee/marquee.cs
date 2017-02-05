@@ -470,6 +470,17 @@ namespace PowerUI{
 			
 		}
 		
+		internal override void RemovedFromDOM(){
+			base.RemovedFromDOM();
+			
+			// Clear the timer:
+			if(Timer!=null){
+				Timer.Stop();
+				Timer=null;
+			}
+			
+		}
+		
 		public override void OnChildrenLoaded(){
 			
 			Start();

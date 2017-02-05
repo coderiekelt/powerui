@@ -441,19 +441,44 @@ namespace PowerUI{
 			DomEvent e=new DomEvent("change");
 			e.SetTrusted(false);
 			
-			if(!runOnChange || dispatchEvent(e)){
+			// Cache previous:
+			int prevIndex=SelectedIndex_;
+			HtmlOptionElement prevNode=SelectedNode_;
+			
+			// Update current (so onchange gets the correct value):
+			SelectedNode_=element;
+			SelectedIndex_=index;
+			
+			if(runOnChange){
 				
-				if(element==null){
-					// Clear the option text:
-					Placeholder.innerHTML="";
-					index=-1;
-				}else{
-					Placeholder.innerHTML=element.innerHTML;
+				if(!dispatchEvent(e)){
+					
+					// Restore to previous:
+					SelectedIndex_=prevIndex;
+					SelectedNode_=prevNode;
+					
+					return;
 				}
 				
-				SelectedIndex_=index;
-				SelectedNode_=element;
-				
+			}
+			
+			// Update placeholder:
+			if(SelectedNode_==null){
+				// Clear the option text:
+				Placeholder.innerHTML="";
+				index=-1;
+			}else{
+				Placeholder.innerHTML=SelectedNode_.innerHTML;
+			}
+			
+		}
+		
+		public override void OnResetAllVariables(){
+			base.OnResetAllVariables();
+			
+			// Update placeholder:
+			if(SelectedNode_!=null){
+				Placeholder.innerHTML=SelectedNode_.innerHTML;
 			}
 			
 		}

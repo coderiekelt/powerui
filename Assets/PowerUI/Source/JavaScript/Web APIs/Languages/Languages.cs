@@ -126,6 +126,7 @@ namespace PowerUI{
 		/// or a parent document if this is in an iframe.</summary>
 		public Language[] all{
 			get{
+				
 				if(all_==null){
 					
 					// Try a parent document.
@@ -164,7 +165,7 @@ namespace PowerUI{
 		internal void LanguageChanged(){
 			
 			// Trigger a language change event:
-			// htmlDocument.window.dispatchEvent("languagechange");
+			window.dispatchEvent(new DomEvent("languagechange"));
 			
 			if(languages_!=null){
 				

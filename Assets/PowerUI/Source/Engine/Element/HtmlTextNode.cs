@@ -60,6 +60,14 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Called when this element got removed from the DOM.</summary>
+		internal override void RemovedFromDOM(){
+			
+			// Let the style know we went offscreen:
+			RenderData_.WentOffScreen();
+			
+		}
+		
 		/// <summary>This nodes render data.</summary>
 		public RenderableData RenderData{
 			get{

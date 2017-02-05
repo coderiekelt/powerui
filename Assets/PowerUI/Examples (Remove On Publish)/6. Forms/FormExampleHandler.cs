@@ -44,6 +44,9 @@ public static class FormExampleHandler{
 		Debug.Log("Your dropdown selection: "+form["favourite"]);
 		Debug.Log("Your Bio: "+form["myBio"]);
 		
+		// Block the default (so it doesn't actually submit it)
+		form.preventDefault();
+		
 	}
 	
 }

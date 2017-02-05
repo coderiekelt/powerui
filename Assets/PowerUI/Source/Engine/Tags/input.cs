@@ -662,6 +662,7 @@ namespace PowerUI{
 				if(f!=null){
 					f.submit();
 				}
+				
 			}else if(Type==InputType.Radio){
 				Select();
 			}else if(Type==InputType.Checkbox){

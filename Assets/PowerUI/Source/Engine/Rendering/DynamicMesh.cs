@@ -85,6 +85,7 @@ namespace PowerUI{
 			
 			// Get it:
 			BlockBuffer buffer=MeshDataBufferPool.GetBuffer();
+			buffer.Mesh=this;
 			
 			if(Normals!=null){
 				buffer.RequireNormals();
@@ -346,12 +347,12 @@ namespace PowerUI{
 				// Copy from the current page:
 				Array.Copy(current.UV2,0,UV2.Buffer,vertIndex,vertCount);
 				
-				if(current.Normals!=null){
+				if(Normals!=null){
 					// Copy from the current page:
 					Array.Copy(current.Normals,0,Normals.Buffer,vertIndex,vertCount);
 				}
 				
-				if(current.UV3!=null){
+				if(UV3!=null){
 					// Copy from the current page:
 					Array.Copy(current.UV3,0,UV3.Buffer,vertIndex,vertCount);
 				}
@@ -397,15 +398,16 @@ namespace PowerUI{
 			// Apply the vertices:
 			OutputMesh.vertices=Vertices.Buffer;
 			OutputMesh.colors=Colours.Buffer;
-			OutputMesh.uv=UV.Buffer;
-			OutputMesh.uv2=UV2.Buffer;
-			
-			if(Normals!=null){
-				OutputMesh.normals=Normals.Buffer;
-			}
 			
 			if(UV3!=null){
 				OutputMesh.uv3=UV3.Buffer;
+			}
+			
+			OutputMesh.uv2=UV2.Buffer;
+			OutputMesh.uv=UV.Buffer;
+			
+			if(Normals!=null){
+				OutputMesh.normals=Normals.Buffer;
 			}
 			
 			//And apply the triangles:

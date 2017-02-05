@@ -6,7 +6,7 @@
 <lang code='ak' name='Akan' local='Akan'/>
 <lang code='am' name='Amharic' local='አማርኛ'/>
 <lang code='an' name='Aragonese' local='aragonés'/>
-<lang code='ar' name='Arabic' local='اللغة العربية'/>
+<lang code='ar' name='Arabic' local='اللغة العربية' dir='rtl'/>
 <lang code='as' name='Assamese' local='অসমীয়া'/>
 <lang code='av' name='Avaric' local='авар мацӀ'/>
 <lang code='ay' name='Aymara' local='aymar aru'/>
@@ -55,7 +55,7 @@
 <lang code='gu' name='Gujarati' local='ગુજરાતી'/>
 <lang code='gv' name='Manx' local='Gaelg'/>
 <lang code='ha' name='Hausa' local='هَوُسَ'/>
-<lang code='he' name='Hebrew' local='עברית'/>
+<lang code='he' name='Hebrew' local='עברית' dir='rtl'/>
 <lang code='hi' name='Hindi' local='हिन्दी'/>
 <lang code='ho' name='Hiri Motu' local='Hiri Motu'/>
 <lang code='hr' name='Croatian' local='hrvatski jezik'/>

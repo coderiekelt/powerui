@@ -128,7 +128,7 @@ namespace PowerUI{
 			renderTexture=new RenderTexture(widthPX,heightPX,16,RenderTextureFormat.ARGB32);
 			
 			// Apply it to the texture:
-			Texture=(Texture)renderTexture;
+			Texture=renderTexture;
 			
 			// Hook it up:
 			SourceCamera.targetTexture=renderTexture;
@@ -141,7 +141,7 @@ namespace PowerUI{
 				renderTexture=new RenderTexture(widthPX,heightPX,16,RenderTextureFormat.ARGB32);
 				
 				// Apply it to the texture:
-				Texture=(Texture)renderTexture;
+				Texture=renderTexture;
 				
 				// Hook it up:
 				SourceCamera.targetTexture=renderTexture;
@@ -156,7 +156,7 @@ namespace PowerUI{
 				Handler.Output=texture;
 				
 				// Apply it:
-				Texture=(Texture)texture;
+				Texture=texture;
 				
 			}
 			
@@ -285,7 +285,12 @@ namespace PowerUI{
 		public override void SetResolution(int x,int y){
 		}
 		
-		public override void SetDimensions(int x,int y){
+		public override bool SetDimensions(int x,int y){
+			
+			// Check for changes:
+			if(pixelWidth==x && pixelHeight==y){
+				return false;
+			}
 			
 			if(RequiresOffset){
 				
@@ -293,9 +298,6 @@ namespace PowerUI{
 				GlobalOffset-=(float)y * WorldPerPixel.y;
 				
 			}
-			
-			int currentHeight=pixelHeight;
-			int currentWidth=pixelWidth;
 			
 			// Set the base dimensions:
 			base.SetDimensions(x,y);
@@ -310,16 +312,19 @@ namespace PowerUI{
 			
 			if(Texture!=null){
 				
-				if(Texture.GetType()==typeof(RenderTexture)){
+				if(Texture is RenderTexture){
 					
-					// Update the texture size:
-					if(y!=currentHeight){
-						Texture.height=y;
-					}
+					// Destroy it:
+					GameObject.Destroy(Texture);
 					
-					if(x!=currentWidth){
-						Texture.width=x;
-					}
+					// Must recreate it unfortunately!
+					RenderTexture renderTexture=new RenderTexture(x,y,16,RenderTextureFormat.ARGB32);
+					
+					// Re-apply:
+					Texture=renderTexture;
+					
+					// Hook it up:
+					SourceCamera.targetTexture=renderTexture;
 					
 				}else{
 					
@@ -331,6 +336,8 @@ namespace PowerUI{
 			
 			// Set the orthographic size:
 			SetOrthographicSize();
+			
+			return true;
 			
 		}
 		

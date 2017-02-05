@@ -48,6 +48,8 @@ namespace PowerUI{
 		internal FloatingElements Floats;
 		/// <summary>The current x location of the renderer in screen pixels from the left.</summary>
 		internal float PenX;
+		/// <summary>The value for horizontal-align. If it's not required, this is just 0.</summary>
+		public int HorizontalAlign;
 		/// <summary>The value for vertical-align.</summary>
 		public int VerticalAlign;
 		/// <summary>Vertical-align offset from the baseline.</summary>
@@ -135,7 +137,7 @@ namespace PowerUI{
 			Parent.RemoveFromLine(CurrentBox);
 			
 			// Complete it:
-			Parent.CompleteLine(true,true);
+			Parent.CompleteLine(LineBreakMode.Normal);
 			
 			// Re-add:
 			Parent.AddToLine(CurrentBox);
@@ -320,7 +322,7 @@ namespace PowerUI{
 					if(PenX!=LineStart){
 						
 						// Line break:
-						CompleteLine(true,true);
+						CompleteLine(LineBreakMode.Normal);
 						
 						// Clear line space only if the test is still true:
 						cls=((MaxX-PenX)<totalWidth);
@@ -339,7 +341,7 @@ namespace PowerUI{
 								if(!ClearLineSpace(floatMode) || (MaxX-PenX)<totalWidth){
 									
 									// Line break.
-									CompleteLine(true,true);
+									CompleteLine(LineBreakMode.Normal);
 									
 								}
 								
@@ -348,7 +350,7 @@ namespace PowerUI{
 						}else{
 							
 							// Line break.
-							CompleteLine(true,true);
+							CompleteLine(LineBreakMode.Normal);
 							
 						}
 						
@@ -628,22 +630,116 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Horizontally aligns a line based on alignment settings.</summary>
+		/// <param name="currentBox">The style of the first element on the line.</param>
+		/// <param name="lineSpace">The amount of space available to the line.</param>
+		/// <param name="elementCount">The number of elements on this line.</param>
+		/// <param name="lineLength">The width of the line in pixels.</param>
+		/// <param name="parentBox">The style which defines the alignment.</param>
+		private void AlignHorizontally(LayoutBox currentBox,LayoutBox lastBox,float lineSpace,int elementCount,float lineLength,int align){
+			
+			if(elementCount==0){
+				return;
+			}
+			
+			if(align!=HorizontalAlignMode.Left){
+				// Does the last element on the line end with a space? If so, act like the space isn't there by reducing line length by it.
+				lineLength-=lastBox.EndSpaceSize;
+			}
+			
+			// How many pixels each element will be moved over:
+			float offsetBy=0f;
+			// How many pixels we add to offsetBy each time we shift an element over:
+			float justifyDelta=0f;
+			// True if we ignore block elements.
+			bool ignoreBlock=true;
+			
+			if((align & HorizontalAlignMode.EitherCenter)!=0){
+				// We're centering - shift by half the 'spare' pixels on this row.
+				
+				// How many pixels of space this line has left / 2:
+				offsetBy=(lineSpace-lineLength)/2f;
+				
+				// Don't ignore block for -moz-center:
+				ignoreBlock=(align==HorizontalAlignMode.Center);
+				
+			}else if(align==HorizontalAlignMode.Right){
+				// How many pixels of space this line has left:
+				offsetBy=(lineSpace-lineLength);
+				
+			}else if(align==HorizontalAlignMode.Justify){
+				
+				// Justify. This is where the total spare space on the line gets shared out evenly
+				// between the elements on this line.
+				// So, we take the spare space and divide it up by the elements on this line:
+				justifyDelta=(lineSpace-lineLength)/(float)elementCount;
+				
+				if(GoingLeftwards){
+					// Make sure the first word starts in the correct spot if we're going leftwards:
+					lineLength=lineSpace;
+					
+					// And also we actually want to be taking a little less each time, so invert justifyDelta:
+					justifyDelta=-justifyDelta;
+				}
+				
+			}
+			
+			if(GoingLeftwards){
+				
+				// Everything is locally positioned off to the left.
+				// Because of this, we need to shift them over the entire size of the row:
+				offsetBy+=lineLength;
+				// In this case it can also be left aligned.
+				
+			}
+			
+			while(currentBox!=null){
+				
+				if(ignoreBlock){
+					
+					// If it's display:block, ignore it.
+					if(currentBox.DisplayMode==DisplayMode.Block){
+						
+						// Skip!
+						currentBox=currentBox.NextOnLine;
+						continue;
+						
+					}
+					
+				}
+				
+				// Shift the element over by the offset.
+				currentBox.ParentOffsetLeft+=offsetBy;
+				
+				offsetBy+=justifyDelta;
+				
+				currentBox=currentBox.NextOnLine;
+			}
+			
+		}
+		
 		/// <summary>Completes a line, optionally breaking it.</summary>
-		public void CompleteLine(bool breakLine,bool topOfStack){
+		/// <param name="settings">Values from LineBreakMode. You'd usually pass Normal.</param>
+		public void CompleteLine(int settings){
 			
 			float lineHeight=LineHeight;
 			
-			if(breakLine || topOfStack){
+			// Note: Doesn't matter about last here.
+			if(settings!=0){
 				
-				// Vertically align all elements on the current line and reset it:
+				// Horizontally + Vertically align all elements on the current line and reset it:
 				LayoutBox currentBox=FirstOnLine;
 				LayoutBox first=currentBox;
+				LayoutBox last=LastOnLine;
+				
 				FirstOnLine=null;
 				LastOnLine=null;
 				
 				// Baseline is default:
+				int elementCount=0;
 				int verticalAlignMode=VerticalAlign;
 				float baseOffset=VerticalAlignOffset;
+				float lineLength=0f;
 				
 				while(currentBox!=null){
 					// Calculate the offset to where the top left corner is (of the complete box, margin included):
@@ -652,6 +748,7 @@ namespace PowerUI{
 					// the baseline is by default at half the line-height but moves up whenever 
 					// an inline-block element with padding/border/margin is added.
 					
+					lineLength+=currentBox.Width;
 					float delta=-(currentBox.Height+currentBox.Margin.Bottom);
 					
 					bool inline=(currentBox.DisplayMode & DisplayMode.OutsideInline)!=0;
@@ -663,60 +760,90 @@ namespace PowerUI{
 						
 					}
 					
-					switch(verticalAlignMode){
+					if((verticalAlignMode & VerticalAlignMode.BaselineRelative)!=0){
 						
-						case VerticalAlignMode.Baseline:
+						if(inline){
 							
-							if(inline){
+							// Bump the elements so they all sit neatly on the baseline:
+							float baselineShift=(CurrentBox.Baseline-currentBox.Baseline)+baseOffset;
+							
+							if(verticalAlignMode==VerticalAlignMode.Super){
 								
-								// Bump the elements so they all sit neatly on the baseline:
-								float baselineShift=(CurrentBox.Baseline-currentBox.Baseline)+baseOffset;
-								delta-=baselineShift;
+								baselineShift+=(currentBox.InnerHeight * 0.75f);
 								
-								// May need to update the line height:
+							}else if(verticalAlignMode==VerticalAlignMode.Sub){
 								
-								if(baselineShift>0){
+								baselineShift-=(currentBox.InnerHeight * 0.75f);
+								
+							}else if(verticalAlignMode==VerticalAlignMode.Middle){
+								
+								// Align the middle of the element with the baseline:
+								baselineShift-=(currentBox.InnerHeight * 0.5f);
+								
+								// Plus half of the parent x-height:
+								baselineShift+=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize * 0.5f);
+								
+							}else if(verticalAlignMode==VerticalAlignMode.TextTop){
+								
+								// Align the top of the text with the baseline:
+								// (add its x-height):
+								baselineShift-=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize);
+								
+							}else if(verticalAlignMode==VerticalAlignMode.TextTop){
+								
+								// Align the top of the text with the baseline:
+								// (remove its x-height):
+								baselineShift+=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize);
+								
+							}
+							
+							delta-=baselineShift;
+							
+							// May need to update the line height:
+							
+							if(baselineShift>0){
+								
+								// (This is where gaps come from below inline images):
+								
+								if(currentBox.DisplayMode==DisplayMode.Inline){
 									
-									// (This is where gaps come from below inline images):
+									// Line height next:
+									baselineShift+=currentBox.InnerHeight;
 									
-									if(currentBox.DisplayMode==DisplayMode.Inline){
-										
-										// Line height next:
-										baselineShift+=currentBox.InnerHeight;
-										
-									}else{
-										
-										// E.g. inline-block:
-										baselineShift+=currentBox.TotalHeight;
-									}
+								}else{
 									
-									if(baselineShift>LineHeight){
-										
-										LineHeight=baselineShift;
-										lineHeight=baselineShift;
-										
-										// Stalled!
-										
-										// - This happens because we've just found out that an element sitting on the baseline
-										//   has generated a gap and ended up making the line get taller.
-										//   Elements after this one can affect the baseline so we can't "pre test" this condition.
-										//   Line height is important for positioning elements, so we'll need to go again
-										//   on the elements that we've already vertically aligned.
-										
-										// Halt and try again:
-										currentBox=first;
-										goto Stall;
-										
-									}
+									// E.g. inline-block:
+									baselineShift+=currentBox.TotalHeight;
+								}
+								
+								if(baselineShift>LineHeight){
+									
+									LineHeight=baselineShift;
+									lineHeight=baselineShift;
+									
+									// Stalled!
+									
+									// - This happens because we've just found out that an element sitting on the baseline
+									//   has generated a gap and ended up making the line get taller.
+									//   Elements after this one can affect the baseline so we can't "pre test" this condition.
+									//   Line height is important for positioning elements, so we'll need to go again
+									//   on the elements that we've already vertically aligned.
+									
+									// Halt and try again:
+									currentBox=first;
+									elementCount=0;
+									lineLength=0f;
+									goto Stall;
 									
 								}
 								
 							}
 							
-						break;
+						}
 						
 					}
 					
+					elementCount++;
 					currentBox.ParentOffsetTop=PenY+delta+lineHeight;
 					
 					// Hop to the next one:
@@ -724,6 +851,41 @@ namespace PowerUI{
 					
 					Stall:
 						continue;
+					
+				}
+				
+				if(this is BlockBoxMeta){
+					
+					// Horizontal align:
+					int hAlign=HorizontalAlign;
+					
+					if((settings&LineBreakMode.Last)!=0 && RenderData!=null){
+						
+						// Use H-Align last:
+						int lastAlign=RenderData.computedStyle.HorizontalAlignLastX;
+						
+						if(lastAlign==HorizontalAlignMode.Auto){
+							
+							// Pick an alignment based on HorizontalAlign:
+							lastAlign=hAlign;
+							
+							if(lastAlign==HorizontalAlignMode.Justify){
+								// Left or right:
+								if(GoingLeftwards){
+									lastAlign=HorizontalAlignMode.Right;
+								}else{
+									lastAlign=HorizontalAlignMode.Left;
+								}
+							}
+							
+						}
+						
+						hAlign=lastAlign;
+					}
+					
+					if(hAlign!=0){
+						AlignHorizontally(first,last,MaxX-LineStart,elementCount,lineLength,hAlign);
+					}
 					
 				}
 				
@@ -797,10 +959,10 @@ namespace PowerUI{
 					Parent.AdvancePen(box);
 				}
 				
-				if(inFlow && breakLine){
+				if(inFlow && ((settings & LineBreakMode.Break)!=0)){
 					
 					// Linebreak the parent:
-					Parent.CompleteLine(breakLine,false);
+					Parent.CompleteLine(LineBreakMode.Break);
 					
 					// Create a new box!
 					// (And add it to the parent)
@@ -831,7 +993,7 @@ namespace PowerUI{
 				
 				// Done recursing downwards - we're at the block!
 				
-				if(breakLine || topOfStack){
+				if(settings!=0){
 					
 					// Update largest line (excludes float right which is actually what we want!):
 					if(PenX>LargestLineWidth){
@@ -910,7 +1072,7 @@ namespace PowerUI{
 				
 			}
 			
-			if(breakLine){
+			if((settings & LineBreakMode.Break)!=0){
 				
 				// Finally, reset the pen 
 				// (this is after the recursion call, so we've cleared floats etc):

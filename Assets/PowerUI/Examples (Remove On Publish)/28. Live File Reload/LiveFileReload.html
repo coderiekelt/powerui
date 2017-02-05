@@ -1,14 +1,8 @@
-
 <!-- Time for a little CSS! -->
 <style type='text/css'>
 
-.background-noise{
-	
-	position:fixed;
-	height:100%;
-	width:100%;
+html{
 	background:url(noise-background.png);
-	
 }
 
 #content-box{
@@ -18,19 +12,12 @@
 	border-radius:70px 30px 70px 30px;
 	width:300px;
 	padding:40px;
-	text-align:justify;
-	color:#000000;
-	margin-top:auto;
-	margin-bottom:auto;
+	color:black;
 	left:10%;
 	
 }
 
 </style>
-
-
-<!-- Background (The blue noise part - PowerUI is actually transparent). Gets its style from the CSS above. -->
-<div class='background-noise'></div>
 
 <!-- The PowerUI logo off to the right. We're using direct style here. -->
 <div style='vertical-align:middle;right:10%;width:140px;height:100%;position:fixed;'>
@@ -48,11 +35,8 @@
 		Here's a simple way to preview your UI's.
 		<br>
 		<br>
-		<b>Try editing the html file next to this scene</b> - pop it open in your favourite editor and make some changes. Then to see the result simply save it and click back on Unity. Your html will reload straight away.
+		<b>Try editing the html file next to this scene</b> - pop it open in your favourite editor and make some changes. Then to see the result simply save it and click back on Unity. Your html will reload.
 		<br>
 		<br>
-		To do this in any scene, just use a "PowerUI Manager Live File" instead of the normal default "PowerUI Manager" (the script attached to a gameobject).
-		<br>
-		<br>
-		<i>If you're wondering why this isn't the default, it's because of C#. Many people use C# to interact with or start up UI's, meaning the reloaded state would be pretty wrong!</i>
+		To do this in any scene, just tick the <b>"Watch for changes"</b> box. Note that it only works with a Html File, not a URL.
 </div>

@@ -35,7 +35,8 @@ namespace PowerUI{
 		/// <summary>Converts the Unity WWW.error messages into an easier to use status code.</summary>
 		public static int GetUnityErrorCode(string unityError){
 			
-			return 420;
+			Dom.Log.Add("Unity Network Error: "+unityError);
+			return 419;
 			
 		}
 		

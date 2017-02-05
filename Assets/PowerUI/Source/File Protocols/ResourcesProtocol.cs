@@ -80,7 +80,9 @@ namespace PowerUI{
 				// Getting a files text content from resources.
 				byte[] data=null;
 				
-				TextAsset asset=Resources.Load(GetPath(package.location)) as TextAsset;
+				string path=GetPath(package.location);
+				
+				TextAsset asset=Resources.Load(path) as TextAsset;
 				
 				if(asset==null){
 					// Not found
@@ -101,13 +103,25 @@ namespace PowerUI{
 		private string GetPath(Location path){
 			
 			string filetype=path.Filetype;
+			string result;
 			
 			if(filetype=="html" || filetype=="htm" || filetype=="txt" || filetype=="xml"){
-				return path.Directory+path.Filename;
+				result=path.Directory+path.Filename;
+			}else{
+			
+				// The file MUST end in .bytes for this to work.
+				result=path.Path;
+				
 			}
 			
-			// The file MUST end in .bytes for this to work.
-			return path.Path;
+			if(result.Length>0 && result[0]=='/'){
+				
+				// Remove initial foward slash:
+				result=result.Substring(1);
+				
+			}
+			
+			return result;
 			
 		}
 		

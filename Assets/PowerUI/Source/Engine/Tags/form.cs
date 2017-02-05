@@ -57,14 +57,22 @@ namespace PowerUI{
 				
 			}else if(mode==HtmlTreeMode.InBody){
 				
-				if(lexer.form==null || lexer.TagCurrentlyOpen("template")){
-					// Syntax error otherwise.
+				bool openTemplate=lexer.TagCurrentlyOpen("template");
+				
+				if(lexer.form!=null && !openTemplate){
+					
+					// Parse error - ignore the token.
+					
+				}else{
 					
 					lexer.CloseParagraphButtonScope();
 					
 					// Add and set form:
 					lexer.Push(this,true);
-					lexer.form=this;
+					
+					if(!openTemplate){
+						lexer.form=this;
+					}
 					
 				}
 				
@@ -87,6 +95,14 @@ namespace PowerUI{
 				
 				if(lexer.TagCurrentlyOpen("template")){
 					
+					// Template in scope.
+					lexer.GenerateImpliedEndTags();
+					
+					lexer.CloseInclusive("form");
+					
+				}else if(lexer.IsInScope("form")){
+					
+					// No template - ordinary form.
 					Element node=lexer.form;
 					lexer.form=null;
 					
@@ -107,15 +123,9 @@ namespace PowerUI{
 						
 					}
 					
-				}else if(lexer.IsInScope("form")){
-					
-					// Ignore otherwise.
-					
-					lexer.GenerateImpliedEndTags();
-					
-					lexer.CloseInclusive("form");
-					
 				}
+				
+				// Ignore otherwise
 				
 			}else{
 				
@@ -294,8 +304,11 @@ namespace PowerUI{
 				DataPackage package=new DataPackage(Action,document.basepath);
 				package.AttachForm(formData.ToUnityForm());
 				
+				// Apply request to the data:
+				formData.request=package;
+				
 				// Apply load event:
-				package.onload=delegate(UIEvent e){
+				package.onload=package.onerror=delegate(UIEvent e){
 					
 					// Attempt to run ondone (doesn't bubble):
 					formData.Reset();
@@ -310,12 +323,18 @@ namespace PowerUI{
 						if(targetDocument==null){
 							// Posting a form to an external target.
 							
-							Log.Add("Warning: Unity cannot post forms to external targets. The page will be loaded a second time.");
+							Log.Add("Warning: Unity cannot post forms to external targets. It will be loaded a second time.");
 							
 							// Open the URL outside of Unity:
 							UnityEngine.Application.OpenURL(package.location.absoluteNoHash);
 							
 						}else{
+							
+							// Change the location:
+							targetDocument.SetRawLocation(package.location);
+							
+							// History entry required:
+							targetDocument.window.history.DocumentNavigated();
 							
 							// Apply document content:
 							targetDocument.GotDocumentContent(package.responseText,package.statusCode);
@@ -342,11 +361,12 @@ namespace PowerUI{
 		/// Scans up the DOM to find the parent form element.</summary>
 		/// <returns>The parent form element, if found.</returns>
 		public HtmlElement GetForm(){
-			if(Tag=="form"){
+			
+			if(this is HtmlFormElement){
 				return this;
 			}
 			
-			HtmlElement parent=parentNode_ as HtmlElement ;
+			HtmlElement parent=parentNode_ as HtmlElement;
 			
 			if(parent==null){
 				return null;

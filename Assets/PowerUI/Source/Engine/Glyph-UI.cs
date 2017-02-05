@@ -34,7 +34,7 @@ namespace InfiniText{
 		/// <summary>Called when this character goes on screen.</summary>
 		public void OnScreen(){
 			
-			if(Location==null){
+			if(Location==null && FirstPathNode!=null){
 				Location=AtlasStacks.Text.RequireImage(this);
 			}
 			

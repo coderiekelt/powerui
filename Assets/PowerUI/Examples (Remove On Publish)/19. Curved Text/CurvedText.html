@@ -5,13 +5,16 @@ html{
 }
 
 #title{
+	width:100%;
+	text-align:center;
 	font-size:40px;
+	position:absolute;
+	top:50%;
+	margin-top:-50%;
 }
 
 body{
-	vertical-align:middle;
 	height:100%;
-	text-align:center;
 }
 </style>
 
@@ -28,13 +31,13 @@ var maxHeight=50f;
 var maxAngle=25f;
 
 // Grab the title:
-var title=document.getElementById("title");
+var title=(document.getElementById("title")):HtmlElement;
 
-// Split it up into it's individual letters:
+// Split it up into its individual letters:
 title.lettering();
 
 // How many letters?
-var letterCount=title.childNodes.count;
+var letterCount=title.childNodes.length;
 
 var angle=0f;
 
@@ -44,10 +47,11 @@ var deltaAngle=(2f * Mathf.PI)/(letterCount-1):float;
 for(var i=0;i<letterCount;i++){
 	
 	// Grab the letters style:
-	var ele=title.childNodes[i];
+	var ele=(title.childNodes[i]):HtmlElement;
 	
 	// Tell them to rotate around their midpoint:
 	ele.style.transformOrigin="50% 50%";
+	ele.style.position="relative";
 	
 	// Get the rotation as a string in degrees:
 	var rotation=(-mathf.Cos(angle)*maxAngle)+"deg";
@@ -56,7 +60,7 @@ for(var i=0;i<letterCount;i++){
 	var top=(mathf.Sin(angle)*maxHeight)+"px";
 	
 	// Animate there now:
-	ele.animate("top:"+top+";rotate-z:"+rotation,0.4f,0.2f,0.8f);
+	// ele.animate("top:"+top+";transform:rotate("+rotation+")",2f);
 	
 	// Increase the angle:
 	angle+=deltaAngle;

@@ -10,31 +10,24 @@ using Dom;
 
 public class CSharpExample : MonoBehaviour {
 	
-	/// <summary>A File containing the html/css/nitro of your UI.</summary>
-	public TextAsset HtmlFile;
-	
-	
 	// Use this for initialization
 	void Start () {
 		
-		// Load the UI from the above HtmlFile:
-		if(HtmlFile!=null){
-			UI.Html=HtmlFile.text;
-		}else{
-			Debug.Log("HTML file missing! Please set one up in the inspector.");
-			return;
-		}
+		// Important note: This script is *after* the manager on the PowerUI-Example object.
+		// That'll make sure this Start method runs after the UI is ready to go.
 		
-		// Next, let's hook up our mouse methods to an element with an ID of 'illBeClickable':
-		
+		// Let's hook up our mouse methods to an element with an ID of 'illBeClickable':
 		Element myElement=UI.document.getElementById("illBeClickable");
 		
+		// It could be an SVG element, a MathML element etc.
+		// Virtually all of the time, it'll be a HtmlElement.
+		
 		if(myElement==null){
-			// Usually you won't need to do this if, but this is just incase!
+			// Usually you won't need to do this, but this is just incase!
 			Debug.Log("Whoops - It looks like the clickable element got removed!");
 		}else{
 			// Great, let's setup the events:
-			(myElement as HtmlElement ).onmousedown = OnElementMouseDown;
+			(myElement as HtmlElement).onmousedown = OnElementMouseDown;
 		}
 		
 		// In many cases there is a group of elements that, when clicked, all do similar things.
@@ -46,7 +39,7 @@ public class CSharpExample : MonoBehaviour {
 		HTMLCollection allHeaders=UI.document.body.getElementsByTagName("h4");
 		
 		foreach(Element element in allHeaders){
-			(element as HtmlElement ).onmousedown = OnHeaderMouseDown;
+			(element as HtmlElement).onmousedown = OnHeaderMouseDown;
 		}
 		
 		// Second, all elements that are kids of body and have a class of "button":
@@ -56,9 +49,12 @@ public class CSharpExample : MonoBehaviour {
 			
 			// This also shows how to create an "anonymous delegate" - that's one not declared as a seperate function.
 			// These are more useful if you have a significant amount of callbacks:
-			(element as HtmlElement ).onmousedown = delegate(MouseEvent mouseEvent) {
-				// mouseEvent.target is the element that actually got clicked:
-				((mouseEvent.target) as HtmlElement ).innerHTML="You clicked this!";
+			(element as HtmlElement).onmousedown = delegate(MouseEvent mouseEvent) {
+				
+				// mouseEvent.target is the element that actually got clicked
+				// (htmlTarget is it as a HtmlElement)
+				mouseEvent.htmlTarget.innerHTML="You clicked this!";
+				
 			};
 			
 		}
@@ -67,26 +63,45 @@ public class CSharpExample : MonoBehaviour {
 	
 	/// <summary>Direct is called directly with onmousedown="CSharpExample.Direct".</summary>
 	public static void Direct(MouseEvent mouseEvent){
-		((mouseEvent.target) as HtmlElement ).style.border="2px solid #0000ff";
+		
+		// mouseEvent.target is the element that actually got clicked.
+		// Note that it could be, e.g. an SVG element. So, htmlTarget
+		// is it as a HtmlElement.
+		
+		mouseEvent.htmlTarget.style.border="2px solid #0000ff";
+		
 	}
 	
 	/// <summary>Called when any span gets clicked. This is linked up in Start as a delegate.</summary>
 	private void OnElementMouseDown(MouseEvent mouseEvent){
-		// mouseEvent.target is the element that actually got clicked:
-		((mouseEvent.target) as HtmlElement ).innerHTML="You clicked it!";
+		
+		// mouseEvent.target is the element that actually got clicked.
+		// Note that it could be, e.g. an SVG element. So, htmlTarget
+		// is it as a HtmlElement.
+		
+		mouseEvent.htmlTarget.innerHTML="You clicked it!";
+		
 	}
 	
 	/// <summary>Called when any h1 gets clicked. This is linked up in Start as a delegate.</summary>
 	private void OnHeaderMouseDown(MouseEvent mouseEvent){
-		// mouseEvent.target is the element that actually got clicked:
-		HtmlElement target=((mouseEvent.target) as HtmlElement );
+		
+		// mouseEvent.target is the element that actually got clicked.
+		// Note that it could be, e.g. an SVG element. So, htmlTarget
+		// is it as a HtmlElement.
+		
+		HtmlElement target=mouseEvent.htmlTarget;
 		
 		target.style.color="#ff00ff";
-		// Sometimes the element itself must store something unique.
-		// For that, we reccommend using attributes (<h1 thisIsAn="attribute"... note that they are always lowercase from C#!), or the element Data property:
 		
-		// Grab it's category=".." value:
+		// Sometimes the element itself must store something unique.
+		// For that, we reccommend using attributes
+		// (<h1 thisIsAn="attribute"... note that they are always lowercase from C#!):
+		
+		// Grab its category=".." value:
+		// (Or use the standard attribute API's)
 		Debug.Log("Its 'category' attribute is "+target["category"]);
+		
 	}
 	
 }

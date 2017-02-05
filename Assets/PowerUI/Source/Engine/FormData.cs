@@ -25,6 +25,8 @@ namespace PowerUI{
 	
 	public class FormData : UIEvent{
 		
+		/// <summary>The raw request.</summary>
+		public DataPackage request;
 		/// <summary>The source form element.</summary>
 		public HtmlElement form;
 		/// <summary>The internal dictionary which holds the field/value pairs.</summary>
@@ -35,6 +37,27 @@ namespace PowerUI{
 		/// <param name="fields">A dictionary holding the field/value pairs from the form.</param>
 		public FormData(Dictionary<string,string> fields){
 			RawFields=fields;
+		}
+		
+		/// <summary>The response as text.</summary>
+		public string responseText{
+			get{
+				return request.responseText;
+			}
+		}
+		
+		/// <summary>The response as bytes.</summary>
+		public byte[] responseBytes{
+			get{
+				return request.responseBytes;
+			}
+		}
+		
+		/// <summary>The response status code.</summary>
+		public int status{
+			get{
+				return request.status;
+			}
 		}
 		
 		/// <summary>Gets the value of the named input element.</summary>

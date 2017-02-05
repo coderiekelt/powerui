@@ -292,7 +292,7 @@ namespace PowerUI{
 			ScreenSpaceProportion=Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView/2f ) * 2f;
 			
 			// Divide it by the screen height in pixels for it in world units:
-			ScreenSpaceProportion/=ScreenInfo.ScreenYFloat;
+			ScreenSpaceProportion/=(float)UnityEngine.Screen.height;
 			
 		}
 		
@@ -402,10 +402,10 @@ namespace PowerUI{
 		/// <see cref="PowerUI.WorldUI.SetResolution"/>. The amount of pixels and pixels per world unit (resolution).</summary>
 		/// <param name="widthPX">The width in pixels.</param>
 		/// <param name="heightPX">The height in pixels.</param>
-		public virtual void SetDimensions(int widthPX,int heightPX){
+		public virtual bool SetDimensions(int widthPX,int heightPX){
 			
 			if(widthPX==pixelWidth && heightPX==pixelHeight){
-				return;
+				return false;
 			}
 			
 			if(widthPX!=pixelWidth){
@@ -431,6 +431,8 @@ namespace PowerUI{
 				e.SetTrusted();
 				document.dispatchEvent(e);
 			}
+			
+			return true;
 			
 		}
 		

@@ -34,11 +34,15 @@ namespace PowerUI{
 			DomainData result;
 			if(!Index.TryGetValue(domain,out result)){
 				
+				// Create it (always created so we don't spam PlayerPrefs):
+				result=new DomainData(domain);
+				
+				// WARNING: The following throws threading issues.
+				// Often occurs when reloading a document with a http/s URL in it.
+				
 				// Try getting it from PlayerPrefs:
 				string domainData=PlayerPrefs.GetString(domain+"-domain-data");
-				
-				// Create it (always created so we don't spam PlayerPrefs):
-				result=new DomainData(domain,domainData);
+				result.LoadFromJson(domainData);
 				
 				// Put into result:
 				Index[domain]=result;
@@ -70,11 +74,8 @@ namespace PowerUI{
 		}
 		
 		
-		public DomainData(string domain,string data){
+		public DomainData(string domain){
 			Host=domain;
-			
-			LoadFromJson(data);
-			
 		}
 		
 		/// <summary>Loads the domain data from the given JSON string.</summary>

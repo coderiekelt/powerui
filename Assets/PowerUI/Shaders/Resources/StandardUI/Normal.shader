@@ -2,17 +2,15 @@ Shader "PowerUI/StandardUI/Normal" {
 	Properties {
 		_Font ("Font Texture", 2D) = "white" {}
 		_Atlas  ("Graphical Atlas", 2D) = "white" {}
-		BottomFontAlias ("Lower Alias",Float)=0.24
-		TopFontAlias ("Upper Alias",Float)=1.24
 	}
-
+	
 	SubShader {
-		
+
 		Tags{"RenderType"="Transparent" Queue=Transparent}
 		
 		Lighting Off
 		Blend SrcAlpha OneMinusSrcAlpha
-		Cull Off
+		Cull Off 
 		ZWrite On 
 		Fog { Mode Off }  
 		
@@ -25,13 +23,12 @@ Shader "PowerUI/StandardUI/Normal" {
 			#pragma fragmentoption ARB_precision_hint_fastest
 			#pragma glsl_no_auto_normalization
 			
-			#include "UnityCG.cginc"
-			
 			struct appdata_t {
 				float4 vertex : POSITION;
-				fixed4 color : COLOR;
-				half2 texcoord : TEXCOORD;
+				half2 texcoord0 : TEXCOORD0;
 				half2 texcoord1 : TEXCOORD1;
+				half2 texcoord2 : TEXCOORD2;
+				fixed4 color : COLOR;
 			};
 			
 			sampler2D _Font;
@@ -40,31 +37,28 @@ Shader "PowerUI/StandardUI/Normal" {
 			sampler2D _Atlas;
 			uniform float4 _Atlas_ST;
 			
-			uniform float TopFontAlias;
-			uniform float BottomFontAlias;
-			
-			appdata_t vert (appdata_t v)
-			{
-				v.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+			appdata_t vert (appdata_t v) {
+				v.vertex = mul( UNITY_MATRIX_MVP, v.vertex );
 				return v;
 			}
-
-			fixed4 frag (appdata_t i) : COLOR
-			{
+			
+			fixed4 frag (appdata_t i) : COLOR {
 				fixed4 col = i.color;
 				
-				if(i.texcoord.y<=1){
-					col *= tex2D(_Atlas, i.texcoord);
+				if(i.texcoord0.y<=1){
+					col *= tex2D(_Atlas, i.texcoord0);
 				}
 				
+				float smooth=0.25 / (4 * 16);
+				
 				if(i.texcoord1.y<=1){
-					col.a *= smoothstep(BottomFontAlias,TopFontAlias,tex2D(_Font,i.texcoord1).a);
+					col.a *= smoothstep(i.texcoord2.x, i.texcoord2.y,tex2D(_Font,i.texcoord1).a);
 				}
 				
 				return col;
 			}
-			ENDCG 
+			
+			ENDCG
 		}
-	} 	
-
+	}
 }

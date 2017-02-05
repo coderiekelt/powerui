@@ -53,7 +53,7 @@ namespace PowerUI{
 			}
 			
 			// Implicit line break:
-			lbm.CompleteLine(true,true);
+			lbm.CompleteLine(LineBreakMode.Normal | LineBreakMode.Last);
 			
 		}
 		

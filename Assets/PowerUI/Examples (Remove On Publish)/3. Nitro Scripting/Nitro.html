@@ -36,7 +36,7 @@ body{
 		Click Me to run some simple nitro!
 	</div>
 	<div onmousedown='elementByID' class='padded'>
-		Click here to affect an element by it's ID.
+		Click here to affect an element by its ID.
 	</div>
 	<div onmousedown='styleMe' class='padded'>
 		The style of this element changes when you click me.
@@ -56,6 +56,14 @@ body{
 </div>
 
 <script type='text/nitro'>
+
+/*
+--- This version of Nitro is now depreciated ---
+
+Use C# instead, or request the new JavaScript engine.
+
+*/
+
 // Nitro looks very similar to Unity Javascript.
 // There are differences though! Functions must be given types.
 // Make sure you check out the nitro website for more information on what the differences are:
@@ -67,7 +75,7 @@ function simpleNitro(e:UIEvent){ // <- Notice the :type here. This generally mak
 	console.log("Welcome to nitro! :) ");
 	
 	// Let's rewrite what the element says:
-	this.innerHTML="Check out the console!";
+	e.htmlTarget.innerHTML="Check out the console!";
 	
 }
 
@@ -76,7 +84,7 @@ function simpleNitro(e:UIEvent){ // <- Notice the :type here. This generally mak
 function styleMe(e:UIEvent){
 	
 	// Let's make the font go green:
-	this.style.color="#00ff00";
+	e.htmlTarget.style.color="#00ff00";
 	
 }
 
@@ -84,7 +92,10 @@ function styleMe(e:UIEvent){
 
 function animateMe(e:UIEvent){
 	
-	this.animate("left:30px;color-overlay:#0000ff;opacity:0;",0.3f,0.5f,0.2f).ondone(doneAnimation);
+	// Position required for left etc to work:
+	e.htmlTarget.style.position="relative";
+	
+	e.htmlTarget.animate("left:40px;opacity:0;",1f).ondone(doneAnimation);
 
 }
 
@@ -93,9 +104,6 @@ function doneAnimation(a:UIAnimation){
 	console.log("done playing the animation!");
 	
 }
-
-
-
 
 function runGameCode(e:UIEvent){
 	// Nitro can call your games functions directly for excellent flexibility.
@@ -131,13 +139,11 @@ function runGameCode(e:UIEvent){
 function elementByID(e:UIEvent){
 	
 	// Getting an element by it's ID.
-	document.getElementById("nitro_title").innerHTML="I wonder what changed?";
-	
 	// Making multiple changes? Store it in a variable for the best performance:
-	var element=document.getElementById("nitro_title");
+	var element=((document.getElementById("nitro_title")):HtmlElement);
 	
-	// Let's rotate it a little around the z axis:
-	element.style.rotateZ="2deg";
+	// Update innerHTML:
+	element.innerHTML="I wonder what changed?";
 	
 	// And make it go a fun blueish colour:
 	element.style.color="#C3DEFA";

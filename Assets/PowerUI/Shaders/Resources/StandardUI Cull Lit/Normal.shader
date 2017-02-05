@@ -2,8 +2,6 @@ Shader "PowerUI/StandardUI Cull Lit/Normal" {
 	Properties {
 		_Font ("Font Texture", 2D) = "white" {}
 		_Atlas  ("Graphical Atlas", 2D) = "white" {}
-		BottomFontAlias ("Lower Alias",Float)=0.24
-		TopFontAlias ("Upper Alias",Float)=1.24
 	}
 	
 	SubShader {
@@ -14,29 +12,38 @@ Shader "PowerUI/StandardUI Cull Lit/Normal" {
 		
 		CGPROGRAM
 		
-		#pragma surface surf Lambert alpha:blend
+		#pragma surface surf Lambert alpha:blend vertex:vert
 		
 		struct Input {
-			float2 uv_Atlas;
-			float2 uv2_Font;
+			float2 texcoord0;
+			float2 texcoord1;
+			float2 texcoord2;
 			fixed4 color : COLOR;
 		};
 		
 		sampler2D _Font;
 		sampler2D _Atlas;
-		uniform float TopFontAlias;
-		uniform float BottomFontAlias;
+		
+		void vert(inout appdata_full i, out Input o){
+			
+			UNITY_INITIALIZE_OUTPUT(Input, o);
+			
+			o.texcoord0=i.texcoord;
+			o.texcoord1=i.texcoord1;
+			o.texcoord2=i.texcoord2;
+			
+		}
 		
 		void surf (Input IN, inout SurfaceOutput o) {
 			
 			fixed4 col = IN.color;
 			
-			if(IN.uv_Atlas.y<=1){
-				col *= tex2D(_Atlas, IN.uv_Atlas);
+			if(IN.texcoord0.y<=1){
+				col *= tex2D(_Atlas, IN.texcoord0);
 			}
 			
-			if(IN.uv2_Font.y<=1){
-				col.a *= smoothstep(BottomFontAlias,TopFontAlias,tex2D(_Font,IN.uv2_Font).a);
+			if(IN.texcoord1.y<=1){
+				col.a *= smoothstep(IN.texcoord2.x,IN.texcoord2.y,tex2D(_Font,IN.texcoord1).a);
 			}
 			
 			o.Albedo = col.rgb;

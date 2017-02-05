@@ -89,7 +89,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Sets the isolated state of this batch.</summary>
-		public void NotIsolated(TextureAtlas graphics,TextureAtlas font,float aliasBottom,float aliasTop){
+		public void NotIsolated(TextureAtlas graphics,TextureAtlas font){
 			
 			if(!Isolated && Setup){
 				return;
@@ -105,17 +105,14 @@ namespace PowerUI{
 			}
 			
 			Mesh.SetGlobalMaterial(Renderer.CurrentShaderSet.Normal);
-			SetFontAtlas(font,aliasBottom,aliasTop);
+			SetFontAtlas(font);
 			SetGraphicsAtlas(graphics);
 		}
 		
 		/// <summary>Sets the font atlas for this batch.</summary>
-		public void SetFontAtlas(TextureAtlas font,float bottom,float top){
+		public void SetFontAtlas(TextureAtlas font){
 			FontAtlas=font;
 			Mesh.SetFontAtlas(font);
-			
-			Mesh.Material.SetFloat("TopFontAlias",top);
-			Mesh.Material.SetFloat("BottomFontAlias",bottom);
 		}
 		
 		/// <summary>Sets the graphics atlas for this batch.</summary>

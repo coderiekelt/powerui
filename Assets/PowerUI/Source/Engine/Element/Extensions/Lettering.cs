@@ -20,7 +20,7 @@ namespace PowerUI{
 	
 	/// <summary>
 	/// A useful function which splits all letters in an element into their own individual elements.
-	/// Great for animating each letter on it's own. Similar to lettering.js.
+	/// Great for animating each letter on its own. Similar to lettering.js.
 	/// </summary>
 
 	public partial class HtmlElement{
@@ -91,7 +91,13 @@ namespace PowerUI{
 						
 						// Create a new span:
 						Element span=document.createElement("span");
-						span.textContent=charString;
+						
+						if(charString==" "){
+							// NBSP:
+							span.textContent="\u00A0";
+						}else{
+							span.textContent=charString;
+						}
 						
 						// Add it:
 						appendChild(span);

@@ -32,7 +32,7 @@ namespace PowerUI{
 				// Run the function:
 				object result=Run("on"+e.type,e);
 				
-				if(result!=null && result.GetType()==typeof(bool)){
+				if(result!=null && result is bool){
 					// It returned true/false - was it false?
 					
 					if(!(bool)result){
