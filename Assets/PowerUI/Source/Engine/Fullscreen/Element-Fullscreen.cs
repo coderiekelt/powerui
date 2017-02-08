@@ -76,6 +76,9 @@ namespace PowerUI{
 			// Set (note that this triggers a CSS event):
 			this["fullscreen"]="1";
 			
+			// Update local style:
+			Style.Computed.RefreshLocal();
+			
 		}
 		
 	}

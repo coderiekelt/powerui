@@ -8,21 +8,16 @@ body{
 	height:100%;
 	width:100%;
 	margin:0;
-	color:#ffffff;
-	overflow:hidden;
-	font-smoothing:0.15;
+	color:white;
 }
 </style>
 
-<div id='screenContent' style='color-overlay:#000000;height:100%;'>
+<div id='screenContent' style='height:100%;background:url(noise-background.png);'>
 	
-	<!-- Background (The blue noise part - PowerUI is actually transparent) -->
-	<div style='position:fixed;height:100%;width:100%;background:url(noise-background.png);'></div>
-
 	<!-- The PowerUI logo in the middle of the screen. -->
 	<div style='background:url(powerUI-logo.png) no-repeat;background-position:center;height:100%;position:fixed;'></div>
 
-	<center style='font-size:30px;v-align:middle;height:100%;'>
+	<center style='font-size:30px;position:relative;top:50%;height:100%;'>
 		<br><br>
 		<b>
 			<span id='message'></span>
@@ -50,7 +45,7 @@ fadedOut(null);
 function fadeIn(){
 	
 	// Fades the screen in. When it's done, it pauses.
-	content.animate("color-overlay:#ffffff;",1.4f).onDone(pause);
+	content.animate("color-overlay:white;",1.4f).onDone(pause);
 	
 }
 
@@ -64,7 +59,7 @@ function pause(a:UIAnimation){
 function fadeOut(){
 	
 	// Fades the screen out. When it's done, it flips the message.
-	content.animate("color-overlay:#000000;",1.4f).onDone(fadedOut);
+	content.animate("color-overlay:black;",1.4f).onDone(fadedOut);
 	
 }
 

@@ -784,6 +784,11 @@ public static class UI{
 			Callbacks.RunAll();
 		}
 		
+		// OnUpdate queue too:
+		if(OnUpdate.FirstElement!=null){
+			OnUpdate.Update();
+		}
+		
 		// Get a deltaTime unaffected by timeScale:
 		float deltaTime=Time.unscaledDeltaTime;
 		

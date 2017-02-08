@@ -76,12 +76,14 @@ namespace PowerUI{
 		public virtual void OnLoadEvent(DomEvent e){
 		}
 		
+		/*
 		public override void OnChildrenLoaded(){
 			
 			// Construct the selector structure now:
-			Style.Computed.RefreshStructure();
+			// Style.Computed.RefreshStructure();
 			
 		}
+		*/
 		
 		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
 		public void GetWidthBounds(out float min,out float max){
@@ -190,6 +192,9 @@ namespace PowerUI{
 			
 			doc.activeElement=this;
 			
+			// Update local style:
+			Style.Computed.RefreshLocal();
+			
 			#if MOBILE
 			// Should we pop up the mobile keyboard?
 			KeyboardMode mobile=OnShowMobileKeyboard();
@@ -230,6 +235,9 @@ namespace PowerUI{
 			}
 			
 			doc.activeElement=null;
+			
+			// Update local style:
+			Style.Computed.RefreshLocal();
 			
 			#if MOBILE
 			// Attempt to hide the keyboard.
@@ -971,6 +979,29 @@ namespace PowerUI{
 					img.SetImage(new ImagePackage(value as Texture2D));
 				}
 			}
+		}
+		
+		/// <summary>Animates css properties on this element.</summary>
+		/// <param name="css">A set of target css properties, e.g. "rotate-x:45deg;scale-y:110%;".</param>
+		/// <param name="duration">The time, in seconds, to take animating the properties.</param>
+		/// <param name="cssTimeFunction">The timing function (CSS).
+		/// Can be anything that's valid CSS; e.g. "steps(3)" or "ease". Note that "ease" is the default in CSS.</summary>
+		/// <returns>An animation instance which can be used to track progress.</returns>
+		public UIAnimation animate(string css,float duration,string cssTimeFunction){	
+			
+			// Load the CSS function:
+			Css.Value value=Css.Value.Load(cssTimeFunction);
+			
+			Blaze.VectorPath timeFunc=null;
+			
+			if(value!=null){
+				
+				// Get as a path:
+				timeFunc=value.GetPath(null,null);
+				
+			}
+			
+			return new UIAnimation(this,css,duration,timeFunc);
 		}
 		
 		/// <summary>Animates css properties on this element.</summary>

@@ -10,7 +10,6 @@ html{
 	font-size:40px;
 	position:absolute;
 	top:50%;
-	margin-top:-50%;
 }
 
 body{
@@ -27,13 +26,12 @@ body{
 
 // Arch settings:
 var maxHeight=50f;
-
 var maxAngle=25f;
 
 // Grab the title:
 var title=(document.getElementById("title")):HtmlElement;
 
-// Split it up into its individual letters:
+// Split it up into its individual letters (so each one is its own element):
 title.lettering();
 
 // How many letters?
@@ -46,7 +44,7 @@ var deltaAngle=(2f * Mathf.PI)/(letterCount-1):float;
 // Arch each one individually:
 for(var i=0;i<letterCount;i++){
 	
-	// Grab the letters style:
+	// Grab the letter:
 	var ele=(title.childNodes[i]):HtmlElement;
 	
 	// Tell them to rotate around their midpoint:
@@ -54,13 +52,13 @@ for(var i=0;i<letterCount;i++){
 	ele.style.position="relative";
 	
 	// Get the rotation as a string in degrees:
-	var rotation=(-mathf.Cos(angle)*maxAngle)+"deg";
+	var rotation=(mathf.Cos(angle)*maxAngle)+"deg";
 	
 	// Get the top offset as a string in degrees:
 	var top=(mathf.Sin(angle)*maxHeight)+"px";
 	
-	// Animate there now:
-	// ele.animate("top:"+top+";transform:rotate("+rotation+")",2f);
+	// Animate there now (using the "ease" CSS function):
+	ele.animate("top:"+top+";transform:rotate("+rotation+")",2f,"ease");
 	
 	// Increase the angle:
 	angle+=deltaAngle;

@@ -55,7 +55,8 @@ namespace PowerUI{
 			
 			// First, figure out the 'aspect ratio' of the scale:
 			Vector3 scale=transform.localScale;
-			float yAspect=scale.y / scale.x;
+			transform.localScale=Vector3.one;
+			float yAspect=scale.z / scale.x;
 			
 			// Calc the number of pixels:
 			int height=(int)((float)PixelWidth * yAspect);
@@ -63,11 +64,6 @@ namespace PowerUI{
 			// Generate a new UI (the name is optional).
 			// The two numbers are the dimensions of our virtual screen:
 			WorldUI ui=new WorldUI(gameObject.name,PixelWidth,height);
-			
-			// Set the scale such that the width "fits".
-			// As we're parented to something scaled 
-			// we just need to scale it so it's x world units wide (a resolution of width/x):
-			ui.SetResolution((float)PixelWidth / 10f);
 			
 			// Settings:
 			ui.PixelPerfect=PixelPerfect;
@@ -89,6 +85,15 @@ namespace PowerUI{
 				// Rotate it 90 degrees about x (to match up with the guide):
 				ui.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
 			}
+			
+			// Set the scale such that the width "fits".
+			// The panel will be PixelWidth wide, so we want to divide by that to get to '1'.
+			// Note that the 10 is because a plane is 10 units wide.
+			// We then multiply it by whatever scale (on x) the user originally wanted.
+			// The y scale is accounted for by the computed pixel height (we don't want to distort it).
+			float scaleFactor=(10f * scale.x) / (float)PixelWidth;
+			
+			ui.transform.localScale=new Vector3(scaleFactor,scaleFactor,scale.y);
 			
 			// Optionally accept input:
 			ui.AcceptInput=InputEnabled;

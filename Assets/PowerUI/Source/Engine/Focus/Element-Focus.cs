@@ -57,17 +57,16 @@ namespace PowerUI{
 			// Grab the midpoint of this element on Y:
 			float myY=computed.GetMidpointY();
 			
-			
 			// For each element in the dom that is focusable and above this..
 			foreach(Node node in allElements){
 				
-				HtmlElement element=node as HtmlElement ;
+				HtmlElement element=node as HtmlElement;
 				
 				if(element==null){
 					continue;
 				}
 				
-				if(element!=this && element.IsAbove(computed) && element.focusable){
+				if(element!=this && element.IsAbove(myY) && element.focusable){
 					// We have an element above.
 					
 					// Check if it is closer than the current result.
@@ -75,15 +74,6 @@ namespace PowerUI{
 					
 					// Is it nearer?
 					float distance=element.DistanceFromFast(myX,myY);
-					
-					// Next, weight the distance by it's verticalness - that's by how much above/below the element actually looks.
-					float verticalness=element.VerticalDistanceRatio(myX,myY);
-					
-					if(verticalness<0.01f){
-						verticalness=0.01f;
-					}
-					
-					distance*=verticalness;
 					
 					// Is it the first we've found, or is it nearer?
 					if(nearest==null || distance<nearestDistance){
@@ -135,7 +125,7 @@ namespace PowerUI{
 					continue;
 				}
 				
-				if(element!=this && element.IsBelow(computed) && element.focusable){
+				if(element!=this && element.IsBelow(myY) && element.focusable){
 					// We have an element below.
 					
 					// Check if it is closer than the current result.
@@ -143,15 +133,6 @@ namespace PowerUI{
 					
 					// Is it nearer?
 					float distance=element.DistanceFromFast(myX,myY);
-					
-					// Next, weight the distance by it's verticalness - that's by how much above/below the element actually looks.
-					float verticalness=element.VerticalDistanceRatio(myX,myY);
-					
-					if(verticalness<0.01f){
-						verticalness=0.01f;
-					}
-					
-					distance*=verticalness;
 					
 					// Is it the first we've found, or is it nearer?
 					if(nearest==null || distance<nearestDistance){
@@ -203,7 +184,7 @@ namespace PowerUI{
 					continue;
 				}
 				
-				if(element!=this && element.IsLeftOf(computed) && element.focusable){
+				if(element!=this && element.IsLeftOf(myX) && element.focusable){
 					// We have an element to our left.
 					
 					// Check if it is closer than the current result.
@@ -211,15 +192,6 @@ namespace PowerUI{
 					
 					// Is it nearer?
 					float distance=element.DistanceFromFast(myX,myY);
-					
-					// Next, weight the distance by it's horizontalness - that's how much to the right/left the element actually looks.
-					float horizontalness=element.HorizontalDistanceRatio(myX,myY);
-					
-					if(horizontalness<0.01f){
-						horizontalness=0.01f;
-					}
-					
-					distance*=horizontalness;
 					
 					// Is it the first we've found, or is it nearer?
 					if(nearest==null || distance<nearestDistance){
@@ -271,7 +243,7 @@ namespace PowerUI{
 					continue;
 				}
 				
-				if(element!=this && element.IsRightOf(computed) && element.focusable){
+				if(element!=this && element.IsRightOf(myX) && element.focusable){
 					// We have an element to our right.
 					
 					// Check if it is closer than the current result.
@@ -279,15 +251,6 @@ namespace PowerUI{
 					
 					// Is it nearer?
 					float distance=element.DistanceFromFast(myX,myY);
-					
-					// Next, weight the distance by it's horizontalness - that's how much to the right/left the element actually looks.
-					float horizontalness=element.HorizontalDistanceRatio(myX,myY);
-					
-					if(horizontalness<0.01f){
-						horizontalness=0.01f;
-					}
-					
-					distance*=horizontalness;
 					
 					// Is it the first we've found, or is it nearer?
 					if(nearest==null || distance<nearestDistance){
@@ -304,7 +267,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Checks if this element defines a specific focusable element by id in the given direction.
-		/// E.g. it's defined focus-right, focus-left, focus-up, focus-down.</summary>
+		/// E.g. its defined focus-right, focus-left, focus-up, focus-down.</summary>
 		/// <param name="direction">The direction to look for an override in.</param>
 		/// <returns>The overriding element, if found. Null otherwise.</returns>
 		private HtmlElement GetFocusableOverride(string direction){
@@ -350,58 +313,6 @@ namespace PowerUI{
 			return new Vector2(x,y);
 		}
 		
-		/// <summary>Finds the distance on both axis of the given point from this elements midpoint. Then, it divides 
-		/// the y result by the x result giving a ratio of 'horizontalness' of the distance. This is used by focus graphs, as it can
-		/// be used to perceive how leftward or how rightward an element is.</summary>
-		private float HorizontalDistanceRatio(float x,float y){
-			ComputedStyle computed=Style.Computed;
-			
-			// Find the distance along both axis:
-			x-=computed.GetMidpointX();
-			y-=computed.GetMidpointY();
-			
-			if(x<0f){
-				x=-x;
-			}
-			
-			if(y<0f){
-				y=-y;
-			}
-			
-			if(x==0f){
-				// Vertical line - it's not horizontal at all!
-				return float.MaxValue;
-			}
-			
-			return y/x;
-		}
-		
-		/// <summary>Finds the distance on both axis of the given point from this elements midpoint. Then, it divides 
-		/// the x result by the y result giving a ratio of 'verticalness' of the distance. This is used by focus graphs, as it can
-		/// be used to perceive how upward or how downward an element is.</summary>
-		private float VerticalDistanceRatio(float x,float y){
-			ComputedStyle computed=Style.Computed;
-			
-			// Find the distance along both axis:
-			x-=computed.GetMidpointX();
-			y-=computed.GetMidpointY();
-			
-			if(x<0f){
-				x=-x;
-			}
-			
-			if(y<0f){
-				y=-y;
-			}
-			
-			if(y==0f){
-				// Horizontal line - it's not vertical at all!
-				return float.MaxValue;
-			}
-			
-			return x/y;
-		}
-		
 		/// <summary>Gets a relative 2D distance of this elements midpoint from the given point.
 		/// The value returned is a fast distance used for comparison only. Use DistanceFrom for the correct distance.</summary>
 		/// <param name="x">The x coordinate to check from.</param>
@@ -422,32 +333,32 @@ namespace PowerUI{
 			return Mathf.Sqrt(DistanceFromFast(x,y));
 		}
 		
-		/// <summary>Checks if this element is to the left of the given style.</summary>
-		/// <returns>True if this element is to the left of the given style.</returns>
-		public bool IsLeftOf(ComputedStyle computed){
-			// Check if my left edge is before (but not equal to) the given left edge.
-			return (Style.Computed.OffsetLeft < computed.OffsetLeft);
+		/// <summary>Checks if this element is to the left of the given point.</summary>
+		/// <returns>True if this element is to the left of the given point.</returns>
+		public bool IsLeftOf(float x){
+			// Check if my right edge is before (but not equal to) the given midpoint.
+			return (Style.Computed.OffsetLeft + Style.Computed.PixelWidth) < x;
 		}
 		
-		/// <summary>Checks if this element is to the right of the given style.</summary>
-		/// <returns>True if this element is to the right of the given style.</returns>
-		public bool IsRightOf(ComputedStyle computed){
-			// Check if my right edge is after (but not equal to) the given right edge.
-			return (Style.Computed.OffsetLeft + Style.Computed.PixelWidth) > (computed.OffsetLeft + computed.PixelWidth);
+		/// <summary>Checks if this element is to the right of the given point.</summary>
+		/// <returns>True if this element is to the right of the given point.</returns>
+		public bool IsRightOf(float x){
+			// Check if my left edge is after (but not equal to) the given midpoint.
+			return Style.Computed.OffsetLeft > x;
 		}
 		
-		/// <summary>Checks if this element is above the given style.</summary>
-		/// <returns>True if this element is above the given style.</returns>
-		public bool IsAbove(ComputedStyle computed){
-			// Check if my top edge is less than (but not equal to) the given top edge.
-			return (Style.Computed.OffsetTop < computed.OffsetTop);
+		/// <summary>Checks if this element is above the given point.</summary>
+		/// <returns>True if this element is above the given point.</returns>
+		public bool IsAbove(float y){
+			// Check if my bottom edge is less than (but not equal to) the given midpoint.
+			return (Style.Computed.OffsetTop + Style.Computed.PixelHeight) < y;
 		}
 		
-		/// <summary>Checks if this element is below the given style.</summary>
-		/// <returns>True if this element is below the given style.</returns>
-		public bool IsBelow(ComputedStyle computed){
-			// Check if my bottom edge is greater than (but not equal to) the given bottom edge.
-			return (Style.Computed.OffsetTop + Style.Computed.PixelHeight) > (computed.OffsetTop + computed.PixelHeight);
+		/// <summary>Checks if this element is below the given point.</summary>
+		/// <returns>True if this element is below the given point.</returns>
+		public bool IsBelow(float y){
+			// Check if my top edge is greater than (but not equal to) the given midpoint.
+			return Style.Computed.OffsetTop > y;
 		}
 		
 		/// <summary>The next focusable child element. Entirely ignores tab index.</summary>
@@ -577,7 +488,7 @@ namespace PowerUI{
 			
 			if(focusable){
 				
-				// This element is focusable! Is it's tabIndex suitable?
+				// This element is focusable! Is its tabIndex suitable?
 				int index=tabIndex;
 				
 				if(index<bestSoFar && index>=search){

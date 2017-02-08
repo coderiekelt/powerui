@@ -27,11 +27,8 @@ namespace PowerUI{
 		public static OnUpdateCallback FirstElement;
 		public static OnUpdateCallback LastElement;
 		
+		
 		public static void Update(){
-			
-			if(FirstElement==null){
-				return;
-			}
 			
 			OnUpdateCallback current=FirstElement;
 			

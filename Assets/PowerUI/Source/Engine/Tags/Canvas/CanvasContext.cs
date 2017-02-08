@@ -41,9 +41,9 @@ namespace PowerUI{
 		/// <summary>The target rendering plane.</summary>
 		public DynamicTexture ImageData;
 		/// <summary>The current fill colour. See fillStyle. Default is black.</summary>
-		public Color32 FillColour=new Color32(0,0,0,255);
+		public Color FillColour=new Color(0,0,0,1f);
 		/// <summary>The current stroke colour. See strokeStyle. Default is black.</summary>
-		public Color32 StrokeColour=new Color32(0,0,0,255);
+		public Color StrokeColour=new Color(0,0,0,1f);
 		
 		
 		/// <summary>Creates a new canvas context for the given canvas element.</summary>
@@ -457,7 +457,13 @@ namespace PowerUI{
 			set{
 				
 				// Apply the colour:
-				FillColour=Css.ColourMap.GetColour(value);
+				Css.Value v=Css.Value.Load(value);
+				
+				if(v!=null && v.IsColour){
+					FillColour=v.GetColour(null,null);
+				}else{
+					FillColour=new Color(0f,0f,0f,0f);
+				}
 				
 			}
 			get{
@@ -470,7 +476,13 @@ namespace PowerUI{
 			set{
 				
 				// Apply the colour:
-				StrokeColour=Css.ColourMap.GetColour(value);
+				Css.Value v=Css.Value.Load(value);
+				
+				if(v!=null && v.IsColour){
+					StrokeColour=v.GetColour(null,null);
+				}else{
+					StrokeColour=new Color(0f,0f,0f,0f);
+				}
 				
 			}
 			get{
