@@ -32,8 +32,6 @@ namespace PowerUI{
 	[Dom.TagName("camera")]
 	public class HtmlCameraElement:HtmlElement{
 		
-		public static int ID=1;
-		
 		/// <summary>The camera component iself. Set with path="hierarchy_path".</summary>
 		public Camera Camera;
 		/// <summary>The transform of the mask, if there is one. Set with mask="file_path".</summary>
@@ -42,8 +40,8 @@ namespace PowerUI{
 		public float DepthFactor;
 		/// <summary>The field of view of a perspective camera.</summary>
 		public float FieldOfView;
-		
-		private int ID_;
+		/// <summary>True if this element has authority over the RenderTexture (and can release it/ create a new one).</summary>
+		public bool CanResize=true;
 		
 		
 		public override bool IsSelfClosing{
@@ -88,19 +86,19 @@ namespace PowerUI{
 						ComputedStyle computed=Style.Computed;
 						
 						// Create RT if one is needed:
-						if(Camera.targetTexture==null){
+						RenderTexture rt=Camera.targetTexture;
+						
+						if(rt==null){
 							
+							// Apply:
 							ApplyNewRenderTexture((int)computed.InnerWidth,(int)computed.InnerHeight);
 							
 						}else{
 							
-							// Just add it:
-							ImageCache.Add("spark-cam-"+ID_,Camera.targetTexture);
+							// Apply to background:
+							image=rt;
 							
 						}
-						
-						// Apply tex to background:
-						computed.ChangeTagProperty("background-image","url(\"cache://spark-cam-"+ID_+"\")");
 						
 					}
 					
@@ -109,6 +107,11 @@ namespace PowerUI{
 				});
 				
 				return true;
+			}else if(property=="noresize"){
+				
+				// Can't resize if noresize is not null:
+				CanResize=(this["noresize"]==null);
+				
 			}else if(property=="mask"){
 				// We've got a mask!
 				
@@ -156,7 +159,6 @@ namespace PowerUI{
 				CreatedTexture=false;
 				
 				// Clear:
-				ImageCache.Remove("spark-cam-"+ID_);
 				Camera.targetTexture.Release();
 				Camera.targetTexture=null;
 				
@@ -192,17 +194,11 @@ namespace PowerUI{
 			// Create it now:
 			Camera.targetTexture=rt;
 			
-			// Add:
-			ImageCache.Add("spark-cam-"+ID_,rt);
+			// Element.image API:
+			image=rt;
 			
 			// Setup the clear flags:
 			// Camera.clearFlags=CameraClearFlags.Depth;
-			
-		}
-		
-		public override void OnTagLoaded(){
-			
-			ID_=ID++;
 			
 		}
 		
@@ -378,7 +374,7 @@ namespace PowerUI{
 			int w=(int)box.InnerWidth;
 			int h=(int)box.InnerHeight;
 			
-			if(rt.width!=w || rt.height!=h){
+			if((rt.width!=w || rt.height!=h) && CanResize){
 				
 				// Release it (can't resize):
 				rt.Release();

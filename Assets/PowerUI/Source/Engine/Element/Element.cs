@@ -790,7 +790,7 @@ namespace PowerUI{
 		
 		/// <summary>Forces a layout to occur if one is required.
 		/// You should almost never need to call this directly - it's only needed if you want to read the fully
-		/// computed size of an element immediately after having updated it's style.</summary>
+		/// computed size of an element immediately after having updated its style.</summary>
 		public void RequireLayout(){
 			htmlDocument.Renderer.Layout();
 		}
@@ -976,8 +976,27 @@ namespace PowerUI{
 						img=new BackgroundImage(RenderData);
 						RenderData.BGImage=img;
 					}
-					img.SetImage(new ImagePackage(value as Texture2D));
+					img.SetImage(new ImagePackage(value));
 				}
+			}
+		}
+		
+		/// <summary>Sets the given image as the background of this element.</summary>
+		public void SetImage(ImageFormat value){
+			
+			BackgroundImage img=RenderData.BGImage;
+			
+			if(value==null){
+				if(img!=null){
+					RenderData.BGImage=null;
+					htmlDocument.RequestLayout();
+				}
+			}else{
+				if(img==null){
+					img=new BackgroundImage(RenderData);
+					RenderData.BGImage=img;
+				}
+				img.SetImage(new ImagePackage(value));
 			}
 		}
 		

@@ -35,11 +35,15 @@ namespace PowerUI{
 		public VectorPath Path;
 		/// <summary>The element for the canvas that this is a context for.</summary>
 		private HtmlCanvasElement Canvas;
-		/// <summary>A package containing the dynamic image. This is used to actually display the image
-		/// on screen.</summary>
-		public ImagePackage Package;
-		/// <summary>The target rendering plane.</summary>
-		public DynamicTexture ImageData;
+		/// <summary>The target rendering plane. Always exists.</summary>
+		private DynamicTexture ImageData_;
+		/// <summary>The target rendering plane. Always exists.</summary>
+		public DynamicTexture ImageData{
+			get{
+				return ImageData_;
+			}
+		}
+		
 		/// <summary>The current fill colour. See fillStyle. Default is black.</summary>
 		public Color FillColour=new Color(0,0,0,1f);
 		/// <summary>The current stroke colour. See strokeStyle. Default is black.</summary>
@@ -51,8 +55,9 @@ namespace PowerUI{
 		public CanvasContext(HtmlCanvasElement canvas){
 			// Apply the tag:
 			Canvas=canvas;
-			
 			Path=new VectorPath();
+			ImageData_=new DynamicTexture();
+			canvas.SetImage(ImageData_);
 		}
 		
 		/// <summary>Creates an infinitext glyph from the path you've just made.</summary>
@@ -82,6 +87,18 @@ namespace PowerUI{
 			
 			return glyph;
 			
+		}
+		
+		/// <summary>This canvas as a png. Null if it contains nothing.</summary>
+		public byte[] pngData{
+			get{
+				
+				if(ImageData_.Texture==null){
+					return null;
+				}
+				
+				return ImageData_.Texture.EncodeToPNG();
+			}
 		}
 		
 		/// <summary>Starts creating a path on this context. Used to draw and fill in any kind of shape.</summary>
@@ -234,6 +251,15 @@ namespace PowerUI{
 			Path.QuadraticCurveTo(cx,cy,x,y);
 		}
 		
+		/// <summary>Tidies up this context.</summary>
+		public void Destroy(){
+			
+			if(ImageData_!=null){
+				ImageData_.Destroy();
+			}
+			
+		}
+		
 		/// <summary>Adds an arc between the given points using the pen point as a control point. 
 		/// Note that nothing will be seen until you call a fill or stroke method.</summary>
 		public void arcTo(float x1,float y1,float x2,float y2,float radius){
@@ -327,6 +353,7 @@ namespace PowerUI{
 			
 			// For each line..
 			
+			DynamicTexture img=ImageData_;
 			VectorPoint node=Path.FirstPathNode;
 			
 			// For each one..
@@ -345,12 +372,15 @@ namespace PowerUI{
 				
 			}
 			
+			// Request a paint:
+			img.RequestPaint();
+			
 		}
 		
 		/// <summary>Fills the current path with a solid colour. The colour used originates from the fillStyle.</summary>
 		public void fill(){
 			
-			if(Path.FirstPathNode==null || ImageData==null){
+			if(Path.FirstPathNode==null){
 				return;
 			}
 			
@@ -367,10 +397,14 @@ namespace PowerUI{
 			// Figure out bounds:
 			Path.RecalculateBounds();
 			
-			int rWidth=ImageData.Width;
-			int rHeight=ImageData.Height;
+			DynamicTexture img=ImageData_;
 			
-			Rasteriser.Rasterise(Path,ImageData.Pixels,rWidth,0,rWidth,rHeight,0f,-rHeight,FillColour,false);
+			int rWidth=img.Width;
+			int rHeight=img.Height;
+			
+			Rasteriser.Rasterise(Path,img.Pixels,rWidth,0,rWidth,rHeight,0f,-rHeight,FillColour,false);
+			
+			img.RequestPaint();
 			
 		}
 		
@@ -382,67 +416,21 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Applies the image data so it's ready for rendering.</summary>
-		public void ApplyImageData(LayoutBox box){
-			
-			if(ImageData==null){
-				ImageData=new DynamicTexture();
-			}
+		public void UpdateDimensions(LayoutBox box){
 			
 			int w=(int)box.InnerWidth;
 			int h=(int)box.InnerHeight;
 			
-			if(w==ImageData.Width && h==ImageData.Height){
+			DynamicTexture img=ImageData_;
+			
+			if(w==img.Width && h==img.Height){
 				// No change. Stop there.
 				return;
 			}
 			
-			// Resize the texture:
-			ImageData.Resize(w,h,false);
+			// Resize the texture (clearing it):
+			img.Resize(w,h,true);
 			
-			// Grab the canvas:
-			HtmlElement element=canvas;
-			
-			// Grab its computed style:
-			ComputedStyle computed=element.style.Computed;
-			
-			if(ImageData.Width!=0 && ImageData.Height!=0){
-				
-				if(Package==null){
-					//We now need a package to actually display it.
-					
-					// Create the package:
-					Package=new ImagePackage("",null);
-					
-					// Apply the package contents:
-					Package.Contents=ImageFormats.GetInstance("dyn");
-					
-					// Get the new contents as a dynamic format:
-					DynamicFormat dynamic=Package.Contents as DynamicFormat;
-					
-					// Apply:
-					dynamic.DynamicImage=ImageData;
-					
-					// Apply it to the element:
-					BackgroundImage img=computed.RenderData.BGImage;
-					
-					if(img==null){
-						img=new BackgroundImage(computed.RenderData);
-						computed.RenderData.BGImage=img;
-					}
-					
-					img.SetImage(Package);
-					
-				}
-				
-				apply();
-			}
-			
-		}
-		
-		/// <summary>Forces any changes to be applied right now.</summary>
-		public void apply(){
-			// Flush any changes:
-			ImageData.FlushDirect();
 		}
 		
 		/// <summary>The canvas element that this is the context for.</summary>
@@ -490,49 +478,30 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>Called when the element is resized.</summary>
-		public void Resized(LayoutBox box){
-			ApplyImageData(box);
-		}
-		
 		/// <summary>The width of the canvas context.</summary>
 		public int width{
 			get{
-				if(ImageData==null){
-					return 0;
-				}
-				
-				return ImageData.Width;
+				return ImageData_.Width;
 			}
 			set{
-				if(ImageData==null){
-					ImageData=new DynamicTexture();
-				}
-				ImageData.ResizeX(value);
+				ImageData_.ResizeX(value);
 			}
 		}
 		
 		/// <summary>The height of the canvas context.</summary>
 		public int height{
 			get{
-				if(ImageData==null){
-					return 0;
-				}
-				
-				return ImageData.Height;
+				return ImageData_.Height;
 			}
 			set{
-				if(ImageData==null){
-					ImageData=new DynamicTexture();
-				}
-				ImageData.ResizeY(value);
+				ImageData_.ResizeY(value);
 			}
 		}
 		
 		/// <summary>Useful method to clear the whole context.</summary>
 		public void clear(){
-			if(ImageData!=null){
-				ImageData.Clear();
+			if(ImageData_!=null){
+				ImageData_.Clear();
 			}
 			
 			Path.Clear();
@@ -550,12 +519,11 @@ namespace PowerUI{
 		
 		/// <summary>Fills the specified box region using the given colour.</summary>
 		public void fillRect(int xStart,int yStart,int rectWidth,int rectHeight,Color32 colour){
-			if(ImageData==null){
-				return;
-			}
 			
 			// First invert y. This is because the canvas API is from the top left corner.
-			int yEnd=ImageData.Height-yStart;
+			DynamicTexture img=ImageData_;
+			
+			int yEnd=img.Height-yStart;
 			
 			int xEnd=xStart+rectWidth;
 			yStart=yEnd-rectHeight;
@@ -569,23 +537,26 @@ namespace PowerUI{
 				yStart=0;
 			}
 			
-			if(xEnd>ImageData.Width){
-				xEnd=ImageData.Width;
+			if(xEnd>img.Width){
+				xEnd=img.Width;
 			}
 			
-			if(yEnd>ImageData.Height){
-				yEnd=ImageData.Height;
+			if(yEnd>img.Height){
+				yEnd=img.Height;
 			}
 			
 			// Fill each pixel:
 			for(int y=yStart;y<yEnd;y++){
 				// Get the index of this row of pixels.
-				int index=(y*ImageData.ResizedWidth);
+				int index=(y*img.Width);
 				
 				for(int x=xStart;x<xEnd;x++){
-					ImageData.SetPixel(x+index,colour);
+					img.Pixels[x+index]=colour;
 				}
 			}
+			
+			img.RequestPaint();
+			
 		}
 		
 	}

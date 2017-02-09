@@ -27,6 +27,18 @@ namespace PowerUI{
 		private CanvasContext2D Context2D;
 		
 		
+		internal override void RemovedFromDOM(){
+			
+			base.RemovedFromDOM();
+			
+			// Destroy the context:
+			if(Context2D!=null){
+				Context2D.Destroy();
+				Context2D=null;
+			}
+			
+		}
+		
 		/// <summary>Gets a rendering context for this canvas.</summary>
 		public override CanvasContext getContext(string contextName){
 			// Lowercase it:
@@ -43,9 +55,13 @@ namespace PowerUI{
 		/// <summary>The 2D canvas context.</summary>
 		public CanvasContext2D context2D{
 			get{
+				
 				if(Context2D==null){
 					Context2D=new CanvasContext2D(this);
 				}
+				
+				// If a layout is pending, redraw right now:
+				RequireLayout();
 				
 				return Context2D;
 			}
@@ -54,15 +70,39 @@ namespace PowerUI{
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			
 			if(Context2D!=null){
-				Context2D.Resized(box);
+				Context2D.UpdateDimensions(box);
 			}
 			
+		}
+		
+		/// <summary>Gets canvas data (png only). If you want it as a byte[], use context.pngData instead.</summary>
+		public override string toDataURL(string mime){
+			
+			mime=mime.ToLower().Trim();
+			
+			if(Context2D==null || mime!="text/png"){
+				return "";
+			}
+			
+			// Get PNG data:
+			byte[] data=Context2D.pngData;
+			
+			if(data==null){
+				return "";
+			}
+			
+			return "data:image/png;base64,"+System.Convert.ToBase64String(data);
 		}
 		
 	}
 	
 	
 	public partial class HtmlElement{
+		
+		/// <summary>Gets canvas data (png only). If you want it as a byte[], use context.pngData instead.</summary>
+		public virtual string toDataURL(string mime){
+			return "";
+		}
 		
 		/// <summary>Gets a rendering context for this canvas (if it is a canvas element!).</summary>
 		/// <param name="text">The context type e.g. "2D".</param>

@@ -486,7 +486,6 @@ public static class UI{
 		Web.Clear();
 		Spa.SPA.Clear();
 		UIAnimation.Clear();
-		DynamicTexture.RemoveAll();
 		ScreenInfo.Clear();
 		WorldUI currentWorldUI=FirstWorldUI;
 		
