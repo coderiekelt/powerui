@@ -56,7 +56,7 @@ namespace PowerUI{
 			Active=true;
 			
 			// Doesn't bubble:
-			DomEvent e=new DomEvent("start");
+			Dom.Event e=new Dom.Event("start");
 			e.SetTrusted(false);
 			
 			if(dispatchEvent(e)){
@@ -123,7 +123,7 @@ namespace PowerUI{
 			}
 			
 			// Doesn't bubble:
-			DomEvent e=new DomEvent("stop");
+			Dom.Event e=new Dom.Event("stop");
 			e.SetTrusted(false);
 			
 			if(dispatchEvent(e)){
@@ -341,7 +341,7 @@ namespace PowerUI{
 		private void Bounced(){
 			
 			// Trigger:
-			DomEvent e=new DomEvent("bounce");
+			Dom.Event e=new Dom.Event("bounce");
 			e.SetTrusted(false);
 			dispatchEvent(e);
 			
@@ -367,7 +367,7 @@ namespace PowerUI{
 				// Fire the finish event:
 				
 				// Doesn't bubble:
-				DomEvent e=new DomEvent("finish");
+				Dom.Event e=new Dom.Event("finish");
 				e.SetTrusted(false);
 				dispatchEvent(e);
 				

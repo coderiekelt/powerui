@@ -24,8 +24,8 @@ namespace PowerUI{
 		/// <summary>Runs the given function held in the named attribute (e.g. onkeydown) and checks if that function blocked
 		/// the event. In the case of a blocked event, no default action should occur. Note that this is called by dispatchEvent
 		/// and the attribute functions run before handlers do (same as Firefox).</summary>
-		/// <param name="e">A standard DomEvent containing e.g. key/mouse information.</param>
-		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
+		/// <param name="e">A standard DOM Event containing e.g. key/mouse information.</param>
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
 			if(bubblePhase){
 				

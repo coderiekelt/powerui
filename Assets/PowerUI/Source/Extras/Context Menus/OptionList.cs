@@ -27,7 +27,7 @@ namespace ContextMenus{
 	public class OptionList{
 		
 		/// <summary>Used when an option is triggered (usually by an onclick attribute).</summary>
-		public static void ResolveOptionFromClick(DomEvent e){
+		public static void ResolveOptionFromClick(Dom.Event e){
 			
 			// Get the src element:
 			HtmlElement src=(e.srcElement as HtmlElement);

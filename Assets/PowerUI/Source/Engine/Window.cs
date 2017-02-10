@@ -333,9 +333,9 @@ namespace PowerUI{
 		public int outerWidth{
 			get{
 				
-				if(document.InWorldUI!=null){
+				if(document.worldUI!=null){
 					
-					return document.InWorldUI.pixelWidth;
+					return document.worldUI.pixelWidth;
 					
 				}
 				
@@ -347,9 +347,9 @@ namespace PowerUI{
 		public int outerHeight{
 			get{
 				
-				if(document.InWorldUI!=null){
+				if(document.worldUI!=null){
 					
-					return document.InWorldUI.pixelHeight;
+					return document.worldUI.pixelHeight;
 					
 				}
 				

@@ -23,7 +23,7 @@ public static class FormExampleHandler{
 	
 	/// <summary>Called when the form is submitted through onsubmit="FormExampleHandler.OnSubmit".</summary>
 	/// <param name="form">A simple object holding the values of all your form inputs by name.</param>
-	public static void OnSubmit(FormData form){
+	public static void OnSubmit(FormEvent form){
 		Debug.Log("Form submitted!");
 		
 		// Usage is simply form["fieldName"], or form.Checked("fieldName") for easily checking if a checkbox is ticked.
@@ -32,7 +32,7 @@ public static class FormExampleHandler{
 		Debug.Log("handling a form with C#.");
 		
 		// Give a feedback message to show something's happened:
-		(UI.document.getElementById("csMessage") as HtmlElement ).innerHTML="Please check the console!";
+		UI.document.getElementById("csMessage").innerHTML="Please check the console!";
 		
 		// And simply log all the fields of the form:
 		Debug.Log("Your name: "+form["yourName"]);

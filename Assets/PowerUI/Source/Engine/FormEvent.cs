@@ -23,7 +23,7 @@ namespace PowerUI{
 	/// It maps field names to their current selected value.
 	/// </summary>
 	
-	public class FormData : UIEvent{
+	public class FormEvent : UIEvent{
 		
 		/// <summary>The raw request.</summary>
 		public DataPackage request;
@@ -35,7 +35,7 @@ namespace PowerUI{
 		
 		/// <summary>Creates a new form with the given field/value pairs.</summary>
 		/// <param name="fields">A dictionary holding the field/value pairs from the form.</param>
-		public FormData(Dictionary<string,string> fields){
+		public FormEvent(Dictionary<string,string> fields){
 			RawFields=fields;
 		}
 		

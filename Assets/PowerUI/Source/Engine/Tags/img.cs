@@ -221,7 +221,7 @@ namespace PowerUI{
 			
 		}
 		
-		public override void OnLoadEvent(DomEvent e){
+		public override void OnLoadEvent(Dom.Event e){
 			
 			BackgroundImage bgImage=RenderData.BGImage;
 			

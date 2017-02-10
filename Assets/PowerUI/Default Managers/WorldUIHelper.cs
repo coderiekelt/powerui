@@ -25,6 +25,8 @@ namespace PowerUI{
 		/// <summary>The expiry for the WorldUI.</summary>
 		[Tooltip("The amount of seconds until the WorldUI destroys itself. 0 means no expiry time.")]
 		public float Expiry=0f;
+		/// <summary>The worldUI instance. Available after OnEnable.</summary>
+		internal WorldUI WorldUI;
 		
 		
 		public override void OnEnable () {
@@ -63,27 +65,28 @@ namespace PowerUI{
 			
 			// Generate a new UI (the name is optional).
 			// The two numbers are the dimensions of our virtual screen:
-			WorldUI ui=new WorldUI(gameObject.name,PixelWidth,height);
+			WorldUI=new WorldUI(gameObject.name,PixelWidth,height);
 			
 			// Settings:
-			ui.PixelPerfect=PixelPerfect;
-			ui.AlwaysFaceCamera=AlwaysFaceTheCamera;
+			WorldUI.PixelPerfect=PixelPerfect;
+			WorldUI.AlwaysFaceCamera=AlwaysFaceTheCamera;
 			
 			if(Expiry!=0f){
 				
-				ui.SetExpiry(Expiry);
+				WorldUI.SetExpiry(Expiry);
 				
 			}
 			
-			// Give it some content using PowerUIManager's Navigate method:
-			Navigate(ui.document);
+			// Give it some content using PowerUI.Manager's Navigate method:
+			// (Just so we can use the same Html/ Url fields - it's completely optional)
+			Navigate(WorldUI.document);
 			
 			// Parent it to the GO:
-			ui.ParentToOrigin(transform);
+			WorldUI.ParentToOrigin(transform);
 			
 			if(hasGuide){
 				// Rotate it 90 degrees about x (to match up with the guide):
-				ui.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
+				WorldUI.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
 			}
 			
 			// Set the scale such that the width "fits".
@@ -93,10 +96,16 @@ namespace PowerUI{
 			// The y scale is accounted for by the computed pixel height (we don't want to distort it).
 			float scaleFactor=(10f * scale.x) / (float)PixelWidth;
 			
-			ui.transform.localScale=new Vector3(scaleFactor,scaleFactor,scale.y);
+			WorldUI.transform.localScale=new Vector3(scaleFactor,scaleFactor,scale.y);
 			
 			// Optionally accept input:
-			ui.AcceptInput=InputEnabled;
+			WorldUI.AcceptInput=InputEnabled;
+			
+		}
+		
+		public override void OnDisable(){
+			
+			// Overriden so we don't destroy the main UI!
 			
 		}
 		

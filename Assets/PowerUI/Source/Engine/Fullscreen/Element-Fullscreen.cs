@@ -37,7 +37,7 @@ namespace PowerUI{
 			}
 			
 			// Trigger fullscreen event:
-			DomEvent e=new DomEvent("fullscreenchange");
+			Dom.Event e=new Dom.Event("fullscreenchange");
 			e.SetTrusted(false);
 			
 			if(!dispatchEvent(e)){

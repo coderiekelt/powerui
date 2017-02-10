@@ -42,9 +42,17 @@ namespace PowerUI{
 		/// <summary>Watches out for changes.</summary>
 		private float _LengthScale = 1f;
 		#endif
+		/// <summary>The document that this is managing.</summary>
+		internal HtmlDocument Document;
 		
 		/// <summary>Applies either Url or HtmlFile to the given document.</summary>
 		public void Navigate(HtmlDocument document){
+			
+			// Set doc:
+			Document=document;
+			
+			// Apply zooms:
+			UpdateZoom(false);
 			
 			// Give it some content:
 			if (!string.IsNullOrEmpty(Url)) {
@@ -83,7 +91,7 @@ namespace PowerUI{
 					delegate(string path,string html){
 						
 						// Write the innerHTML now:
-						UI.document.innerHTML=html;
+						Document.innerHTML=html;
 					
 					}
 				);
@@ -94,9 +102,6 @@ namespace PowerUI{
 			
 			// Start:
 			UI.Start();
-			
-			// Apply zooms:
-			UpdateZoom(false);
 			
 			// Load the main UI from the above HtmlFile or Url. Note that UI's don't have to be loaded like this! You
 			// can also just set a string of text if needed.
@@ -117,16 +122,16 @@ namespace PowerUI{
 			if (AutomaticallyHandleDpi) {
 				
 				// Using the web API to get the pixel ratio:
-				zoom *= UI.document.window.devicePixelRatio;
+				zoom *= Document.window.devicePixelRatio;
 				
 			}
 			
 			// Apply zoom (base for zoom:auto; override by setting some other zoom value):
-			UI.document.Zoom = zoom;
+			Document.Zoom = zoom;
 			
 			if (requestReflow) {
 				
-				UI.document.RequestLayout();
+				Document.RequestLayout();
 				
 			}
 			
@@ -149,6 +154,7 @@ namespace PowerUI{
 		
 		// OnDisable is called when the manager script component is disabled. You don't need this.
 		public virtual void OnDisable () {
+			
 			UI.Destroy();
 			
 			#if UNITY_EDITOR && !UNITY_WEBPLAYER

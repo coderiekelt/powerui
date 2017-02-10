@@ -16,7 +16,7 @@ using Dom;
 
 namespace PowerUI{
 	
-	public class AnimationEvent : DomEvent{
+	public class AnimationEvent : Dom.Event{
 		
 		public string animationName;
 		public float elapsedTime;
@@ -40,7 +40,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class AudioProcessingEvent : DomEvent{
+	public class AudioProcessingEvent : Dom.Event{
 		
 		public AudioBuffer input;
 		public AudioBuffer output;
@@ -64,14 +64,14 @@ namespace PowerUI{
 		
 	}
 	
-	public class BeforeInputEvent : DomEvent{
+	public class BeforeInputEvent : Dom.Event{
 		
 		public BeforeInputEvent(){}
 		public BeforeInputEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class BeforeUnloadEvent : DomEvent{
+	public class BeforeUnloadEvent : Dom.Event{
 		
 		public string returnValue;
 		
@@ -82,7 +82,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class BlobEvent : DomEvent{
+	public class BlobEvent : Dom.Event{
 		
 		public byte[] data;
 		
@@ -103,7 +103,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class ClipboardEvent : DomEvent{
+	public class ClipboardEvent : Dom.Event{
 		
 		/// <summary>The raw clipboard data. Always non-null.</summary>
 		private DataTransfer _ClipboardData;
@@ -136,7 +136,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class CloseEvent : DomEvent{
+	public class CloseEvent : Dom.Event{
 		
 		public CloseEvent(){}
 		public CloseEvent(string type,object init):base(type,init){}
@@ -150,7 +150,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class CustomEvent : DomEvent{
+	public class CustomEvent : Dom.Event{
 		
 		public object detail;
 		
@@ -159,28 +159,28 @@ namespace PowerUI{
 		
 	}
 	
-	public class CSSFontFaceLoadEvent : DomEvent{
+	public class CSSFontFaceLoadEvent : Dom.Event{
 		
 		public CSSFontFaceLoadEvent(){}
 		public CSSFontFaceLoadEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class DeviceLightEvent : DomEvent{
+	public class DeviceLightEvent : Dom.Event{
 		
 		public DeviceLightEvent(){}
 		public DeviceLightEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class DeviceMotionEvent : DomEvent{
+	public class DeviceMotionEvent : Dom.Event{
 		
 		public DeviceMotionEvent(){}
 		public DeviceMotionEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class DeviceOrientationEvent : DomEvent{
+	public class DeviceOrientationEvent : Dom.Event{
 		
 		public bool absolute;
 		public float alpha;
@@ -192,14 +192,14 @@ namespace PowerUI{
 		
 	}
 	
-	public class DeviceProximityEvent : DomEvent{
+	public class DeviceProximityEvent : Dom.Event{
 		
 		public DeviceProximityEvent(){}
 		public DeviceProximityEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class DOMTransactionEvent : DomEvent{
+	public class DOMTransactionEvent : Dom.Event{
 		
 		public DOMTransactionEvent(){}
 		public DOMTransactionEvent(string type,object init):base(type,init){}
@@ -213,21 +213,21 @@ namespace PowerUI{
 		
 	}
 	
-	public class EditingBeforeInputEvent : DomEvent{
+	public class EditingBeforeInputEvent : Dom.Event{
 		
 		public EditingBeforeInputEvent(){}
 		public EditingBeforeInputEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class ErrorEvent : DomEvent{
+	public class ErrorEvent : Dom.Event{
 		
 		public ErrorEvent(){}
 		public ErrorEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class FetchEvent : DomEvent{
+	public class FetchEvent : Dom.Event{
 		
 		public FetchEvent(){}
 		public FetchEvent(string type,object init):base(type,init){}
@@ -244,14 +244,14 @@ namespace PowerUI{
 		
 	}
 	
-	public class GamepadEvent : DomEvent{
+	public class GamepadEvent : Dom.Event{
 		
 		public GamepadEvent(){}
 		public GamepadEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class IDBVersionChangeEvent : DomEvent{
+	public class IDBVersionChangeEvent : Dom.Event{
 		
 		public IDBVersionChangeEvent():base("versionchange"){}
 		public IDBVersionChangeEvent(string type,object init):base(type,init){}
@@ -265,14 +265,14 @@ namespace PowerUI{
 		
 	}
 	
-	public class MediaStreamEvent : DomEvent{
+	public class MediaStreamEvent : Dom.Event{
 		
 		public MediaStreamEvent():base("mediastream"){}
 		public MediaStreamEvent(string type,object init):base(type,init){}
 		
 	}
 	
-	public class MessageEvent : DomEvent{
+	public class MessageEvent : Dom.Event{
 		
 		public object data;
 		public string origin;
@@ -330,7 +330,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class OfflineAudioCompletionEvent : DomEvent{
+	public class OfflineAudioCompletionEvent : Dom.Event{
 		
 		public OfflineAudioCompletionEvent(){}
 		
@@ -338,7 +338,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class PageTransitionEvent : DomEvent{
+	public class PageTransitionEvent : Dom.Event{
 		
 		public PageTransitionEvent(){}
 		
@@ -346,7 +346,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class PointerEvent : DomEvent{
+	public class PointerEvent : Dom.Event{
 		
 		public PointerEvent(){}
 		
@@ -354,7 +354,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class PopStateEvent : DomEvent{
+	public class PopStateEvent : Dom.Event{
 		
 		public object state;
 		
@@ -365,7 +365,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class ProgressEvent : DomEvent{
+	public class ProgressEvent : Dom.Event{
 		
 		public ProgressEvent(){}
 		
@@ -373,7 +373,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class RelatedEvent : DomEvent{
+	public class RelatedEvent : Dom.Event{
 		
 		public RelatedEvent(){}
 		
@@ -381,7 +381,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class RTCDataChannelEvent : DomEvent{
+	public class RTCDataChannelEvent : Dom.Event{
 		
 		public RTCDataChannelEvent(){}
 		
@@ -389,7 +389,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class RTCIdentityErrorEvent : DomEvent{
+	public class RTCIdentityErrorEvent : Dom.Event{
 		
 		public RTCIdentityErrorEvent(){}
 		
@@ -397,7 +397,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class RTCIdentityEvent : DomEvent{
+	public class RTCIdentityEvent : Dom.Event{
 		
 		public RTCIdentityEvent(){}
 		
@@ -405,7 +405,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class RTCPeerConnectionIceEvent : DomEvent{
+	public class RTCPeerConnectionIceEvent : Dom.Event{
 		
 		public RTCPeerConnectionIceEvent(){}
 		
@@ -413,7 +413,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class SensorEvent : DomEvent{
+	public class SensorEvent : Dom.Event{
 		
 		public SensorEvent(){}
 		
@@ -421,7 +421,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class StorageEvent : DomEvent{
+	public class StorageEvent : Dom.Event{
 		
 		public StorageEvent(){}
 		
@@ -429,7 +429,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class TextEvent : DomEvent{
+	public class TextEvent : Dom.Event{
 		
 		public TextEvent(){}
 		
@@ -437,7 +437,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class TimeEvent : DomEvent{
+	public class TimeEvent : Dom.Event{
 		
 		public TimeEvent(){}
 		
@@ -522,7 +522,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class TrackEvent : DomEvent{
+	public class TrackEvent : Dom.Event{
 		
 		public TrackEvent(){}
 		
@@ -530,7 +530,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class TransitionEvent : DomEvent{
+	public class TransitionEvent : Dom.Event{
 		
 		public TransitionEvent(){}
 		
@@ -538,7 +538,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class UserProximityEvent : DomEvent{
+	public class UserProximityEvent : Dom.Event{
 		
 		public UserProximityEvent(){}
 		
@@ -546,7 +546,7 @@ namespace PowerUI{
 		
 	}
 	
-	public class WebGLContextEvent : DomEvent{
+	public class WebGLContextEvent : Dom.Event{
 		
 		public WebGLContextEvent(){}
 		

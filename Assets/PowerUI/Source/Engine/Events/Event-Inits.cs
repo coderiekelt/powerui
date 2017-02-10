@@ -22,7 +22,7 @@ namespace PowerUI{
 		public bool cancelable;
 		public bool composable;
 		
-		internal virtual void Setup(DomEvent e){}
+		internal virtual void Setup(Dom.Event e){}
 		
 	}
 	

@@ -172,7 +172,7 @@ namespace PowerUI{
 			document.Viewport.Update(ScreenXFloat,ScreenYFloat);
 			
 			// Fire the resize event (doesn't bubble):
-			DomEvent resize=new DomEvent("resize");
+			Dom.Event resize=new Dom.Event("resize");
 			resize.SetTrusted(false);
 			document.window.dispatchEvent(resize);
 			

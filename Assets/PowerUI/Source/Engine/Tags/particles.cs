@@ -126,7 +126,7 @@ namespace PowerUI{
 			ParticleTransform=transform;
 			
 			// PowerUI layer, unless we're on a WorldUI:
-			if(htmlDocument.InWorldUI==null){
+			if(htmlDocument.worldUI==null){
 				
 				// Update the layer:
 				gameObject.layer=UI.Layer;

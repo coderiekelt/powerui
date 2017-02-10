@@ -31,6 +31,7 @@ public class SimpleHealthPoints : MonoBehaviour {
 		
 		// Get the green bit of the bar:
 		if(GreenBar==null){
+			// (Cast to a HtmlElement, because we want to access the style property):
 			GreenBar=(UI.document.getElementById("basic-bar-internal") as HtmlElement);
 		}
 		

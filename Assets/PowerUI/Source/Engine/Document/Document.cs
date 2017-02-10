@@ -279,7 +279,7 @@ namespace PowerUI{
 			// Dispatch onload (doesn't bubble):
 			
 			if(body!=null){
-				DomEvent e=new DomEvent("load");
+				Dom.Event e=new Dom.Event("load");
 				e.SetTrusted(false);
 				body.dispatchEvent(e);
 			}
@@ -538,7 +538,7 @@ namespace PowerUI{
 				if(window.iframe!=null){
 					
 					// Dispatch (don't bubble):
-					DomEvent e=new DomEvent("load");
+					Dom.Event e=new Dom.Event("load");
 					e.SetTrusted(false);
 					window.iframe.dispatchEvent(e);
 					
@@ -579,7 +579,7 @@ namespace PowerUI{
 			}
 			set{
 				CurrentTitle=value;
-				DomEvent e=new DomEvent("titlechange");
+				Dom.Event e=new Dom.Event("titlechange");
 				e.SetTrusted();
 				dispatchEvent(e);
 			}
@@ -597,7 +597,7 @@ namespace PowerUI{
 				}
 				
 				CurrentTooltip=value;
-				DomEvent e=new DomEvent("tooltipchange");
+				Dom.Event e=new Dom.Event("tooltipchange");
 				e.SetTrusted();
 				dispatchEvent(e);
 			}

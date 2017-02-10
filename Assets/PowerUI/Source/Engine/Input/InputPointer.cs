@@ -333,7 +333,7 @@ namespace PowerUI{
 					}else if(DragStatus==SELECTING){
 						
 						// Finished selection - trigger selectionend:
-						DomEvent sc=new DomEvent("selectionend");
+						Dom.Event sc=new Dom.Event("selectionend");
 						sc.SetTrusted();
 						
 						// Dispatch on the element:

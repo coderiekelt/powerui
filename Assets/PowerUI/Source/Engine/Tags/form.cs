@@ -292,7 +292,7 @@ namespace PowerUI{
 				uniqueValues[name]=value;
 			}
 			
-			FormData formData=new FormData(uniqueValues);
+			FormEvent formData=new FormEvent(uniqueValues);
 			formData.SetTrusted(false);
 			formData.EventType="submit";
 			// Hook up the form element:

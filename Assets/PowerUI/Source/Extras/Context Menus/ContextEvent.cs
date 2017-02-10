@@ -81,7 +81,7 @@ namespace ContextMenus{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Dom.Event e){
 			Listener((ContextEvent)e);
 		}
 		

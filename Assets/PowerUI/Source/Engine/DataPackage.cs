@@ -362,7 +362,7 @@ namespace PowerUI{
 		public void TimedOut(){
 			
 			statusCode=408;
-			DomEvent e=new DomEvent();
+			Dom.Event e=new Dom.Event();
 			e.SetTrusted();
 			e.EventType="timeout";
 			dispatchEvent(e);

@@ -160,7 +160,7 @@ namespace PowerUI{
 			}
 		}
 		
-		protected override bool HandleLocalEvent(Dom.DomEvent e,bool bubblePhase){
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
 			if(bubblePhase && Dropdown!=null && e.type=="mouseup"){
 				

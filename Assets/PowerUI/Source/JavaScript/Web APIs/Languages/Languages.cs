@@ -165,7 +165,7 @@ namespace PowerUI{
 		internal void LanguageChanged(){
 			
 			// Trigger a language change event:
-			window.dispatchEvent(new DomEvent("languagechange"));
+			window.dispatchEvent(new Dom.Event("languagechange"));
 			
 			if(languages_!=null){
 				

@@ -81,7 +81,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((UIEvent)e);
 		}
 		
@@ -102,7 +102,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((KeyboardEvent)e);
 		}
 		
@@ -123,7 +123,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((AnimationEvent)e);
 		}
 		
@@ -144,7 +144,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((AudioProcessingEvent)e);
 		}
 		
@@ -165,7 +165,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((BeforeInputEvent)e);
 		}
 		
@@ -186,7 +186,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((BeforeUnloadEvent)e);
 		}
 		
@@ -207,7 +207,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((BlobEvent)e);
 		}
 		
@@ -228,7 +228,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((ClipboardEvent)e);
 		}
 		
@@ -249,7 +249,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((CloseEvent)e);
 		}
 		
@@ -270,7 +270,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((CompositionEvent)e);
 		}
 		
@@ -291,7 +291,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((CustomEvent)e);
 		}
 		
@@ -312,7 +312,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((CSSFontFaceLoadEvent)e);
 		}
 		
@@ -333,7 +333,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((DeviceLightEvent)e);
 		}
 		
@@ -354,7 +354,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((DeviceMotionEvent)e);
 		}
 		
@@ -375,7 +375,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((DeviceOrientationEvent)e);
 		}
 		
@@ -396,7 +396,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((DeviceProximityEvent)e);
 		}
 		
@@ -417,7 +417,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((DOMTransactionEvent)e);
 		}
 		
@@ -438,7 +438,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((DragEvent)e);
 		}
 		
@@ -459,7 +459,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((EditingBeforeInputEvent)e);
 		}
 		
@@ -480,7 +480,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((ErrorEvent)e);
 		}
 		
@@ -501,7 +501,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((FetchEvent)e);
 		}
 		
@@ -522,7 +522,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((FocusEvent)e);
 		}
 		
@@ -543,7 +543,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((GamepadEvent)e);
 		}
 		
@@ -564,7 +564,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((IDBVersionChangeEvent)e);
 		}
 		
@@ -585,7 +585,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((InputEvent)e);
 		}
 		
@@ -606,7 +606,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((MediaStreamEvent)e);
 		}
 		
@@ -627,7 +627,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((MessageEvent)e);
 		}
 		
@@ -648,7 +648,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((MouseEvent)e);
 		}
 		
@@ -669,7 +669,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((MutationEvent)e);
 		}
 		
@@ -690,7 +690,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((OfflineAudioCompletionEvent)e);
 		}
 		
@@ -711,7 +711,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((PageTransitionEvent)e);
 		}
 		
@@ -732,7 +732,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((PointerEvent)e);
 		}
 		
@@ -753,7 +753,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((PopStateEvent)e);
 		}
 		
@@ -774,7 +774,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((ProgressEvent)e);
 		}
 		
@@ -795,7 +795,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((RelatedEvent)e);
 		}
 		
@@ -816,7 +816,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((RTCDataChannelEvent)e);
 		}
 		
@@ -837,7 +837,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((RTCIdentityErrorEvent)e);
 		}
 		
@@ -858,7 +858,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((RTCIdentityEvent)e);
 		}
 		
@@ -879,7 +879,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((RTCPeerConnectionIceEvent)e);
 		}
 		
@@ -900,7 +900,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((SensorEvent)e);
 		}
 		
@@ -921,7 +921,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((StorageEvent)e);
 		}
 		
@@ -942,7 +942,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((SVGEvent)e);
 		}
 		
@@ -963,7 +963,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((SVGZoomEvent)e);
 		}
 		
@@ -984,7 +984,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((TextEvent)e);
 		}
 		
@@ -1005,7 +1005,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((TimeEvent)e);
 		}
 		
@@ -1026,7 +1026,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((TouchEvent)e);
 		}
 		
@@ -1047,7 +1047,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((TrackEvent)e);
 		}
 		
@@ -1068,7 +1068,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((TransitionEvent)e);
 		}
 		
@@ -1089,7 +1089,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((UserProximityEvent)e);
 		}
 		
@@ -1110,7 +1110,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((WebGLContextEvent)e);
 		}
 		
@@ -1131,7 +1131,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Event e){
 			Listener((WheelEvent)e);
 		}
 		

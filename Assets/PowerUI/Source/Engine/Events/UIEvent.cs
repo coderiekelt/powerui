@@ -21,10 +21,10 @@ namespace PowerUI{
 	/// An event object is always provided with any onmousedown/onmouseup/onkeydown etc.
 	/// </summary>
 	
-	public partial class UIEvent : DomEvent{
+	public partial class UIEvent : Dom.Event{
 		
 		/// <summary>The source Unity event if there is one.</summary>
-		public Event unityEvent;
+		public UnityEngine.Event unityEvent;
 		/// <summary>The pointer that triggered this event.</summary>
 		public InputPointer trigger;
 		
@@ -220,7 +220,7 @@ namespace PowerUI{
 
 namespace Dom{
 	
-	public partial class DomEvent{
+	public partial class Event{
 		
 		/// <summary>Sets up this UIEvent.</summary>
 		public void initUIEvent(string type,bool canBubble,bool cancelable,PowerUI.Window view,ulong detail){

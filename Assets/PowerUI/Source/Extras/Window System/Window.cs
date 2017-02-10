@@ -277,10 +277,10 @@ namespace Windows{
 			}
 			
 			// Use an event which runs between the clear and load:
-			contentDocument.AfterClearBeforeSet=delegate(Dom.DomEvent acs){
+			contentDocument.AfterClearBeforeSet=delegate(Dom.Event acs){
 				
 				// Hook up title change:
-				contentDocument.ontitlechange+=delegate(Dom.DomEvent e){
+				contentDocument.ontitlechange+=delegate(Dom.Event e){
 					
 					// Set the 'title' element, if we have one:
 					HtmlElement t=TitleElement;
@@ -323,7 +323,7 @@ namespace Windows{
 		public void trigger(string name){
 			
 			// Create the event:
-			Dom.DomEvent e=document.createEvent("window"+name);
+			Dom.Event e=document.createEvent("window"+name);
 			e.SetTrusted();
 			
 			// Trigger it now:
@@ -342,7 +342,7 @@ namespace Windows{
 			}
 			
 			// Create the event:
-			Dom.DomEvent e=document.createEvent(name);
+			Dom.Event e=document.createEvent(name);
 			e.SetTrusted();
 			
 			// Trigger it now on the element:

@@ -266,7 +266,7 @@ namespace PowerUI{
 				
 				zone=GUILayoutUtility.GetLastRect();
 				
-				if(zone.Contains(Event.current.mousePosition)){
+				if(zone.Contains(UnityEngine.Event.current.mousePosition)){
 					
 					// Mark as the node with the mouse over it:
 					MouseOverNode=node;
@@ -286,7 +286,7 @@ namespace PowerUI{
 			// Check mouse (Doesn't work unfortunately!):
 			zone=GUILayoutUtility.GetLastRect();
 			
-			if(zone.Contains(Event.current.mousePosition)){
+			if(zone.Contains(UnityEngine.Event.current.mousePosition)){
 				
 				// Mark as the node with the mouse over it:
 				MouseOverNode=node;

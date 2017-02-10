@@ -42,19 +42,10 @@ namespace PowerUI{
 		public ElementStyle Style;
 		/// <summary>Internal use only. Children being rendered are set here. This allows multiple threads to access the DOM.</summary>
 		public NodeList KidsToRender;
-		/// <summary>This is true if the childNodes are being rebuilt. True for a tiny amount of time, but prevents collisions with the renderer thread.</summary>
-		public bool IsRebuildingChildren;
 		
 		
 		public HtmlElement(){
 			Style=new ElementStyle(this);
-		}
-		
-		/// <summary>The ownerDocument as a Html document.</summary>
-		public HtmlDocument htmlDocument{
-			get{
-				return document_ as HtmlDocument;
-			}
 		}
 		
 		/// <summary>This nodes computed style.</summary>
@@ -73,7 +64,7 @@ namespace PowerUI{
 		
 		/// <summary>Called by some tags when their content is loaded. E.g. img tag or iframe.</summary>
 		/// <param name="e">The load event.</param>
-		public virtual void OnLoadEvent(DomEvent e){
+		public virtual void OnLoadEvent(Dom.Event e){
 		}
 		
 		/*
@@ -365,61 +356,6 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Inserts html before this element.</summary>
-		public void before(string html){
-			
-			HtmlElement parent=parentElement as HtmlElement ;
-			
-			if(parent==null){
-				throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR);
-			}
-			
-			// Insert:
-			parent.insertInnerHTML(childIndex,html);
-			
-		}
-		
-		/// <summary>Inserts html after this element.</summary>
-		public void after(string html){
-			
-			HtmlElement parent=parentElement as HtmlElement ;
-			
-			if(parent==null){
-				throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR);
-			}
-			
-			// Insert:
-			parent.insertInnerHTML(childIndex+1,html);
-			
-		}
-		
-		/// <summary>Inserts HTML at the given position name.</summary>
-		public void insertAdjacentHTML(string positionName,string html){
-			
-			positionName=positionName.ToLower().Trim();
-			
-			switch(positionName){
-				
-				case "beforebegin":
-					// Before this element
-					before(html);
-				break;
-				case "afterbegin":
-					// New first child
-					prependInnerHTML(html);
-				break;
-				case "beforeend":
-					// New last child
-					appendInnerHTML(html);
-				break;
-				case "afterend":
-					// Immediately after
-					after(html);
-				break;
-			}
-			
-		}
-		
 		internal override void ResetVariable(string name){
 			OnResetAllVariables();
 			base.ResetVariable(name);
@@ -429,190 +365,6 @@ namespace PowerUI{
 		internal override void ResetAllVariables(){
 			OnResetAllVariables();
 			base.ResetAllVariables();
-		}
-		
-		/// <summary>The html of this element including the element itself.</summary>
-		public string outerHTML{
-			get{
-				System.Text.StringBuilder result=new System.Text.StringBuilder();
-				ToString(result);
-				return result.ToString();
-			}
-			set{
-				
-				HtmlElement parent=parentElement as HtmlElement ;
-				
-				if(parent==null){
-					throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR);
-				}
-				
-				// Get child index:
-				int index=childIndex;
-				
-				// Remove this element:
-				parent.removeChild(this);
-				
-				// Insert at index:
-				parent.insertInnerHTML(index,value);
-				
-			}
-		}
-		
-		public override string ToString(){
-			return "[object "+GetType().Name+"]";
-		}
-		
-		/// <summary>Appends the given literal text to the content of this element.
-		/// This is good for preventing html injection as the text will be taken literally.</summary>
-		/// <param name="text">The literal text to append.</param>
-		public void appendTextContent(string text){
-			
-			if(string.IsNullOrEmpty(text)){
-				return;
-			}
-			
-			// Parse now:
-			HtmlLexer lexer=new HtmlLexer(text,this);
-			
-			// Plaintext state:
-			lexer.State=HtmlParseMode.Plaintext;
-			
-			// Ok!
-			lexer.Parse();
-			
-		}
-		
-		/// <summary>Appends the given html text to the content of this element.</summary>
-		/// <param name="text">The html text to append.</param>
-		public void append(string html){
-			if(string.IsNullOrEmpty(html)){
-				return;
-			}
-			
-			// Parse now:
-			HtmlLexer lexer=new HtmlLexer(html,this);
-			
-			// PCData is fine here.
-			
-			// Ok!
-			lexer.Parse();
-			
-		}
-		
-		/// <summary>Appends the given child element to the content of this element.</summary>
-		/// <param name="child">The child to append.</param>
-		public void append(HtmlElement child){
-			if(child==null){
-				return;
-			}
-			appendChild(child);
-		}
-		
-		/// <summary>Appends the given html text to the content of this element.</summary>
-		/// <param name="text">The html text to append.</param>
-		public void appendInnerHTML(string text){
-			append(text);
-		}
-		
-		/// <summary>Inserts HTML into this element at the given index. Pushes any elements at the given index over.</summary>
-		public void insertInnerHTML(int index,string text){
-			if(string.IsNullOrEmpty(text)){
-				return;
-			}
-			
-			// Cache child nodes:
-			NodeList children=childNodes_;
-			
-			int childCount=children==null ? 0 : children.length;
-			
-			if(index>=childCount){
-				// Append:
-				appendInnerHTML(text);
-				return;
-			}
-			
-			// Create new nodes set:
-			childNodes_=new NodeList();
-			
-			// Transfer up to but not including index:
-			if(children!=null){
-				
-				for(int i=0;i<index;i++){
-					
-					childNodes_.push(children[i]);
-					
-				}
-				
-			}
-			
-			// Add to end:
-			appendInnerHTML(text);
-			
-			if(children==null){
-				return;
-			}
-			
-			// Append the remaining nodes:
-			for(int i=index;i<childCount;i++){
-				childNodes_.push(children[i]);
-			}
-			
-		}
-		
-		/// <summary>Prepends the given child element to the content of this element, adding it as the first child.</summary>
-		/// <param name="child">The child to prepend.</param>
-		public void prepend(HtmlElement child){
-			// Insert at #0:
-			insertChild(0,child);
-		}
-		
-		/// <summary>Prepends the given html text to the content of this element, adding it as the first child.</summary>
-		/// <param name="text">The html text to prepend.</param>
-		public void prepend(string text){
-			// Insert at #0:
-			insertInnerHTML(0,text);
-		}
-		
-		/// <summary>Prepends the given html text to the content of this element, adding it as the first child.</summary>
-		/// <param name="text">The html text to prepend.</param>
-		public void prependInnerHTML(string text){
-			// Insert at #0:
-			insertInnerHTML(0,text);
-		}
-		
-		/// <summary>Gets or sets the innerHTML of this element.</summary>
-		public virtual string innerHTML{
-			get{
-				if(htmlDocument.AotDocument){
-					return "";
-				}
-				System.Text.StringBuilder result=new System.Text.StringBuilder();
-				
-				if(childNodes_!=null){
-					
-					for(int i=0;i<childNodes_.length;i++){
-						childNodes_[i].ToString(result);
-					}
-					
-				}
-				
-				return result.ToString();
-			}
-			set{
-				
-				IsRebuildingChildren=true;
-				
-				if(childNodes_!=null){
-					empty();
-				}
-				
-				if(!string.IsNullOrEmpty(value)){
-					appendInnerHTML(value);
-				}
-				
-				IsRebuildingChildren=false;
-				
-			}
 		}
 		
 		/// <summary>Called when the DOM changed.</summary>
@@ -935,7 +687,7 @@ namespace PowerUI{
 		/// <summary>The world UI this element belongs to.</summary>
 		public WorldUI worldUI{
 			get{
-				return htmlDocument.InWorldUI;
+				return htmlDocument.worldUI;
 			}
 		}
 		

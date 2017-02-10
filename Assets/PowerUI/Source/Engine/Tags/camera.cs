@@ -218,7 +218,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Fires all events into the scene.</summary>
-		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
 			// Handle locally:
 			if(base.HandleLocalEvent(e,bubblePhase)){

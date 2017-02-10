@@ -273,7 +273,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Called when the game screen changes size. Used by pixel perfect WorldUI's.</summary>
-		private void MainScreenSizeChanged(DomEvent e){
+		private void MainScreenSizeChanged(Dom.Event e){
 			
 			Camera camera=CameraToFace;
 				
@@ -427,7 +427,7 @@ namespace PowerUI{
 			
 			// Fire the resize event:
 			if(document.body!=null){
-				DomEvent e=new DomEvent("resize");
+				Dom.Event e=new Dom.Event("resize");
 				e.SetTrusted();
 				document.dispatchEvent(e);
 			}

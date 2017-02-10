@@ -27,6 +27,7 @@ public static class DragScroller{
 		}
 		
 		// Store the element being scrolled:
+		// (Cast to a HtmlElement for focus() etc):
 		Scrolling=(e.currentTarget as HtmlElement);
 		
 		// Store the current position of the mouse, and the current scroll offset.

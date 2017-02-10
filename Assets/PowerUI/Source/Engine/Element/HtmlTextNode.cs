@@ -46,6 +46,9 @@ namespace PowerUI{
 			set{
 				characterData_=value;
 				
+				// Must recompute TAW:
+				TotalAdvanceWidth=float.MinValue;
+				
 				// Get the text renderer:
 				TextRenderingProperty trp=RenderData_.Text;
 				

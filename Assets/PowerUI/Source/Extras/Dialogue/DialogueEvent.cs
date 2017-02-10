@@ -22,7 +22,7 @@ namespace Dialogue{
 	/// Represents a dialogue event.
 	/// </summary>
 	
-	public class DialogueEvent : DomEvent{
+	public class DialogueEvent : Dom.Event{
 		
 		/// <summary>The manager that this originated from. Can be null during e.g. load events when no manager is available.</summary>
 		public Manager manager;
@@ -102,7 +102,7 @@ namespace Dialogue{
 			}
 		}
 		
-		public override void handleEvent(DomEvent e){
+		public override void handleEvent(Dom.Event e){
 			Listener((DialogueEvent)e);
 		}
 		

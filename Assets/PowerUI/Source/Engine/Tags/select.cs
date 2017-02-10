@@ -438,7 +438,7 @@ namespace PowerUI{
 				return;
 			}
 			
-			DomEvent e=new DomEvent("change");
+			Dom.Event e=new Dom.Event("change");
 			e.SetTrusted(false);
 			
 			// Cache previous:
@@ -483,7 +483,7 @@ namespace PowerUI{
 			
 		}
 		
-		protected override bool HandleLocalEvent(Dom.DomEvent e,bool bubblePhase){
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
 			if(e.type=="mousedown" && bubblePhase){
 				

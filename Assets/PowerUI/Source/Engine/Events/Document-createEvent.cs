@@ -6,11 +6,11 @@ namespace PowerUI{
 	
 	public partial class HtmlDocument{
 		
-		public DomEvent createEvent(string type){
+		public Event createEvent(string type){
 			return createEvent(type,null,null);
 		}
 		
-		public DomEvent createEvent(string type,string evtType,object init){
+		public Event createEvent(string type,string evtType,object init){
 			
 			if(type==null){
 				return null;
@@ -39,7 +39,7 @@ namespace PowerUI{
 				case "htmlevent":
 				case "htmlevents":
 					
-					return new DomEvent(evtType,init);
+					return new Event(evtType,init);
 				
 				case "textevent":
 					
@@ -56,7 +56,7 @@ namespace PowerUI{
 			}
 			
 			// htmlevent, event etc:
-			return new DomEvent(evtType,init);
+			return new Event(evtType,init);
 			
 		}
 		

@@ -51,7 +51,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Looks out for paste events.</summary>
-		protected override bool HandleLocalEvent(DomEvent e,bool bubblePhase){
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
 			// Handle locally:
 			if(base.HandleLocalEvent(e,bubblePhase)){
@@ -180,7 +180,7 @@ namespace PowerUI{
 		/// <param name="value">The value to set.</param>
 		private void SetValue(string newValue){
 			
-			DomEvent e=new DomEvent("change");
+			Dom.Event e=new Dom.Event("change");
 			e.SetTrusted(false);
 			if(!dispatchEvent(e)){
 				return;
