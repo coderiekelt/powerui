@@ -174,6 +174,11 @@ public static class UI{
 		// Hookup the InfiniText logging method:
 		InfiniText.Fonts.OnLog+=OnLogMessage;
 		
+		#if !NoBIDI
+		// Setup bidi character metadata:
+		InfiniText.DirectionCategory.Setup();
+		#endif
+		
 		// Setup the character entities such as &nbsp;
 		CharacterEntities.Setup();
 		

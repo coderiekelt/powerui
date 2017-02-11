@@ -57,10 +57,10 @@ namespace InfiniText{
 			
 		}
 		
-		/// <summary>True if this is a rightwards character (e.g. Arabic).</summary>
-		public bool Rightwards{
+		/// <summary>The unicode bidirectional category (e.g. Important for Arabic).</summary>
+		public int Directionality{
 			get{
-				return RightToLeft.Rightwards(RawCharcode);
+				return DirectionCategory.Get(RawCharcode);
 			}
 		}
 		

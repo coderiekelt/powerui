@@ -62,6 +62,8 @@ namespace PowerUI{
 		public RenderableData RenderData;
 		/// <summary>An offset to apply to MaxX.</summary>
 		public float MaxOffset;
+		/// <summary>True if the current line contains bi-directional text. I.e. Any box with a non-zero "UnicodeBidi" value.</summary>
+		public bool ContainsBidirectional;
 		
 		
 		public LineBoxMeta(LineBoxMeta parent,LayoutBox firstBox,RenderableData renderData){
@@ -256,6 +258,33 @@ namespace PowerUI{
 				styleBox.ParentOffsetTop=PenY+styleBox.Margin.Top;
 				
 				return;
+			}
+			
+			// If currentBox is overriding bidi..
+			if((CurrentBox.UnicodeBidi & UnicodeBidiMode.Override)!=0){
+				
+				// Override the value now.
+				
+				// If it was mirrored, keep it so:
+				if((styleBox.UnicodeBidi & UnicodeBidiMode.Mirrored)!=0){
+					
+					if(GoingLeftwards){
+						styleBox.UnicodeBidi=UnicodeBidiMode.LeftwardsMirrored;
+					}else{
+						styleBox.UnicodeBidi=UnicodeBidiMode.RightwardsMirrored;
+					}
+					
+				}else if(GoingLeftwards){
+					styleBox.UnicodeBidi=UnicodeBidiMode.LeftwardsNormal;
+				}else{
+					styleBox.UnicodeBidi=UnicodeBidiMode.RightwardsNormal;
+				}
+				
+			}
+			
+			// Only leftwards (mirrored or normal) matters here:
+			if((styleBox.UnicodeBidi & UnicodeBidiMode.Leftwards)!=0){
+				ContainsBidirectional=true;
 			}
 			
 			int floatMode=styleBox.FloatMode;
@@ -674,23 +703,6 @@ namespace PowerUI{
 				// So, we take the spare space and divide it up by the elements on this line:
 				justifyDelta=(lineSpace-lineLength)/(float)elementCount;
 				
-				if(GoingLeftwards){
-					// Make sure the first word starts in the correct spot if we're going leftwards:
-					lineLength=lineSpace;
-					
-					// And also we actually want to be taking a little less each time, so invert justifyDelta:
-					justifyDelta=-justifyDelta;
-				}
-				
-			}
-			
-			if(GoingLeftwards){
-				
-				// Everything is locally positioned off to the left.
-				// Because of this, we need to shift them over the entire size of the row:
-				offsetBy+=lineLength;
-				// In this case it can also be left aligned.
-				
 			}
 			
 			while(currentBox!=null){
@@ -885,6 +897,61 @@ namespace PowerUI{
 					
 					if(hAlign!=0){
 						AlignHorizontally(first,last,MaxX-LineStart,elementCount,lineLength,hAlign);
+					}
+					
+				}
+				
+				// Got bidi text and the bidi algo is enabled:
+				if(ContainsBidirectional && (CurrentBox.UnicodeBidi!=UnicodeBidiMode.Plaintext)){
+					
+					ContainsBidirectional=false;
+					// - Unicode Bi-Directionality -
+					
+					currentBox=first;
+					LayoutBox startBidi=null;
+					LayoutBox previousBidi=null;
+					
+					while(currentBox!=null){
+						
+						int bidiMode=currentBox.UnicodeBidi;
+						
+						if(startBidi==null){
+							
+							// If we hit a leftwards box, mark it as the start:
+							if((bidiMode & UnicodeBidiMode.Leftwards)!=0){
+								
+								startBidi=currentBox;
+								
+							}
+							
+						}else if((bidiMode & UnicodeBidiMode.Rightwards)!=0){
+							
+							// Hit a rightwards node! The previous box was the last one.
+							if(previousBidi!=startBidi){
+								
+								// Do nothing otherwise - it was only 1 box.
+								
+								// Rightwards align startBidi to previousBidi.
+								// The "line length" is simply the gap between them:
+								float bidiLineMax=(previousBidi.ParentOffsetLeft + previousBidi.Width) - startBidi.ParentOffsetLeft;
+								
+								// Align!
+								RightwardsAlign(startBidi,previousBidi,bidiLineMax);
+								
+							}
+							
+						}
+						
+						previousBidi=currentBox;
+						currentBox=currentBox.NextOnLine;
+					}
+					
+					// If start is not null (and it has something after it)..
+					if(startBidi!=null && startBidi.NextOnLine!=null){
+						
+						// Align from startBidi -> EOL.
+						RightwardsAlign(startBidi,null,CurrentBox.InnerWidth - startBidi.ParentOffsetLeft);
+						
 					}
 					
 				}
@@ -1084,6 +1151,21 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Part of the bi-directional algorithm. Converts leftwards boxes to rightwards ones.</summary>
+		private void RightwardsAlign(LayoutBox currentBox,LayoutBox to,float lineMax){
+			
+			while(currentBox!=null && currentBox!=to){
+			
+				// Update its offset left:
+				currentBox.ParentOffsetLeft=lineMax - (currentBox.Width + currentBox.ParentOffsetLeft);
+				
+				// Next on line:
+				currentBox=currentBox.NextOnLine;
+				
+			}
+			
+		}
+		
 		/// <summary>Attempts to clear left or right. If they're both the same height
 		/// then it will clear the given side.</summary>
 		private bool ClearLineSpace(int floatMode){
@@ -1158,44 +1240,8 @@ namespace PowerUI{
 				){
 					
 					// Same as below (but x only)
-					if(GoingLeftwards){
-						
-						PenX+=styleBox.Width+styleBox.Margin.Right;
-						PenX+=styleBox.Margin.Left;
-						
-					}else{
-						
-						PenX+=styleBox.Margin.Left;
-						PenX+=styleBox.Width+styleBox.Margin.Right;
-				
-					}
+					PenX+=styleBox.Margin.Left+styleBox.Width+styleBox.Margin.Right;
 					
-				}
-				
-			}else if(GoingLeftwards){
-				
-				PenX+=styleBox.Width+styleBox.Margin.Right;
-				styleBox.ParentOffsetLeft=LineStart*2-PenX;
-				PenX+=styleBox.Margin.Left;
-				
-				// If it's not a flow root then don't use total height.
-				// If it's a word then we don't check it at all.
-				float effectiveHeight;
-				
-				if(styleBox.DisplayMode==DisplayMode.Inline){
-					effectiveHeight=styleBox.InnerHeight;
-				}else{
-					effectiveHeight=styleBox.TotalHeight;
-				}
-				
-				if(effectiveHeight>LineHeight){
-					LineHeight=effectiveHeight;
-				}
-				
-				float baseline=styleBox.Baseline;
-				
-				if(baseline>CurrentBox.Baseline){
-					CurrentBox.Baseline=baseline;
 				}
 				
 			}else{
