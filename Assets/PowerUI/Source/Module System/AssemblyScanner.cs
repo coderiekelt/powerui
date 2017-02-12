@@ -128,6 +128,23 @@ namespace Modular{
 		/// <summary>Scans all loaded assemblies.</summary>
 		public void ScanAll(){
 			
+			if(Modular.Start.Started.Count==0){
+				
+				#if NETFX_CORE
+				// This typically happens in the Editor.
+				Modular.Start.Now(GetType());
+				#else
+				
+				// Start all assemblies:
+				Assembly[] all=System.AppDomain.CurrentDomain.GetAssemblies();
+				
+				foreach(Assembly a in all){
+					Modular.Start.Now(a);
+				}
+				
+				#endif
+			}
+			
 			// For each started module..
 			foreach(KeyValuePair<Assembly,StartInfo> kvp in Modular.Start.Started){
 				
