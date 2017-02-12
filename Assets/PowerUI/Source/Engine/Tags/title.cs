@@ -29,7 +29,7 @@ namespace PowerUI{
 			}
 		}
 		
-		public override void OnTagLoaded(){
+		public override void OnChildrenLoaded(){
 			htmlDocument.title=innerHTML;
 		}
 		

@@ -77,11 +77,16 @@ namespace PowerUI{
 			Position=new Vector2(relativeX * UnityEngine.Screen.width, relativeY * UnityEngine.Screen.height);
 		}
 		
-		public override bool Relocate(){
+		public override bool Relocate(out Vector2 delta){
 			
 			if(Invalidated_){
 				// Reset:
 				Invalidated_=false;
+				
+				delta=new Vector2(
+					Position.x - ScreenX,
+					Position.y - ScreenY
+				);
 				
 				// Update position:
 				ScreenX=Position.x;
@@ -94,10 +99,12 @@ namespace PowerUI{
 			if(Transform_!=null && Transform_.hasChanged){
 				// Reset:
 				Transform_.hasChanged=false;
+				delta=Vector2.zero;
 				return true;
 			}
 			
 			// No change.
+			delta=Vector2.zero;
 			return false;
 			
 		}

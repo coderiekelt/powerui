@@ -45,7 +45,7 @@ namespace ContextMenus{
 		/// <summary>Two attributes (optindex='index' and onclick='OptionList.ResolveOptionFromClick') which make an option clickable.</summary>
 		public string mouseRef{
 			get{
-				return "optindex='"+index+"' onclick='OptionList.ResolveOptionFromClick'";
+				return "optindex='"+index+"' onclick='ContextMenus.OptionList.ResolveOptionFromClick'";
 			}
 		}
 		

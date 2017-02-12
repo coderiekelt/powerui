@@ -1,0 +1,57 @@
+<title>My New Window</title>
+
+<!--
+For the record, you could add head etc, but it's really not necessary.
+As always, everything (including the title) can use localisation too!
+-->
+
+<style type='text/css'>
+
+/*
+	Windows are totally isolated from everything else - they're actually iframes.
+*/
+
+html{
+	color:white;
+	background:#0194E1;
+}
+
+body{
+	margin:30px;
+}
+
+</style>
+
+<center>
+	<h1>Hello!</h1>
+	<br><br>
+	This is the window template for a <b>floating</b> window.
+	<br><br>
+	It was opened with the window:// url scheme - if you click it again, this window will close.
+	<br><br>
+	This window resizes and moves too - Drag either the window itself or the bottom right corner.
+</center>
+
+<script type='text/nitro'>
+
+/* 
+This version of Nitro is depreciated
+but it demonstrates a simple way of passing variables to a window.
+
+Calling sparkWindows.open or adding a query string to the window URL
+will set global variables. They're available immediately!
+
+------------------------
+E.g. The window URL that loads up this content is..
+
+window://floating/WindowExample/windowContent.html?hello=nitro
+
+We'll get a global called 'hello' and it's value is 'nitro'.
+
+*/
+
+// Show it:
+debug.log("The window URL set the hello global to:");
+debug.log(hello);
+
+</script>

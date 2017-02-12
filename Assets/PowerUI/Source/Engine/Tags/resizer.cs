@@ -30,8 +30,10 @@ namespace PowerUI{
 		public float PositionX;
 		/// <summary>The starting mouse values.</summary>
 		public float PositionY;
-		/// <summary>The element being resized when this is dragged.</summary>
+		/// <summary>A custom element being resized when this is dragged.</summary>
 		public HtmlElement ToResize;
+		/// <summary>The actual being resized when this is dragged.</summary>
+		private HtmlElement ToResize_;
 		
 		
 		public override bool IsSelfClosing{
@@ -53,20 +55,39 @@ namespace PowerUI{
 			if(e.type=="dragstart"){
 				
 				if(ToResize==null){
-					ToResize=parentElement as HtmlElement;
+					ToResize_=parentElement as HtmlElement;
+				}else{
+					ToResize_=ToResize;
 				}
 				
-				// Track where the mouse started off:
-				UIEvent ue=(e as UIEvent);
-				
-				PositionX=ue.trigger.DownDocumentX;
-				PositionY=ue.trigger.DownDocumentY;
-				
 				// Get the CSS resize property:
-				if(ToResize!=null){
+				if(ToResize_!=null){
 					
 					// Obtain its values:
-					Css.Properties.Resize.Compute(ToResize.ComputedStyle,out AllowX,out AllowY);
+					Css.Properties.Resize.Compute(ToResize_.ComputedStyle,out AllowX,out AllowY);
+					
+					// Does it explicitly change the resize target?
+					while(ToResize_!=null){
+						
+						// Get the target attrib:
+						string attr=ToResize_["resize-target"];
+						
+						if(attr!=null){
+							
+							if(attr=="parent"){
+								
+								// Update to resize:
+								ToResize_=ToResize_.parentElement as HtmlElement;
+								
+								// Loop again; that might also specify a target.
+								continue;
+								
+							}
+						}
+						
+						break;
+						
+					}
 					
 				}
 				
@@ -78,22 +99,18 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Called when the thumb is being dragged.</summary>
-		public override void OnDrag(PowerUI.DragEvent mouseEvent){
+		public override bool OnDrag(PowerUI.DragEvent mouseEvent){
 			
 			// Get the amount of pixels the pointer moved by:
-			float deltaX=AllowX ? mouseEvent.clientX-PositionX : 0f;
-			float deltaY=AllowY ? mouseEvent.clientY-PositionY : 0f;
+			float deltaX=AllowX ? mouseEvent.deltaX : 0f;
+			float deltaY=AllowY ? mouseEvent.deltaY : 0f;
 			
 			if(deltaX==0f && deltaY==0f){
-				return;
+				return false;
 			}
 			
-			// Update position:
-			PositionX=mouseEvent.clientX;
-			PositionY=mouseEvent.clientY;
-			
 			// Resize now!
-			ComputedStyle cs=ToResize.Style.Computed;
+			ComputedStyle cs=ToResize_.Style.Computed;
 			
 			if(deltaX!=0f){
 				
@@ -101,7 +118,7 @@ namespace PowerUI{
 				Css.Value width=cs[Css.Properties.Width.GlobalProperty];
 				
 				// Update it:
-				deltaX+=width.GetDecimal(ToResize.RenderData,Css.Properties.Width.GlobalProperty);
+				deltaX+=width.GetDecimal(ToResize_.RenderData,Css.Properties.Width.GlobalProperty);
 				
 				// Write it back out:
 				cs.ChangeProperty(Css.Properties.Width.GlobalProperty,new Css.Units.DecimalUnit(deltaX));
@@ -114,12 +131,14 @@ namespace PowerUI{
 				Css.Value height=cs[Css.Properties.Height.GlobalProperty];
 				
 				// Update it:
-				deltaY+=height.GetDecimal(ToResize.RenderData,Css.Properties.Height.GlobalProperty);
+				deltaY+=height.GetDecimal(ToResize_.RenderData,Css.Properties.Height.GlobalProperty);
 				
 				// Write it back out:
 				cs.ChangeProperty(Css.Properties.Height.GlobalProperty,new Css.Units.DecimalUnit(deltaY));
 				
 			}
+			
+			return false;
 			
 		}
 		

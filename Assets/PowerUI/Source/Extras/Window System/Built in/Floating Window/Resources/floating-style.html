@@ -3,46 +3,49 @@
 
 .window-content{
 	
+	border-radius:6px 6px 0px 0px;
 	width:500px;
 	height:450px;
 	position:fixed;
-	top:50%;
-	left:50%;
-	background:white;
-	border:1px solid grey;
+	top:10%;
+	left:10%;
+	background:rgb(236,236,236);
+	border:1px solid rgb(236,236,236);
 	
 }
 
 .window-title-bar{
 	
+	text-align:center;
+	background:linear-gradient(to bottom, rgb(248,247,255) 0%,rgb(236,236,236) 100%);
 	width:100%;
-	height:1.4em;
+	height:25px;
 	
 }
 
 .window-iframe{
 	
+	border:0;
 	width:100%;
-	height:calc(100%-1.4em);
+	height:calc(100% - 25px);
 	overflow:auto;
+	resize:both;
 	
 }
 
-.window-buttons{
-	
-	position:absolute;
-	top:50%;
-	margin-top:-8px;
-	right:5px;
-	
+.window-close:hover{
+	background:linear-gradient(to bottom, white 0%,red 100%);
 }
 
 .window-close{
 	
-	background:red;
+	position:absolute;
+	right:5px;
+	top:0px;
+	background:linear-gradient(to bottom, rgb(220,220,220) 0%,rgb(207,207,207) 100%);
 	border:1px solid white;
-	border-radius:4px;
-	width:16px;
-	height:16px;
+	text-align:center;
+	width:22px;
+	height:18px;
 	
 }

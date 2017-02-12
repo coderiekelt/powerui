@@ -55,7 +55,9 @@ namespace PowerUI{
 			}
 			
 			// Build the 'full' url:
-			url="resources://"+url+"/index.html";
+			if(!url.Contains("://")){
+				url="resources://"+url;
+			}
 			
 			// Any query string is passed in as extras:
 			Dictionary<string,string> searchParams=path.searchParams;

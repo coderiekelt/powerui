@@ -244,7 +244,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Called when the thumb is being dragged.</summary>
-		public override void OnDrag(PowerUI.DragEvent mouseEvent){
+		public override bool OnDrag(PowerUI.DragEvent mouseEvent){
 			
 			float delta;
 			
@@ -255,11 +255,12 @@ namespace PowerUI{
 			}
 			
 			if(delta==0){
-				return;
+				return false;
 			}
 			
 			ScrollBy(delta,false,true);
 			
+			return false;
 		}
 		
 		public override void OnChildrenLoaded(){

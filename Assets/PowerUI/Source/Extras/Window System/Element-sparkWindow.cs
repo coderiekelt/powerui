@@ -68,3 +68,18 @@ namespace PowerUI{
 	}
 	
 }
+
+namespace Dom{
+	
+	public partial class Event{
+		
+		/// <summary>The window that the *currentTarget* of the event is in.</summary>
+		public Windows.Window sparkWindow{
+			get{
+				return (currentTarget as PowerUI.HtmlElement).sparkWindow;
+			}
+		}
+		
+	}
+	
+}

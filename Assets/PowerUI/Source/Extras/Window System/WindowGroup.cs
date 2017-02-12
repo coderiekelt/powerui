@@ -83,7 +83,7 @@ namespace Windows{
 					e.style.width="100%";
 					e.style.height="100%";
 					e.style.position="fixed";
-					hostDoc.appendChild(e);
+					hostDoc.html.appendChild(e);
 					WindowHostElement_=e;
 					
 				}

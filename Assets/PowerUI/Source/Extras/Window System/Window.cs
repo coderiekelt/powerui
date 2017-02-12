@@ -23,6 +23,16 @@ namespace Windows{
 	
 	public class Window : WindowGroup{
 		
+		/// <summary>
+		/// Closes the window that the given event originated from.
+		/// </summary>
+		public static void CloseThis(UIEvent e){
+			
+			// Get the window and close it:
+			e.sparkWindow.close();
+			
+		}
+		
 		/// <summary>Index in managers array.</summary>
 		private int Index_; 
 		/// <summary>Index in managers array.</summary>
@@ -280,7 +290,7 @@ namespace Windows{
 			contentDocument.AfterClearBeforeSet=delegate(Dom.Event acs){
 				
 				// Hook up title change:
-				contentDocument.ontitlechange+=delegate(Dom.Event e){
+				contentDocument.ontitlechange=delegate(Dom.Event e){
 					
 					// Set the 'title' element, if we have one:
 					HtmlElement t=TitleElement;
@@ -291,20 +301,24 @@ namespace Windows{
 					
 				};
 				
-				// Apply globals to the script engine:
+				// Apply globals to the script engine when it's ready:
 				if(globals!=null){
+				
+					contentDocument.addEventListener("scriptenginestart",delegate(Dom.Event e){
 					
-					foreach(KeyValuePair<string,object> kvp in globals){
-						
-						// Skip if it starts with -spark-
-						if(kvp.Key.StartsWith("-spark-")){
-							continue;
+						foreach(KeyValuePair<string,object> kvp in globals){
+							
+							// Skip if it starts with -spark-
+							if(kvp.Key.StartsWith("-spark-")){
+								continue;
+							}
+							
+							// Set it:
+							contentDocument.setJsVariable(kvp.Key,kvp.Value);
+							
 						}
 						
-						// Set it:
-						contentDocument.setJsVariable(kvp.Key,kvp.Value);
-						
-					}
+					});
 					
 				}
 				
@@ -314,8 +328,11 @@ namespace Windows{
 			trigger("open");
 			trigger("animateshow");
 			
-			// Navigate CD:
-			contentDocument.location.href=url;
+			// Create the location (relative to resources:// by default):
+			Dom.Location loc=new Dom.Location(url,null);
+			
+			// Navigate CD now:
+			contentDocument.location=loc;
 			
 		}
 		
@@ -323,7 +340,7 @@ namespace Windows{
 		public void trigger(string name){
 			
 			// Create the event:
-			Dom.Event e=document.createEvent("window"+name);
+			WindowEvent e=new WindowEvent("window"+name,null);
 			e.SetTrusted();
 			
 			// Trigger it now:
@@ -550,6 +567,9 @@ namespace Windows{
 				contentDocument=frame.contentDocument;
 			}
 			
+			// Update the attribute:
+			element["-spark-window-id"]=Index.ToString();
+			
 		}
 		
 		/// <summary>Loads the contents of this window now.</summary>
@@ -565,9 +585,6 @@ namespace Windows{
 				
 				// Append style if it was required:
 				AddStyle();
-				
-				// Update the attribute:
-				element["-spark-window-id"]=Index.ToString();
 				
 				// Load now:
 				Goto(url,globals);

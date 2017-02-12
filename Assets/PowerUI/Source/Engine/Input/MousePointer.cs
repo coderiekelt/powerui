@@ -15,7 +15,7 @@ namespace PowerUI{
 			
 		}
 		
-		public override bool Relocate(){
+		public override bool Relocate(out Vector2 delta){
 			
 			// Get the current mouse position:
 			Vector2 position=UnityEngine.Input.mousePosition;
@@ -27,9 +27,16 @@ namespace PowerUI{
 			if(position.x==ScreenX && position.y==ScreenY){
 				
 				// Nope!
+				delta=Vector2.zero;
 				return false;
 				
 			}
+			
+			// Delta:
+			delta=new Vector2(
+				position.x - ScreenX,
+				position.y - ScreenY
+			);
 			
 			// Update position:
 			ScreenX=position.x;

@@ -39,6 +39,13 @@ namespace Windows{
 		/// <summary>Adds an option to the builder.</summary>
 		public virtual void BuildOption(StringBuilder builder,Option option){}
 		
+		/// <summary>The style of the default root - the white box. Also note that it has a class of "default-context".</summary>
+		public virtual string RootStyle{
+			get{
+				return "position:fixed;color:black;background:white;width:200px;border:1px solid rgb(236,236,236);border-radius:3px;";
+			}
+		}
+		
 		/// <summary>Builds up the options now.</summary>
 		public virtual void BuildOptions(StringBuilder builder){
 			
@@ -47,7 +54,7 @@ namespace Windows{
 			}
 			
 			// The root node (must only be one node at the root):
-			builder.Append("<div>");
+			builder.Append("<div class='default-context' style='"+RootStyle+"'>");
 			
 			// Generate the menu now!
 			foreach(Option option in List.options){
@@ -84,6 +91,20 @@ namespace Windows{
 			
 			// Write it out into the template:
 			SetHtml(html);
+			
+			if(element==null){
+				return;
+			}
+			
+			// Position the root element:
+			int x=GetInteger("x",globals,-1);
+			int y=GetInteger("y",globals,-1);
+			
+			if(x!=-1 || y!=-1){
+				element.style.left=x+"fpx";
+				element.style.top=y+"fpx";
+			}
+			
 			
 		}
 		

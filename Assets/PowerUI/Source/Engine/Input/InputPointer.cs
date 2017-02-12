@@ -109,6 +109,10 @@ namespace PowerUI{
 		public float DownDocumentY;
 		/// <summary>This occurs with touch pointers. They get marked as removed when the finger is no longer on the screen.</summary>
 		public bool Removed;
+		/// <summary>The current minimum drag distance.</summary>
+		public float MinDragDistance;
+		/// <summary>Used by e.g. dragging. The element that is "pressed" can be different from the one being actually dragged.</summary>
+		public Element ActiveUpdating;
 		/// <summary>The element that this pointer is currently over.</summary>
 		public Element ActiveOver;
 		/// <summary>The element that this pointer last pressed/ clicked on.</summary>
@@ -159,45 +163,103 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Finds the minimum drag distance. Always greater than zero.</summary>
+		public float GetMinDragDistance(){
+			
+			// If we've got a 'draggable' element, that is preferred:
+			Element draggable=(ActiveUpdating==null)?ActivePressed : ActiveUpdating;
+			
+			if(draggable==null){
+				return Input.MinimumDragStartDistance;
+			}
+			
+			float distance=draggable.DragStartDistance;
+			
+			if(distance==0f){
+				// Default, (after checking for a mindrag attribute):
+				string minDrag=draggable["mindrag"];
+				
+				if(minDrag==null){
+					
+					// Unspecified.
+					// Default depends if we're actually a 'draggable' or not:
+					if(ActiveUpdating==null){
+						distance=Input.MinimumDragStartDistance;
+					}else{
+						// 1:
+						distance=1f;
+					}
+					
+				}else if(!float.TryParse(minDrag,out distance) || distance<=0f){
+					
+					// Default:
+					distance=Input.MinimumDragStartDistance;
+					
+				}
+				
+			}
+			
+			return distance;
+			
+		}
+		
 		/// <summary>Checks if the delta between DocumentX/Y and DownDocumentX/Y is bigger than our min drag size.</summary>
 		public bool MovedBeyondDragDistance{
 			get{
 				
-				if(ActivePressed==null){
+				// If we've got a 'draggable' element, that is preferred:
+				Element draggable=(ActiveUpdating==null) ? ActivePressed : ActiveUpdating;
+				
+				if(draggable==null){
 					return false;
 				}
 				
 				float d=DownDocumentX-DocumentX;
-				
-				float distance=ActivePressed.DragStartDistance;
-				
-				if(distance==0){
-					// Default:
-					distance=Input.MinimumDragStartDistance;
-				}
-				
-				if(d<=-distance || d>=distance){
+			
+				if(d<=-MinDragDistance || d>=MinDragDistance){
 					return true;
 				}
 				
 				d=DownDocumentY-DocumentY;
 				
-				return (d<=-distance || d>=distance);
-				
+				return (d<=-MinDragDistance || d>=MinDragDistance);	
 			}
 		}
 		
 		/// <summary>Update ScreenX/ScreenY.</summary>
 		/// <returns>True if it moved.</returns>
-		public virtual bool Relocate(){
+		public virtual bool Relocate(out UnityEngine.Vector2 delta){
+			delta=UnityEngine.Vector2.zero;
 			return false;
 		}
 		
+		/// <summary>Sets ButtonID mapping from the Unity ID to the W3C ones.</summary>
+		public void SetButton(int unityButtonID){
+			
+			switch(unityButtonID){
+				case 0:
+					ButtonID=0;
+				break;
+				case 1:
+					// Right:
+					ButtonID=2;
+				break;
+				case 2:
+					// Middle:
+					ButtonID=1;
+				break;
+				default:
+					ButtonID=unityButtonID;
+				break;
+			}
+			
+		}
+		
 		/// <summary>Clicks this pointer - same as SetPressure(1).</summary>
-		public void Click(int buttonID){
+		public void Click(int unityButtonID){
 			
 			// Set button ID:
-			ButtonID=buttonID;
+			SetButton(unityButtonID);
 			
 			// Always full pressure:
 			SetPressure(1f);
@@ -205,10 +267,10 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Releases this pointer - same as SetPressure(0).</summary>
-		public void Release(){
+		public void Release(int unityButtonID){
 			
-			// Clear button:
-			ButtonID=0;
+			// Set button ID:
+			SetButton(unityButtonID);
 			
 			// Clear pressure:
 			SetPressure(0f);
@@ -343,6 +405,7 @@ namespace PowerUI{
 					
 					// Always clear drag status:
 					DragStatus=0;
+					MinDragDistance=0f;
 					
 				}
 				

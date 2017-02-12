@@ -597,6 +597,24 @@ namespace PowerUI{
 		/// items/ players and you want that object to receive the event.</summary>
 		public static TargetResolveDelegate TargetResolver;
 		
+		/// <summary>Looks for any element with the 'draggable' attribute.</summary>
+		public static Element GetDraggable(Element current){
+			
+			while(current!=null){
+				
+				// Got the attribute?
+				if(current["draggable"]!=null){
+					return current;
+				}
+				
+				current=current.parentElement;
+			}
+			
+			// Nope!
+			return null;
+			
+		}
+		
 		/// <summary>Attempts to resolve a Gameobject to an event target. Prefers to use Input.TargetResolver but falls back searching for 
 		/// a script on the gameobject which implements it. Will search up the hierarchy too.</summary>
 		public static IEventTarget ResolveTarget(GameObject toResolve){
@@ -745,7 +763,8 @@ namespace PowerUI{
 				pointer=InputPointer.AllRaw[i];
 				
 				// Update its position and state now:
-				bool moved=pointer.Relocate();
+				Vector2 delta;
+				bool moved=pointer.Relocate(out delta);
 				
 				if(pointer.Removed){
 					// It got removed! (E.g. a finger left the screen).
@@ -784,12 +803,6 @@ namespace PowerUI{
 						
 						if(oldActiveOver!=null){
 							
-							// Clear active:
-							pointer.ActiveOver=null;
-							
-							// Update the CSS:
-							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
-							
 							// Trigger a mouseout (bubbles):
 							mouseEvent.EventType="mouseout";
 							mouseEvent.SetTrusted();
@@ -809,9 +822,16 @@ namespace PowerUI{
 						// Update it:
 						pointer.ActiveOver=newActiveOver;
 						
+						if(oldActiveOver!=null){
+							
+							// Update the CSS (hover; typically out):
+							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
+							
+						}
+						
 						if(newActiveOver!=null){
 							
-							// Update the CSS (hover)
+							// Update the CSS (hover; typically in)
 							(newActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
 							
 						}
@@ -913,16 +933,31 @@ namespace PowerUI{
 					// How far has it moved since it went down?
 					if(pointer.DragStatus==InputPointer.DRAG_UNKNOWN){
 						
+						// Is the element we pressed (or any of its parents) draggable?
+						if(pointer.MinDragDistance==0f){
+							
+							// Find if we've got a draggable element:
+							pointer.ActiveUpdating=GetDraggable(pointer.ActivePressed);
+							
+							// Find the min drag distance:
+							pointer.MinDragDistance=pointer.GetMinDragDistance();
+							
+						}
+						
 						if(pointer.MovedBeyondDragDistance){
 							
-							// Possibly dragging. Is the element we pressed draggable?
-							if(pointer.ActivePressed["draggable"]!=null){
+							// Possibly dragging.
+							
+							// Actually marked as 'draggable'?
+							if(pointer.ActiveUpdating!=null){
 								
 								// Try start drag:
 								DragEvent de=new DragEvent("dragstart");
 								de.trigger=pointer;
 								de.SetModifiers();
 								de.SetTrusted();
+								de.deltaX=delta.x;
+								de.deltaY=delta.y;
 								de.clientX=pointer.DocumentX;
 								de.clientY=pointer.DocumentY;
 								
@@ -972,18 +1007,52 @@ namespace PowerUI{
 						
 					}else if(pointer.DragStatus==InputPointer.DRAGGING){
 						
-						// Move the dragged element:
+						// Move the dragged element (the event goes to everybody):
 						if(pointer.ActivePressed!=null){
 							
 							DragEvent de=new DragEvent("drag");
 							de.trigger=pointer;
 							de.SetModifiers();
 							de.SetTrusted();
+							de.deltaX=delta.x;
+							de.deltaY=delta.y;
 							de.clientX=pointer.DocumentX;
 							de.clientY=pointer.DocumentY;
 							
 							if(pointer.ActivePressed.dispatchEvent(de)){
-								pointer.ActivePressed.OnDrag(de);
+								
+								// Note that onDrag runs on the *dragging* element only.
+								Element dragging=(pointer.ActiveUpdating==null)? pointer.ActivePressed : pointer.ActiveUpdating;
+								
+								if(dragging.OnDrag(de)){
+									
+									// Run the PowerUI default - move the element:
+									RenderableData renderData=(dragging as IRenderableNode).RenderData;
+									
+									// Get the "actual" left/top values:
+									if(renderData.FirstBox!=null){
+										
+										// Get computed style:
+										ComputedStyle cs=renderData.computedStyle;
+										
+										// Fix if it isn't already:
+										if(renderData.FirstBox.PositionMode!=PositionMode.Fixed){
+											
+											cs.ChangeTagProperty("position","fixed");
+											
+										}
+										
+										// Get top/left pos:
+										float left=renderData.FirstBox.X+delta.x;
+										float top=renderData.FirstBox.Y+delta.y;
+										
+										// Write it back out:
+										cs.ChangeTagProperty("left",new Css.Units.DecimalUnit(left));
+										cs.ChangeTagProperty("top",new Css.Units.DecimalUnit(top));
+										
+									}
+									
+								}
 							}
 							
 						}

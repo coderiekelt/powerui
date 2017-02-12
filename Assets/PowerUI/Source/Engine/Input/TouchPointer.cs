@@ -64,7 +64,7 @@ namespace PowerUI{
 			FireTouchEvents=true;
 		}
 		
-		public override bool Relocate(){
+		public override bool Relocate(out Vector2 delta){
 			
 			// Died?
 			if(!StillAlive){
@@ -72,6 +72,7 @@ namespace PowerUI{
 				
 				// Mouse up etc:
 				SetPressure(0f);
+				delta=Vector2.zero;
 				return true;
 			}
 			
@@ -85,9 +86,16 @@ namespace PowerUI{
 			if(position.x==ScreenX && position.y==ScreenY){
 				
 				// Nope!
+				delta=Vector2.zero;
 				return false;
 				
 			}
+			
+			// Delta:
+			delta=new Vector2(
+				position.x - ScreenX,
+				position.y - ScreenY
+			);
 			
 			// Update position:
 			ScreenX=position.x;

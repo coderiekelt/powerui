@@ -78,6 +78,9 @@ namespace PowerUI{
 				Engines[types[i].ToLower().Trim()]=engine;
 			}
 			
+			Dom.Event e=new Dom.Event("scriptengineload");
+			dispatchEvent(e);
+			
 			return engine;
 			
 		}

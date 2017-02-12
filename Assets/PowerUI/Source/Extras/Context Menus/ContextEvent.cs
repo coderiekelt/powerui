@@ -88,3 +88,22 @@ namespace ContextMenus{
 	}
 	
 }
+
+
+namespace Dom{
+	
+	public partial class Element{
+		
+		/// <summary>Called when this element receives a contextmenu request.</summary>
+		public ContextMenus.ContextEventDelegate oncontextmenu{
+			get{
+				return GetFirstDelegate<ContextMenus.ContextEventDelegate>("contextmenu");
+			}
+			set{
+				addEventListener("contextmenu",new ContextMenus.ContextEventListener(value));
+			}
+		}
+		
+	}
+	
+}

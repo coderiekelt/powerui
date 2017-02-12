@@ -208,6 +208,12 @@ namespace PowerUI{
 	
 	public class DragEvent : UIEvent{
 		
+		/// <summary>The delta X value.</summary>
+		public float deltaX;
+		/// <summary>The delta Y value.</summary>
+		public float deltaY;
+		
+		
 		public DragEvent(string type):base(type){}
 		public DragEvent(string type,object init):base(type,init){}
 		

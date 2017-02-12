@@ -52,7 +52,7 @@ namespace PowerUI{
 				if(type==EventType.MouseUp){
 					
 					// Release it:
-					PowerUI.Input.SystemMouse.Release();
+					PowerUI.Input.SystemMouse.Release(current.button);
 					
 				}else if(type==EventType.MouseDown){
 					

@@ -89,7 +89,7 @@ namespace PowerUI{
 					}
 					
 					// Apply now:
-					GotDocumentContent(package.responseText,package.statusCode);
+					GotDocumentContent(package.responseText,package.statusCode,false);
 					
 				}
 				
@@ -515,7 +515,7 @@ namespace PowerUI{
 		
 		/// <summary>Sets the document content with a status code.
 		/// Displays error info if html is blank or ErrorHandlers.CatchAll is set.</summary>
-		internal void GotDocumentContent(string html,int status){
+		internal void GotDocumentContent(string html,int status,bool openClose){
 			
 			if( status!=200 && (string.IsNullOrEmpty(html) || ErrorHandlers.CatchAll) ){
 				
@@ -531,8 +531,15 @@ namespace PowerUI{
 				
 			}else{
 				
-				// Write the innerHTML now:
-				innerHTML=html;
+				if(openClose){
+					// Full open/close cycle:
+					innerHTML=html;
+				}else{
+					// Parse now:
+					HtmlLexer lexer=new HtmlLexer(html,this);
+					lexer.Parse();
+					close();
+				}
 				
 				// Run the onload event if we're in an iframe:
 				if(window.iframe!=null){
@@ -628,6 +635,13 @@ namespace PowerUI{
 				// Open parse and close:
 				IsOpen=false;
 				open();
+				
+				if(AfterClearBeforeSet!=null){
+					
+					// Invoke during load now:
+					AfterClearBeforeSet(createEvent("duringload"));
+					
+				}
 				
 				// Parse now:
 				HtmlLexer lexer=new HtmlLexer(value,this);

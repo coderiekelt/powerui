@@ -337,7 +337,7 @@ namespace PowerUI{
 							targetDocument.window.history.DocumentNavigated();
 							
 							// Apply document content:
-							targetDocument.GotDocumentContent(package.responseText,package.statusCode);
+							targetDocument.GotDocumentContent(package.responseText,package.statusCode,true);
 							
 						}
 						
