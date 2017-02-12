@@ -454,3 +454,14 @@ namespace PowerUI{
 	}
 	
 }
+
+namespace Blaze{
+	
+	public partial class BlockBuffer{
+		
+		/// <summary>The current host DynamicMesh.</summary>
+		public PowerUI.DynamicMesh Mesh;
+		
+	}
+	
+}
