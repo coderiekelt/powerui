@@ -84,50 +84,13 @@ namespace Windows{
 		/// <summary>The available window template types.</summary>
 		public static Dictionary<string,Type> WindowTypes;
 		
-		/// <summary>Sets up the global lookup by searching for any classes which implement Window.</summary>
-		public static void Setup(Assembly asm){
-			
-			WindowTypes=new Dictionary<string,Type>();
-			
-			#if NETFX_CORE
-			
-			// For each type..
-			foreach(TypeInfo type in asm.DefinedTypes){
-				
-				if(type.IsGenericType){
-					continue;
-				}
-				
-				if( type.IsSubclassOf(typeof(Window))){
-					Add(type.AsType());
-				}
-				
-			}
-			
-			#else
-			
-			Type[] allTypes=asm.GetTypes();
-			
-			// For each type..
-			for(int i=allTypes.Length-1;i>=0;i--){
-				Type type=allTypes[i];
-				
-				if(type.IsGenericType){
-					continue;
-				}
-				
-				if(TypeData.IsSubclassOf(type,typeof(Window))){
-					Add(type);
-				}
-				
-			}
-			
-			#endif
-			
-		}
-		
 		/// <summary>Adds the given type as an available window type.</summary>
-		private static void Add(Type type){
+		public static void Add(Type type){
+			
+			if(WindowTypes==null){
+				// Create the set now:
+				WindowTypes=new Dictionary<string,Type>();
+			}
 			
 			// Get the name attribute from it (don't inherit):
 			TagName tagName=Attribute.GetCustomAttribute(type,typeof(TagName),false) as TagName;

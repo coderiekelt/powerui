@@ -79,8 +79,9 @@ namespace PowerUI{
 			
 			Properties=null;
 			
-			// If your game is running, here be gremlins:
-			Css.CssProperties.All=null;
+			// If your game is running, here be gremlins!
+			// It recreates all CSS properties, resulting in multiple instances:
+			Css.Start.Reset();
 			
 			Load();
 			
@@ -91,20 +92,8 @@ namespace PowerUI{
 			
 			if(Properties==null){
 				
-				#if NETFX_CORE
-				
-				// Startup the CSS engine:
-				CssProperties.Setup();
-				
-				#else
-				
-				// Get all types:
-				Type[] allTypes=typeof(CssProperties).Assembly.GetTypes();
-				
-				// Startup the CSS engine:
-				CssProperties.Setup(allTypes);
-				
-				#endif
+				// Start the CSS engine:
+				Css.Start.Now();
 				
 				// Load the CSS properties:
 				LoadAvailableProperties();

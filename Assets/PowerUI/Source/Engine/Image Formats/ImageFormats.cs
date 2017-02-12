@@ -30,51 +30,19 @@ namespace PowerUI{
 		public static Dictionary<string,ImageFormat> Formats;
 		
 		
-		/// <summary>Sets up all available image formats.
-		/// Called internally by UI.Setup.</summary>
-		private static void Setup(){
-			
-			Formats=new Dictionary<string,ImageFormat>();
-			
-			#if NETFX_CORE
-			
-			// For each type..
-			foreach(TypeInfo type in typeof(ImageFormats).GetTypeInfo().Assembly.DefinedTypes){
-				
-				// Is it a ImageFormat?
-				if( type.IsSubclassOf(typeof(ImageFormat)) ){
-					// Yes it is - add it.
-					Add((ImageFormat)Activator.CreateInstance(type.AsType()));
-				}
-				
-			}
-			
-			#else
-			
-			// Get all types:
-			Type[] allTypes=Assembly.GetExecutingAssembly().GetTypes();
-			
-			// For each type..
-			
-			for(int i=allTypes.Length-1;i>=0;i--){
-				Type type=allTypes[i];
-				
-				// Is it a ImageFormat?
-				if( TypeData.IsSubclassOf(type,typeof(ImageFormat)) ){
-					// Yes it is - add it.
-					Add((ImageFormat)Activator.CreateInstance(type));
-				}
-			}
-			
-			#endif
-			
-		}
-		
 		/// <summary>Adds the given image format to the global set for use.
 		/// Note that you do not need to call this manually; Just deriving from
 		/// ImageFormat is all that is required.</summary>
-		/// <param name="format">The new format to add.</param>
-		public static void Add(ImageFormat format){
+		/// <param name="formatType">The type for the format to add.</param>
+		public static void Add(Type formatType){
+			
+			if(Formats==null){
+				Formats=new Dictionary<string,ImageFormat>();
+			}
+			
+			// Instance it:
+			ImageFormat format=(ImageFormat)Activator.CreateInstance(formatType);
+			
 			string[] nameSet=format.GetNames();
 			
 			if(nameSet==null){
@@ -84,6 +52,7 @@ namespace PowerUI{
 			foreach(string name in nameSet){
 				Formats[name.ToLower()]=format;
 			}
+			
 		}
 		
 		/// <summary>Gets an instance of a format by the given file type.</summary>
@@ -100,7 +69,15 @@ namespace PowerUI{
 		public static ImageFormat Get(string type){
 			
 			if(Formats==null){
-				Setup();
+				
+				// Load the formats now!
+				Modular.AssemblyScanner.FindAllSubTypesNow(typeof(ImageFormat),
+					delegate(Type t){
+						// Add it as format:
+						ImageFormats.Add(t);
+					}
+				);
+				
 			}
 			
 			if(type==null){

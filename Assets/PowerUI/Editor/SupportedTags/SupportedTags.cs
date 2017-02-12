@@ -82,7 +82,7 @@ namespace PowerUI{
 			Tags=null;
 			
 			// If your game is running, here be gremlins:
-			Dom.MLNamespaces.All=null;
+			Dom.Start.Reset();
 			
 			Load();
 			
@@ -200,8 +200,7 @@ namespace PowerUI{
 		public static void LoadAvailableTags(){
 			
 			// Refresh the tag engine:
-			Dom.TagHandlers.Clear();
-			Dom.TagHandlers.Setup(Nitro.Assemblies.Current);
+			Dom.Start.Now();
 			
 			// Get the full list:
 			AllTags=Dom.TagHandlers.GetAll();
@@ -217,6 +216,12 @@ namespace PowerUI{
 				
 				// Instance to check:
 				Element inst=Activator.CreateInstance(handler) as Element;
+				
+				if(inst==null){
+					// E.g. a text node.
+					continue;
+				}
+				
 				inst.Tag=kvp.Key;
 				
 				// Skip internal tags:

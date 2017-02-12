@@ -36,61 +36,20 @@ namespace PowerUI{
 		public static Dictionary<string,FileProtocol> Protocols;
 		
 		
-		/// <summary>Sets up all available file protocols by scanning around
-		/// for all classes which inherit from the FileProtocol type.
-		/// Called internally by UI.Setup.</summary>
-		public static void Setup(){
-			if(Protocols!=null){
-				return;
-			}
-			
-			Protocols=new Dictionary<string,FileProtocol>();
-			
-			#if NETFX_CORE
-			
-			// For each type..
-			foreach(TypeInfo type in typeof(FileProtocols).GetTypeInfo().Assembly.DefinedTypes){
-				
-				// Is it a FileProtocol?
-				if( type.IsSubclassOf(typeof(FileProtocol)) ){
-					// Yes it is - add it.
-					Add((FileProtocol)Activator.CreateInstance(type.AsType()));
-				}
-				
-			}
-			
-			// Startup the CSS engine:
-			Css.CssProperties.Setup();
-			
-			#else
-			
-			// Get all types:
-			Type[] allTypes=Assembly.GetExecutingAssembly().GetTypes();
-			
-			// For each type..
-			
-			for(int i=allTypes.Length-1;i>=0;i--){
-				Type type=allTypes[i];
-				
-				// Is it a FileProtocol?
-				if( TypeData.IsSubclassOf(type,typeof(FileProtocol)) ){
-					// Yes it is - add it.
-					Add((FileProtocol)Activator.CreateInstance(type));
-				}
-			}
-			
-			// Startup the CSS engine:
-			Css.CssProperties.Setup(allTypes);
-			
-			#endif
-			
-		}
-		
 		/// <summary>Adds the given file protocol to the global set for use.
 		/// Note that you do not need to call this manually; Just deriving from
 		/// FileProtocol is all that is required.</summary>
-		/// <param name="protocol">The new protocol to add.</param>
-		public static void Add(FileProtocol protocol){
+		/// <param name="protocolType">The type of the protocol to add.</param>
+		public static void Add(Type protocolType){
+			
+			if(Protocols==null){
+				Protocols=new Dictionary<string,FileProtocol>();
+			}
+			
+			// Instance it:
+			FileProtocol protocol=(FileProtocol)Activator.CreateInstance(protocolType);
+			
+			// Get the names:
 			string[] nameSet=protocol.GetNames();
 			
 			if(nameSet==null){
@@ -100,12 +59,18 @@ namespace PowerUI{
 			foreach(string name in nameSet){
 				Protocols[name.ToLower()]=protocol;
 			}
+			
 		}
 		
 		/// <summary>Gets a protocol by the given name.</summary>
 		/// <param name="protocol">The name of the protocol, e.g. "http".</param>
 		/// <returns>A FileProtocol if found; null otherwise.</returns>
 		public static FileProtocol Get(string protocol){
+			
+			if(Protocols==null){
+				throw new Exception("No file protocols available!");
+			}
+			
 			if(protocol==null){
 				protocol="";
 			}

@@ -25,6 +25,8 @@ namespace InfiniText{
 	
 	public partial class Glyph{
 		
+		/// <summary>Cached directionality.</summary>
+		private int Direction=-1;
 		/// <summary>A graphical image representation of this character for e.g. Emoji.</summary>
 		public ImagePackage Image;
 		/// <summary>The rendered location of this SDF character. Also tracks on-screen counts internally.</summary>
@@ -60,7 +62,10 @@ namespace InfiniText{
 		/// <summary>The unicode bidirectional category (e.g. Important for Arabic).</summary>
 		public int Directionality{
 			get{
-				return DirectionCategory.Get(RawCharcode);
+				if(Direction==-1){
+					Direction=DirectionCategory.Get(RawCharcode);
+				}
+				return Direction;
 			}
 		}
 		

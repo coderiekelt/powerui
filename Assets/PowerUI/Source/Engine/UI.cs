@@ -150,6 +150,14 @@ public static class UI{
 		
 	}
 	
+	/// <summary>Searches the given assembly for PowerUI modules, custom tags, properties etc.
+	/// Just an alias for Modular.Start.Now(asm).</summary>
+	public static void SearchAssembly(System.Reflection.Assembly asm){
+		
+		Modular.Start.Now(asm);
+		
+	}
+	
 	/// <summary>Startup the UI. Now called internally, but can be called at the start of any scene using PowerUI.</summary>
 	public static void Start(){
 		Start(false);
@@ -182,11 +190,13 @@ public static class UI{
 		// Setup the character entities such as &nbsp;
 		CharacterEntities.Setup();
 		
-		// Startup the tag handlers:
-		Dom.TagHandlers.Setup(Assemblies.Current);
-		
-		// Startup the file protocols (internally also starts up the CSS engine):
-		FileProtocols.Setup();
+		// Start modules now! UI is always precompiled; Manager never is.
+		// Starting them both will either start just one module or two 
+		// (depending on if we're precompiled or not).
+		// Essentially that'll automatically catch all custom tags etc 
+		// regardless of where they are in the project.
+		Modular.Start.Now(typeof(UI));
+		Modular.Start.Now(typeof(PowerUI.Manager));
 		
 		// Setup language metadata:
 		Languages.globalLoader.Setup();

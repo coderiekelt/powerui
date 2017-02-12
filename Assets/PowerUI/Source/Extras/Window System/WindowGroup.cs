@@ -157,7 +157,15 @@ namespace Windows{
 		public Window open(string typeName,string url,Dictionary<string,object> globals){
 			
 			if(Manager.WindowTypes==null){
-				Manager.Setup(Assemblies.Current);
+				
+				// Load the windows now!
+				Modular.AssemblyScanner.FindAllSubTypesNow(typeof(Windows.Window),
+					delegate(Type t){
+						// Add it as an available window:
+						Manager.Add(t);
+					}
+				);
+				
 			}
 			
 			Type type;
