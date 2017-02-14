@@ -753,6 +753,26 @@ namespace PowerUI{
 				float baseOffset=VerticalAlignOffset;
 				float lineLength=0f;
 				
+				// Is the nearest block parent a table cell?
+				bool tableCell=(CurrentBox.DisplayMode==DisplayMode.TableCell);
+				
+				if(tableCell && (verticalAlignMode&VerticalAlignMode.TopMiddleBottom)!=0){
+					
+					// Adjust the meaning of valign on this element:
+					switch(verticalAlignMode){
+						case VerticalAlignMode.Top:
+							verticalAlignMode=VerticalAlignMode.TableTop;
+						break;
+						case VerticalAlignMode.Middle:
+							verticalAlignMode=VerticalAlignMode.TableMiddle;
+						break;
+						case VerticalAlignMode.Bottom:
+							verticalAlignMode=VerticalAlignMode.TableBottom;
+						break;
+					}
+					
+				}
+				
 				while(currentBox!=null){
 					// Calculate the offset to where the top left corner is (of the complete box, margin included):
 					
@@ -779,34 +799,36 @@ namespace PowerUI{
 							// Bump the elements so they all sit neatly on the baseline:
 							float baselineShift=(CurrentBox.Baseline-currentBox.Baseline)+baseOffset;
 							
-							if(verticalAlignMode==VerticalAlignMode.Super){
-								
-								baselineShift+=(currentBox.InnerHeight * 0.75f);
-								
-							}else if(verticalAlignMode==VerticalAlignMode.Sub){
-								
-								baselineShift-=(currentBox.InnerHeight * 0.75f);
-								
-							}else if(verticalAlignMode==VerticalAlignMode.Middle){
-								
-								// Align the middle of the element with the baseline:
-								baselineShift-=(currentBox.InnerHeight * 0.5f);
-								
-								// Plus half of the parent x-height:
-								baselineShift+=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize * 0.5f);
-								
-							}else if(verticalAlignMode==VerticalAlignMode.TextTop){
-								
-								// Align the top of the text with the baseline:
-								// (add its x-height):
-								baselineShift-=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize);
-								
-							}else if(verticalAlignMode==VerticalAlignMode.TextTop){
-								
-								// Align the top of the text with the baseline:
-								// (remove its x-height):
-								baselineShift+=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize);
-								
+							switch(verticalAlignMode){
+								case VerticalAlignMode.Super:
+									baselineShift+=(currentBox.InnerHeight * 0.75f);
+								break;
+								case VerticalAlignMode.Sub:
+									baselineShift-=(currentBox.InnerHeight * 0.75f);
+								break;
+								case VerticalAlignMode.Middle:
+									
+									// Align the middle of the element with the baseline:
+									baselineShift-=(currentBox.InnerHeight * 0.5f);
+									
+									// Plus half of the parent x-height:
+									baselineShift+=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize * 0.5f);
+									
+								break;
+								case VerticalAlignMode.TextTop:
+									
+									// Align the top of the text with the baseline:
+									// (add its x-height):
+									baselineShift-=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize);
+									
+								break;
+								case VerticalAlignMode.TextBottom:
+									
+									// Align the top of the text with the baseline:
+									// (remove its x-height):
+									baselineShift+=(CurrentBox.FontFace.ExHeight * CurrentBox.FontSize);
+									
+								break;
 							}
 							
 							delta-=baselineShift;
@@ -851,6 +873,31 @@ namespace PowerUI{
 								
 							}
 							
+						}
+						
+					}else if((verticalAlignMode & VerticalAlignMode.TableMode)!=0){
+						
+						// Aligning vertically (tables):
+						
+						// Vertical alignment:
+						switch(verticalAlignMode){
+							
+							case VerticalAlignMode.TableMiddle:
+								
+								// Similar to below - we find the gap, then add *half* of that onto OffsetTop.
+								delta+=(CurrentBox.InnerHeight-currentBox.Height) / 2f;
+								
+							break;
+							case VerticalAlignMode.TableBottom:
+							
+								// Find the gap - parent height-contentHeight.
+								// Then simply add that onto delta.
+								delta+=CurrentBox.InnerHeight-currentBox.Height;
+								
+							break;
+							// case VerticalAlignMode.TableTop:
+								// Default - do nothing
+							// break;
 						}
 						
 					}
@@ -1154,6 +1201,8 @@ namespace PowerUI{
 		/// <summary>Part of the bi-directional algorithm. Converts leftwards boxes to rightwards ones.</summary>
 		private void RightwardsAlign(LayoutBox currentBox,LayoutBox to,float lineMax){
 			
+			/*
+			// Note that word order can be confused without this.
 			while(currentBox!=null && currentBox!=to){
 			
 				// Update its offset left:
@@ -1163,6 +1212,7 @@ namespace PowerUI{
 				currentBox=currentBox.NextOnLine;
 				
 			}
+			*/
 			
 		}
 		

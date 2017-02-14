@@ -43,8 +43,9 @@ namespace ContextMenus{
 		}
 		/// <summary>The list which represents the group of options.</summary>
 		public OptionList list;
-		/// <summary>The name of the window which will display the context options. Set this during the oncontextmenu event.</summary>
-		public string window="menulist";
+		/// <summary>The name of the window template which will display the 
+		/// context options. Set this during the oncontextmenu event.</summary>
+		public string template="menulist";
 		
 		
 		/// <summary>Adds the given option to the list. Typically the markup would be a HTML variable.

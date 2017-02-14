@@ -105,7 +105,7 @@ namespace PowerUI{
 			string filetype=path.Filetype;
 			string result;
 			
-			if(filetype=="html" || filetype=="htm" || filetype=="txt" || filetype=="xml"){
+			if(filetype=="html" || filetype=="htm" || filetype=="txt" || filetype=="xml" || filetype=="json"){
 				result=path.Directory+path.Filename;
 			}else{
 			

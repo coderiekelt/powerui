@@ -13,13 +13,22 @@ public class AdvancedHealth : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
+		/* Future update: This will instead be bars of any shape using SVG and stroke */
+		
 		// Create our dynamic textures:
 		PowerBarGraphic=new PowerBar();
 		HealthBarGraphic=new HealthBar();
 		
-		// Internally they have now setup 
-		// dynamic://healthbar and dynamic://powerbar
-		// links for easy access from the html.
+		// Get a reference to the document:
+		var document=UI.document;
+		
+		// Get the elements (using the shortcut for HtmlElement):
+		var powerBar=document.getById("powerbar");
+		var healthBar=document.getById("healthbar");
+		
+		// Apply the graphics to them:
+		powerBar.SetImage(PowerBarGraphic);
+		healthBar.SetImage(HealthBarGraphic);
 		
 	}
 	

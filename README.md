@@ -1,36 +1,10 @@
-# PowerUI 2 (Bleeding Edge)
+# PowerUI 2
 
-Hello! Welcome to the bleeding edge PowerUI 2 project. This repository doesn't currently contain a stable branch - it's simply the absolute latest commits in order to bring you the latest code as fast as possible. One does not simply make a web browser, *but let's do it anyway!*
-
-## Down Features
-
-Here's the list of things that are known to be not working with the reasons why.
-
-* Tables
-
-> HTML tables including the caption element
-
-Tables are now the top priority. The new functionality required for display:table is in place but hasn't been connected together yet.
-
-* text-shadow and text-stroke
-
-> Both are new in PowerUI 2 but are currently incomplete
-
-They exhibit some unstable behaviour, and text-shadow only accepts one shadow at the moment (however, the code required to allow multiple text-shadows and multiple background images is already in place).
+Hello! Welcome to PowerUI 2. One does not simply make a web browser, *but let's do it anyway!*
 
 ## Testing required
 
 These are parts of PowerUI which are currently under tested. Use at your own risk!
-
-* The new window manager
-
-> And its derived systems; dialogue trees and context menus
-
-* @Keyframes and CSS transform
-
-> E.g. transform:rotate(90deg); inside @keyframes.
-
-@keyframes currently also needs more broad testing - particularly with the new transition functions.
 
 * Img tag additions
 
@@ -42,9 +16,9 @@ These are parts of PowerUI which are currently under tested. Use at your own ris
 
 The input system was rebuilt, but is currently under tested. Needs to be tested out on a multitouch screen and in VR with the new [VR camera modes](http://powerui.kulestar.com/wiki/index.php?title=Virtual_Reality_Cameras).
 
-## Down features to be worked on post release
+## Features to be worked on post release
 
-These are all new in PowerUI 2 and have easy workarounds so they're considered minor.
+These are all new in PowerUI 2.
 
 * Float edge cases
 

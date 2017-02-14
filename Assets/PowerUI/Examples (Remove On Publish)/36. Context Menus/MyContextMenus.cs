@@ -38,8 +38,8 @@ public class MyContextMenus : MonoBehaviour {
 		myElement.oncontextmenu=delegate(ContextEvent ce){
 			
 			// If you'd like to use some other window template, you'd do that here:
-			// (This way, your 3D context menu's can look totally different, for example).
-			// ce.window="menulist";
+			// (This way, your 3D context menus can look totally different, for example).
+			// ce.template="menulist";
 			
 			// Add the options (supports HTML, localisation and custom Option classes):
 			ce.add("About",delegate(Option sender){
@@ -55,7 +55,7 @@ public class MyContextMenus : MonoBehaviour {
 			});
 			
 			// The add methods return the Option object it created.
-			// You can add to them too - they're also lists:
+			// You can add to them too to make a submenu:
 			option.add("Email",delegate(Option sender){
 				
 				Debug.Log("powerui@kulestar.com");

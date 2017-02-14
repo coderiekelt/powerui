@@ -130,11 +130,16 @@ namespace PowerUI{
 				return null;
 			}
 			
+			if(window.document.html==null){
+				Dom.Log.Add("Can't prompt without a html node.");
+				return null;
+			}
+			
 			// Append it:
 			HtmlElement background=window.document.createElement("div") as HtmlElement ;
 			background.id="spark-prompt-background";
 			background.innerHTML="<div id='spark-prompt'>"+text+"</div>";
-			window.document.appendChild(background);
+			window.document.html.appendChild(background);
 			
 			// Get the message zone:
 			HtmlElement content=background.getElementById("spark-prompt-content-zone") as HtmlElement ;

@@ -17,30 +17,30 @@ using System.Reflection;
 using Nitro;
 
 
-namespace Dialogue{
+namespace PowerSlide{
 	
 	/// <summary>
-	/// A raw dialogue action. E.g. "start cutscene x" or "open door y". These are mapped as event listeners.
-	/// Note that the DialogueEvent can hold extra parameters to pass through to your target.
+	/// A raw slide action. E.g. "start cutscene x" or "open door y". These are mapped as event listeners.
+	/// Note that the SlideEvent can hold extra parameters to pass through to your target.
 	/// </summary>
 	
 	public class Action{
 		
-		/// <summary>The card this is an action for.</summary>
-		public Card Card;
+		/// <summary>The slide this is an action for.</summary>
+		public Slide Slide;
 		/// <summary>A custom action ID.</summary>
 		public string ID;
-		/// <summary>The method to run. Must accept a DialogueEvent.</summary>
+		/// <summary>The method to run. Must accept a SlideEvent.</summary>
 		public MethodInfo Method;
 		
 		
-		public Action(Card card){
-			Card=card;
+		public Action(Slide slide){
+			Slide=slide;
 		}
 		
 		/// <summary>Loads the action meta from the given JSON data.</summary>
-		public Action(Card card,JSObject data){
-			Card=card;
+		public Action(Slide slide,JSObject data){
+			Slide=slide;
 			Load(data);
 		}
 		
@@ -54,7 +54,7 @@ namespace Dialogue{
 			int index=methodName.LastIndexOf('.');
 			
 			if(index==-1){
-				throw new Exception("Class name and method required in dialogue action methods (\"method\":\"Class.Method\").");
+				throw new Exception("Class name and method required in slide action methods (\"method\":\"Class.Method\").");
 			}
 			
 			// Grab the class name:
@@ -64,7 +64,7 @@ namespace Dialogue{
 			Type type=CodeReference.GetFirstType(className);
 			
 			if(type==null){
-				throw new Exception("Dialogue action method type not found: "+className);
+				throw new Exception("Slide action method type not found: "+className);
 			}
 			
 			// Update the method name:
@@ -79,7 +79,7 @@ namespace Dialogue{
 			#endif
 			
 			if(Method==null){
-				throw new Exception("Dialogue action method not found in '"+type.ToString()+"': "+methodName);
+				throw new Exception("Slide action method not found in '"+type.ToString()+"': "+methodName);
 			}
 			
 		}

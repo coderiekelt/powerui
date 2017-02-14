@@ -208,8 +208,14 @@ namespace ContextMenus{
 			// Get the window manager:
 			Windows.Manager windowManager=(ce.contextDocument as HtmlDocument).sparkWindows;
 			
-			// Open a window (almost always closes others of the same type):
-			window=windowManager.open(ce.window,null,buildGlobals(ce));
+			// Open a window (closing an existing one):
+			window=windowManager.get(ce.template,null);
+			
+			if(window!=null){
+				window.close();
+			}
+			
+			window=windowManager.open(ce.template,null,buildGlobals(ce));
 			
 		}
 		

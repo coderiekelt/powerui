@@ -33,15 +33,18 @@ namespace PowerUI{
 			
 			// For each one..
 			DynamicTexture current=ToUpdate;
+			ToUpdate=null;
 			
 			while(current!=null){
+				
+				DynamicTexture next=current.NextToUpdate;
+				current.NextToUpdate=null;
 				
 				// Repaint:
 				current.Repaint();
 				
 				// Next:
-				current=current.NextToUpdate;
-				
+				current=next;
 			}
 			
 		}

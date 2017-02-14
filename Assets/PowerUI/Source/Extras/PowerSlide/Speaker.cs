@@ -15,7 +15,7 @@ using PowerUI;
 using Json;
 
 
-namespace Dialogue{
+namespace PowerSlide{
 	
 	/// <summary>
 	/// A speaker. Either an item (which includes NPCs), an item instance or a user.
@@ -30,17 +30,17 @@ namespace Dialogue{
 		public string Reference;
 		/// <summary>The type of speaker.</summary>
 		public SpeakerType Type;
-		/// <summary>The card this is a speaker for.</summary>
-		public Card Card;
+		/// <summary>The slide this is a speaker for.</summary>
+		public Slide Slide;
 		
 		
-		public Speaker(Card card){
-			Card=card;
+		public Speaker(Slide slide){
+			Slide=slide;
 		}
 		
-		/// <summary>Loads the speaker meta from the given JSON data.</summary>
-		public Speaker(Card card,JSObject data){
-			Card=card;
+		/// <summary>Loads the speaker meta from the given JSON.</summary>
+		public Speaker(Slide slide,JSObject data){
+			Slide=slide;
 			Load(data);
 		}
 		

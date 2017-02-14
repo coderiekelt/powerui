@@ -11,7 +11,7 @@
 
 using System;
 using PowerUI;
-using Dialogue;
+using PowerSlide;
 
 
 namespace Dom{
@@ -22,8 +22,8 @@ namespace Dom{
 	
 	public partial class EventTarget{
 		
-		public void addEventListener(string name,DialogueEventDelegate method){
-			addEventListener(name,new DialogueEventListener(method));
+		public void addEventListener(string name,SlideEventDelegate method){
+			addEventListener(name,new SlideEventListener(method));
 		}
 		
 	}

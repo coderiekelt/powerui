@@ -16,21 +16,23 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace Dialogue{
+namespace PowerSlide{
 	
 	/// <summary>
-	/// Represents a dialogue event.
+	/// Represents a PowerSlide event.
 	/// </summary>
 	
-	public class DialogueEvent : Dom.Event{
+	public class SlideEvent : Dom.Event{
 		
 		/// <summary>The manager that this originated from. Can be null during e.g. load events when no manager is available.</summary>
 		public Manager manager;
-		/// <summary>The current train of thought.</summary>
-		public Train train;
-		/// <summary>The current cue card. Can be null if this is a train event.</summary>
-		public Card card;
-		/// <summary>The current action. Can be null if this is a train/card event.</summary>
+		/// <summary>The current timeline.</summary>
+		public Timeline timeline;
+		/// <summary>The current track (group of slides).</summary>
+		public Track track;
+		/// <summary>The current slide. Can be null if this is a track event.</summary>
+		public Slide slide;
+		/// <summary>The current action. Can be null if this is a track/slide event.</summary>
 		public Action action;
 		/// <summary>An optional set of globals to pass to the target.</summary>
 		public Dictionary<string,object> globals;
@@ -73,7 +75,7 @@ namespace Dialogue{
 			}
 		}
 		
-		public DialogueEvent(string type,object init):base(type,init){}
+		public SlideEvent(string type,object init):base(type,init){}
 		
 		/// <summary>Opens a window with the given template and URL. Globals originate from this event.
 		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
@@ -85,14 +87,14 @@ namespace Dialogue{
 		
 	}
 	
-	public delegate void DialogueEventDelegate(DialogueEvent e);
+	public delegate void SlideEventDelegate(SlideEvent e);
 	
-	/// Handler for DialogueEvent events.
-	public class DialogueEventListener : EventListener{
+	/// Handler for SlideEvent events.
+	public class SlideEventListener : EventListener{
 		
-		public DialogueEventDelegate Listener;
+		public SlideEventDelegate Listener;
 		
-		public DialogueEventListener(DialogueEventDelegate listener){
+		public SlideEventListener(SlideEventDelegate listener){
 			Listener=listener;
 		}
 		
@@ -103,7 +105,7 @@ namespace Dialogue{
 		}
 		
 		public override void handleEvent(Dom.Event e){
-			Listener((DialogueEvent)e);
+			Listener((SlideEvent)e);
 		}
 		
 	}

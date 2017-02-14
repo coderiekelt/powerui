@@ -222,18 +222,19 @@ namespace Speech{
 			
 			for(int i=0;i<childNodes_.length;i++){
 				Node node=childNodes_[i];
-				IRenderableNode child=node as IRenderableNode;
+				Element child=node as Element;
+				IRenderableNode irn=(child as IRenderableNode);
 				
-				if(child==null){
+				if(child==null || irn==null){
 					continue;
 				}
 				
-				RenderableData renderData=child.RenderData;
+				ComputedStyle cs=irn.ComputedStyle;
 				
 				for(int s=0;s<selectors.Length;s++){
 					
 					// Match?
-					if(selectors[s].Test(renderData,e)!=null){
+					if(selectors[s].StructureMatch(cs,e)){
 						// Yep!
 						results.push(node);
 						
@@ -244,7 +245,7 @@ namespace Speech{
 					
 				}
 				
-				child.querySelectorAll(selectors,results,e,one);
+				irn.querySelectorAll(selectors,results,e,one);
 				
 				if(one && results.length==1){
 					return;

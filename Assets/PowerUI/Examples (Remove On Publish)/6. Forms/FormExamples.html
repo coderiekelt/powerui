@@ -181,7 +181,7 @@ body{
 
 	// Nitro example:
 
-	function HandleWithNitro(form:FormData){
+	function HandleWithNitro(form:FormEvent){
 		// This function gets called when the form is submitted.
 		// The form's fields are provided as a neat object
 		// so you don't have to go hunting for values.
@@ -216,7 +216,7 @@ body{
 	// This small switch value prevents double clicking/ multi-sending:
 	var sending=false;
 	
-	function OnSendingToWeb(form:FormData){
+	function OnSendingToWeb(form:FormEvent){
 		
 		// This function is called when the form is submitted.
 		
@@ -255,7 +255,7 @@ body{
 		
 	}
 	
-	function OnFinishedSending(e:FormData){ 
+	function OnFinishedSending(e:FormEvent){ 
 		
 		// No longer sending:
 		sending=false;

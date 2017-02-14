@@ -235,12 +235,14 @@ dropdown{
 
 /* Built in JS prompts; alert, confirm etc */
 #spark-prompt-background{
-	background:rgba(0,0,0,42%);
+	background-color:rgba(0,0,0,0.4);
 	width:100%;
 	height:100%;
+	top:0;
+	left:0;
 	position:fixed;
-	text-align:center;
-	vertical-align:middle;
+	text-align:-moz-center;
+	vertical-align:table-middle;
  }
  
 #spark-prompt{
@@ -436,7 +438,6 @@ colgroup {
 
 tr {
     display: table-row;
-    vertical-align: inherit;
 }
 
 tbody {
@@ -454,22 +455,16 @@ tfoot {
     vertical-align: middle;
 }
 
-table > tr {
-    vertical-align: middle;
-}
-
 td {
     display: table-cell;
     padding: 1px;
     text-align: inherit;
-    vertical-align: inherit;
 }
 
 th {
     display: table-cell;
     font-weight: bold;
     padding: 1px;
-    vertical-align: inherit;
 }
 
 q::before {

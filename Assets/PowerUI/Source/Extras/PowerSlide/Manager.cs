@@ -12,20 +12,20 @@
 using System;
 
 
-namespace Dialogue{
+namespace PowerSlide{
 	
 	/// <summary>
-	/// A dialogue manager. Active dialogue operates in these and there is only ever one manager per Document.
+	/// A PowerSlide manager. Active slides operate in these and there is only ever one manager per Document.
 	/// </summary>
 	
 	public class Manager{
 		
 		/// <summary>The document that this is managing.</summary>
 		public PowerUI.HtmlDocument document;
-		/// <summary>The actively displaying card.</summary>
-		public Card currentCard;
-		/// <summary>The actively displaying train.</summary>
-		public Train currentTrain;
+		/// <summary>The actively displaying slide.</summary>
+		public Slide currentSlide;
+		/// <summary>The actively displaying track.</summary>
+		public Track currentTrack;
 		
 		
 		public Manager(PowerUI.HtmlDocument document){
@@ -40,18 +40,18 @@ namespace PowerUI{
 
 	public partial class HtmlDocument{
 		
-		/// <summary>Instance of a window manager. May be null.</summary>
-		private Dialogue.Manager dialogue_;
+		/// <summary>Instance of a PowerSlide manager. May be null.</summary>
+		private PowerSlide.Manager slides_;
 		
-		/// <summary>The document.dialogue API. Read only.</summary>
-		public Dialogue.Manager sparkDialogue{
+		/// <summary>The document.slides API. Read only.</summary>
+		public PowerSlide.Manager slides{
 			get{
 				
-				if(dialogue_==null){
-					dialogue_=new Dialogue.Manager(this);
+				if(slides_==null){
+					slides_=new PowerSlide.Manager(this);
 				}
 				
-				return dialogue_;
+				return slides_;
 			}
 		}
 		
