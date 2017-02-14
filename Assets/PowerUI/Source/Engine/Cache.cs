@@ -380,7 +380,11 @@ namespace PowerUI{
 		/// <summary>The cached data.</summary>
 		public byte[] Data{
 			get{
+				#if UNITY_WEBPLAYER || UNITY_WEBGL
+				return null;
+				#else
 				return System.IO.File.ReadAllBytes(PathToData);
+				#endif
 			}
 		}
 		
@@ -412,8 +416,12 @@ namespace PowerUI{
 				
 			}
 			
+			#if UNITY_WEBPLAYER || UNITY_WEBGL
+			// Write out here
+			#else
 			// Write it out now:
 			System.IO.File.WriteAllBytes(PathToData_, data);
+			#endif
 		}
 		
 		/// <summary>Writes out this index entry.</summary>

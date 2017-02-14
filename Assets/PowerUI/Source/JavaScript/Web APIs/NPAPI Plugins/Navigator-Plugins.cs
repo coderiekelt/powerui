@@ -27,8 +27,8 @@ namespace PowerUI{
 	
 	public partial class Navigator{
 		
-		private static Dictionary<string,Plugin> PluginMap;
-		private static PluginArray LoadedPlugins;
+		internal static Dictionary<string,Plugin> PluginMap;
+		internal static PluginArray LoadedPlugins;
 		
 		
 		/// <summary>Is java enabled?</summary>
