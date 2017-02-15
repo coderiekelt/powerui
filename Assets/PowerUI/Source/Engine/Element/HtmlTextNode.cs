@@ -307,6 +307,12 @@ namespace PowerUI{
 			// Get the text renderer (or create it):
 			Css.TextRenderingProperty text=RenderData_.RequireTextProperty();
 			
+			if(text.AllEmpty){
+				min=0f;
+				max=0f;
+				return;
+			}
+			
 			// Need to compute TAW?
 			if(TotalAdvanceWidth==float.MinValue){
 				
