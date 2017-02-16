@@ -33,8 +33,6 @@ namespace PowerSlide{
 		public string selector;
 		/// <summary>Optional: The name of the event that will continue from the cue.</summary>
 		public string eventName;
-		/// <summary>The elements which can continue this cue.</summary>
-		private HTMLCollection linkedElements;
 		
 		
 		public override void load(JSObject json){

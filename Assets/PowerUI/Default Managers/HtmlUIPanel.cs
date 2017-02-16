@@ -24,7 +24,7 @@ namespace PowerUI{
 	/// This route performs much worse than it otherwise could do.
 	/// </summary>
 	
-	public class HtmlUIPanel : PowerUI.Manager
+	public class HtmlUIPanel : PowerUI.Manager, HtmlUIBase
 	{
 		
 		/// <summary>The PowerUI UI itself. Use this to get through to document etc.</summary>
@@ -32,6 +32,13 @@ namespace PowerUI{
 		/// <summary>A reference to the rect transform.</summary>
 		internal RectTransform RectTransform;
 		
+		
+		/// <summary>Used by HtmlUIBase - the screen region of this panel.</summary>
+		public RectTransform screenRect{
+			get{
+				return RectTransform;
+			}
+		}
 		
 		/// <summary>A quick route to the DOM document (useful for e.g. doc.getElementById).</summary>
 		public HtmlDocument document{

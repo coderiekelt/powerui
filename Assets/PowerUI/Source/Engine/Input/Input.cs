@@ -369,7 +369,7 @@ namespace PowerUI{
 		}
 		
 		#if HANDLE_UNITY_UI
-		public static HtmlUIPanel MapToUIPanel(ref Vector2 screenPos){
+		public static HtmlDocument MapToUIPanel(ref Vector2 screenPos){
 			
 			//Create the PointerEventData with null for the EventSystem
 			UnityEngine.EventSystems.PointerEventData ed = new UnityEngine.EventSystems.PointerEventData(null);
@@ -394,7 +394,7 @@ namespace PowerUI{
 				UnityEngine.EventSystems.RaycastResult rayRes=results[i];
 				
 				// Get the panel:
-				HtmlUIPanel panel=rayRes.gameObject.GetComponent<HtmlUIPanel>();
+				HtmlUIBase panel=rayRes.gameObject.GetComponent<HtmlUIBase>();
 				
 				if(panel!=null){
 					
@@ -402,7 +402,7 @@ namespace PowerUI{
 					
 					Vector2 localPoint;
 					
-					RectTransform rectTrans=panel.RectTransform;
+					RectTransform rectTrans=panel.screenRect;
 					
 					UnityEngine.RectTransformUtility.ScreenPointToLocalPointInRectangle(
 						rectTrans,
@@ -420,7 +420,7 @@ namespace PowerUI{
 					screenPos.x=localPoint.x;
 					screenPos.y=( rectangle.height-1-localPoint.y);
 					
-					return panel;
+					return panel.document;
 					
 				}
 				
@@ -500,12 +500,12 @@ namespace PowerUI{
 				// Try hitting the Unity UI first.
 				point=new Vector2(x,ScreenInfo.ScreenY-1-y);
 				
-				HtmlUIPanel panel=MapToUIPanel(ref point);
+				HtmlDocument panelDoc=MapToUIPanel(ref point);
 				
-				if(panel!=null){
+				if(panelDoc!=null){
 					
 					// Test for an element there:
-					result=panel.document.elementFromPointOnScreen(point.x,point.y);
+					result=panelDoc.elementFromPointOnScreen(point.x,point.y);
 					
 					if(result!=null){
 						

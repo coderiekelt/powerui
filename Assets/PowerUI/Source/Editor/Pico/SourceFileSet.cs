@@ -26,16 +26,9 @@ namespace Pico{
 	
 	public class SourceFileSet{
 		
-		/// <summary>The part of the path we strip off when copying this file set elsewhere.</summary>
-		public string BasePath;
 		public List<string> Files=new List<string>();
 		public List<string> Ignores=new List<string>();
 		
-		
-		/// <summary>Creates a source file set with the given base path. This path is only used during CopyTo.</summary>
-		public SourceFileSet(string basePath){
-			BasePath=basePath;
-		}
 		
 		/// <summary>Is the file/directory with the given name ignored?</summary>
 		public bool IsIgnored(string name){
@@ -89,8 +82,8 @@ namespace Pico{
 				
 			}
 			
-			// Must end in .cs:
-			if(basePath.EndsWith(".cs")){
+			// Must end in .cs or .preco:
+			if(basePath.EndsWith(".cs") || basePath.EndsWith(".preco")){
 				
 				// Add as a file:
 				Files.Add(basePath);
@@ -99,74 +92,57 @@ namespace Pico{
 			
 		}
 		
-		/// <summary>Copies all files in this set to the given target location.
-		/// Note that all paths in this set will first have BasePath remove from them.</sumamry>
-		public bool CopyTo(string path){
+		/// <summary>Adds (or removes) a ".preco" extension to all the files in this set.
+		/// Do note that this precompiler copies all source files first.</summary>
+		public void Rename(bool addExtension){
 			
 			for(int i=0;i<Files.Count;i++){
 				
-				// Grab the file:
-				string file=Files[i];
+				// Get the path:
+				string path=Files[i];
 				
-				if(!file.StartsWith(BasePath+"/")){
+				// Already contains the extension?
+				bool hasExtension=path.EndsWith(".preco");
+				
+				if(hasExtension == addExtension){
+					continue;
+				}
+				
+				bool hasMeta=File.Exists(path+".meta");
+				
+				if(addExtension){
 					
-					Debug.LogError("Copy error! Halting due to safety risk. All source files must share a common path. Path error was with file: "+file);
-					return false;
+					// Add the extension:
+					File.Move(path,path+".preco");
+					
+					// Same for the meta file, if it exists:
+					if(hasMeta){
+						
+						// Rename the meta file too:
+						File.Move(path+".meta",path+".preco.meta");
+						
+					}
+					
+				}else{
+					
+					// Remove the extension:
+					string pathNoPreco=path.Substring(0,path.Length-6);
+					
+					File.Move(path,pathNoPreco);
+					
+					// Same for the meta file, if it exists:
+					if(hasMeta){
+						
+						// Rename the meta file too:
+						File.Move(path+".meta",pathNoPreco+".meta");
+						
+					}
 					
 				}
 				
-				// Strip the section:
-				string targetPath=path+"/"+file.Substring(BasePath.Length+1);
-				
-				// Get the directory:
-				string dir=Path.GetDirectoryName(targetPath);
-				
-				// Create it (if it doesn't exist):
-				Directory.CreateDirectory(dir);
-				
-				// Copy:
-				File.Copy(file,targetPath,true);
-				
-			}
-			
-			return true;
-			
-		}
-		
-		/// <summary>Deletes all files in this set. *Should be used with caution of course!*
-		/// Do note that this precompiler copies all source files first.</summary>
-		public void Delete(){
-			
-			for(int i=0;i<Files.Count;i++){
-				File.Delete(Files[i]);
 			}
 			
 			Files.Clear();
-			
-		}
-		
-		/// <summary>Gets an array of files.</summary>
-		public string[] ToArray(){
-			return Files.ToArray();
-		}
-		
-		/// <summary>Reads all files into a set of source code.</summary>
-		public string[] ToSourceArray(){
-			
-			string[] array=Files.ToArray();
-			
-			for(int i=0;i<array.Length;i++){
-				
-				// Get the file path:
-				string file=array[i];
-				
-				// Read it, and write the source into the array:
-				array[i]="#line 0 \""+file+"\"\r\n"+File.ReadAllText(file);
-				
-			}
-			
-			return array;
-			
 			
 		}
 		

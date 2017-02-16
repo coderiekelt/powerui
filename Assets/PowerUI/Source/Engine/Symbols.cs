@@ -13,9 +13,7 @@
 	#define UNITY3
 #endif
 
-#if UNITY_EDITOR
-
-using UnityEditor;
+using System;
 using UnityEngine;
 using System.Threading;
 using System.IO;
@@ -45,8 +43,10 @@ namespace PowerUI{
 			#if UNITY_2_6 || UNITY3
 			// Read the cscp.rsp file.
 			return "";
+			#elseif UNITY_EDITOR
+			return UnityEditor.PlayerSettings.GetScriptingDefineSymbolsForGroup(UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup);
 			#else
-			return PlayerSettings.GetScriptingDefineSymbolsForGroup(CurrentBuildGroup);
+			throw new Exception("Failed to get scripting defines. This usually means you're using PowerUI precompiled without the editor flag.");
 			#endif
 		}
 		
@@ -54,8 +54,10 @@ namespace PowerUI{
 			#if UNITY_2_6 || UNITY3
 			// Write the file.
 			// Flush asset db.
+			#elseif UNITY_EDITOR
+			PlayerSettings.SetScriptingDefineSymbolsForGroup(UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup,sym);
 			#else
-			PlayerSettings.SetScriptingDefineSymbolsForGroup(CurrentBuildGroup,sym);
+			throw new Exception("Failed to set scripting define. This usually means you're using PowerUI precompiled without the editor flag.");
 			#endif
 		}
 		
@@ -114,15 +116,6 @@ namespace PowerUI{
 			Set(defineSymbols);
 		}
 		
-		/// <summary>A shortcut to the current build target.</summary>
-		private static BuildTargetGroup CurrentBuildGroup{
-			get{
-				return EditorUserBuildSettings.selectedBuildTargetGroup;
-			}
-		}
-		
 	}
 
 }
-
-#endif

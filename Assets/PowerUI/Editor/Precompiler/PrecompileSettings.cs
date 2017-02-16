@@ -38,19 +38,13 @@ namespace PowerUI{
 
 	public class PrecompileSettings : EditorWindow{
 		
-		/// <summary>True if PowerUI is precompiled.</summary>
-		public static bool Precompiled;
-		/// <summary>True if the current precompile is in editor mode.</summary>
-		public static bool EditorMode=true;
-		
-		
 		// Add menu item named "Precompile" to the PowerUI menu:
 		[MenuItem("Window/PowerUI/Precompile")]
 		public static void ShowWindow(){
 			
 			// Show existing window instance. If one doesn't exist, make one.
 			EditorWindow window=EditorWindow.GetWindow(typeof(PrecompileSettings));
-
+			
 			// Give it a title:
 			#if PRE_UNITY5_3
 			window.title="Precompile";
@@ -59,97 +53,83 @@ namespace PowerUI{
 			title.text="Precompile";
 			window.titleContent=title;
 			#endif
-
-			LoadSettings();
 			
 		}
 		
-		public static void LoadSettings(){
+		/// <summary>The precompiled PowerUI module.</summary>
+		private Module Module;
+		
+		
+		/// <summary>Sets up the module.</summary>
+		private void GetModule(){
 			
-			// Get the is precompiled and editor state from the settings:
-			Module settings=Precompiler.GetModule("PowerUI");
+			// Create a precompileable module:
+			Module=new Module("PowerUI");
 			
-			if(settings==null){
-				Precompiled=false;
-				EditorMode=true;
-			}else{
-				Precompiled=true;
-				EditorMode=settings.EditorMode;
+			// Got source folders?
+			if(Module.SourceFolders.Count==0){
+				
+				// Find PowerUI:
+				string powerUIPath=PowerUIEditor.GetPowerUIPath();
+				
+				// Add the source folder(s) now:
+				// (We don't precompile the managers because that would break references).
+				Module.SourceFolders.Add(powerUIPath+"/Source");
+				
 			}
 			
 		}
 		
 		void OnGUI(){
 			
-			bool previousValue=Precompiled;
-			Precompiled=EditorGUILayout.Toggle("Precompile PowerUI",previousValue);
-			PowerUIEditor.HelpBox("Ensure you have a backup first as this will move files. Highly recommended that you use this - PowerUI is a big library! Precompiles PowerUI such that it doesn't get built every time you change any of your scripts. Note that this precompiler can be used for your scripts too.");
-			
-			if(previousValue!=Precompiled){
-				OnPrecompileChanged();
+			if(Module==null){
+				GetModule();
 			}
 			
-			previousValue=EditorMode;
-			EditorMode=EditorGUILayout.Toggle("Editor Mode",previousValue);
-			PowerUIEditor.HelpBox("Compile with the UNITY_EDITOR flag.");
+			// The precompile PowerUI tickbox:
+			bool isPrecompiled=Module.Precompiled;
+			bool tickedPrecompiled=EditorGUILayout.Toggle("Precompile PowerUI",isPrecompiled);
+			PowerUIEditor.HelpBox("Precompiles PowerUI. It will appear to freeze - backup first! You must also recompile each time you change platforms - see the Precompiler entry on the PowerUI wiki.");
 			
-			if(previousValue!=EditorMode){
-				OnEditorModeChanged();
-			}
-			
-			if(Precompiled && GUILayout.Button("Recompile")){
+			if(isPrecompiled!=tickedPrecompiled){
 				
-				Recompile();
-				
-			}
-			
-		}
-		
-		private void OnEditorModeChanged(){
-			
-			if(!Precompiled){
-				return;
-			}
-			
-			Recompile();
-			
-		}
-		
-		private void OnPrecompileChanged(){
-			
-			Precompile();
-			
-		}
-		
-		public void Recompile(){
-			
-			Precompiler.Recompile("PowerUI",EditorMode);
-			
-		}
-		
-		private void Precompile(){
-			
-			if(!Precompiled){
-				
-				// Undo the "PowerUI" precompiled module.
-				Precompiler.Reverse("PowerUI");
-				
-				return;
+				// Compile/ revert:
+				if(tickedPrecompiled){
+					
+					// Compile:
+					Module.Compile();
+					
+				}else{
+					
+					// Revert:
+					Module.Revert();
+					
+				}
 				
 			}
 			
-			List<string> paths=new List<string>();
+			bool isEditorMode=Module.EditorMode;
+			bool tickedEditorMode=EditorGUILayout.Toggle("Editor Mode",isEditorMode);
+			PowerUIEditor.HelpBox("Compile with the UNITY_EDITOR flag. Almost always leave this unchecked.");
 			
-			// Find PowerUI:
-			string powerUIPath=PowerUIEditor.GetPowerUIPath();
+			if(isEditorMode!=tickedEditorMode){
+				
+				// Update module value:
+				Module.EditorMode=tickedEditorMode;
+				
+				if(Module.Precompiled){
+					// Compile the module:
+					Module.Compile();
+				}
+				
+			}
 			
-			paths.Add(powerUIPath+"/Source");
-			
-			Precompiler.Precompile(
-				paths,
-				"PowerUI",
-				EditorMode
-			);
+			if(isPrecompiled && GUILayout.Button("Recompile")){
+				
+				// Compile the module now:
+				Module.Compile();
+				
+			}
 			
 		}
 		

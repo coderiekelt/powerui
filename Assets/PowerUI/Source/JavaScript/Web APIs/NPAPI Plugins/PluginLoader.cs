@@ -13,45 +13,45 @@ namespace PowerUI{
 	/// Note that PowerUI does not store a list of plugins it has installed - you'll need to manage that yourself.
 	/// </summary>
 	
-	internal class NpApiPlugin : DllLoader{
+	public class NpApiPlugin : DllLoader{
 		
-		internal const int NP_ABI_MASK=0;
+		public const int NP_ABI_MASK=0;
 		
-		internal const int NP_VERSION_MAJOR=0;
-		internal const int NP_VERSION_MINOR=19;
+		public const int NP_VERSION_MAJOR=0;
+		public const int NP_VERSION_MINOR=19;
 		
 		/* RC_DATA types for version info - required */
-		internal const int NP_INFO_ProductVersion=1;
-		internal const int NP_INFO_MIMEType=2;
-		internal const int NP_INFO_FileOpenName=3;
-		internal const int NP_INFO_FileExtents=4;
+		public const int NP_INFO_ProductVersion=1;
+		public const int NP_INFO_MIMEType=2;
+		public const int NP_INFO_FileOpenName=3;
+		public const int NP_INFO_FileExtents=4;
 		
 		/* RC_DATA types for version info - used if found */
-		internal const int NP_INFO_FileDescription=5;
-		internal const int NP_INFO_ProductName=6;
+		public const int NP_INFO_FileDescription=5;
+		public const int NP_INFO_ProductName=6;
 		
 		/* RC_DATA types for version info - optional */
-		internal const int NP_INFO_CompanyName=7;
-		internal const int NP_INFO_FileVersion=8;
-		internal const int NP_INFO_InternalName=9;
-		internal const int NP_INFO_LegalCopyright=10;
-		internal const int NP_INFO_OriginalFilename=11;
+		public const int NP_INFO_CompanyName=7;
+		public const int NP_INFO_FileVersion=8;
+		public const int NP_INFO_InternalName=9;
+		public const int NP_INFO_LegalCopyright=10;
+		public const int NP_INFO_OriginalFilename=11;
 		
 		/* Error codes */
-		internal const short NPERR_NO_ERROR=0;
-		internal const short NPERR_GENERIC_ERROR =1;
-		internal const short NPERR_INVALID_INSTANCE_ERROR=2;
-		internal const short NPERR_INVALID_FUNCTABLE_ERROR=3;
-		internal const short NPERR_MODULE_LOAD_FAILED_ERROR=4;
-		internal const short NPERR_OUT_OF_MEMORY_ERROR =5;
-		internal const short NPERR_INVALID_PLUGIN_ERROR =6;
-		internal const short NPERR_INVALID_PLUGIN_DIR_ERROR=7;
-		internal const short NPERR_INCOMPATIBLE_VERSION_ERROR=8;
-		internal const short NPERR_INVALID_PARAM=9;
-		internal const short NPERR_INVALID_URL =10;
-		internal const short NPERR_FILE_NOT_FOUND=11;
-		internal const short NPERR_NO_DATA= 12;
-		internal const short NPERR_STREAM_NOT_SEEKABLE=13;
+		public const short NPERR_NO_ERROR=0;
+		public const short NPERR_GENERIC_ERROR =1;
+		public const short NPERR_INVALID_INSTANCE_ERROR=2;
+		public const short NPERR_INVALID_FUNCTABLE_ERROR=3;
+		public const short NPERR_MODULE_LOAD_FAILED_ERROR=4;
+		public const short NPERR_OUT_OF_MEMORY_ERROR =5;
+		public const short NPERR_INVALID_PLUGIN_ERROR =6;
+		public const short NPERR_INVALID_PLUGIN_DIR_ERROR=7;
+		public const short NPERR_INCOMPATIBLE_VERSION_ERROR=8;
+		public const short NPERR_INVALID_PARAM=9;
+		public const short NPERR_INVALID_URL =10;
+		public const short NPERR_FILE_NOT_FOUND=11;
+		public const short NPERR_NO_DATA= 12;
+		public const short NPERR_STREAM_NOT_SEEKABLE=13;
 		
 		/// <summary>NP_Initialize function pointer mapped to a delegate.</summary>
 		private NP_Initialize_Delegate NP_Initialize;
@@ -78,39 +78,39 @@ namespace PowerUI{
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPP{
+	public struct NPP{
 		
 		/// <summary>Plug-in private data</summary>
-		IntPtr pdata;
+		public IntPtr pdata;
 		/// <summary>UA private data</summary>
-		IntPtr ndata;
+		public IntPtr ndata;
 		
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPStream{
+	public struct NPStream{
 		
 		/// <summary>Plug-in private data</summary>
-		IntPtr pdata;
+		public IntPtr pdata;
 		/// <summary>UA private data</summary>
-		IntPtr ndata;
-		string url;
-		uint end;
-		uint lastmodified;
-		IntPtr notifyData;
-		string headers; // version 0.17+
+		public IntPtr ndata;
+		public string url;
+		public uint end;
+		public uint lastmodified;
+		public IntPtr notifyData;
+		public string headers; // version 0.17+
 		
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPByteRange{
+	public struct NPByteRange{
 		/// <summary>Negative offset means from the end.</summary>
-		int offset;
-		uint length;
-		IntPtr next;
+		public int offset;
+		public uint length;
+		public IntPtr next;
 	}
 	
-	internal enum NPPVariable{
+	public enum NPPVariable{
 		NPPVpluginNameString = 1,
 		NPPVpluginDescriptionString,
 		NPPVpluginWindowBool,
@@ -265,74 +265,74 @@ namespace PowerUI{
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPNetscapeFuncs{
-		ushort size;
-		ushort version; // Newer versions may have additional fields added to the end
-		IntPtr geturl; // Make a GET request for a URL either to the window or another stream
-		IntPtr posturl; // Make a POST request for a URL either to the window or another stream
-		IntPtr requestread;
-		IntPtr newstream;
-		IntPtr write;
-		IntPtr destroystream;
-		IntPtr status;
-		IntPtr uagent;
-		IntPtr memalloc; // Allocates memory from the browser's memory space
-		IntPtr memfree; // Frees memory from the browser's memory space
-		IntPtr memflush;
-		IntPtr reloadplugins;
-		IntPtr getJavaEnv;
-		IntPtr getJavaPeer;
-		IntPtr geturlnotify; // Async call to get a URL
-		IntPtr posturlnotify; // Async call to post a URL
-		IntPtr getvalue; // Get information from the browser
-		IntPtr setvalue; // Set information about the plugin that the browser controls
-		IntPtr invalidaterect;
-		IntPtr invalidateregion;
-		IntPtr forceredraw;
-		IntPtr getstringidentifier; // Get a NPIdentifier for a given string
-		IntPtr getstringidentifiers;
-		IntPtr getintidentifier;
-		IntPtr identifierisstring;
-		IntPtr utf8fromidentifier; // Get a string from a NPIdentifier
-		IntPtr intfromidentifier;
-		IntPtr createobject; // Create an instance of a NPObject
-		IntPtr retainobject; // Increment the reference count of a NPObject
-		IntPtr releaseobject; // Decrement the reference count of a NPObject
-		IntPtr invoke; // Invoke a method on a NPObject
-		IntPtr invokeDefault; // Invoke the default method on a NPObject
-		IntPtr evaluate; // Evaluate javascript in the scope of a NPObject
-		IntPtr getproperty; // Get a property on a NPObject
-		IntPtr setproperty; // Set a property on a NPObject
-		IntPtr removeproperty; // Remove a property from a NPObject
-		IntPtr hasproperty; // Returns true if the given NPObject has the given property
-		IntPtr hasmethod; // Returns true if the given NPObject has the given Method
-		IntPtr releasevariantvalue; // Release a MNVariant (free memory)
-		IntPtr setexception;
-		IntPtr pushpopupsenabledstate;
-		IntPtr poppopupsenabledstate;
+	public struct NPNetscapeFuncs{
+		public ushort size;
+		public ushort version; // Newer versions may have additional fields added to the end
+		public IntPtr geturl; // Make a GET request for a URL either to the window or another stream
+		public IntPtr posturl; // Make a POST request for a URL either to the window or another stream
+		public IntPtr requestread;
+		public IntPtr newstream;
+		public IntPtr write;
+		public IntPtr destroystream;
+		public IntPtr status;
+		public IntPtr uagent;
+		public IntPtr memalloc; // Allocates memory from the browser's memory space
+		public IntPtr memfree; // Frees memory from the browser's memory space
+		public IntPtr memflush;
+		public IntPtr reloadplugins;
+		public IntPtr getJavaEnv;
+		public IntPtr getJavaPeer;
+		public IntPtr geturlnotify; // Async call to get a URL
+		public IntPtr posturlnotify; // Async call to post a URL
+		public IntPtr getvalue; // Get information from the browser
+		public IntPtr setvalue; // Set information about the plugin that the browser controls
+		public IntPtr invalidaterect;
+		public IntPtr invalidateregion;
+		public IntPtr forceredraw;
+		public IntPtr getstringidentifier; // Get a NPIdentifier for a given string
+		public IntPtr getstringidentifiers;
+		public IntPtr getintidentifier;
+		public IntPtr identifierisstring;
+		public IntPtr utf8fromidentifier; // Get a string from a NPIdentifier
+		public IntPtr intfromidentifier;
+		public IntPtr createobject; // Create an instance of a NPObject
+		public IntPtr retainobject; // Increment the reference count of a NPObject
+		public IntPtr releaseobject; // Decrement the reference count of a NPObject
+		public IntPtr invoke; // Invoke a method on a NPObject
+		public IntPtr invokeDefault; // Invoke the default method on a NPObject
+		public IntPtr evaluate; // Evaluate javascript in the scope of a NPObject
+		public IntPtr getproperty; // Get a property on a NPObject
+		public IntPtr setproperty; // Set a property on a NPObject
+		public IntPtr removeproperty; // Remove a property from a NPObject
+		public IntPtr hasproperty; // Returns true if the given NPObject has the given property
+		public IntPtr hasmethod; // Returns true if the given NPObject has the given Method
+		public IntPtr releasevariantvalue; // Release a MNVariant (free memory)
+		public IntPtr setexception;
+		public IntPtr pushpopupsenabledstate;
+		public IntPtr poppopupsenabledstate;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPPluginFuncs {
-		ushort size;
-		ushort version;
-		IntPtr newp;
-		IntPtr destroy;
-		IntPtr setwindow;
-		IntPtr newstream;
-		IntPtr destroystream;
-		IntPtr asfile;
-		IntPtr writeready;
-		IntPtr write;
-		IntPtr print;
-		IntPtr evt;
-		IntPtr urlnotify;
-		IntPtr javaClass;
-		IntPtr getvalue;
-		IntPtr setvalue;
+	public struct NPPluginFuncs {
+		public ushort size;
+		public ushort version;
+		public IntPtr newp;
+		public IntPtr destroy;
+		public IntPtr setwindow;
+		public IntPtr newstream;
+		public IntPtr destroystream;
+		public IntPtr asfile;
+		public IntPtr writeready;
+		public IntPtr write;
+		public IntPtr print;
+		public IntPtr evt;
+		public IntPtr urlnotify;
+		public IntPtr javaClass;
+		public IntPtr getvalue;
+		public IntPtr setvalue;
 	}
 	
-	internal enum NPNVariable{
+	public enum NPNVariable{
 		NPNVxDisplay = 1,
 		NPNVxtAppContext,
 		NPNVnetscapeWindow,
@@ -357,95 +357,95 @@ namespace PowerUI{
 		#endif
 	}
 	
-	internal enum NPWindowType{
+	public enum NPWindowType{
 		Window = 1,
 		Drawable
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPSavedData{
-		int len;
-		IntPtr buf;
+	public struct NPSavedData{
+		public int len;
+		public IntPtr buf;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPRect{
-		ushort top;
-		ushort left;
-		ushort bottom;
-		ushort right;
+	public struct NPRect{
+		public ushort top;
+		public ushort left;
+		public ushort bottom;
+		public ushort right;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPSize{
-		int width;
-		int height;
+	public struct NPSize{
+		public int width;
+		public int height;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPWindow{
+	public struct NPWindow{
 		
 		/// <summary>The native window handle. hWnd on Windows.</summary>
-		IntPtr nativeWindow;
+		public IntPtr nativeWindow;
 		/// <summary>Position of top left corner relative to the UA.</summary>
-		uint x;
+		public uint x;
 		/// <summary>Position of top left corner relative to the UA.</summary>
-		uint y;
+		public uint y;
 		/// <summary>Maximum window size</summary>
-		uint width;
+		public uint width;
 		/// <summary>Maximum window size</summary>
-		uint height;
+		public uint height;
 		/// <summary>Clipping rectangle in port coordinates</summary>
-		NPRect clipRect;
+		public NPRect clipRect;
 		
 		#if XP_UNIX && !XP_MACOSX
 		/// <summary>Platform-dependent additonal data (old Mac only)</summary>
-		IntPtr ws_info;
+		public IntPtr ws_info;
 		#endif
 		
 		/// <summary>Is this a window or a drawable?</summary>
-		NPWindowType type;
+		public NPWindowType type;
 		
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPFullPrint{
-		byte pluginPrinted;/* Set TRUE if plugin handled fullscreen printing */
-		byte printOne;		 /* TRUE if plugin should print one copy to default printer */
-		IntPtr platformPrint; /* Platform-specific printing info */
+	public struct NPFullPrint{
+		public byte pluginPrinted;/* Set TRUE if plugin handled fullscreen printing */
+		public byte printOne;		 /* TRUE if plugin should print one copy to default printer */
+		public IntPtr platformPrint; /* Platform-specific printing info */
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPEmbedPrint{
-		NPWindow window;
-		IntPtr platformPrint; /* Platform-specific printing info */
+	public struct NPEmbedPrint{
+		public NPWindow window;
+		public IntPtr platformPrint; /* Platform-specific printing info */
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPPrint_Union{
-		NPFullPrint fullPrint;   /* if mode is NP_FULL */
-		NPEmbedPrint embedPrint; /* if mode is NP_EMBED */
+	public struct NPPrint_Union{
+		public NPFullPrint fullPrint;   /* if mode is NP_FULL */
+		public NPEmbedPrint embedPrint; /* if mode is NP_EMBED */
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPPrint{
-		ushort mode;               /* NP_FULL or NP_EMBED */
-		NPPrint_Union print;
+	public struct NPPrint{
+		public ushort mode;               /* NP_FULL or NP_EMBED */
+		public NPPrint_Union print;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	internal struct NPEvent{
+	public struct NPEvent{
 		
-		ushort Event; // can also be a uint
-		uint WParam;
-		uint LParam;
+		public ushort Event; // can also be a uint
+		public uint WParam;
+		public uint LParam;
 		
 	}
 	
 	/// <summary>
 	/// Loads DLLs dynamically. Used by NPAPI to load e.g. Flash.
 	/// </summary>
-	internal class DllLoader{
+	public class DllLoader{
 		
 		/// <summary>A pointer to the DLL itself.</summary>
 		private IntPtr Dll;

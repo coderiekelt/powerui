@@ -43,7 +43,7 @@ namespace PowerUI{
 		private float _LengthScale = 1f;
 		#endif
 		/// <summary>The document that this is managing.</summary>
-		internal HtmlDocument Document;
+		public HtmlDocument Document;
 		
 		/// <summary>Applies either Url or HtmlFile to the given document.</summary>
 		public void Navigate(HtmlDocument document){
