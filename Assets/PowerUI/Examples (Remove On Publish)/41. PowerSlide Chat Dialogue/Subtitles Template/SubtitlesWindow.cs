@@ -38,7 +38,7 @@ namespace Windows{
 					html+="<div class='subtitle-option' "+OptionMouseDown(option)+">"+option.markup+"</div>";
 					
 				}
-				
+			
 			}else if(dialogue.speakerCount>0){
 				
 				// Show the speaker names at the top instead:
@@ -81,6 +81,10 @@ namespace Windows{
 			// Write to subtitle-text (a child of 'element'):
 			element.getElementById("subtitle-text").innerHTML=html;
 			
+			// Click to continue - don't show it if this is an options slide:
+			// Display the "click to continue" option, using getById to cast to HtmlElement:
+			element.getById("click-to-continue").style.display=dialogue.isOptions ? "none" : "block";
+			
 		}
 		
 		/// <summary>Called when the given slide requested to hide.
@@ -96,20 +100,10 @@ namespace Windows{
 		}
 		
 		/// <summary>Called when the dialogue is now waiting for a cue event.</summary>
-		protected override void WaitForCue(SlideEvent e){
-			
-			// Display the "click to continue" option, using getById to cast to HtmlElement:
-			element.getById("click-to-continue").style.display="block";
-			
-		}
+		// protected override void WaitForCue(SlideEvent e){}
 		
 		/// <summary>Called when the dialogue got cued.</summary>
-		protected override void Cued(SlideEvent e){
-			
-			// Hide the "click to continue" option:
-			element.getById("click-to-continue").style.display="none";
-			
-		}
+		// protected override void Cued(SlideEvent e){}
 		
 	}
 	

@@ -30,6 +30,43 @@ namespace Windows{
 		public PowerSlide.Timeline Timeline;
 		
 		
+		/// <summary>A click to continue helper. This entirely ignores the event if an option is on the UI.
+		/// Otherwise, it simply acts the same as Windows.Window.Cue</summary>
+		public static void ClickToContinue(PowerUI.MouseEvent e){
+			
+			// The window:
+			Windows.Window window=e.htmlTarget.sparkWindow;
+			
+			// Is it a dialogue window?
+			DialogueWindow dw=window as DialogueWindow;
+			
+			PowerSlide.Timeline tl;
+			
+			if(dw!=null){
+				
+				// Get the timeline:
+				tl=dw.Timeline;
+				
+				// Is there an option on the UI at the moment?
+				if(dw.hasActiveOption){
+					// Yes - ignore:
+					return;
+				}
+				
+			}else{
+				
+				// Get the timeline:
+				tl=PowerSlide.Timeline.Get(window);
+				
+			}
+			
+			// Cue it:
+			if(tl!=null){
+				tl.Cue();
+			}
+			
+		}
+		
 		/// <summary>Occurs when an option is clicked.</summary>
 		public static void RunOption(PowerUI.MouseEvent e){
 			
@@ -77,6 +114,36 @@ namespace Windows{
 			// Kill the event:
 			e.stopPropagation();
 			
+		}
+		
+		/// <summary>True if there is an option actively on this dialogue window.</summary>
+		public bool hasActiveOption{
+			get{
+				
+				if(Timeline==null){
+					return false;
+				}
+				
+				// Check running slides:
+				PowerSlide.Slide current=Timeline.FirstRunning;
+				
+				while(current!=null){
+					
+					PowerSlide.DialogueSlide ds=current as PowerSlide.DialogueSlide;
+					
+					if(ds!=null){
+						
+						if(ds.isOptions){
+							return true;
+						}
+						
+					}
+					
+					current=current.NextRunning;
+				}
+				
+				return false;
+			}
 		}
 		
 		/// <summary>A convenience function for setting up onmousedown and unique-id attributes.
