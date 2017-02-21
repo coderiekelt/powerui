@@ -27,6 +27,8 @@ namespace PowerSlide{
 	
 	public partial class Timeline{
 		
+		/// <summary>True if this is a dialogue timeline.</summary>
+		internal bool isDialogue=false;
 		/// <summary>The default language for this timeline.</summary>
 		public string defaultLanguage="en";
 		/// <summary>An optional declared duration. Overriden by the slides-duration value.
@@ -36,15 +38,88 @@ namespace PowerSlide{
 		public Track[] tracks;
 		/// <summary>Source URL.</summary>
 		public string src;
+		/// <summary>Default template to use.</summary>
+		public string template;
 		/// <summary>The ComputedStyle that this was applied to (can be null).</summary>
 		public ComputedStyle Style;
 		/// <summary>A list of event listeners that *must* be destroyed 
 		/// when either this timeline is killed or is un-paused.</summary>
 		internal List<CueElementData> CueElements;
+		/// <summary>If this timeline is using a window, the window itself.
+		/// Used by dialogue.</summary>
+		public Windows.Window currentWindow;
+		/// <summary>Host HTML document.</summary>
+		public HtmlDocument document;
+		
 		
 		public Timeline(ComputedStyle style){
 			Style=style;
+			
+			if(style!=null){
+				document=style.document as HtmlDocument;
+			}
+			
 		}
+		
+		/// <summary>Gets a slide by its unique ID.</summary>
+		public Slide getSlide(int uniqueID){
+			
+			// For each track..
+			for(int i=0;i<tracks.Length;i++){
+			
+				Track track=tracks[i];
+				
+				// For each slide..
+				for(int s=0;s<track.slides.Length;s++){
+					
+					// Get it:
+					Slide slide=track.slides[s];
+					
+					// Get by unique ID:
+					Slide res=slide.getSlideByID(uniqueID);
+					
+					if(res!=null){
+						// Got it!
+						return res;
+					}
+					
+				}
+				
+			}
+			
+			return null;
+			
+		}
+		
+		/// <summary>Opens a window, passing this timeline as a global.</summary>
+		internal Windows.Window OpenWindow(string template){
+			
+			if(document==null || template==null){
+				Dom.Log.Add("PowerSlide requested to open a window without a document/ template. Request was ignored.");
+				return null;
+			}
+			
+			if(currentWindow!=null){
+				
+				if(currentWindow.Type==template){
+					// Unchanged template.
+					return currentWindow;
+				}
+				
+				currentWindow.close();
+				currentWindow=null;
+			}
+			
+			// Window globals:
+			Dictionary<string,object> globals=new Dictionary<string,object>();
+			globals["timeline"]=this;
+			
+			// Open it now:
+			currentWindow=document.sparkWindows.open(template,null,globals);
+			
+			return currentWindow;
+		}
+		
 		
 		/// <summary>
 		/// Tidies up any event handlers added by cue nodes.
@@ -80,9 +155,6 @@ namespace PowerSlide{
 				// Considered to be a single track.
 				// Try loading it now:
 				Track track=Track.LoadFromJson(this,json);
-				
-				// Default duration '1':
-				duration=new Css.Units.DecimalUnit(1f);
 				
 				if(track==null){
 					
@@ -136,15 +208,6 @@ namespace PowerSlide{
 					// Load it as a CSS value:
 					duration=Css.Value.Load(durationText);
 					
-				}else{
-					duration=null;
-				}
-				
-				if(duration==null){
-					
-					// Default is '1':
-					duration=new Css.Units.DecimalUnit(1f);
-					
 				}
 				
 			}
@@ -170,6 +233,27 @@ namespace PowerSlide{
 			throw new Exception(message);
 		}
 		
+		/// <summary>The maximum defined duration.</summary>
+		public float maxDefinedDuration{
+			get{
+				
+				float max=0f;
+				
+				for(int i=0;i<tracks.Length;i++){
+					
+					// Get the duration:
+					float dur=tracks[i].definedDuration;
+					
+					if(dur>max){
+						max=dur;
+					}
+					
+				}
+				
+				return max;
+			}
+		}
+		
 		/// <summary>Gets the first track by the name of the track. "style" or "dialogue" for example.</summary>
 		public Track getTrackByTagName(string name){
 			
@@ -189,6 +273,7 @@ namespace PowerSlide{
 			return null;
 			
 		}
+		
 		
 		/// <summary>Gets all tracks by the name of the track. "style" or "dialogue" for example.</summary>
 		public List<Track> getTracksByTagName(string name){

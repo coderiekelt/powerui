@@ -27,15 +27,20 @@ namespace PowerSlide{
 	
 	public partial class Slide : EventTarget{
 		
+		/// <summary>A global slide ID. Used to obtain a slide from a click event.</summary>
+		private static int UniqueID_=1;
+		
 		/// <summary>Use this and partial class extensions to add custom info loaded from JSON.</summary>
 		public static event SlideEventDelegate OnLoad;
 		
 		/// <summary>
-		/// Globally unique slide ID.
+		/// A unique ID (locally). Used to obtain a slide from e.g. a click event.
 		/// </summary>
-		public int id;
-		/// <summary>The json the slide originated from.
-		/// NOTE: Only set if OnLoad is not null.</summary>
+		internal int uniqueID;
+		/// <summary>
+		/// True if this slide should be entirely ignored.</summary>
+		public bool ignore;
+		/// <summary>The json the slide originated from.</summary>
 		public JSObject rawJson;
 		/// <summary>
 		/// The index of this slide in its track. Note that these aren't unique.
@@ -50,9 +55,9 @@ namespace PowerSlide{
 		/// <summary>Specified duration value.</summary>
 		public Css.Value duration;
 		/// <summary>The computed start value.</summary>
-		public float computedStart=float.MinValue;
+		public float computedStart=0f;
 		/// <summary>The computed duration.</summary>
-		public float computedDuration=float.MinValue;
+		public float computedDuration=0f;
 		/// <summary>
 		/// Actions to trigger.
 		/// </summary>
@@ -70,6 +75,21 @@ namespace PowerSlide{
 			}
 		}
 		
+		public Slide(){
+			uniqueID=UniqueID_++;
+		}
+		
+		/// <summary>Gets a slide by a unique ID.</summary>
+		public virtual Slide getSlideByID(int uniqueID){
+			
+			if(this.uniqueID==uniqueID){
+				return this;
+			}
+			
+			return null;
+			
+		}
+		
 		/// <summary>This slide is now done.</summary>
 		internal virtual void End(){
 			
@@ -80,14 +100,35 @@ namespace PowerSlide{
 			dispatchEvent(se);
 			
 			// Dispatch to the element too:
-			element.dispatchEvent(se);
+			EventTarget et=eventTarget;
 			
+			if(et!=null){
+				et.dispatchEvent(se);
+			}
+			
+		}
+		
+		/// <summary>The event target to use.</summary>
+		public EventTarget eventTarget{
+			get{
+				Element e=element;
+				
+				if(e==null){
+					return timeline.document;
+				}
+				
+				return e;
+			}
 		}
 		
 		/// <summary>The element which the timeline is running on.</summary>
 		public Element element{
 			get{
-				return track.timeline.Style.Element as Element;
+				if(timeline.Style==null){
+					return null;
+				}
+				
+				return timeline.Style.Element as Element;
 			}
 		}
 		
@@ -101,7 +142,11 @@ namespace PowerSlide{
 			dispatchEvent(se);
 			
 			// Dispatch to the element too:
-			element.dispatchEvent(se);
+			EventTarget et=eventTarget;
+			
+			if(et!=null){
+				et.dispatchEvent(se);
+			}
 			
 		}
 		
@@ -110,14 +155,6 @@ namespace PowerSlide{
 			get{
 				return track.id;
 			}
-		}
-		
-		/// <summary>Continues to the next slide in the track.</summary>
-		public void next(){
-			
-			// Go to the next slide:
-			track.go(index+1);
-			
 		}
 		
 		/// <summary>Cues this slide right now.</summary>
@@ -158,6 +195,48 @@ namespace PowerSlide{
 			
 		}
 		
+		/// <summary>Ends this slide if it's done.</summary>
+		internal void EndIfDone(bool backwards,float progress){
+		
+			float end=backwards ? (1f-computedStart) : computedEnd;
+			
+			if(end<=progress){
+				
+				// Remove from running:
+				if(NextRunning==null){
+					timeline.LastRunning=PreviousRunning;
+				}else{
+					NextRunning.PreviousRunning=PreviousRunning;
+				}
+				
+				if(PreviousRunning==null){
+					timeline.FirstRunning=NextRunning;
+				}else{
+					PreviousRunning.NextRunning=NextRunning;
+				}
+				
+				// Done! This can "pause" to make it wait for a cue.
+				End();
+				
+			}
+			
+		}
+		
+		/// <summary>The timeline that this slide is in.</summary>
+		public Timeline timeline{
+			get{
+				return track.timeline;
+			}
+		}
+		
+		/// <summary>True if this slide has had start called but not end.
+		/// I.e. it's actively running.</summary>
+		public bool isActive{
+			get{
+				return timeline.IsActive(this);
+			}
+		}
+		
 		/// <summary>Called when the timeline is paused/ resumed and this slide is running.</summary>
 		internal virtual void SetPause(bool paused){}
 		
@@ -179,9 +258,6 @@ namespace PowerSlide{
 				// Load the start value:
 				duration=Css.Value.Load(durationText);
 			}
-			
-			// Global ID (optional):
-			int.TryParse(json.String("id"),out id);
 			
 			// Action:
 			JSArray actions=json["actions"] as JSArray;
@@ -224,15 +300,26 @@ namespace PowerSlide{
 				
 			}
 			
+			rawJson=json;
+			
 			if(OnLoad!=null){
 				
 				// Dispatch the load event which enables any custom info being added:
-				rawJson=json;
 				SlideEvent de=createEvent("load");
 				OnLoad(de);
 				
 			}
 			
+		}
+		
+		/// <summary>Reads from the JSON. Specify custom values with this.</summary>
+		public JSObject this[string index]{
+			get{
+				if(rawJson==null){
+					return null;
+				}
+				return rawJson[index];
+			}
 		}
 		
 		/// <summary>Sets up an action at the given index in the Actions set.</summary>

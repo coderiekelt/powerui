@@ -52,6 +52,24 @@ namespace PowerSlide{
 			
 		}
 		
+		/// <summary>Gets the current instance for the given window (null if none found).</summary>
+		public static Timeline Get(Windows.Window window){
+			
+			Timeline current=First;
+			
+			while(current!=null){
+				
+				if(current.currentWindow==window){
+					return current;
+				}
+				
+				current=current.After;
+			}
+			
+			return null;
+			
+		}
+		
 		/// <summary>Removes all active slides.</summary>
 		public static void Clear(){
 			Last=First=null;
@@ -104,10 +122,47 @@ namespace PowerSlide{
 		/// <summary>True if this instance is in the update queue.</summary>
 		private bool Enqueued;
 		/// <summary>The first currently running slide (from any track).</summary>
-		private Slide FirstRunning;
+		internal Slide FirstRunning;
 		/// <summary>The last currently running slide (from any track).</summary>
-		private Slide LastRunning;
+		internal Slide LastRunning;
 		
+		
+		/// <summary>Gets all active slides of the given type.</summary>
+		public List<T> GetActive<T>() where T:Slide{
+			
+			// Create results:
+			List<T> result=new List<T>();
+			
+			Slide current=FirstRunning;
+			
+			while(current!=null){
+				
+				if(current is T){
+					result.Add((T)current);
+				}
+				
+				current=current.NextRunning;
+			}
+			
+			return result;
+		}
+		
+		/// <summary>True if the given slide is currently running.</summary>
+		public bool IsActive(Slide s){
+			
+			Slide current=FirstRunning;
+			
+			while(current!=null){
+				
+				if(current==s){
+					return true;
+				}
+				
+				current=current.NextRunning;
+			}
+			
+			return false;
+		}
 		
 		/// <summary>Starts this instance.</summary>
 		public void Start(){
@@ -175,9 +230,16 @@ namespace PowerSlide{
 				if(rawDuration<0f){
 					
 					if(duration==null){
-						rawDuration=1f;
+						
+						// Infer from max end time, or '1' if there is none.
+						rawDuration=maxDefinedDuration;
+						
+						if(rawDuration==0f){
+							rawDuration=1f;
+						}
+						
 					}else{
-						rawDuration=duration.GetDecimal(Style.RenderData,null);
+						rawDuration=duration.GetDecimal(Style==null? null : Style.RenderData,null);
 					}
 					
 				}
@@ -224,7 +286,7 @@ namespace PowerSlide{
 			
 			CurrentTime+=deltaTime;
 			
-			if(!Style.Element.isRooted){
+			if(Style!=null && !Style.Element.isRooted){
 				
 				// Immediately stop - the element was removed (don't call the finished event):
 				Stop(false);
@@ -233,24 +295,13 @@ namespace PowerSlide{
 				
 			}
 			
-			if(CurrentTime >= ActualDuration){
-				
-				// Done!
-				CompletedCycle();
-				
-				// Stop there:
-				return;
-				
-			}
-			
 			// Set ActiveValue by sampling from the curve (if there is one):
-			float progress=CurrentTime;
 			
 			if(ProgressSampler!=null){
 				
 				// Map through the progression curve:
-				ProgressSampler.Goto(progress / ActualDuration,true);
-				progress=ProgressSampler.CurrentValue * ActualDuration;
+				ProgressSampler.Goto(CurrentTime / ActualDuration,true);
+				CurrentTime=ProgressSampler.CurrentValue * ActualDuration;
 				
 			}
 			
@@ -279,15 +330,27 @@ namespace PowerSlide{
 					// Get the slide:
 					Slide slideToStart=track.slides[index];
 					
+					if(slideToStart.ignore){
+						// Skip:
+						if(Backwards){
+							index--;
+						}else{
+							index++;
+						}
+						
+						continue;
+						
+					}
+					
 					// Startable?
 					if(Backwards){
 						
-						if((1f-slideToStart.computedEnd)>=progress){
+						if((1f-slideToStart.computedEnd)>=CurrentTime){
 							// Nope!
 							break;
 						}
 						
-					}else if(slideToStart.computedStart>=progress){
+					}else if(slideToStart.computedStart>=CurrentTime){
 						// Nope!
 						break;
 					}
@@ -310,7 +373,7 @@ namespace PowerSlide{
 					track.currentSlide=index;
 					
 					if(Paused){
-						break;
+						return;
 					}
 					
 					if(Backwards){
@@ -321,38 +384,28 @@ namespace PowerSlide{
 					
 				}
 				
-				if(Paused){
-					break;
-				}
+			}
+			
+			// Kill any slides which are now done:
+			EndDoneSlides();
+			
+			if(CurrentTime >= ActualDuration){
+				
+				// Done!
+				CompletedCycle();
 				
 			}
+			
+		}
+		
+		internal void EndDoneSlides(){
 			
 			// Kill any slides which are now done:
 			Slide current=FirstRunning;
 			
 			while(current!=null){
 				
-				float end=Backwards ? (1f-current.computedStart) : current.computedEnd;
-				
-				if(end<=progress){
-					
-					// Remove from running:
-					if(current.NextRunning==null){
-						LastRunning=current.PreviousRunning;
-					}else{
-						current.NextRunning.PreviousRunning=current.PreviousRunning;
-					}
-					
-					if(current.PreviousRunning==null){
-						LastRunning=current.NextRunning;
-					}else{
-						current.PreviousRunning.NextRunning=current.NextRunning;
-					}
-					
-					// Done! This can "pause" to make it wait for a cue.
-					current.End();
-					
-				}
+				current.EndIfDone(Backwards,CurrentTime);
 				
 				current=current.NextRunning;
 			}
@@ -407,6 +460,11 @@ namespace PowerSlide{
 			
 		}
 		
+		/// <summary>Cues this timeline (unpauses it).</summary>
+		public void Cue(){
+			SetPause(false);
+		}
+		
 		/// <summary>Changes the paused state of this animation.</summary>
 		public void SetPause(bool value){
 			
@@ -432,6 +490,14 @@ namespace PowerSlide{
 				
 			}
 			
+			// Quit any slides that are now done:
+			if(!value){
+				
+				// Kill any slides which are now done:
+				EndDoneSlides();
+				
+			}
+			
 			// Clear cues:
 			ClearCues();
 			
@@ -452,7 +518,7 @@ namespace PowerSlide{
 				
 				// Get the defined vector path:
 				path=timingFunc.GetPath(
-					Style.RenderData,
+					Style==null? null : Style.RenderData,
 					Css.Properties.SlidesTimingFunction.GlobalProperty
 				);
 				
@@ -479,11 +545,24 @@ namespace PowerSlide{
 		
 		/// <summary>Dispatches an event of the given name.</summary>
 		public void Dispatch(string name){
-			
 			SlideEvent se=new SlideEvent("slides"+name,null);
 			se.timeline=this;
 			se.SetTrusted(true);
-			Style.Element.dispatchEvent(se);
+			dispatchEvent(se);
+		}
+		
+		/// <summary>Dispatch an event.</summary>
+		public void dispatchEvent(Dom.Event e){
+			
+			if(Style!=null){
+				Style.Element.dispatchEvent(e);
+			}else if(document!=null){
+				document.dispatchEvent(e);
+			}
+			
+			if(currentWindow!=null){
+				currentWindow.dispatchEvent(e);
+			}
 			
 		}
 		
@@ -529,6 +608,12 @@ namespace PowerSlide{
 				Paused=false;
 				
 				current=current.NextRunning;
+			}
+			
+			// Window:
+			if(currentWindow!=null){
+				currentWindow.close();
+				currentWindow=null;
 			}
 			
 			if(fireEvent){

@@ -28,8 +28,8 @@ namespace Dom{
 			Timeline slides=Timeline.Get(cs);
 			
 			if(slides!=null){
-				// Great - unpause it!
-				slides.SetPause(false);
+				// Great - cue it!
+				slides.Cue();
 			}
 			
 		}

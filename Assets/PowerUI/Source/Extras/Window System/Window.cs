@@ -21,7 +21,7 @@ namespace Windows{
 	/// An instance of an open window.
 	/// </summary>
 	
-	public class Window : WindowGroup{
+	public partial class Window : WindowGroup{
 		
 		/// <summary>
 		/// Closes the window that the given event originated from.
@@ -88,9 +88,14 @@ namespace Windows{
 				w.close(false);
 			}
 			
+			if(element==null){
+				return;
+			}
+			
 			if(removeFrame){
 				
 				// Run the close events:
+				OnClose();
 				trigger("close");
 				trigger("animatehide");
 				
@@ -272,9 +277,25 @@ namespace Windows{
 			}
 		}
 		
+		/// <summary>Handles events on the window itself.</summary>
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
+			
+			if(bubblePhase){
+				OnEvent(e);
+			}
+			
+			return base.HandleLocalEvent(e,bubblePhase);
+		}
+		
+		/// <summary>Called when the window receives an event.</summary>
+		protected virtual void OnEvent(Dom.Event e){}
+		
+		/// <summary>Called when the window is closing.</summary>
+		protected virtual void OnClose(){}
+		
 		/// <summary>Navigates the window to the given URL. Should only be used once; 
 		/// close and open another window (or use links inside the iframe).</summary>
-		private void Goto(string url,Dictionary<string,object> globals){
+		internal virtual void Goto(string url,Dictionary<string,object> globals){
 			
 			// Set location:
 			Location=url;

@@ -27,6 +27,9 @@ namespace PowerSlide{
 	
 	public class CuePoint : Slide{
 		
+		/// <summary>Zero (the default length).</summary>
+		private static Css.Value ZERO=new Css.Units.DecimalUnit(0f);
+		
 		/// <summary>True if the selector is global.</summary>
 		public bool global;
 		/// <summary>Optional: Selects a UI element which will continue from the cue.</summary>
@@ -66,6 +69,10 @@ namespace PowerSlide{
 			}
 			
 			base.load(json);
+			
+			// Duration is always zero:
+			duration=ZERO;
+			
 		}
 		
 		/// <summary>The cued-by elements. These will cue the slides (to make it continue).</summary>
@@ -95,8 +102,14 @@ namespace PowerSlide{
 		internal override void Start(){
 			
 			// Pause it now!
-			track.timeline.SetPause(true);
-			track.timeline.CurrentTime=computedStart;
+			Timeline tl=track.timeline;
+			tl.SetPause(true);
+			
+			if(tl.Backwards){
+				tl.CurrentTime=1f-computedStart;
+			}else{
+				tl.CurrentTime=computedStart;
+			}
 			
 			// Hook up cue elements now:
 			HTMLCollection targs=cuedBy;

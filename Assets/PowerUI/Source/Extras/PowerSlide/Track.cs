@@ -107,8 +107,20 @@ namespace PowerSlide{
 				
 			}
 			
-			// string, "languages", "speakers" => Dialogue track
-			if(firstEntry is Json.JSValue || firstEntry["languages"]!=null || firstEntry["speakers"]!=null){
+			// string, "markup", "speakers" => Dialogue track
+			if(firstEntry is Json.JSValue || firstEntry["markup"]!=null || firstEntry["goto"]!=null || firstEntry["audio"]!=null || 
+				firstEntry["speakers"]!=null || firstEntry["speaker"]!=null || firstEntry["options"]!=null){
+				
+				// If it contained goto, then we actually have a block of options in one slide.
+				if(firstEntry["goto"]!=null){
+					
+					JSIndexedArray td=new JSIndexedArray();
+					JSObject firstSlide=new JSObject();
+					firstSlide["options"]=trackData;
+					td.push(firstSlide);
+					trackData=td;
+					
+				}
 				
 				// Dialogue track.
 				track=new DialogueTrack();
@@ -155,6 +167,49 @@ namespace PowerSlide{
 		
 		internal virtual void OnStart(){}
 		
+		/// <summary>The defined duration.</summary>
+		internal float definedDuration{
+			get{
+				float start=0f;
+				
+				for(int i=0;i<slides.Length;i++){
+					
+					// Get the slide:
+					Slide slide=slides[i];
+					
+					if(slide.start==null){
+						continue;
+					}
+					
+					if(slide.start is Css.Units.PercentUnit){
+						continue;
+					}
+					
+					// Get the raw dec:
+					float startDec=slide.start.GetRawDecimal();
+					
+					if(startDec>start){
+						start=startDec;
+					}
+					
+					// Get the duration:
+					if(slide.duration==null || slide.duration is Css.Units.PercentUnit){
+						continue;
+					}
+					
+					// Get the end:
+					startDec+=slide.duration.GetRawDecimal();
+					
+					if(startDec>start){
+						start=startDec;
+					}
+					
+				}
+				
+				return start;
+			}
+		}
+		
 		/// <summary>Updates the computedStart and computedDuration values.</summary>
 		/// <param name="length">Total track length.</param>
 		internal void SetStartAndDuration(float length){
@@ -165,11 +220,21 @@ namespace PowerSlide{
 			}
 			
 			int firstNoStart=-1;
+			int ignoreSlides=0;
 			
 			for(int i=0;i<slides.Length;i++){
 				
 				// Get the slide:
 				Slide slide=slides[i];
+				
+				if(slide.ignore){
+					
+					if(firstNoStart!=-1){
+						ignoreSlides++;
+					}
+					
+					continue;
+				}
 				
 				// Compute start first:
 				if(slide.start==null){
@@ -192,10 +257,11 @@ namespace PowerSlide{
 					if(firstNoStart!=-1){
 						
 						// Plug the gap from firstNoStart to i-1.
-						PlugStartGaps(firstNoStart,i,startDec);
+						PlugStartGaps(firstNoStart,i,ignoreSlides,startDec);
 						
 						// Clear:
 						firstNoStart=-1;
+						ignoreSlides=0;
 						
 					}
 					
@@ -206,7 +272,7 @@ namespace PowerSlide{
 			if(firstNoStart!=-1){
 				
 				// Plug the gap from firstNoStart to length-1.
-				PlugStartGaps(firstNoStart,slides.Length,length);
+				PlugStartGaps(firstNoStart,slides.Length,ignoreSlides,length);
 				
 			}
 			
@@ -216,14 +282,40 @@ namespace PowerSlide{
 				// Get the slide:
 				Slide slide=slides[i];
 				
+				if(slide.ignore){
+					continue;
+				}
+				
 				// Compute duration:
 				if(slide.duration==null){
 					
-					// It's just followingStart - myStart:
+					// It's just next non-ignored Start - myStart:
 					if(i==slides.Length-1){
 						slide.computedDuration=length - slide.computedStart;
 					}else{
-						slide.computedDuration=slides[i+1].computedStart - slide.computedStart;
+						
+						int nextIndex=i+1;
+						Slide next=slides[nextIndex];
+						
+						while(next.ignore){
+							
+							nextIndex++;
+							
+							if(nextIndex==slides.Length){
+								next=null;
+								break;
+							}
+							
+							next=slides[nextIndex];
+							
+						}
+						
+						if(next==null){
+							slide.computedDuration=length - slide.computedStart;
+						}else{
+							slide.computedDuration=next.computedStart - slide.computedStart;
+						}
+						
 					}
 					
 				}else{
@@ -245,17 +337,36 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Sets start between firstNoStart and max-1 using the given start value for max.</summary>
-		private void PlugStartGaps(int firstNoStart,int max,float maxStart){
+		private void PlugStartGaps(int firstNoStart,int max,int ignoreSlides,float maxStart){
 			
 			float gapStart=0f;
 			
 			if(firstNoStart!=0){
-				// The end of the frame before FNS:
-				gapStart=slides[firstNoStart-1].computedEnd;
+				// The end of the frame before FNS (the nearest non-ignored slide):
+				int index=firstNoStart-1;
+				Slide prev=null;
+				
+				while(index>=0){
+					
+					prev=slides[index];
+					
+					if(prev.ignore){
+						index--;
+						prev=null;
+					}else{
+						break;
+					}
+					
+				}
+				
+				if(prev!=null){
+					gapStart=prev.computedEnd;
+				}
+				
 			}
 			
 			// The delta between start values:
-			float slideDelta=( maxStart-gapStart ) / (float)(max-firstNoStart);
+			float slideDelta=( maxStart-gapStart ) / (float)(max-firstNoStart-ignoreSlides);
 			
 			// Plug the gap now:
 			for(int x=firstNoStart;x<max;x++){
@@ -296,30 +407,6 @@ namespace PowerSlide{
 			get{
 				return (slides!=null);
 			}
-		}
-		
-		/// <summary>Advances to the slide at the given index. Typically originates from slide.Next.</summary>
-		public void go(int index){
-			
-			/*
-			
-			manager.currentTrack=this;
-			
-			if(Slides==null || index<0 || index>=Slides.Length){
-				
-				// End
-				
-			}else{
-				
-				// Get the slide:
-				Slide slide=Slides[index];
-				
-				// Set as current:
-				manager.currentSlide=slide;
-				
-			}
-			*/
-			
 		}
 		
 		/// <summary>Creates a slide of the correct type for this track.</summary>

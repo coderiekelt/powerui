@@ -27,35 +27,244 @@ namespace PowerSlide{
 	public class DialogueSlide : Slide{
 		
 		/// <summary>
+		/// Loads the given json as a set of options.
+		/// </summary>
+		public static DialogueSlide[] LoadOptions(JSObject json,DialogueSlide parent){
+			
+			if(json==null){
+				return null;
+			}
+			
+			// If it's just a string, then we have just a goto.
+			if(json is JSValue){
+				
+				DialogueSlide slide=new DialogueSlide();
+				slide.slidesToGoTo=json.ToString();
+				slide.track=parent.track;
+				return new DialogueSlide[1]{slide};
+				
+			}
+			
+			// Create the set:
+			DialogueSlide[] set=new DialogueSlide[json.length];
+			
+			foreach(KeyValuePair<string,JSObject> kvp in json){
+				
+				JSObject entry=kvp.Value;
+				
+				// Get the index:
+				int index;
+				int.TryParse(kvp.Key,out index);
+				
+				// Create the option:
+				DialogueSlide slide=new DialogueSlide();
+				
+				// Template:
+				slide.template=entry.String("template");
+				
+				// Markup:
+				slide.markup=entry.String("markup");
+				
+				// Goto:
+				slide.slidesToGoTo=entry.String("goto");
+				slide.index=index;
+				slide.track=parent.track;
+				slide.parent=parent;
+				
+				// Add it:
+				set[index]=slide;
+				
+			}
+			
+			return set;
+			
+		}
+		
+		/// <summary>True if this slide waits for a cue. It's true if the slide does not have a defined duration.
+		/// (because progression of dialogue is almost never regular enough for automatic durations to be usable).</summary>
+		public bool WaitForCue;
+		/// <summary>
 		/// One or more speakers who say this. Note that a single 'speaker' object can
 		/// be multiple actual speakers. For example, it might be referring to a 'clan member' object.
 		/// In the scene, there could be 5 clan members.
 		/// </summary>
 		public Speaker[] speakers;
 		/// <summary>
-		/// The template to use.
-		/// Using this will override whatever your default is, allowing you to have left/right style dialogue.
+		/// The parent slide of an option slide.
+		/// </summary>
+		public DialogueSlide parent;
+		/// <summary>
+		/// An optional template to use.
+		/// </summary>
 		public string template;
 		/// <summary>
-		/// When this slide is displayed as an option, the markup to show. Indexed by language (e.g. "en").
+		/// When this slide runs, the set of slides to go to next.
 		/// </summary>
-		internal Dictionary<string,string> option;
+		public string slidesToGoTo;
 		/// <summary>
-		/// The markup to show when this slide is visible. Indexed by language (e.g. "en").
+		/// Path to an audio file.
+		/// If an audio file runs throughout the duration of dialogue, put it in a second dialogue track.
 		/// </summary>
-		internal Dictionary<string,string> markup;
+		public string audioFilePath;
+		/// <summary>
+		/// The mood of the speaker. Can be extracted from the SSML or directly declared in the slide.
+		/// Note that plain text adopts the mood of the previous slide.
+		/// </summary>
+		public string mood;
+		/// <summary>
+		/// The raw options provided by this slide, if it is an options slide.
+		/// </summary>
+		private DialogueSlide[] options_;
+		/// <summary>
+		/// Options can potentially be "remote" so dialogue trees can be easily extended.
+		/// These are the options expanded fully (i.e. remote URLs are loaded).
+		/// </summary>
+		private DialogueSlide[] expandedOptions_;
+		/// <summary>
+		/// The markup to show.
+		/// </summary>
+		internal string markup;
 		
 		
-		/// <summary>Gets the markup for a particular language.</summary>
-		public string getMarkup(string language){
-			return GetFromSet(language,true,markup);
+		/// <summary>Gets a slide by a unique ID.</summary>
+		public override Slide getSlideByID(int uniqueID){
+			
+			if(this.uniqueID==uniqueID){
+				return this;
+			}
+			
+			// Options?
+			if(options_!=null){
+				
+				for(int i=0;i<options_.Length;i++){
+					
+					// Get from the option:
+					Slide r=options_[i].getSlideByID(uniqueID);
+					
+					if(r!=null){
+						return r;
+					}
+					
+				}
+				
+			}
+			
+			return null;
+			
 		}
 		
-		/// <summary>Gets the markup for a particular language.</summary>
-		public string getMarkup(string language,bool fallbackOnDefault){
+		/// <summary>Swaps {mood} with the mood of this slide.</summary>
+		public string ApplyMood(string url){
 			
-			return GetFromSet(language,fallbackOnDefault,markup);
+			if(url==null){
+				return null;
+			}
 			
+			if(mood==null){
+				return url.Replace("{mood}","neutral");
+			}
+			
+			return url.Replace("{mood}",mood);
+			
+		}
+		
+		/// <summary>The number of speakers. Checks if speakers is null.</summary>
+		public int speakerCount{
+			get{
+				if(speakers==null){
+					return 0;
+				}
+				
+				return speakers.Length;
+			}
+		}
+		
+		/// <summary>The complete options set.</summary>
+		public DialogueSlide[] options{
+			get{
+				// No remote ones for now:
+				return options_;
+			}
+		}
+		
+		/// <summary>This slide is now starting.</summary>
+		internal override void Start(){
+			base.Start();
+			
+			Timeline tl=track.timeline;
+			
+			// Display this dialogue slide now!
+			
+			// Get the template to use:
+			string templateToUse=(template==null)? tl.template:template;
+			
+			// Open the window (which closes the prev one for us):
+			Windows.Window window=tl.OpenWindow(templateToUse);
+			
+			if(window!=null){
+				// Trigger a dialogue start event:
+				SlideEvent s=new SlideEvent("dialoguestart",null);
+				s.slide=this;
+				tl.dispatchEvent(s);
+			}
+			
+			if(WaitForCue){
+				
+				// Wait! Advance to the end of the slide now too 
+				// (because it has an auto duration which doesn't have any meaning).
+				tl.SetPause(true);
+				
+				if(tl.Backwards){
+					tl.CurrentTime=computedStart;
+				}else{
+					tl.CurrentTime=computedEnd;
+				}
+				
+			}
+			
+		}
+		
+		/// <summary>This dialogue is now offscreen.</summary>
+		internal override void End(){
+			base.End();
+			
+			// Trigger dialogue end event if we have a window:
+			Timeline tl=track.timeline;
+			
+			// Trigger a dialogue end event:
+			SlideEvent s=new SlideEvent("dialogueend",null);
+			s.slide=this;
+			tl.dispatchEvent(s);
+			
+			if(tl.currentWindow==null){
+				return;
+			}
+			
+			// Close the window if this is the last slide non-ignored slide.
+			bool last=true;
+			
+			for(int i=index+1;i<track.slides.Length;i++){
+				
+				if(!track.slides[i].ignore){
+					last=false;
+					break;
+				}
+				
+			}
+			
+			if(last){
+				// Close the window now:
+				tl.currentWindow.close();
+				tl.currentWindow=null;
+			}
+			
+		}
+		
+		/// <summary>True if this is an options slide.</summary>
+		public bool isOptions{
+			get{
+				return options_!=null;
+			}
 		}
 		
 		/// <summary>Gets a value from a localised set at the given language code.
@@ -88,56 +297,45 @@ namespace PowerSlide{
 			return value;
 		}
 		
-		/// <summary>Loads a value into a localised set.</summary>
-		private Dictionary<string,string> LoadLocalised(JSObject json){
+		/// <summary>Uses the speaker set from a previous slide which defined them.</summary>
+		private void UsePrevious(bool mood){
 			
-			var result=new Dictionary<string,string>();
-			
-			if(json==null){
-				return result;
-			}
-			
-			// Just a string?
-			if(json is Json.JSValue){
+			// Step backwards until we hit one
+			// (because of how load works, this should *always* stop at the previous slide).
+			for(int i=index-1;i>=0;i--){
 				
-				// Default language:
-				result[track.timeline.defaultLanguage]=json.ToString();
+				DialogueSlide slide=track.slides[i] as DialogueSlide;
 				
-			}else{
-				
-				// Should be a set of languages:
-				foreach(KeyValuePair<string,JSObject> kvp in json){
+				if(slide!=null && slide.speakers!=null){
 					
-					// Get as nice names:
-					string langCode=kvp.Key;
-					JSObject translation=kvp.Value;
+					speakers=slide.speakers;
 					
-					if(translation==null){
-						continue;
+					if(mood){
+						this.mood=slide.mood;
 					}
 					
-					// Lowercase:
-					langCode=langCode.Trim().ToLower();
-					
-					// Add to set:
-					result[langCode]=translation.ToString();
+					break;
 					
 				}
 				
 			}
 			
-			return result;
-			
 		}
 		
 		public override void load(JSObject json){
+			
+			// Was duration set?
+			WaitForCue=(json["duration"]==null);
 			
 			// If it's just a string, then we've only got markup here:
 			// ["Hello","I'm Dave"]
 			if(json is JSValue){
 				
+				// Use the previous slide to obtain the speakers and mood.
+				UsePrevious(true);
+				
 				// markup only:
-				markup=LoadLocalised(json);
+				markup=json.ToString();
 				
 				return;
 			}
@@ -146,22 +344,65 @@ namespace PowerSlide{
 			template=json.String("template");
 			
 			// Markup:
-			markup=LoadLocalised(json["markup"]);
+			markup=json.String("markup");
 			
-			// Option:
-			option=LoadLocalised(json["option"]);
+			// Raw options:
+			options_=LoadOptions(json["options"],this);
+			
+			if(options_!=null){
+				// If options are present we'll almost always be waiting for a cue 
+				// (from the player when they select an option).
+				WaitForCue=true;
+			}
+			
+			// Audio track:
+			audioFilePath=json.String("audio");
+			
+			// Mood:
+			mood=json.String("mood");
+			
+			// Allow overriding WaitForCue:
+			string wfc=json.String("wait-for-cue");
+			
+			if(wfc=="false"){
+				WaitForCue=false;
+			}else if(wfc=="true"){
+				WaitForCue=true;
+			}
 			
 			// Speakers:
-			JSArray speakers=json["speakers"] as JSArray;
+			JSObject speakers=json["speakers"];
 			
-			if(speakers!=null){
+			if(speakers==null){
+				speakers=json["speaker"];
+			}
+			
+			if(speakers==null){
 				
-				if(speakers.IsIndexed){
+				// Use previous speakers (but not previous mood):
+				UsePrevious(false);
+				
+			}else{
+				
+				if(markup==null){
+					// Only a speaker slide - ignore it:
+					ignore=true;
+				}
+				
+				JSArray speakerSet=speakers as JSArray;
+				
+				if(speakerSet==null){
 					
-					// Multiple speakers:
+					// Just one.
+					LoadSpeaker(0,speakers);
+					
+				}else if(speakerSet.IsIndexed){
+					
+					// Multiple speakers.
+					this.speakers=new Speaker[speakers.length];
 					
 					// For each one..
-					foreach(KeyValuePair<string,JSObject> kvp in speakers.Values){
+					foreach(KeyValuePair<string,JSObject> kvp in speakerSet.Values){
 						
 						// index is..
 						int index;
@@ -174,18 +415,7 @@ namespace PowerSlide{
 					
 				}else{
 					
-					// Should be an array but we'll also accept just one.
-					LoadSpeaker(0,speakers);
-					
-				}
-				
-			}else{
-				
-				// Check for just 'speaker':
-				speakers=json["speaker"] as JSArray;
-				
-				if(speakers!=null){
-					
+					// Just one (but as an object, with a type).
 					LoadSpeaker(0,speakers);
 					
 				}
@@ -204,8 +434,25 @@ namespace PowerSlide{
 				speakers=new Speaker[1];
 			}
 			
+			// Load the info:
+			SpeakerType type;
+			string reference=Speaker.LoadReference(data,out type);
+			
 			// Create and add:
-			speakers[index]=new Speaker(this,data);
+			Speaker speaker=null;
+			
+			if(Speaker.OnGetInfo!=null){
+				speaker=Speaker.OnGetInfo(this,type,reference);
+			}
+			
+			if(speaker==null){
+				speaker=new Speaker();
+			}
+			
+			speaker.Type=type;
+			speaker.Reference=reference;
+			
+			speakers[index]=speaker;
 			
 		}
 		

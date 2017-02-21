@@ -24,12 +24,47 @@ namespace PowerSlide{
 	
 	public class SlideEvent : Dom.Event{
 		
-		/// <summary>The manager that this originated from. Can be null during e.g. load events when no manager is available.</summary>
-		public Manager manager;
 		/// <summary>The current timeline.</summary>
-		public Timeline timeline;
+		public Timeline timeline_;
 		/// <summary>The current track (group of slides).</summary>
-		public Track track;
+		public Track track_;
+		
+		/// <summary>The current timeline.</summary>
+		public Timeline timeline{
+			get{
+				if(timeline_!=null){
+					return timeline_;
+				}
+				
+				Track tr=track;
+				if(tr!=null){
+					return tr.timeline;
+				}
+				
+				return null;
+			}
+			set{
+				timeline_=value;
+			}
+		}
+		
+		/// <summary>The current track (group of slides).</summary>
+		public Track track{
+			get{
+				if(track_!=null){
+					return track_;
+				}
+				
+				if(slide!=null){
+					return slide.track;
+				}
+				
+				return null;
+			}
+			set{
+				track_=value;
+			}
+		}
 		/// <summary>The current slide. Can be null if this is a track event.</summary>
 		public Slide slide;
 		/// <summary>The current action. Can be null if this is a track/slide event.</summary>
@@ -60,11 +95,13 @@ namespace PowerSlide{
 		/// <summary>The HTML document that this dialogue event originated from.</summary>
 		public PowerUI.HtmlDocument htmlDocument{
 			get{
-				if(manager==null){
+				Timeline tl=timeline;
+				
+				if(tl==null){
 					return null;
 				}
 				
-				return manager.document;
+				return tl.document;
 			}
 		}
 		

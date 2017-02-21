@@ -18,6 +18,11 @@ using Json;
 namespace PowerSlide{
 	
 	/// <summary>
+	/// Resolves the given type/id into a speaker.
+	/// </summary>
+	public delegate Speaker OnSpeakerDelegate(DialogueSlide slide,SpeakerType type,string id);
+	
+	/// <summary>
 	/// A speaker. Either an item (which includes NPCs), an item instance or a user.
 	/// Note that if there are multiple instances of an item in the scene, all of them are selected.
 	/// </summary>
@@ -25,75 +30,83 @@ namespace PowerSlide{
 	public class Speaker{
 		
 		/// <summary>
+		/// Used when resolving the information for a speaker (their name etc).
+		/// </summary>
+		public static OnSpeakerDelegate OnGetInfo;
+		
+		/// <summary>Loads the speaker meta from the given JSON data.</summary>
+		public static string LoadReference(JSObject data,out SpeakerType type){
+			
+			string typeName;
+			string reference=null;
+			type=SpeakerType.Other;
+			
+			if(data is JSValue){
+				
+				reference=data.ToString();
+				typeName=reference.ToLower();
+				
+				if(typeName=="player" || typeName=="user"){
+					type=SpeakerType.Player;
+					reference=null;
+				}else if(typeName=="system"){
+					type=SpeakerType.System;
+					reference=null;
+				}else{
+					// It's the reference value:
+					reference=typeName;
+				}
+				
+			}else{
+				
+				// Load the type:
+				typeName=data.CaseString("type",false);
+				
+				if(typeName=="user" || typeName=="player"){
+					type=SpeakerType.Player;
+				}else if(typeName=="system"){
+					type=SpeakerType.System;
+				}else{
+					type=SpeakerType.Other;
+				}
+				
+				// Ref:
+				reference=data.String("id");
+				
+				// Check for 'self' or 0:
+				if(type==SpeakerType.Player){
+					
+					string referenceLC=reference.ToLower().Trim();
+					
+					if(referenceLC=="self" || referenceLC=="0"){
+						// Got it! Just use null:
+						reference=null;
+					}
+					
+				}
+				
+			}
+			
+			return reference;
+			
+		}
+		
+		/// <summary>
 		/// Typically an ID but can also be a custom reference used when resolving who the speaker is.
 		/// </summary>
 		public string Reference;
 		/// <summary>The type of speaker.</summary>
 		public SpeakerType Type;
-		/// <summary>The slide this is a speaker for.</summary>
-		public Slide Slide;
+		/// <summary>The full name of this speaker.</summary>
+		public string FullName;
+		/// <summary>The URL of a chathead. Use {$mood} to include emotion (e.g. happy, sad etc).</summary>
+		public string ChatHeadUrl;
 		
-		
-		public Speaker(Slide slide){
-			Slide=slide;
-		}
-		
-		/// <summary>Loads the speaker meta from the given JSON.</summary>
-		public Speaker(Slide slide,JSObject data){
-			Slide=slide;
-			Load(data);
-		}
-		
-		/// <summary>Creates speaker meta for the given type and reference.</summary>
-		public Speaker(SpeakerType type,string reference){
-			
-			Type=type;
-			Reference=reference;
-			
-			Init();
-			
-		}
-		
-		/// <summary>Loads the speaker meta from the given JSON data.</summary>
-		public void Load(JSObject data){
-			
-			// Load the type:
-			string type=data.CaseString("type",false);
-			
-			if(type=="user" || type=="player"){
-				Type=SpeakerType.User;
-			}else if(type=="instance"){
-				Type=SpeakerType.Instance;
-			}else{
-				Type=SpeakerType.Item;
-			}
-			
-			// Ref:
-			Reference=data.String("id");
-			Init();
-		}
-		
-		/// <summary>Makes sure the ref is setup correctly.</summary>
-		private void Init(){
-			
-			// Check for 'self' or 0:
-			if(Type==SpeakerType.User){
-				
-				string reference=Reference.ToLower().Trim();
-				
-				if(reference=="self" || reference=="0"){
-					// Got it! Just use null:
-					Reference=null;
-				}
-				
-			}
-			
-		}
 		
 		/// <summary>True if this speaker represents the current user. Use 'self', null or 0 as your reference.</summary>
 		public bool IsCurrentUser{
 			get{
-				return (Type==SpeakerType.User && Reference==null);
+				return (Type==SpeakerType.Player && Reference==null);
 			}
 		}
 		
@@ -103,12 +116,12 @@ namespace PowerSlide{
 	/// The type of a speaker.
 	/// </summary>
 	public enum SpeakerType{
-		/// <summary>An item ID. Includes NPCs.</summary>
-		Item,
-		/// <summary>A particular instance of an item.</summary>
-		Instance,
 		/// <summary>Referencing some player. Use 'self'/null/0 to refer to *this* player.</summary>
-		User
+		Player,
+		/// <summary>A system speaker. Acts like a narrator.</summary>
+		System,
+		/// <summary>Some custom speaker type.</summary>
+		Other
 	}
 	
 }

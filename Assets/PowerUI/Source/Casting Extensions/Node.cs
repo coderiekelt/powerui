@@ -30,6 +30,27 @@ namespace Dom{
 			}
 		}
 		
+		/// <summary>Casts getElementByTagName to a HtmlElement for you (exists because of SVG and MathML).</summary>
+		public HtmlElement getByTagName(string tag){
+			
+			return getElementByTagName(tag) as HtmlElement;
+			
+		}
+		
+		/// <summary>Casts getElementById to a HtmlElement for you (exists because of SVG and MathML).</summary>
+		public HtmlElement getById(string id){
+			
+			return getElementById(id) as HtmlElement;
+			
+		}
+		
+		/// <summary>Casts getElementByAttribute to a HtmlElement for you (exists because of SVG and MathML).</summary>
+		public HtmlElement getByAttribute(string property,string value){
+			
+			return getElementByAttribute(property,value) as HtmlElement;
+			
+		}
+		
 	}
 	
 }
