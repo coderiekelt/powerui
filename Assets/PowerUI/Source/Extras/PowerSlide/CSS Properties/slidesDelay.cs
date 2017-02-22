@@ -40,7 +40,7 @@ namespace Css.Properties{
 			if(value==null || value.Type==ValueType.Text){
 				si.Delay=0;
 			}else{
-				si.Delay=value.GetDecimal(style.RenderData,this) / 1000f;
+				si.Delay=value.GetDecimal(style.RenderData,this);
 			}
 			
 			// Ok!

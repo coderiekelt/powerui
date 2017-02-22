@@ -40,7 +40,7 @@ namespace Css.Properties{
 			if(value==null){
 				si.AppliedDuration=float.MinValue;
 			}else{
-				si.AppliedDuration=value.GetDecimal(style.RenderData,this) / 1000f;
+				si.AppliedDuration=value.GetDecimal(style.RenderData,this);
 			}
 			
 			// Ok!

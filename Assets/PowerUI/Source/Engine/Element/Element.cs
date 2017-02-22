@@ -390,9 +390,6 @@ namespace PowerUI{
 				
 			}
 			
-			// Reload its style:
-			Style.Computed.RefreshStructure();
-			
 			// Update its css by telling it the parent changed.
 			// This affects inherit, height/width etc.
 			Style.Computed.ParentChanged();

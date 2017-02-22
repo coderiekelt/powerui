@@ -174,8 +174,8 @@ namespace PowerSlide{
 					continue;
 				}
 				
-				// Set duration (expected in ms):
-				htmlE.style["animation-duration"]=new Css.Units.DecimalUnit(computedDuration * 1000f);
+				// Set duration:
+				htmlE.style["animation-duration"]=new Css.Units.DecimalUnit(computedDuration);
 				
 				// Set direction:
 				htmlE.style["animation-direction"]=new Css.Units.TextUnit(dir);
