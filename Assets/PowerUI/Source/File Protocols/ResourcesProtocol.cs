@@ -34,6 +34,44 @@ namespace PowerUI{
 			return new string[]{"","resources","res"};
 		}
 		
+		public override void OnGetAudio(AudioPackage package){
+			
+			// Main thread only:
+			Callback.MainThread(delegate(){
+				
+				string resUrl=package.location.Directory+package.location.Filename;
+				
+				if(resUrl.Length>0 && resUrl[0]=='/'){
+					resUrl=resUrl.Substring(1);
+				}
+				
+				// Get the audio:
+				UnityEngine.Object resource=Resources.Load(resUrl);
+				
+				if(resource==null){
+					
+					// Note: the full file should be called something.bytes for this to work in Unity.
+					resUrl=package.location.Path;
+					
+					if(resUrl.Length>0 && resUrl[0]=='/'){
+						resUrl=resUrl.Substring(1);
+					}
+					
+					resource=Resources.Load(resUrl);
+					
+				}
+				
+				// Try loading from the asset:
+				if(package.Contents.LoadFromAsset(resource,package)){
+					
+					package.Done();
+					
+				}
+				
+			});
+			
+		}
+		
 		public override void OnGetGraphic(ImagePackage package){
 			
 			// Main thread only:

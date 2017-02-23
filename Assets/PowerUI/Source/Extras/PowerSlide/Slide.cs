@@ -50,6 +50,10 @@ namespace PowerSlide{
 		/// The track this slide belongs to.
 		/// </summary>
 		public Track track;
+		/// <summary>
+		/// The timing leader for this slide (if it has one).
+		/// </summary>
+		public ITimingLeader timing;
 		/// <summary>Specified start value.</summary>
 		public Css.Value start;
 		/// <summary>Specified duration value.</summary>
@@ -90,6 +94,34 @@ namespace PowerSlide{
 			
 		}
 		
+		/// <summary>Ends this slides timing lead.</summary>
+		public void EndTimingLead(){
+			
+			if(track.timeline.timingLeader==this){
+				
+				// Clear the leader:
+				track.timeline.timingLeader=null;
+				
+			}
+			
+			if(timing!=null){
+				timing.Stop();
+				timing=null;
+			}
+			
+		}
+		
+		/// <summary>The timeline will now have its timing lead by the given leader.</summary>
+		public void TimingLeadBy(ITimingLeader leader){
+		
+			// Set the leader:
+			timing=leader;
+			
+			// Apply this slide to the timeline:
+			track.timeline.timingLeader=this;
+			
+		}
+		
 		/// <summary>This slide is now done.</summary>
 		internal virtual void End(){
 			
@@ -105,6 +137,9 @@ namespace PowerSlide{
 			if(et!=null){
 				et.dispatchEvent(se);
 			}
+			
+			// Quit timing lead:
+			EndTimingLead();
 			
 		}
 		

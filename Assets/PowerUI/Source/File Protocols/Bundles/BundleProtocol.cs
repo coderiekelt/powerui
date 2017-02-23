@@ -116,6 +116,28 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Attempts to get a graphic from the given location using this protocol.</summary>
+		/// <param name="package">The audio request. GotGraphic must be called on this when the protocol is done.</param>
+		/// <param name="path">The location of the file to retrieve using this protocol.</param>
+		public override void OnGetAudio(AudioPackage package){
+			
+			LoadBundle(package.location,delegate(AssetBundle bundle){
+				
+				// Pull audio from the bundle using the hash as our hierarchy:
+				UnityEngine.Object asset=bundle.LoadAsset(package.location.hash);
+				
+				// Try loading from the asset:
+				if(package.Contents.LoadFromAsset(asset,package)){
+					
+					// Ok!
+					package.Done();
+					
+				}
+				
+			});
+			
+		}
+		
+		/// <summary>Attempts to get a graphic from the given location using this protocol.</summary>
 		/// <param name="package">The image request. GotGraphic must be called on this when the protocol is done.</param>
 		/// <param name="path">The location of the file to retrieve using this protocol.</param>
 		public override void OnGetGraphic(ImagePackage package){

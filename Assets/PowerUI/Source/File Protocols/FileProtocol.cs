@@ -152,6 +152,15 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Get the file at the given path as any supported audio format.
+		/// Once it's been retrieved, this must call package.GotAudio(theObject) internally.</summary>
+		public virtual void OnGetAudio(AudioPackage package){
+			
+			// Get the data - it'll call package.Done which will handle it for us:
+			OnGetData(package);
+			
+		}
+		
 		/// <summary>The user clicked on the given link which points to the given path.</summary>
 		public virtual void OnFollowLink(HtmlElement linkElement,Location path){
 			

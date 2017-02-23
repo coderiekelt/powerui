@@ -153,6 +153,45 @@ namespace PowerSlide{
 			
 		}
 		
+		/// <summary>Begins playing any audio</summary>
+		private void PlayAudio(){
+			
+			// Get a full path (also uses {language} and {mood} and is relative to resources://Dialogue):
+			
+			// Localise it:
+			string audioPath=audioFilePath.Replace("{language}",UI.Language);
+			
+			// Load the file now:
+			AudioPackage req=new AudioPackage(
+				audioPath,
+				new Dom.Location("resources://Dialogue/",null)
+			);
+			
+			// Apply the audio package to the slides set:
+			TimingLeadBy(req);
+			
+			req.onload=delegate(UIEvent e){
+				
+				// Play immediately - the system has been waiting for it
+				// (if it's from resources then the delay would've been generally unnoticeable):
+				req.Start(track.timeline.node);
+				
+			};
+			
+			req.onerror=delegate(UIEvent e){
+				
+				// Skip this frame:
+				Dom.Log.Add("Audio file unavailable - PowerSlide will playback without it.");
+				
+				EndTimingLead();
+				
+			};
+			
+			// Send it off:
+			req.send();
+			
+		}
+		
 		/// <summary>Swaps {mood} with the mood of this slide.</summary>
 		public string ApplyMood(string url){
 			
@@ -203,6 +242,15 @@ namespace PowerSlide{
 			Timeline tl=track.timeline;
 			
 			// Display this dialogue slide now!
+			
+			// Any audio?
+			if(!string.IsNullOrEmpty(audioFilePath)){
+				
+				// Play the audio now.
+				// Note that PowerSlide will follow the lead of the audio engine.
+				PlayAudio();
+				
+			}
 			
 			// Get the template to use:
 			string templateToUse=(template==null)? tl.template:template;

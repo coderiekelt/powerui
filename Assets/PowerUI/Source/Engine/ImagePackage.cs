@@ -34,15 +34,15 @@ namespace PowerUI{
 		public ImageFormat Contents;
 
 		
-		/// <summary>Creates a new text package for the named file to get. The path must be absolute.
-		/// You must then call <see cref="PowerUI.TextPackage.Get"/> to perform the request.</summary>
+		/// <summary>Creates a new package for the named file to get. The path must be absolute.
+		/// You must then call <see cref="PowerUI.ImagePackage.send"/> to perform the request.</summary>
 		/// <param name="src">The file to get.</param>
 		public ImagePackage(string src){
 			SetPath(src,null);
 		}
 		
-		/// <summary>Creates a new text package for the named file to get.
-		/// You must then call <see cref="PowerUI.TextPackage.Get"/> to perform the request.</summary>
+		/// <summary>Creates a new package for the named file to get.
+		/// You must then call <see cref="PowerUI.ImagePackage.send"/> to perform the request.</summary>
 		/// <param name="src">The file to get.</param>
 		/// <param name="relativeTo">The path the file to get is relative to, if any (may be null).</param>
 		public ImagePackage(string src,Location relativeTo){

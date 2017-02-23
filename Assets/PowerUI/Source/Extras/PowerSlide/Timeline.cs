@@ -40,6 +40,9 @@ namespace PowerSlide{
 		public string src;
 		/// <summary>Default template to use.</summary>
 		public string template;
+		/// <summary>A time leading slide (usually one with audio/ video) 
+		/// which this timeline will follow for timing purposes.</summary>
+		public Slide timingLeader;
 		/// <summary>The ComputedStyle that this was applied to (can be null).</summary>
 		public ComputedStyle Style;
 		/// <summary>A list of event listeners that *must* be destroyed 
@@ -59,6 +62,17 @@ namespace PowerSlide{
 				document=style.document as HtmlDocument;
 			}
 			
+		}
+		
+		/// <summary>The node that this timeline is on.</summary>
+		public Dom.Node node{
+			get{
+				if(Style!=null){
+					return Style.Element;
+				}
+				
+				return document;
+			}
 		}
 		
 		/// <summary>Gets a slide by its unique ID.</summary>

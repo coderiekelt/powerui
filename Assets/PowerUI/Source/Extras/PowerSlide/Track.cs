@@ -238,10 +238,29 @@ namespace PowerSlide{
 					continue;
 				}
 				
-				// Compute start first:
+				// Explicit duration:
+				if(slide.duration!=null){
+					
+					// Get the raw dec so we can resolve %:
+					float durDec=slide.duration.GetRawDecimal();
+					
+					if(slide.duration is Css.Units.PercentUnit){
+						durDec *= length;
+					}
+					
+					slide.computedDuration=durDec;
+					
+				}
+				
+				// Compute start:
 				if(slide.start==null){
 					
-					if(firstNoStart==-1){
+					if(slide.duration!=null){
+						
+						// Duration only - it starts at the end of the previous frame.
+						// That's computed in the following loop when we know more start times.
+						
+					}else if(firstNoStart==-1){
 						firstNoStart=i;
 					}
 					
@@ -269,6 +288,7 @@ namespace PowerSlide{
 					
 				}
 				
+				
 			}
 			
 			if(firstNoStart!=-1){
@@ -286,6 +306,37 @@ namespace PowerSlide{
 				
 				if(slide.ignore){
 					continue;
+				}
+				
+				if(slide.start==null && slide.duration!=null){
+					
+					// No start time, but we do have a duration. It's the end of the previous non-ignored slide:
+					int prevIndex=i-1;
+					Slide prev=null;
+					
+					while(prevIndex>=0){
+						
+						prev=slides[prevIndex];
+						
+						if(!prev.ignore){
+							break;
+						}
+						
+						prevIndex--;
+						
+						if(prevIndex<0){
+							prev=null;
+							break;
+						}
+						
+					}
+					
+					if(prev==null){
+						slide.computedStart=0f;
+					}else{
+						slide.computedStart=prev.computedEnd;
+					}
+					
 				}
 				
 				// Compute duration:
@@ -319,17 +370,6 @@ namespace PowerSlide{
 						}
 						
 					}
-					
-				}else{
-					
-					// Get the raw dec so we can resolve %:
-					float durDec=slide.duration.GetRawDecimal();
-					
-					if(slide.duration is Css.Units.PercentUnit){
-						durDec *= length;
-					}
-					
-					slide.computedDuration=durDec;
 					
 				}
 				

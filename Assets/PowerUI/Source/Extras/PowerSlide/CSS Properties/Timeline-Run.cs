@@ -284,7 +284,32 @@ namespace PowerSlide{
 				
 			}
 			
-			CurrentTime+=deltaTime;
+			// If we have a timing leader, then current time is..
+			if(timingLeader!=null){
+				
+				CurrentTime=timingLeader.computedStart;
+				
+				if(timingLeader.timing!=null){
+					
+					// Get the leaders duration (just in case it has expired):
+					float duration=timingLeader.timing.GetDuration();
+					float current=timingLeader.timing.GetCurrentTime();
+					
+					CurrentTime+=current;
+					
+					if(duration!=-1f && current>=duration){
+						
+						// It's finished! Quit the timing leader:
+						// (This occurs if the lead time is shorter than the slide's duration).
+						timingLeader.EndTimingLead();
+						
+					}
+					
+				}
+				
+			}else{
+				CurrentTime+=deltaTime;
+			}
 			
 			if(Style!=null && !Style.Element.isRooted){
 				
