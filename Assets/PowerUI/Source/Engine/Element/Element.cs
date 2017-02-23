@@ -913,7 +913,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Gets the style of this element.</summary>
-		public Css.ElementStyle style{
+		public override Css.ElementStyle style{
 			get{
 				return Style;
 			}

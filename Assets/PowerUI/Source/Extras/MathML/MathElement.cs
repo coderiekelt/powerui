@@ -335,7 +335,7 @@ namespace MathML{
 		}
 		
 		/// <summary>This elements style.</summary>
-		public ElementStyle style{
+		public override ElementStyle style{
 			get{
 				return Style;
 			}
