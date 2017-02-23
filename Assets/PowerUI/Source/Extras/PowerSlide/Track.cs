@@ -177,19 +177,21 @@ namespace PowerSlide{
 					// Get the slide:
 					Slide slide=slides[i];
 					
-					if(slide.start==null){
-						continue;
-					}
+					float startDec=start;
 					
-					if(slide.start is Css.Units.PercentUnit){
-						continue;
-					}
-					
-					// Get the raw dec:
-					float startDec=slide.start.GetRawDecimal();
-					
-					if(startDec>start){
-						start=startDec;
+					if(slide.start!=null){
+						
+						if(slide.start is Css.Units.PercentUnit){
+							continue;
+						}
+						
+						// Get the raw dec:
+						startDec=slide.start.GetRawDecimal();
+						
+						if(startDec>start){
+							start=startDec;
+						}
+						
 					}
 					
 					// Get the duration:

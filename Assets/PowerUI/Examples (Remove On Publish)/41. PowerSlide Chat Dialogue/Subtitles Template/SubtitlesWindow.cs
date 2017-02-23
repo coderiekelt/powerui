@@ -14,9 +14,15 @@ namespace Windows{
 	[Dom.TagName("subtitles")]
 	public class SubtitlesWindow : DialogueWindow{
 		
+		/// <summary>This one can only display one slide at a time. This is the slide itself.
+		/// Note that you should use allActive instead of this.</summary>
+		private DialogueSlide Current_;
+		
 		/// <summary>Called when the given slide requested to display.
 		/// Note that multiple slides may request to be visible at the same time.</summary>
 		protected override void Show(DialogueSlide dialogue){
+			
+			Current_=dialogue;
 			
 			// Get the html:
 			string html;
@@ -81,9 +87,9 @@ namespace Windows{
 			// Write to subtitle-text (a child of 'element'):
 			element.getElementById("subtitle-text").innerHTML=html;
 			
-			// Click to continue - don't show it if this is an options slide:
+			// Click to continue - only show if it's cued (either because it's an options menu, or it waits):
 			// Display the "click to continue" option, using getById to cast to HtmlElement:
-			element.getById("click-to-continue").style.display=dialogue.isOptions ? "none" : "block";
+			element.getById("click-to-continue").style.display=dialogue.cued ? "block" : "none";
 			
 		}
 		
@@ -94,6 +100,10 @@ namespace Windows{
 			// Just empty the dialogue from the UI (this assumes there's only one).
 			// If you want to be able to display multiple entries, you could use:
 			// List<DialogueSlide> all=allActive;
+			
+			if(Current_!=dialogue){
+				return;
+			}
 			
 			element.getElementById("subtitle-text").innerHTML="";
 			

@@ -187,6 +187,15 @@ namespace PowerSlide{
 			}
 		}
 		
+		/// <summary>A dialogue slide is classed as cued if it waits for a cue and it's not an options menu.
+		/// Note that options menu's are cued, but you almost never want to visually display 
+		/// something like 'click to continue' on them.</summary>
+		public bool cued{
+			get{
+				return WaitForCue && !isOptions;
+			}
+		}
+		
 		/// <summary>This slide is now starting.</summary>
 		internal override void Start(){
 			base.Start();
