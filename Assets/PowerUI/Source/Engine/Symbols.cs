@@ -43,7 +43,7 @@ namespace PowerUI{
 			#if UNITY_2_6 || UNITY3
 			// Read the cscp.rsp file.
 			return "";
-			#elseif UNITY_EDITOR
+			#elif UNITY_EDITOR
 			return UnityEditor.PlayerSettings.GetScriptingDefineSymbolsForGroup(UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup);
 			#else
 			throw new Exception("Failed to get scripting defines. This usually means you're using PowerUI precompiled without the editor flag.");
@@ -54,8 +54,8 @@ namespace PowerUI{
 			#if UNITY_2_6 || UNITY3
 			// Write the file.
 			// Flush asset db.
-			#elseif UNITY_EDITOR
-			PlayerSettings.SetScriptingDefineSymbolsForGroup(UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup,sym);
+			#elif UNITY_EDITOR
+			UnityEditor.PlayerSettings.SetScriptingDefineSymbolsForGroup(UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup,sym);
 			#else
 			throw new Exception("Failed to set scripting define. This usually means you're using PowerUI precompiled without the editor flag.");
 			#endif
