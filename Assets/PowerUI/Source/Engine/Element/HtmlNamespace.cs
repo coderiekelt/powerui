@@ -19,29 +19,14 @@ using UnityEngine;
 namespace PowerUI{
 	
 	/// <summary>
-	/// An interface which all HTML nodes subscribe to.
-	/// </summary>
-	
-	public interface HtmlNode{
-		
-		#region Internal layout
-		
-		/// <summary>Called when an element is no longer on the screen.</summary>
-		void WentOffScreen();
-		
-		#endregion
-		
-	}
-	
-	/// <summary>
 	/// The HTML namespace attribute as used by all HTML nodes.
 	/// </summary>
 	public class HtmlNamespace : XmlNamespace{
 		
 		public HtmlNamespace()
-			:base("http://www.w3.org/1999/xhtml","xhtml",typeof(PowerUI.HtmlDocument),"svg:svg,mml:math")
+			:base("http://www.w3.org/1999/xhtml","xhtml","text/html",typeof(PowerUI.HtmlDocument),"svg:svg,mml:math")
 		{
-			
+		
 		}
 		
 	}

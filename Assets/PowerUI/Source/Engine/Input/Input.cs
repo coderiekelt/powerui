@@ -1082,7 +1082,7 @@ namespace PowerUI{
 									Range range=s.Ranges[0];
 									
 									// Get text node:
-									HtmlTextNode htn=(range.startContainer as HtmlTextNode);
+									RenderableTextNode htn=(range.startContainer as RenderableTextNode);
 									
 									if(htn!=null){
 										

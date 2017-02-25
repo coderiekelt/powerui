@@ -45,7 +45,7 @@ namespace PowerUI{
 				Node child=kids[i];
 				
 				// Get as text:
-				HtmlTextNode text=child as HtmlTextNode;
+				RenderableTextNode text=child as RenderableTextNode;
 				
 				if(text==null){
 					

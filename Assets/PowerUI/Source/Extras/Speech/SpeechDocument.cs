@@ -20,7 +20,7 @@ namespace Speech{
 				if(_SpeechNamespace==null){
 					
 					// Setup the namespace (Doesn't request the URL; see XML namespaces for more info):
-					_SpeechNamespace=Dom.MLNamespaces.Get("http://www.w3.org/2001/10/synthesis","ssml");
+					_SpeechNamespace=Dom.MLNamespaces.Get("http://www.w3.org/2001/10/synthesis","ssml","application/ssml+xml");
 					
 				}
 				
@@ -53,7 +53,7 @@ namespace Speech{
 		}
 		
 		/// <summary>The root style node.</summary>
-		public override Node RootStyleNode{
+		public override Dom.Element documentElement{
 			get{
 				return speak;
 			}
@@ -84,6 +84,9 @@ namespace Speech{
 				// Parse now:
 				HtmlLexer lexer=new HtmlLexer(value,this);
 				lexer.Parse();
+				
+				// Dom loaded:
+				ContentLoadedEvent();
 				
 				close();
 			}

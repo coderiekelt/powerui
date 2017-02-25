@@ -24,7 +24,7 @@ namespace Speech{
 	/// A base class for all speech markup tag types. This is used to distictively identify them.
 	/// </summary>
 	
-	[XmlNamespace("http://www.kulestar.com/sml/","sml",typeof(SpeechDocument))]
+	[SpeechNamespace]
 	[Dom.TagName("Default")]
 	public class SpeechElement:Element, IRenderableNode{
 		
@@ -33,7 +33,7 @@ namespace Speech{
 		
 		
 		public SpeechElement(){
-			
+			Style=new ElementStyle(this);
 		}
 		
 		/// <summary>This nodes computed style.</summary>
@@ -123,6 +123,50 @@ namespace Speech{
 				
 				if(cMax>max){
 					max=cMax;
+				}
+				
+			}
+			
+		}
+		
+		/// <summary>Called when this element goes offscreen.</summary>
+		public void WentOffScreen(){
+			
+			RenderableData renderable=RenderData;
+			renderable.WentOffScreen();
+			
+			// Apply to all virtual elements:
+			VirtualElements virts=renderable.Virtuals;
+			
+			if(virts!=null){
+				
+				foreach(KeyValuePair<int,Node> kvp in virts.Elements){
+				
+					// Tell it that it's gone offscreen:
+					IRenderableNode irn=(kvp.Value as IRenderableNode);
+					
+					if(irn!=null){
+						irn.WentOffScreen();
+					}
+					
+				}
+				
+			}
+			
+			if(childNodes_!=null){
+				
+				for(int i=0;i<childNodes_.length;i++){
+					
+					// Get as a HTML node:
+					IRenderableNode htmlNode=(childNodes_[i] as IRenderableNode);
+					
+					if(htmlNode==null){
+						return;
+					}
+					
+					// Call offscreen:
+					htmlNode.WentOffScreen();
+					
 				}
 				
 			}

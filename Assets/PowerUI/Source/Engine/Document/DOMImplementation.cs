@@ -13,7 +13,7 @@ namespace Dom{
 	public partial class DOMImplementation{
 		
 		/// <summary>Creates a HTML document with the given title.</summary>
-		public HtmlDocument createHtmlDocument(string title){
+		public HtmlDocument createHTMLDocument(string title){
 			
 			if (!string.IsNullOrEmpty(title)){
 				title="<title>"+title+"</title>";

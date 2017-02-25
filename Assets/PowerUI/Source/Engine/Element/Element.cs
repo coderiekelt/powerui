@@ -36,7 +36,7 @@ namespace PowerUI{
 	/// </summary>
 	[HtmlNamespace]
 	[Dom.TagName("Default")]
-	public partial class HtmlElement:Element, HtmlNode, IRenderableNode{
+	public partial class HtmlElement:Element, IRenderableNode{
 		
 		/// <summary>Internal use only. The style of this element. Use <see cref="PowerUI.HtmlElement.style"/> instead.</summary>
 		public ElementStyle Style;
@@ -104,7 +104,7 @@ namespace PowerUI{
 				float bMin;
 				float bMax;
 				
-				if(child is HtmlTextNode){
+				if(child is RenderableTextNode){
 					
 					// Always get bounds:
 					bMin=float.MinValue;
@@ -449,11 +449,15 @@ namespace PowerUI{
 			VirtualElements virts=renderable.Virtuals;
 			
 			if(virts!=null){
-			
+				
 				foreach(KeyValuePair<int,Node> kvp in virts.Elements){
 				
 					// Tell it that it's gone offscreen:
-					(kvp.Value as HtmlElement ).WentOffScreen();
+					IRenderableNode irn=(kvp.Value as IRenderableNode);
+					
+					if(irn!=null){
+						irn.WentOffScreen();
+					}
 					
 				}
 				
@@ -464,7 +468,7 @@ namespace PowerUI{
 				for(int i=0;i<childNodes_.length;i++){
 					
 					// Get as a HTML node:
-					HtmlNode htmlNode=(childNodes_[i] as HtmlNode);
+					IRenderableNode htmlNode=(childNodes_[i] as IRenderableNode);
 					
 					if(htmlNode==null){
 						return;

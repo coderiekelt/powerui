@@ -62,9 +62,9 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The container holding the text.</summary>
-		public HtmlTextNode TextHolder{
+		public RenderableTextNode TextHolder{
 			get{
-				return firstChild as HtmlTextNode;
+				return firstChild as RenderableTextNode;
 			}
 		}
 		
@@ -678,7 +678,7 @@ namespace PowerUI{
 				// Move the caret to the clicked point.
 				
 				// Get the text content:
-				HtmlTextNode htn=TextHolder;
+				RenderableTextNode htn=TextHolder;
 				
 				if(htn==null){
 					// Index is just 0.

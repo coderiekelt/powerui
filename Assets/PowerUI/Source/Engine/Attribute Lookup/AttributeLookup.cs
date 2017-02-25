@@ -14,7 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace PowerUI{
+namespace Dom{
 	
 	/// <summary>
 	/// A lookup is used to cache e.g. elements by ID.
@@ -41,7 +41,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Adds the given element to this lookup.</summary>
-		public void Add(string key,HtmlElement ele){
+		public void Add(string key,Element ele){
 			
 			// Create link:
 			AttributeLookupLink link=new AttributeLookupLink(ele);
@@ -68,7 +68,7 @@ namespace PowerUI{
 		
 		/// <summary>Removes the given element value from this lookup.</summary>
 		/// <returns>True if the cache should also be removed.</returns>
-		public bool Remove(string key,HtmlElement ele){
+		public bool Remove(string key,Element ele){
 			
 			AttributeLookupLink chain;
 			if(!Lookup.TryGetValue(key,out chain)){

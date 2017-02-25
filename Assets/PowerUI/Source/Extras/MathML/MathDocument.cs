@@ -20,7 +20,7 @@ namespace MathML{
 				if(_MathMLNamespace==null){
 					
 					// Setup the namespace (Doesn't request the URL; see XML namespaces for more info):
-					_MathMLNamespace=Dom.MLNamespaces.Get("http://www.w3.org/1998/Math/MathML","mml");
+					_MathMLNamespace=Dom.MLNamespaces.Get("http://www.w3.org/1998/Math/MathML","mml","application/mathml+xml");
 					
 				}
 				
@@ -52,7 +52,7 @@ namespace MathML{
 		}
 		
 		/// <summary>The root style node.</summary>
-		public override Node RootStyleNode{
+		public override Element documentElement{
 			get{
 				return math;
 			}
@@ -83,6 +83,9 @@ namespace MathML{
 				// Parse now:
 				HtmlLexer lexer=new HtmlLexer(value,this);
 				lexer.Parse();
+				
+				// Dom loaded:
+				ContentLoadedEvent();
 				
 				close();
 			}

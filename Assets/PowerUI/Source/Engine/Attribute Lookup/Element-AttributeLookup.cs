@@ -14,16 +14,16 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace PowerUI{
+namespace Dom{
 	
 	
-	public partial class HtmlElement{
+	public partial class Element{
 		
 		
 		/// <summary>Adds this element to all fast lookups.</summary>
 		public void AddToAttributeLookups(){
 			
-			foreach(KeyValuePair<string,AttributeLookup> kvp in htmlDocument.AttributeIndex){
+			foreach(KeyValuePair<string,AttributeLookup> kvp in document.AttributeIndex){
 				
 				AddToAttributeLookup(kvp.Key,kvp.Value);
 				
@@ -49,7 +49,7 @@ namespace PowerUI{
 			for(int i=0;i<childNodes_.length;i++){
 				
 				// Add child elements too:
-				HtmlElement el=(childNodes_[i] as HtmlElement );
+				Dom.Element el=(childNodes_[i] as Dom.Element );
 				
 				if(el==null){
 					// E.g. text node.

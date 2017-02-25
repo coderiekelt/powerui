@@ -89,7 +89,7 @@ namespace PowerUI{
 			if(Locate){
 				Locate=false;
 				
-				HtmlTextNode htn=TextHolder;
+				RenderableTextNode htn=TextHolder;
 				Vector2 position;
 				
 				if(htn==null){
@@ -192,9 +192,9 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The container holding the text.</summary>
-		public HtmlTextNode TextHolder{
+		public RenderableTextNode TextHolder{
 			get{
-				return Input.firstChild as HtmlTextNode;
+				return Input.firstChild as RenderableTextNode;
 			}
 		}
 		

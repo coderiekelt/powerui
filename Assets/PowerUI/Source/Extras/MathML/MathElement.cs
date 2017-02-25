@@ -23,8 +23,7 @@ namespace MathML{
 	/// <summary>
 	/// A base class for all MathML tag types. This is used to distictively identify them.
 	/// </summary>
-	
-	[XmlNamespace("http://www.w3.org/1998/Math/MathML","mml",typeof(MathDocument))]
+	[MathNamespace]
 	[Dom.TagName("Default")]
 	public class MathElement:Element, IRenderableNode{
 		
@@ -33,7 +32,7 @@ namespace MathML{
 		
 		
 		public MathElement(){
-			
+			Style=new ElementStyle(this);
 		}
 		
 		/// <summary>This nodes computed style.</summary>
@@ -41,6 +40,126 @@ namespace MathML{
 			get{
 				return Style.Computed;
 			}
+		}
+		
+		/// <summary>Called when the DOM changed.</summary>
+		internal override void ChangedDOM(){
+			
+			// Request a layout:
+			(document as Css.ReflowDocument).RequestLayout();
+			
+		}
+		
+		/// <summary>Called when this element got added to the DOM.</summary>
+		internal override void AddedToDOM(){
+			
+			Css.ReflowDocument doc=document as Css.ReflowDocument;
+			
+			if(doc!=null){
+				
+				if(doc.AttributeIndex!=null){
+					// Index element if needed:
+					AddToAttributeLookups();
+				}
+				
+				// Make sure the stylesheet is present:
+				doc.RequireStyleSheet(this);
+				
+			}
+			
+			// Update its css by telling it the parent changed.
+			// This affects inherit, height/width etc.
+			Style.Computed.ParentChanged();
+			
+			if(doc!=null){
+				// Request a layout:
+				doc.RequestLayout();
+			}
+			
+		}
+		
+		/// <summary>Called when this element got removed from the DOM.</summary>
+		internal override void RemovedFromDOM(){
+			
+			Css.ReflowDocument reflowDocument=document as Css.ReflowDocument;
+			
+			if(reflowDocument.AttributeIndex!=null){
+				
+				// Remove this from the DOM attribute cache:
+				reflowDocument.RemoveCachedElement(this);
+				
+			}
+			
+			// Remove handler:
+			// OnRemovedFromDOM();
+			
+			// Let the style know we went offscreen:
+			RenderableData renderable=RenderData;
+			renderable.WentOffScreen();
+			
+			// Apply to all virtual elements:
+			VirtualElements virts=renderable.Virtuals;
+			
+			if(virts!=null){
+			
+				foreach(KeyValuePair<int,Node> kvp in virts.Elements){
+				
+					// Remove it:
+					kvp.Value.RemovedFromDOM();
+					
+				}
+				
+			}
+			
+			base.RemovedFromDOM();
+			
+			// Request a layout:
+			reflowDocument.RequestLayout();
+			
+		}
+		
+		/// <summary>Called when this element goes offscreen.</summary>
+		public void WentOffScreen(){
+			
+			RenderableData renderable=RenderData;
+			renderable.WentOffScreen();
+			
+			// Apply to all virtual elements:
+			VirtualElements virts=renderable.Virtuals;
+			
+			if(virts!=null){
+				
+				foreach(KeyValuePair<int,Node> kvp in virts.Elements){
+				
+					// Tell it that it's gone offscreen:
+					IRenderableNode irn=(kvp.Value as IRenderableNode);
+					
+					if(irn!=null){
+						irn.WentOffScreen();
+					}
+					
+				}
+				
+			}
+			
+			if(childNodes_!=null){
+				
+				for(int i=0;i<childNodes_.length;i++){
+					
+					// Get as a HTML node:
+					IRenderableNode htmlNode=(childNodes_[i] as IRenderableNode);
+					
+					if(htmlNode==null){
+						return;
+					}
+					
+					// Call offscreen:
+					htmlNode.WentOffScreen();
+					
+				}
+				
+			}
+			
 		}
 		
 		public void OnRender(Renderman renderer){}

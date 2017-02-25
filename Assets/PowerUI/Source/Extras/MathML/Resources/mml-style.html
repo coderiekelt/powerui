@@ -29,7 +29,7 @@ math {
   display: inline;
   font-size: inherit;
   font-style: normal;
-  font-family: serif;
+  font-family: "LatinModernMath";
   line-height: normal;
   word-spacing: normal;
   letter-spacing: normal;
@@ -39,7 +39,7 @@ math {
 }
 math[mode="display"], math[display="block"] {
   display: block;
-  text-align: -spark-center;
+  text-align: -moz-center;
   -spark-math-display: block;
 }
 math[display="inline"] {
@@ -106,7 +106,6 @@ ms[rquote]:after {
 
 merror {
   display: block;
-  font-family: sans-serif;
   font-weight: bold;
   white-space: pre;
   margin: 1em;
@@ -146,7 +145,7 @@ mtr, mlabeledtr {
 mtd {
   display: table-cell;
   vertical-align: inherit;
-  text-align: -spark-center;
+  text-align: -moz-center;
   white-space: nowrap;
 }
 
@@ -214,11 +213,18 @@ mtable[framespacing] > mtr > mtd {
 
 /**********************************************************************/
 /* This is used when wrapping non-MathML inline elements inside math. */
+
+/*
+
+Disabled at the moment; -spark-mathml-anonymous-block targets everything.
+
 *|*::-spark-mathml-anonymous-block {
   display: inline-block !important;
   position: static !important;
   text-indent: 0;
 }
+
+*/
 
 /**************************************************************************/
 /* Controlling Displaystyle and Scriptlevel                               */
@@ -241,12 +247,19 @@ mstyle[displaystyle="true"] {
   -spark-math-display: block;
 }
 
+
 /*  munder, mover and munderover change the scriptlevels of their children
    using -moz-math-increment-script-level because regular CSS rules are
    insufficient to control when the scriptlevel should be incremented. All other
    cases can be described using regular CSS, so we do it this way because it's
    more efficient and less code. */
-:-moz-math-increment-script-level { -spark-script-level: +1; }
+
+/*
+
+   Also disabled (scope is too broad)
+
+   :-moz-math-increment-script-level { -spark-script-level: +1; }
+*/
 
 /*
    The mfrac element sets displaystyle to "false", or if it was already false

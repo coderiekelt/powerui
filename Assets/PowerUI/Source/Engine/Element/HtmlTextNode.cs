@@ -22,7 +22,14 @@ namespace PowerUI{
 	/// </summary>
 	[HtmlNamespace]
 	[Dom.TagName("TextNode")]
-	public class HtmlTextNode:Dom.TextNode, HtmlNode, IRenderableNode{
+	public class HtmlTextNode:RenderableTextNode{
+		
+	}
+	
+	/// <summary>
+	/// A renderable text node.
+	/// </summary>
+	public class RenderableTextNode : Dom.TextNode, IRenderableNode{
 		
 		/// <summary>The total number of spaces.</summary>
 		public int SpaceCount;
@@ -34,7 +41,7 @@ namespace PowerUI{
 		internal TextRenderableData RenderData_;
 		
 		
-		public HtmlTextNode(){
+		public RenderableTextNode(){
 			RenderData_=new TextRenderableData(this);
 		}
 		

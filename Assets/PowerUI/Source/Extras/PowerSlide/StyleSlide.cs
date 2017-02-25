@@ -123,7 +123,7 @@ namespace PowerSlide{
 					// Select from the doc:
 					Css.ReflowDocument doc=(element.document as Css.ReflowDocument);
 					
-					Css.IRenderableNode node=(doc.RootStyleNode as Css.IRenderableNode);
+					Css.IRenderableNode node=(doc.documentElement as Css.IRenderableNode);
 					
 					return node.querySelectorAll(selector);
 					

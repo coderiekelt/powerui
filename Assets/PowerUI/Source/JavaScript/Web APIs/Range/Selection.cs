@@ -126,7 +126,7 @@ namespace PowerUI{
 			}
 			
 			// Get as text node:
-			HtmlTextNode htn=(r.startContainer as HtmlTextNode);
+			RenderableTextNode htn=(r.startContainer as RenderableTextNode);
 			
 			if(htn==null){
 				// Can't select this at the moment.
