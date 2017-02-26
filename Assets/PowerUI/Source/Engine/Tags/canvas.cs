@@ -27,6 +27,34 @@ namespace PowerUI{
 		private CanvasContext2D Context2D;
 		
 		
+		/// <summary>The width.</summary>
+		public int width{
+			get{
+				int w;
+				if(!int.TryParse(this["width"],out w) || w<0){
+					w=300;
+				}
+				return w;
+			}
+			set{
+				this["width"]=value.ToString();
+			}
+		}
+		
+		/// <summary>The height.</summary>
+		public int height{
+			get{
+				int h;
+				if(!int.TryParse(this["height"],out h) || h<0){
+					h=150;
+				}
+				return h;
+			}
+			set{
+				this["height"]=value.ToString();
+			}
+		}
+		
 		internal override void RemovedFromDOM(){
 			
 			base.RemovedFromDOM();

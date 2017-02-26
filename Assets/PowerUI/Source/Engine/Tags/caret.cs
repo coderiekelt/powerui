@@ -39,6 +39,36 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The start of the selection, or the caret index.</summary>
+		public ulong selectionStart{
+			get{
+				// Got a selection?
+				Selection s=GetSelection();
+				
+				if(s==null){	
+					return (ulong)Index;
+				}
+				
+				// Anchor is the start:
+				return (ulong)(s.anchorOffset);
+			}
+		}
+		
+		/// <summary>The end of the selection, or the caret index+1.</summary>
+		public ulong selectionEnd{
+			get{
+				// Got a selection?
+				Selection s=GetSelection();
+				
+				if(s==null){	
+					return (ulong)(Index+1);
+				}
+				
+				// Focus is the end:
+				return (ulong)(s.focusOffset);
+			}
+		}
+		
 		/// <summary>Scrolls the input box if the given position is out of bounds.</summary>
 		private void ScrollIfBeyond(ref Vector2 position){
 			
@@ -124,17 +154,32 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>True if it successfully deleted a selection.</summary>
-		public bool TryDeleteSelection(){
+		/// <summary>Gets the selection of this caret. Null if none.</summary>
+		public Selection GetSelection(){
 			
 			if(TextHolder==null){
-				return false;
+				return null;
 			}
 			
 			// Got a selection?
 			Selection s=htmlDocument.getSelection();
 			
 			if(s==null || s.focusNode!=TextHolder){	
+				return null;
+			}
+			
+			// Selected the text.
+			return s;
+			
+		}
+		
+		/// <summary>True if it successfully deleted a selection.</summary>
+		public bool TryDeleteSelection(){
+			
+			// Got a selection?
+			Selection s=GetSelection();
+			
+			if(s==null){	
 				return false;
 			}
 			

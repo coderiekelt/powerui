@@ -326,6 +326,50 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Screen x coordinate.</summary>
+		public float screenX{
+			get{
+				return clientX;
+			}
+		}
+		
+		/// <summary>Screen y coordinate.</summary>
+		public float screenY{
+			get{
+				return clientY;
+			}
+		}
+		
+		/// <summary>X coordinate relative to the page (accounts for scrolling too).</summary>
+		public float pageX{
+			get{
+				
+				// Get the document:
+				Document doc=document;
+				
+				if(doc==null){
+					return clientX;
+				}
+				
+				return (doc.documentElement as HtmlElement).scrollLeft + clientX;
+			}
+		}
+		
+		/// <summary>Y coordinate relative to the page (accounts for scrolling too).</summary>
+		public float pageY{
+			get{
+				
+				// Get the document:
+				Document doc=document;
+				
+				if(doc==null){
+					return clientY;
+				}
+				
+				return (doc.documentElement as HtmlElement).scrollTop + clientY;
+			}
+		}
+		
 	}
 	
 	public class MutationEvent : UIEvent{

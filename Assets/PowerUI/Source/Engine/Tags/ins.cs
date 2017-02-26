@@ -16,7 +16,7 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("ins")]
-	public class HtmlInsertedElement:HtmlElement{
+	public class HtmlInsertedElement:HtmlModElement{
 		
 	}
 	

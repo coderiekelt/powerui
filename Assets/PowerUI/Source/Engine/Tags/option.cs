@@ -125,7 +125,7 @@ namespace PowerUI{
 		public override void OnChildrenLoaded(){
 			
 			// Get the dropdown:
-			Dropdown=GetSelect(parentElement);
+			Dropdown=GetParentByTagName("select") as HtmlSelectElement;
 			
 			if(Selected && Dropdown!=null){
 				// Tell the select:
@@ -134,19 +134,61 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Gets or finds the parent select tag that this option belongs to.</summary>
-		/// <param name="element">The element to check if it's a select.</param>
-		/// <returns>The select tag if found; null otherwise.</returns>
-		private HtmlSelectElement GetSelect(Element element){
-			if(element==null){
-				return null;
+		/// <summary>True if this element is disabled.</summary>
+		public bool disabled{
+			get{
+				if(GetBoolAttribute("disabled")){
+					return true;
+				}
+				
+				HtmlOptGroupElement gp=GetParentByTagName("optgroup") as HtmlOptGroupElement;
+				
+				if(gp==null){
+					return false;
+				}
+				
+				return gp.disabled;
 			}
-			
-			if(element.Tag=="select"){
-				return (HtmlSelectElement)(element);
+			set{
+				SetBoolAttribute("disabled",value);
 			}
-			
-			return GetSelect(element.parentElement);
+		}
+		
+		/// <summary>A label for the group.</summary>
+		public string label{
+			get{
+				string l=this["label"];
+				
+				if(l==null){
+					return text;
+				}
+				
+				return l;
+			}
+			set{
+				this["label"]=value;
+			}
+		}
+		
+		/// <summary>True if this option is currently selected.</summary>
+		public bool selected{
+			get{
+				
+				// Get the options menu:
+				if(Dropdown==null){
+					return false;
+				}
+				
+				return Dropdown.SelectedOption==this;
+			}
+			set{
+				if(value){
+					Dropdown.SetSelected(this);
+				}else{
+					// Return to index 0:
+					Dropdown.SetSelected(0);
+				}
+			}
 		}
 		
 		/// <summary>the index of this option element.</summary>
@@ -157,6 +199,16 @@ namespace PowerUI{
 					return 0;
 				}
 				return Dropdown.GetOptionIndex(this);
+			}
+		}
+		
+		/// <summary>The text of an option element.</summary>
+		public string text{
+			get{
+				return this["text"];
+			}
+			set{
+				this["text"]=value;
 			}
 		}
 		
@@ -172,20 +224,6 @@ namespace PowerUI{
 			// Handle locally:
 			return base.HandleLocalEvent(e,bubblePhase);
 			
-		}
-		
-	}
-	
-	public partial class HtmlElement{
-		
-		/// <summary>The text of an option element.</summary>
-		public string text{
-			get{
-				return this["text"];
-			}
-			set{
-				this["text"]=value;
-			}
 		}
 		
 	}

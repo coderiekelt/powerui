@@ -9,15 +9,15 @@
 //          www.kulestar.com
 //--------------------------------------
 
+using Dom;
+
+
 namespace PowerUI{
 	
 	/// <summary>
-	/// Represents a HTML del(eted) element. These get striked through.
+	/// An unrecognised element.
 	/// </summary>
 	
-	[Dom.TagName("del")]
-	public class HtmlDeletedElement:HtmlModElement{
-		
-	}
+	public class HtmlUnknownElement:HtmlElement{}
 	
 }

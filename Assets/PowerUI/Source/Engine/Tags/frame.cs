@@ -21,6 +21,16 @@ namespace PowerUI{
 	[Dom.TagName("frame")]
 	public class HtmlFrameElement:HtmlElement{
 		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

@@ -125,12 +125,12 @@ namespace Speech{
 		}
 		
 		/// <summary>Clears the document of all it's content, including scripts and styles.</summary>
-		public void clear(){
+		public override void clear(){
 			
 			speak=null;
 			
 			// Gracefully clear the innerHTML:
-			empty();
+			base.clear();
 			
 		}
 		

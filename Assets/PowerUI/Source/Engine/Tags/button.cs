@@ -30,9 +30,47 @@ namespace PowerUI{
 		public string Value;
 		
 		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
 		public HtmlButtonElement(){
 			// Make sure this tag is focusable:
 			IsFocusable=true;
+		}
+		
+		/// <summary>Does this element get submitted with the form?</summary>
+		internal override bool IsFormSubmittable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal override bool IsFormListed{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Can this element have a label?</summary>
+		internal override bool IsFormLabelable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>All labels targeting this select element.</summary>
+		public NodeList labels{
+			get{
+				return HtmlLabelElement.FindAll(this);
+			}
 		}
 		
 		/// <summary>Called when this node has been created and is being added to the given lexer.

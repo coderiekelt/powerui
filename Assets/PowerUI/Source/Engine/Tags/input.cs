@@ -39,8 +39,12 @@ namespace PowerUI{
 		public bool Hidden;
 		/// <summary>The value text for this input.</summary>
 		public string Value;
+		/// <summary>The original value.</summary>
+		public string defaultValue;
 		/// <summary>For boolean (radio or checkbox) inputs, this is true if this one is checked.</summary>
 		private bool Checked_;
+		/// <summary>The default checked state. 1 is checked, 2 is not checked, 0 is not set yet.</summary>
+		private int DefaultChecked_;
 		/// <summary>For text or password input boxes, this is the caret.</summary>
 		public HtmlCaretElement Caret;
 		/// <summary>The type of input that this is; e.g. text/password/radio etc.</summary>
@@ -48,7 +52,7 @@ namespace PowerUI{
 		/// <summary>The maximum length of text in this box.</summary>
 		public int MaxLength=int.MaxValue;
 		/// <summary>A placeholder value.</summary>
-		public string Placeholder="";
+		private string Placeholder_="";
 		
 		/// <summary>The current location of the caret.</summary>
 		public int CaretIndex{
@@ -58,6 +62,231 @@ namespace PowerUI{
 				}
 				
 				return Caret.Index;
+			}
+		}
+		
+		/// <summary>The alt attribute.</summary>
+		public string alt{
+			get{
+				return this["alt"];
+			}
+			set{
+				this["alt"]=value;
+			}
+		}
+		
+		/// <summary>The accept attribute.</summary>
+		public string accept{
+			get{
+				return this["accept"];
+			}
+			set{
+				this["accept"]=value;
+			}
+		}
+		
+		/// <summary>The start of the selection, or the caret index.</summary>
+		public ulong selectionStart{
+			get{
+				if(Caret==null){
+					return 0;
+				}
+				
+				return Caret.selectionStart;
+			}
+		}
+		
+		/// <summary>The end of the selection, or the caret index+1.</summary>
+		public ulong selectionEnd{
+			get{
+				if(Caret==null){
+					return 0;
+				}
+				
+				return Caret.selectionEnd;
+			}
+		}
+		
+		/// <summary>Overrides the action of the host form.</summary>
+		public string formAction{
+			get{
+				return this["formaction"];
+			}
+			set{
+				this["formaction"]=value;
+			}
+		}
+		
+		/// <summary>Overrides the enctype of the host form.</summary>
+		public string formEncType{
+			get{
+				return this["formenctype"];
+			}
+			set{
+				this["formenctype"]=value;
+			}
+		}
+		
+		/// <summary>Overrides the method of the host form.</summary>
+		public string formMethod{
+			get{
+				return this["formmethod"];
+			}
+			set{
+				this["formmethod"]=value;
+			}
+		}
+		
+		/// <summary>Overrides the validate of the host form.</summary>
+		public bool formNoValidate{
+			get{
+				return GetBoolAttribute("formnovalidate");
+			}
+			set{
+				SetBoolAttribute("formnovalidate",value);
+			}
+		}
+		
+		/// <summary>Overrides the method of the host form.</summary>
+		public string formTarget{
+			get{
+				return this["formtarget"];
+			}
+			set{
+				this["formtarget"]=value;
+			}
+		}
+		
+		/// <summary>The placeholder text, if any.</summary>
+		public string placeholder{
+			get{
+				return this["placeholder"];
+			}
+			set{
+				this["placeholder"]=value;
+			}
+		}
+		
+		/// <summary>True if this element can be autofocused.</summary>
+		public bool autofocus{
+			get{
+				return GetBoolAttribute("autofocus");
+			}
+			set{
+				SetBoolAttribute("autofocus",value);
+			}
+		}
+		
+		/// <summary>True if this element is disabled.</summary>
+		public bool disabled{
+			get{
+				return GetBoolAttribute("disabled");
+			}
+			set{
+				SetBoolAttribute("disabled",value);
+			}
+		}
+		
+		/// <summary>True if this element is required.</summary>
+		public bool required{
+			get{
+				return GetBoolAttribute("required");
+			}
+			set{
+				SetBoolAttribute("required",value);
+			}
+		}
+		
+		/// <summary>True if this element is readonly.</summary>
+		public bool readOnly{
+			get{
+				return GetBoolAttribute("readonly");
+			}
+			set{
+				SetBoolAttribute("readonly",value);
+			}
+		}
+		
+		/// <summary>All labels targeting this select element.</summary>
+		public NodeList labels{
+			get{
+				return HtmlLabelElement.FindAll(this);
+			}
+		}
+		
+		/// <summary>The height attribute.</summary>
+		public string height{
+			get{
+				return this["height"];
+			}
+			set{
+				this["height"]=value;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The src attribute.</summary>
+		public string src{
+			get{
+				return this["src"];
+			}
+			set{
+				this["src"]=value;
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
+		
+		public override void OnFormReset(){
+			if(Type==InputType.Checkbox || Type==InputType.Radio){
+				Checked=defaultChecked;
+			}else{
+				SetValue(defaultValue);
+			}
+		}
+		
+		/// <summary>Does this element get reset with the form?</summary>
+		internal override bool IsFormResettable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element get submitted with the form?</summary>
+		internal override bool IsFormSubmittable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal override bool IsFormListed{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Can this element have a label?</summary>
+		internal override bool IsFormLabelable{
+			get{
+				return true;
 			}
 		}
 		
@@ -93,6 +322,43 @@ namespace PowerUI{
 		public override bool IsSelfClosing{
 			get{
 				return true;
+			}
+		}
+		
+		/// <summary>Returns/sets the default state as specified in the doc.</summary>
+		public bool defaultChecked{
+			get{
+				return DefaultChecked_==1;
+			}
+			set{
+				DefaultChecked_=value?1:2;
+			}
+		}
+		
+		/// <summary>Gets or sets the checked state of this radio/checkbox input.
+		/// Note that 'checked' is a C# keyword, thus the uppercase.
+		/// Nitro is not case-sensitive (and JS lowercases it), so element.checked works fine there.</summary>
+		public override bool Checked{
+			get{
+				return GetBoolAttribute("checked");
+			}
+			set{
+				SetBoolAttribute("checked",value);
+			}
+		}
+		
+		/// <summary>The max length.</summary>
+		public long maxLength{
+			get{
+				
+				if(MaxLength>=int.MaxValue){
+					return -1;
+				}
+				
+				return MaxLength;
+			}
+			set{
+				this["maxlength"]=value.ToString();
 			}
 		}
 		
@@ -218,8 +484,8 @@ namespace PowerUI{
 			
 			}else if(property=="placeholder"){
 				
-				Placeholder=this["placeholder"];
-				innerHTML=Placeholder;
+				Placeholder_=this["placeholder"];
+				innerHTML=Placeholder_;
 				
 				return true;
 			
@@ -246,6 +512,11 @@ namespace PowerUI{
 				}else{
 					// Parse the maximum length from the string:
 					if(int.TryParse(value,out MaxLength)){
+						
+						if(MaxLength<0){
+							MaxLength=int.MaxValue;
+						}
+						
 						// Clip the value if we need to:
 						if(Value!=null && Value.Length>MaxLength){
 							SetValue(Value);
@@ -269,6 +540,11 @@ namespace PowerUI{
 					
 					Select();
 					
+					if(DefaultChecked_==0){
+						// First time. Apply it:
+						DefaultChecked_=1;
+					}
+					
 				}else{
 					state=state.ToLower().Trim();
 					
@@ -276,9 +552,19 @@ namespace PowerUI{
 						
 						Unselect();
 						
+						if(DefaultChecked_==0){
+							// First time. Apply it:
+							DefaultChecked_=2;
+						}
+						
 					}else{
 						
 						Select();
+						
+						if(DefaultChecked_==0){
+							// First time. Apply it:
+							DefaultChecked_=1;
+						}
 						
 					}
 					
@@ -371,7 +657,7 @@ namespace PowerUI{
 					
 				}else{
 					
-					allInputs=form.GetAllInputs();
+					allInputs=form.elements;
 					
 				}
 				
@@ -431,6 +717,10 @@ namespace PowerUI{
 			
 			if(value==null || CaretIndex>value.Length){
 				MoveCaret(0);
+			}
+			
+			if(Value==null){
+				defaultValue=value;
 			}
 			
 			// Update the value:
@@ -550,8 +840,16 @@ namespace PowerUI{
 						// Also call a convenience (non-standard) "onenter" method.
 						
 						HtmlFormElement f=form;
-						if(f!=null && f.HasSubmitButton){
-							f.submit();
+						if(f!=null){
+							
+							// Get the first submit button:
+							HtmlElement submitButton=f.GetSubmitButton();
+							
+							if(submitButton!=null){
+								// Submit it now:
+								f.submit(submitButton);
+							}
+							
 						}
 						
 						return;
@@ -589,7 +887,7 @@ namespace PowerUI{
 						HtmlFormElement f=form;
 						
 						if(f!=null){
-							f.submit();
+							f.submit(this);
 						}
 						
 					}
@@ -608,7 +906,7 @@ namespace PowerUI{
 				return;
 			}
 			
-			if(innerHTML==Placeholder && Placeholder!=""){
+			if(innerHTML==Placeholder_ && Placeholder_!=""){
 				innerHTML="";
 			}
 			
@@ -627,8 +925,8 @@ namespace PowerUI{
 			Style.Computed.RemoveVirtual(HtmlCaretElement.Priority);
 			Caret=null;
 			
-			if(innerHTML=="" && Placeholder!=""){
-				innerHTML=Placeholder;
+			if(innerHTML=="" && Placeholder_!=""){
+				innerHTML=Placeholder_;
 			}
 			
 		}
@@ -660,7 +958,7 @@ namespace PowerUI{
 				// Find the form and then attempt to submit it.
 				HtmlFormElement f=form;
 				if(f!=null){
-					f.submit();
+					f.submit(this);
 				}
 				
 			}else if(Type==InputType.Radio){

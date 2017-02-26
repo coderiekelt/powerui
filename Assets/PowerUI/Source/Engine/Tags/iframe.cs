@@ -31,6 +31,98 @@ namespace PowerUI{
 		public HtmlDocument ContentDocument;
 		
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The content window.</summary.
+		public Window contentWindow{
+			get{
+				return ContentDocument.window;
+			}
+		}
+		
+		/// <summary>The height attribute.</summary>
+		public string height{
+			get{
+				return this["height"];
+			}
+			set{
+				this["height"]=value;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The referrerpolicy attribute.</summary>
+		public string referrerPolicy{
+			get{
+				return this["referrerpolicy"];
+			}
+			set{
+				this["referrerpolicy"]=value;
+			}
+		}
+		
+		/// <summary>The src attribute.</summary>
+		public string src{
+			get{
+				return this["src"];
+			}
+			set{
+				this["src"]=value;
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
+		
+		/// <summary>Reloads the iframe.</summary>
+		public void reload(){
+			contentWindow.location.reload();
+		}
+		
+		/// <summary>Indicates whether it's possible to navigate backwards</summary>
+		public bool getCanGoBack(){
+			return contentWindow.history.canGoBack;
+		}
+		
+		/// <summary>Goes to the previous location in its browsing history.</summary>
+		public void goBack(){
+			contentWindow.history.back();
+		}
+		
+		/// <summary>Indicates whether it's possible to navigate forwards</summary>
+		public bool getCanGoForward(){
+			return contentWindow.history.canGoForward;
+		}
+		
+		/// <summary>Goes to the next location in its browsing history.</summary>
+		public void goForward(){
+			contentWindow.history.forward();
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
 		/// Closely related to Element.OnLexerCloseNode.</summary>
 		/// <returns>True if this element handled itself.</returns>
@@ -67,10 +159,11 @@ namespace PowerUI{
 			if(property=="src"){
 				Src=this["src"];
 				LoadContent();
-				return true;
+			}else{
+				return false;
 			}
 			
-			return false;
+			return true;
 		}
 		
 		/// <summary>Loads the content of this iframe now.</summary>

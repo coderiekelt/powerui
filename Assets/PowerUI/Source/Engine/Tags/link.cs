@@ -32,6 +32,98 @@ namespace PowerUI{
 		public Css.StyleSheet styleSheet=null;
 		
 		
+		/// <summary>Represents whether the link is disabled.</summary>
+		public bool disabled{
+			get{
+				return GetBoolAttribute("disabled");
+			}
+			set{
+				SetBoolAttribute("disabled",value);
+			}
+		}
+		
+		/// <summary>The href attribute.</summary>
+		public string href{
+			get{
+				return this["href"];
+			}
+			set{
+				this["href"]=value;
+			}
+		}
+		
+		/// <summary>The media attribute.</summary>
+		public string media{
+			get{
+				return this["media"];
+			}
+			set{
+				this["media"]=value;
+			}
+		}
+		
+		/// <summary>The referrerpolicy attribute.</summary>
+		public string referrerPolicy{
+			get{
+				return this["referrerpolicy"];
+			}
+			set{
+				this["referrerpolicy"]=value;
+			}
+		}
+		
+		/// <summary>The rel attribute.</summary>
+		public string rel{
+			get{
+				return this["rel"];
+			}
+			set{
+				this["rel"]=value;
+			}
+		}
+		
+		/// <summary>The set of rel values.</summary>
+		public DOMTokenList relList{
+			get{
+				return new DOMTokenList(this,"rel");
+			}
+		}
+		
+		/*
+		public DOMSettableTokenList sizes{
+			get{
+				return new DOMSettableTokenList(this,"sizes");
+			}
+		}
+		*/
+		
+		/// <summary>The stylesheet that this is loading.</summary>
+		public Css.StyleSheet sheet{
+			get{
+				return styleSheet;
+			}
+		}
+		
+		/// <summary>The target attribute.</summary>
+		public string target{
+			get{
+				return this["target"];
+			}
+			set{
+				this["target"]=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

@@ -22,6 +22,18 @@ namespace PowerUI{
 	[Dom.TagName("pre")]
 	public class HtmlPreElement:HtmlElement{
 		
+		/// <summary>The width attribute (a long).</summary>
+		public long width{
+			get{
+				long v;
+				long.TryParse(this["width"],out v);
+				return v;
+			}
+			set{
+				this["width"]=value.ToString();
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

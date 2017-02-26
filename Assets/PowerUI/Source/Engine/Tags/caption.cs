@@ -19,7 +19,17 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("caption")]
-	public class HtmlCaptionElement:HtmlElement{
+	public class HtmlTableCaptionElement:HtmlElement{
+		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
 		
 		/// <summary>When the given lexer resets, this is called.</summary>
 		public override int SetLexerMode(bool last,Dom.HtmlLexer lexer){

@@ -18,6 +18,16 @@ namespace PowerUI{
 	[Dom.TagName("q")]
 	public class HtmlQuoteElement:HtmlElement{
 		
+		/// <summary>The cite attribute.</summary>
+		public string cite{
+			get{
+				return this["cite"];
+			}
+			set{
+				this["cite"]=value;
+			}
+		}
+		
 	}
 	
 }

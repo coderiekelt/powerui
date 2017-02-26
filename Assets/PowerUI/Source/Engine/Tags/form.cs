@@ -36,6 +36,96 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The method attribute.</summary>
+		public string method{
+			get{
+				return this["method"];
+			}
+			set{
+				this["method"]=value;
+			}
+		}
+		
+		/// <summary>The target attribute.</summary>
+		public string target{
+			get{
+				return this["target"];
+			}
+			set{
+				this["target"]=value;
+			}
+		}
+		
+		/// <summary>The action attribute.</summary>
+		public string action{
+			get{
+				return this["action"];
+			}
+			set{
+				this["action"]=value;
+			}
+		}
+		
+		/// <summary>The enctype attribute.</summary>
+		public string encoding{
+			get{
+				return this["enctype"];
+			}
+			set{
+				this["enctype"]=value;
+			}
+		}
+		
+		/// <summary>The enctype attribute.</summary>
+		public string enctype{
+			get{
+				return this["enctype"];
+			}
+			set{
+				this["enctype"]=value;
+			}
+		}
+		
+		/// <summary>The accept-charset attribute.</summary>
+		public string acceptCharset{
+			get{
+				return this["accept-charset"];
+			}
+			set{
+				this["accept-charset"]=value;
+			}
+		}
+		
+		/// <summary>The autocomplete attribute.</summary>
+		public string autocomplete{
+			get{
+				return this["autocomplete"];
+			}
+			set{
+				this["autocomplete"]=value;
+			}
+		}
+		
+		/// <summary>The novalidate attribute.</summary>
+		public bool noValidate{
+			get{
+				return GetBoolAttribute("novalidate");
+			}
+			set{
+				SetBoolAttribute("novalidate",value);
+			}
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
 		/// Closely related to Element.OnLexerCloseNode.</summary>
 		/// <returns>True if this element handled itself.</returns>
@@ -143,27 +233,28 @@ namespace PowerUI{
 			}
 			
 			if(property=="onsubmit"){
-				return true;
 			}else if(property=="action"){
 				Action=this["action"];
-				return true;
+			}else{
+				return false;
 			}
 			
-			return false;
+			return true;
 		}
 		
 		/// <summary>Gets all input elements contained within this form.</summary>
+		/// <param name='mode'>The form search options.</summary>
 		/// <returns>A list of all input elements.</returns>
-		public HTMLCollection GetAllInputs(){
-			HTMLCollection results=new HTMLCollection();
-			GetAllInputs(results,this);
+		public HTMLFormControlsCollection GetAllInputs(InputSearchMode mode){
+			HTMLFormControlsCollection results=new HTMLFormControlsCollection();
+			GetAllInputs(results,this,mode);
 			return results;
 		}
 		
 		/// <summary>Gets all inputs from the given element, adding the results to the given list.</summary>
 		/// <param name="results">The list that all results are added to.</param>
 		/// <param name="element">The element to check.</param>
-		private void GetAllInputs(INodeList results,HtmlElement element){
+		public static void GetAllInputs(INodeList results,HtmlElement element,InputSearchMode mode){
 			
 			NodeList kids=element.childNodes_;
 			
@@ -172,25 +263,37 @@ namespace PowerUI{
 			}
 			
 			for(int i=0;i<kids.length;i++){
-				HtmlElement child=kids[i] as HtmlElement ;
+				HtmlElement child=kids[i] as HtmlElement;
 				
-				if(child==null){
+				if(child==null || child.Tag=="form"){
+					// Don't go into child forms.
 					continue;
 				}
 				
-				if(child.Tag=="input"||child.Tag=="select"||child.Tag=="textarea"){
+				if(
+					(mode==InputSearchMode.Submittable && child.IsFormSubmittable) || 
+					(mode==InputSearchMode.Listed && child.IsFormListed) ||
+					(mode==InputSearchMode.Resettable && child.IsFormResettable)
+				){
 					results.push(child);
 				}else{
-					GetAllInputs(results,child);
+					GetAllInputs(results,child,mode);
 				}
 				
 			}
 		}
 		
-		/// <summary>Gets all input elements contained within this form.</summary>
-		public override HTMLCollection elements{
+		/// <summary>Number of controls in the form.</summary>
+		public long length{
 			get{
-				return GetAllInputs();
+				return elements.length;
+			}
+		}
+		
+		/// <summary>Gets all input elements contained within this form.</summary>
+		public HTMLFormControlsCollection elements{
+			get{
+				return GetAllInputs(InputSearchMode.Listed);
 			}
 		}
 		
@@ -232,34 +335,87 @@ namespace PowerUI{
 		/// <summary>True if this form has a submit button within it.</summary>
 		public bool HasSubmitButton{
 			get{
-				// Get all inputs:
-				HTMLCollection allInputs=getElementsByTagName("input");
-				
-				// Are any a submit?
-				foreach(Element element in allInputs){
-					if(element["type"]=="submit"){
-						return true;
-					}
-				}
-				
-				return false;
+				return GetSubmitButton()!=null;
 			}
+		}
+		
+		/// <summary>Gets a submit button. Null if none were found.</summary>
+		public HtmlElement GetSubmitButton(){
+		
+			// Get all inputs:
+			HTMLCollection allInputs=getElementsByTagName("input");
+			
+			// Are any a submit?
+			foreach(Element element in allInputs){
+				if(element["type"]=="submit"){
+					return element as HtmlElement;
+				}
+			}
+			
+			return null;
+		}
+		
+		/// <summary>Resets this form.</summary>
+		public void reset(){
+			
+			// Get resettable elements:
+			HTMLFormControlsCollection allReset=GetAllInputs(InputSearchMode.Submittable);
+			
+			foreach(Element e in allReset){
+				HtmlElement he=(e as HtmlElement);
+				
+				if(he!=null){
+					he.OnFormReset();
+				}
+			}
+			
 		}
 		
 		/// <summary>Submits this form.</summary>
 		public override void submit(){
+			submit(null);
+		}
+		
+		/// <summary>Gets an attribute value which may be overriden in the given element.</summary>
+		private string GetOverriden(string name,HtmlElement button){
+			
+			// Get from this element:
+			string current=this[name];
+			
+			// Got an override?
+			if(button!=null){
+				string overriden=button["form"+name];
+				
+				if(overriden!=null){
+					return overriden;
+				}
+			}
+			
+			return current;
+			
+		}
+		
+		/// <summary>Submits this form using the given button. It may override the action etc.</summary>
+		public void submit(HtmlElement clickedButton){
 			
 			// Generate a nice dictionary of the form contents.
 			
 			// Step 1: find the unique names of the elements:
 			Dictionary<string,string> uniqueValues=new Dictionary<string,string>();
 			
-			HTMLCollection allInputs=GetAllInputs();
+			// Get submittable elements:
+			HTMLFormControlsCollection allInputs=GetAllInputs(InputSearchMode.Submittable);
 			
 			foreach(Element element in allInputs){
+				
+				if(element is HtmlButtonElement){
+					// No buttons.
+					continue;
+				}
+				
 				string type=element["type"];
-				if(type=="submit"||type=="button"){
-					// Don't want buttons in here.
+				if(type=="submit"){
+					// No submit either.
 					continue;
 				}
 				
@@ -292,6 +448,9 @@ namespace PowerUI{
 				uniqueValues[name]=value;
 			}
 			
+			// Get the action:
+			string action=GetOverriden("action",clickedButton);
+			
 			FormEvent formData=new FormEvent(uniqueValues);
 			formData.SetTrusted(false);
 			formData.EventType="submit";
@@ -301,7 +460,7 @@ namespace PowerUI{
 			if( dispatchEvent(formData) ){
 				
 				// Get ready to post now!
-				DataPackage package=new DataPackage(Action,document.basepath);
+				DataPackage package=new DataPackage(action,document.basepath);
 				package.AttachForm(formData.ToUnityForm());
 				
 				// Apply request to the data:
@@ -318,7 +477,9 @@ namespace PowerUI{
 						// Otherwise the ondone function quit the event.
 						
 						// Load the result into target now.
-						HtmlDocument targetDocument=ResolveTarget();
+						string target=GetOverriden("target",clickedButton);
+						
+						HtmlDocument targetDocument=ResolveTarget(target);
 						
 						if(targetDocument==null){
 							// Posting a form to an external target.
@@ -353,27 +514,19 @@ namespace PowerUI{
 		
 	}
 	
+	/// <summary>
+	/// Options when searching for input elements.
+	/// </summary>
+	public enum InputSearchMode{
+		Submittable,
+		Listed,
+		Resettable
+	}
 	
 	public partial class HtmlElement{
 		
-		
-		/// <summary>Internal use only. <see cref="PowerUI.HtmlElement.formElement"/>.
-		/// Scans up the DOM to find the parent form element.</summary>
-		/// <returns>The parent form element, if found.</returns>
-		public HtmlElement GetForm(){
-			
-			if(this is HtmlFormElement){
-				return this;
-			}
-			
-			HtmlElement parent=parentNode_ as HtmlElement;
-			
-			if(parent==null){
-				return null;
-			}
-			
-			return parent.GetForm();
-		}
+		/// <summary>Called when the parent form is reset.</summary>
+		public virtual void OnFormReset(){}
 		
 		/// <summary>Submits the form this element is in.</summary>
 		public virtual void submit(){
@@ -391,14 +544,7 @@ namespace PowerUI{
 		/// The object returned provides useful methods such as <see cref="PowerUI.HtmlFormElement.submit"/>. </summary>
 		public HtmlFormElement form{
 			get{
-				return GetForm() as HtmlFormElement;
-			}
-		}
-		
-		/// <summary>Gets all input elements contained within this form.</summary>
-		public virtual HTMLCollection elements{
-			get{
-				return null;
+				return GetParentByTagName("form") as HtmlFormElement;
 			}
 		}
 		

@@ -21,6 +21,26 @@ namespace PowerUI{
 	[Dom.TagName("meta")]
 	public class HtmlMetaElement:HtmlElement{
 	
+		/// <summary>The meta-data attribute.</summary>
+		public string content{
+			get{
+				return this["meta-data"];
+			}
+			set{
+				this["meta-data"]=value;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

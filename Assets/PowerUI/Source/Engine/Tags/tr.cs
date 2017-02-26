@@ -23,7 +23,69 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("tr")]
-	public class HtmlTrElement:HtmlElement{
+	public class HtmlTableRowElement:HtmlElement{
+		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The bgcolor attribute.</summary>
+		public string bgColor{
+			get{
+				return this["bgcolor"];
+			}
+			set{
+				this["bgcolor"]=value;
+			}
+		}
+		
+		/// <summary>The section row index.</summary>
+		public long sectionRowIndex{
+			get{
+				return childIndex;
+			}
+		}
+		
+		/// <summary>An index in the entire table.</summary>
+		public long rowIndex{
+			get{
+				// Get the table itself:
+				HtmlTableElement table=GetParentByTagName("table") as HtmlTableElement;
+				
+				// Must align with table.deleteRow(index).
+				if(table==null){
+					return -1;
+				}
+				
+				return table.rows.indexOf(this);
+			}
+		}
+		
+		/// <summary>The cells on the row (td and th).</summary>
+		public HTMLCollection cells{
+			get{
+				HTMLCollection hc=new HTMLCollection();
+				getElementsByTagName("td",false,hc);
+				getElementsByTagName("th",false,hc);
+				return hc;
+			}
+		}
+		
+		/// <summary>The valign attribute.</summary>
+		public string vAlign{
+			get{
+				return this["valign"];
+			}
+			set{
+				this["valign"]=value;
+			}
+		}
 		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{

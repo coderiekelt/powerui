@@ -19,7 +19,45 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("tbody")]
-	public class HtmlTableBodyElement:HtmlElement{
+	public class HtmlTableBodyElement:HtmlTableSectionElement{
+		
+		/// <summary>Called when a close tag of this element has 
+		/// been created and is being added to the given lexer.</summary>
+		/// <returns>True if this element handled itself.</returns>
+		public override bool OnLexerCloseNode(HtmlLexer lexer,int mode){
+			return HandleTableBodyClose("tbody",lexer,mode);
+		}
+		
+	}
+	
+	public class HtmlTableSectionElement:HtmlElement{
+		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The rows in the section.</summary>
+		public HTMLCollection rows{
+			get{
+				return getElementsByTagName("tr");
+			}
+		}
+		
+		/// <summary>The valign attribute.</summary>
+		public string vAlign{
+			get{
+				return this["valign"];
+			}
+			set{
+				this["valign"]=value;
+			}
+		}
 		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
@@ -40,16 +78,52 @@ namespace PowerUI{
 		/// <returns>True if this element handled itself.</returns>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			
-			return HandleTableBodyZone(this,lexer,mode);
+			// Most common case:
+			if(mode==HtmlTreeMode.InTable){
+				
+				// Clear back to table context:
+				lexer.CloseToTableContext();
+				
+				lexer.Push(this,true);
+				lexer.CurrentMode = HtmlTreeMode.InTableBody;
+				
+			}else if(mode==HtmlTreeMode.InBody){
+				
+				// [Table component] - Parse error if this appears in the body.
+				// Just ignore it.
+				
+			}else if(mode==HtmlTreeMode.InCaption){
+				
+				// [Table component] - Close it and reprocess:
+				lexer.CloseCaption(this,null);
+				
+			}else if(mode==HtmlTreeMode.InCell){
+				
+				// [Table component] - Close to table cell if <th> or <td> is in scope and reprocess:
+				lexer.CloseIfThOrTr(this,null);
+				
+			}else if(mode==HtmlTreeMode.InTableBody){
+				
+				// [Table component] - Close to table if in a table body context and reprocess:
+				lexer.CloseToTableBodyIfBody(this,null);
+				
+			}else if(mode==HtmlTreeMode.InRow){
+				
+				// [Table component] - Close to table body if <tr> is in scope and reprocess:
+				lexer.TableBodyIfTrInScope(this,null);
+				
+			}else if(mode==HtmlTreeMode.InTemplate){
+				
+				// [Table component] - Step the template:
+				lexer.TemplateStep(this,null,HtmlTreeMode.InTable);
+				
+			}else{
 			
-		}
-		
-		/// <summary>Called when a close tag of this element has 
-		/// been created and is being added to the given lexer.</summary>
-		/// <returns>True if this element handled itself.</returns>
-		public override bool OnLexerCloseNode(HtmlLexer lexer,int mode){
+				return false;
 			
-			return HandleTableBodyClose("tbody",lexer,mode);
+			}
+			
+			return true;
 			
 		}
 		
@@ -86,7 +160,7 @@ namespace PowerUI{
 		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
 		/// Closely related to Element.OnLexerCloseNode. Shared by tbody, thead and tfoot.</summary>
-		public static bool HandleTableBodyClose(string close,HtmlLexer lexer,int mode){
+		protected bool HandleTableBodyClose(string close,HtmlLexer lexer,int mode){
 			
 			if((mode & IgnoreClose)!=0){
 				
@@ -129,59 +203,6 @@ namespace PowerUI{
 			}else if(mode==HtmlTreeMode.InSelectInTable){
 				
 				lexer.CloseSelect(false,null,close);
-				
-			}else{
-			
-				return false;
-			
-			}
-			
-			return true;
-			
-		}
-		
-		/// <summary>Called when this node has been created and is being added to the given lexer.
-		/// Closely related to Element.OnLexerCloseNode. Shared by tbody, thead and tfoot.</summary>
-		public static bool HandleTableBodyZone(HtmlElement node,HtmlLexer lexer,int mode){
-			
-			// Most common case:
-			if(mode==HtmlTreeMode.InTable){
-				
-				// Clear back to table context:
-				lexer.CloseToTableContext();
-				
-				lexer.Push(node,true);
-				lexer.CurrentMode = HtmlTreeMode.InTableBody;
-				
-			}else if(mode==HtmlTreeMode.InBody){
-				
-				// [Table component] - Parse error if this appears in the body.
-				// Just ignore it.
-				
-			}else if(mode==HtmlTreeMode.InCaption){
-				
-				// [Table component] - Close it and reprocess:
-				lexer.CloseCaption(node,null);
-				
-			}else if(mode==HtmlTreeMode.InCell){
-				
-				// [Table component] - Close to table cell if <th> or <td> is in scope and reprocess:
-				lexer.CloseIfThOrTr(node,null);
-				
-			}else if(mode==HtmlTreeMode.InTableBody){
-				
-				// [Table component] - Close to table if in a table body context and reprocess:
-				lexer.CloseToTableBodyIfBody(node,null);
-				
-			}else if(mode==HtmlTreeMode.InRow){
-				
-				// [Table component] - Close to table body if <tr> is in scope and reprocess:
-				lexer.TableBodyIfTrInScope(node,null);
-				
-			}else if(mode==HtmlTreeMode.InTemplate){
-				
-				// [Table component] - Step the template:
-				lexer.TemplateStep(node,null,HtmlTreeMode.InTable);
 				
 			}else{
 			

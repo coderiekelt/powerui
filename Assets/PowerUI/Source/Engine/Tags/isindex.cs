@@ -16,7 +16,7 @@ namespace PowerUI{
 	/// </summary>
 
 	[Dom.TagName("isindex")]
-	public class HtmlIsindexElement:HtmlElement{
+	public class HtmlIsIndexElement:HtmlElement{
 		
 	}
 	

@@ -18,6 +18,16 @@ namespace PowerUI{
 	[Dom.TagName("data")]
 	public class HtmlDataElement:HtmlElement{
 		
+		/// <summary>The value attribute.</summary>
+		public string Value{
+			get{
+				return this["value"];
+			}
+			set{
+				this["value"]=value;
+			}
+		}
+		
 	}
 	
 }

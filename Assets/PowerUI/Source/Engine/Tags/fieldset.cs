@@ -21,8 +21,44 @@ namespace PowerUI{
 	[Dom.TagName("fieldset")]
 	public class HtmlFieldsetElement:HtmlElement{
 		
+		/// <summary>Gets all input elements contained within this form.</summary>
+		public HTMLFormControlsCollection elements{
+			get{
+				HTMLFormControlsCollection results=new HTMLFormControlsCollection();
+				HtmlFormElement.GetAllInputs(results,this,InputSearchMode.Listed);
+				return results;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal override bool IsFormListed{
 			get{
 				return true;
 			}

@@ -33,6 +33,46 @@ namespace PowerUI{
 		public int CodeIndex=-1;
 		
 		
+		/// <summary>The charset.</summary>
+		public string charset{
+			get{
+				return this["charset"];
+			}
+			set{
+				this["charset"]=value;
+			}
+		}
+		
+		/// <summary>The src of the script.</summary>
+		public string src{
+			get{
+				return this["src"];
+			}
+			set{
+				this["src"]=value;
+			}
+		}
+		
+		/// <summary>The type of the script.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The contents of the script.</summary>
+		public string text{
+			get{
+				return textContent;
+			}
+			set{
+				textContent=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

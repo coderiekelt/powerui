@@ -39,6 +39,158 @@ namespace PowerUI{
 		private bool Loaded;
 		
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The alt attribute.</summary>
+		public string alt{
+			get{
+				return this["alt"];
+			}
+			set{
+				this["alt"]=value;
+			}
+		}
+		
+		/// <summary>True if this image is ready.</summary>
+		public bool complete{
+			get{
+				return ((Image!=null && Image.Contents!=null && Image.Contents.Loaded) || this["src"]==null);
+			}
+		}
+		
+		/// <summary>The current src (which can change depending on e.g. media queries).</summary>
+		public string currentSrc{
+			get{
+				Css.BackgroundImage bg=RenderData.BGImage;
+				
+				if(bg==null || bg.Image==null){
+					return "";
+				}
+				
+				return bg.Image.location.href;
+			}
+		}
+		
+		/// <summary>The height attribute.</summary>
+		public string height{
+			get{
+				return this["height"];
+			}
+			set{
+				this["height"]=value;
+			}
+		}
+		
+		/// <summary>The ismap attribute.</summary>
+		public bool isMap{
+			get{
+				return GetBoolAttribute("ismap");
+			}
+			set{
+				SetBoolAttribute("ismap",value);
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The 'natural' height of the image in CSS pixels.</summary>
+		public ulong naturalHeight{
+			get{
+				if(Image==null || Image.Contents==null || !Image.Contents.Loaded){
+					return 0;
+				}
+				
+				return (ulong)Image.Height;
+			}
+		}
+		
+		/// <summary>The 'natural' width of the image in CSS pixels.</summary>
+		public ulong naturalWidth{
+			get{
+				if(Image==null || Image.Contents==null || !Image.Contents.Loaded){
+					return 0;
+				}
+				
+				return (ulong)Image.Width;
+			}
+		}
+		
+		/// <summary>The referrerpolicy attribute.</summary>
+		public string referrerPolicy{
+			get{
+				return this["referrerpolicy"];
+			}
+			set{
+				this["referrerpolicy"]=value;
+			}
+		}
+		
+		/// <summary>The src attribute.</summary>
+		public string src{
+			get{
+				return this["src"];
+			}
+			set{
+				this["src"]=value;
+			}
+		}
+		
+		/// <summary>The sizes attribute.</summary>
+		public string sizes{
+			get{
+				return this["sizes"];
+			}
+			set{
+				this["sizes"]=value;
+			}
+		}
+		
+		/// <summary>The srcset attribute.</summary>
+		public string srcset{
+			get{
+				return this["srcset"];
+			}
+			set{
+				this["srcset"]=value;
+			}
+		}
+		
+		/// <summary>The useMap attribute.</summary>
+		public string useMap{
+			get{
+				return this["usemap"];
+			}
+			set{
+				this["usemap"]=value;
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
+		
 		public override bool IsSelfClosing{
 			get{
 				return true;

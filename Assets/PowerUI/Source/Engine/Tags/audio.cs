@@ -16,7 +16,7 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("audio")]
-	public class HtmlAudioElement:HtmlElement{
+	public class HtmlAudioElement:HtmlMediaElement{
 		
 	}
 	

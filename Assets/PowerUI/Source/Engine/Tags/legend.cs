@@ -18,6 +18,16 @@ namespace PowerUI{
 	[Dom.TagName("legend")]
 	public class HtmlLegendElement:HtmlElement{
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
 	}
 	
 }

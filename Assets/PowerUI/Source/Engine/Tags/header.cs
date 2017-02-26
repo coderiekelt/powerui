@@ -21,6 +21,16 @@ namespace PowerUI{
 	[Dom.TagName("header")]
 	public class HtmlHeaderElement:HtmlElement{
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Css;
 using Dom;
+using PowerUI;
 
 
 namespace PowerUI{
@@ -33,6 +34,8 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The default selected option.</summary>
+		public int defaultIndex;
 		/// <summary>The selected node.</summary>
 		private HtmlOptionElement SelectedNode_;
 		/// <summary>The currently open dropdown.</summary>
@@ -49,6 +52,107 @@ namespace PowerUI{
 				
 				return RenderData.Virtuals.Get(HtmlSelectButtonElement.Priority-1) as HtmlDivElement;
 				
+			}
+		}
+		
+		/// <summary>The set of all option elements contained by this element.</summary>
+		public HTMLOptionsCollection options{
+			get{
+				HTMLOptionsCollection hoc=new HTMLOptionsCollection();
+				CollectOptions(this,hoc);
+				return hoc;
+			}
+		}
+		
+		/// <summary>The number of option elements in this select.</summary>
+		public int length{
+			get{
+				int v=0;
+				CountOptions(this,ref v);
+				return v;
+			}
+		}
+		
+		/// <summary>True if this is a multiselect.</summary>
+		public bool multiple{
+			get{
+				return GetBoolAttribute("multiple");
+			}
+			set{
+				SetBoolAttribute("multiple",value);
+			}
+		}
+		
+		/// <summary>True if this element can be autofocused.</summary>
+		public bool autofocus{
+			get{
+				return GetBoolAttribute("autofocus");
+			}
+			set{
+				SetBoolAttribute("autofocus",value);
+			}
+		}
+		
+		/// <summary>True if this element is disabled.</summary>
+		public bool disabled{
+			get{
+				return GetBoolAttribute("disabled");
+			}
+			set{
+				SetBoolAttribute("disabled",value);
+			}
+		}
+		
+		/// <summary>True if this element is required.</summary>
+		public bool required{
+			get{
+				return GetBoolAttribute("required");
+			}
+			set{
+				SetBoolAttribute("required",value);
+			}
+		}
+		
+		/// <summary>The control type.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The size attribute.</summary>
+		public long size{
+			get{
+				string v=this["size"];
+				
+				if(v==null){
+					if(multiple){
+						return 4;
+					}
+					
+					return 1;
+				}
+				
+				long result;
+				long.TryParse(v,out result);
+				return result;
+				
+			}
+			set{
+				this["size"]=value.ToString();
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
 			}
 		}
 		
@@ -198,9 +302,69 @@ namespace PowerUI{
 			return GetOption(this,ref index);
 		}
 		
+		/// <summary>Collects all option elements that are child nodes (including inside optgroups).</summary>
+		public static void CollectOptions(Node parent,INodeList hoc){
+			
+			if(parent.childNodes_==null){
+				return;
+			}
+			
+			// For each child node..
+			for(int i=0;i<parent.childNodes_.length;i++){
+				
+				// Get it:
+				Node child=parent.childNodes_[i];
+				
+				// Option?
+				if(child is HtmlOptionElement){
+					hoc.push(child);
+					continue;
+				}
+				
+				if(child.childNodes_!=null){
+					// Go recursive:
+					CollectOptions(child,hoc);
+				}
+				
+			}
+			
+		}
+		
+		/// <summary>Counts all option elements that are child nodes (including inside optgroups).</summary>
+		private void CountOptions(Node parent,ref int count){
+			
+			if(parent.childNodes_==null){
+				return;
+			}
+			
+			// For each child node..
+			for(int i=0;i<parent.childNodes_.length;i++){
+				
+				// Get it:
+				Node child=parent.childNodes_[i];
+				
+				// Option?
+				if(child is HtmlOptionElement){
+					count++;
+					continue;
+				}
+				
+				if(child.childNodes_!=null){
+					// Go recursive:
+					CountOptions(child,ref count);
+				}
+				
+			}
+			
+		}
+		
 		/// <summary>Searches parent (which must be a parent) for the given node.
 		/// Each time an option element is encountered, currentIndex is increased.</summary>
 		private HtmlOptionElement GetOption(Node parent,ref int targetIndex){
+			
+			if(parent.childNodes_==null){
+				return null;
+			}
 			
 			// For each child node..
 			for(int i=0;i<parent.childNodes_.length;i++){
@@ -262,6 +426,10 @@ namespace PowerUI{
 		/// Each time an option element is encountered, currentIndex is increased.</summary>
 		private bool GetOptionIndex(Node parent,Node node,ref int currentIndex){
 			
+			if(parent.childNodes_==null){
+				return false;
+			}
+			
 			// For each child node..
 			for(int i=0;i<parent.childNodes_.length;i++){
 				
@@ -296,14 +464,6 @@ namespace PowerUI{
 			return false;
 		}
 		
-		/// <summary>Adds an option to this dropdown menu. Element.add() calls this.</summary>
-		public void AddOption(HtmlElement element){
-			
-			// Just add as a child:
-			appendChild(element);
-			
-		}
-	   
 		public override void OnTagLoaded(){
 			
 			// Append the text,dropdown and button.
@@ -328,6 +488,9 @@ namespace PowerUI{
 				// -3 Prompts it to not call onchange, then set index 0.
 				SetSelected(-3);
 			}
+			
+			// Set default:
+			defaultIndex=SelectedIndex_;
 			
 		}
 		
@@ -359,6 +522,58 @@ namespace PowerUI{
 			Dropdown.style.width=box.Width+"px";
 			Dropdown.style.top=(box.Y+box.PaddedHeight)+"px";
 			
+		}
+		
+		/// <summary>Selected options.</summary>
+		public HTMLCollection selectedOptions{
+			get{
+				HTMLCollection hc=new HTMLCollection();
+				
+				if(SelectedNode_!=null){
+					hc.push(SelectedNode_);
+				}
+				
+				return hc;
+			}
+		}
+		
+		/// <summary>All labels targeting this select element.</summary>
+		public NodeList labels{
+			get{
+				return HtmlLabelElement.FindAll(this);
+			}
+		}
+		
+		public override void OnFormReset(){
+			selectedIndex=defaultIndex;
+		}
+		
+		/// <summary>Does this element get reset with the form?</summary>
+		internal override bool IsFormResettable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element get submitted with the form?</summary>
+		internal override bool IsFormSubmittable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal override bool IsFormListed{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Can this element have a label?</summary>
+		internal override bool IsFormLabelable{
+			get{
+				return true;
+			}
 		}
 		
 		internal override void OnBlurEvent(FocusEvent fe){
@@ -520,6 +735,35 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Removes the option at the given index.</summary>
+		public void remove(int index){
+			// Get it at that index:
+			HtmlOptionElement option=item(index);
+			
+			if(option!=null){
+				// Remove it:
+				option.remove();
+			}
+		}
+		
+		/// <summary>Gets the option named item.</summary>
+		public HtmlOptionElement item(int index){
+			return options.item(index) as HtmlOptionElement;
+		}
+		
+		/// <summary>Gets the option named item.</summary>
+		public HtmlOptionElement namedItem(string name){
+			return options.namedItem(name) as HtmlOptionElement;
+		}
+		
+		/// <summary>Adds a dropdown menu option.</summary>
+		public void add(HtmlElement element){
+			
+			// Just add as a child:
+			appendChild(element);
+			
+		}
+		
 	}
 	
 	
@@ -550,18 +794,114 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>Adds a dropdown menu option.</summary>
-		public void add(HtmlElement element){
+	}
+	
+}
+
+namespace Dom{
+
+	/// <summary>
+	/// A collection of HTML option elements.
+	/// </summary>
+	public partial class HTMLOptionsCollection : INodeList,IEnumerable<HtmlOptionElement>{
+		
+		List<HtmlOptionElement> values=new List<HtmlOptionElement>();
+		
+		
+		public int length{
+			get{
+				return values.Count;
+			}
+		}
+		
+		/// <summary>Removes the given node.</summary>
+		public void remove(Node node){
 			
-			// Get the select tag:
-			HtmlSelectElement select=this as HtmlSelectElement;
+			HtmlOptionElement el=node as HtmlOptionElement;
 			
-			if(select!=null){
+			if(el==null){
+				return;
+			}
+			
+			values.Remove(el);
+		}
+		
+		/// <summary>Insert at the given index.</summary>
+		public void insert(int index,Node node){
+			
+			HtmlOptionElement el=node as HtmlOptionElement;
+			
+			if(el==null){
+				return;
+			}
+			
+			values.Insert(index,el);
+		}
+		
+		public void push(Node node){
+			
+			HtmlOptionElement el=node as HtmlOptionElement;
+			
+			if(el==null){
+				return;
+			}
+			
+			values.Add(el);
+			
+		}
+		
+		public HtmlOptionElement namedItem(string name){
+			
+			for(int i=0;i<values.Count;i++){
 				
-				select.AddOption(element);
+				if(values[i].id==name){
+					return values[i];
+				}
 				
 			}
 			
+			// Last resort - try name this time:
+			
+			for(int i=0;i<values.Count;i++){
+				
+				if(values[i]["name"]==name){
+					return values[i];
+				}
+				
+			}
+			
+			// Or null:
+			return null;
+			
+		}
+		
+		/// <summary>Gets a node at a particular index.</summary>
+		public HtmlOptionElement item(int index){
+			
+			if(index>=values.Count || index<0){
+				return null;
+			}
+			
+			return values[index];
+			
+		}
+		
+		/// <summary>Gets an element at the specified index.</summary>
+		public HtmlOptionElement this[int index]{
+			get{
+				return values[index];
+			}
+			internal set{
+				values[index]=value;
+			}
+		}
+		
+		public IEnumerator<HtmlOptionElement> GetEnumerator(){
+			return values.GetEnumerator();
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator(){
+			return GetEnumerator();
 		}
 		
 	}

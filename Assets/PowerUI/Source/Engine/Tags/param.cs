@@ -27,6 +27,46 @@ namespace PowerUI{
 		
 		// NB: Fine for OnLexerAddNode to use the default.
 		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The value attribute.</summary>
+		public string Value{
+			get{
+				return this["value"];
+			}
+			set{
+				this["value"]=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The valuetype attribute.</summary>
+		public string valueType{
+			get{
+				return this["valuetype"];
+			}
+			set{
+				this["valuetype"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

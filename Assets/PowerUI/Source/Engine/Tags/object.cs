@@ -21,6 +21,168 @@ namespace PowerUI{
 	[Dom.TagName("object")]
 	public class HtmlObjectElement:HtmlElement{
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The archive attribute.</summary>
+		public string archive{
+			get{
+				return this["archive"];
+			}
+			set{
+				this["archive"]=value;
+			}
+		}
+		
+		/// <summary>The border attribute.</summary>
+		public string border{
+			get{
+				return this["border"];
+			}
+			set{
+				this["border"]=value;
+			}
+		}
+		
+		/// <summary>The codebase attribute.</summary>
+		public string codeBase{
+			get{
+				return this["codebase"];
+			}
+			set{
+				this["codebase"]=value;
+			}
+		}
+		
+		/// <summary>The codetype attribute.</summary>
+		public string codeType{
+			get{
+				return this["codetype"];
+			}
+			set{
+				this["codetype"]=value;
+			}
+		}
+		
+		/// <summary>The data attribute.</summary>
+		public string data{
+			get{
+				return this["data"];
+			}
+			set{
+				this["data"]=value;
+			}
+		}
+		
+		/// <summary>The declare attribute.</summary>
+		public string declare{
+			get{
+				return this["declare"];
+			}
+			set{
+				this["declare"]=value;
+			}
+		}
+		
+		/// <summary>The height attribute.</summary>
+		public string height{
+			get{
+				return this["height"];
+			}
+			set{
+				this["height"]=value;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The standby attribute.</summary>
+		public string standby{
+			get{
+				return this["standby"];
+			}
+			set{
+				this["standby"]=value;
+			}
+		}
+		
+		/// <summary>The tabindex of this element.</summary>
+		public long tabindex{
+			get{
+				return tabIndex;
+			}
+			set{
+				tabIndex=(int)value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The typemustmatch attribute.</summary>
+		public bool typeMustMatch{
+			get{
+				return GetBoolAttribute("typemustmatch");
+			}
+			set{
+				SetBoolAttribute("typemustmatch",value);
+			}
+		}
+		
+		/// <summary>The useMap attribute.</summary>
+		public string useMap{
+			get{
+				return this["usemap"];
+			}
+			set{
+				this["usemap"]=value;
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
+		
+		/// <summary>Can the element be validated?</summary>
+		public bool willValidate{
+			get{
+				return false;
+			}
+		}
+		
+		/// <summary>Checks if this element is valid.</summary>
+		public bool checkValidity(){
+			return true;
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			
@@ -67,6 +229,43 @@ namespace PowerUI{
 			get{
 				return true;
 			}
+		}
+		
+		/// <summary>Does this element get submitted with the form?</summary>
+		internal override bool IsFormSubmittable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal override bool IsFormListed{
+			get{
+				return true;
+			}
+		}
+		
+		public override bool OnAttributeChange(string property){
+			if(base.OnAttributeChange(property)){
+				return true;
+			}
+			
+			if(property=="border"){
+				Style.Computed.ChangeTagProperty("border-width",NormalizeSize(this["border"]));
+			}else{
+				return false;
+			}
+			
+			return true;
+		}
+		
+		/// <summary>Normalises a size to a CSS compatible value.</summary>
+		private string NormalizeSize(string size){
+			if(size!=null && !size.Contains("%")){
+				size+="px";
+			}
+			
+			return size;
 		}
 		
 	}

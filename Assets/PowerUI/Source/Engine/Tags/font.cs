@@ -22,6 +22,36 @@ namespace PowerUI{
 	[Dom.TagName("font")]
 	public class HtmlFontElement:HtmlElement{
 		
+		/// <summary>The color attribute.</summary>
+		public string color{
+			get{
+				return this["color"];
+			}
+			set{
+				this["color"]=value;
+			}
+		}
+		
+		/// <summary>The size attribute.</summary>
+		public string size{
+			get{
+				return this["size"];
+			}
+			set{
+				this["size"]=value;
+			}
+		}
+		
+		/// <summary>The face attribute.</summary>
+		public string face{
+			get{
+				return this["face"];
+			}
+			set{
+				this["face"]=value;
+			}
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			

@@ -29,11 +29,74 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("video")]
-	public class HtmlVideoElement:HtmlElement{
+	public class HtmlVideoElement:HtmlMediaElement{
 		
-		/// <summary>The audio source for this video.</summary>
-		public AudioSource Audio;
+		/// <summary>The underlying image package. Can be null.</summary>
+		public ImagePackage RawImage{
+			get{
+				Css.BackgroundImage bg=RenderData.BGImage;
+				
+				if(bg==null || bg.Image==null){
+					return null;
+				}
+				
+				return bg.Image;
+			}
+		}
 		
+		/// <summary>The height attribute.</summary>
+		public string height{
+			get{
+				return this["height"];
+			}
+			set{
+				this["height"]=value;
+			}
+		}
+		
+		/// <summary>The poster attribute.</summary>
+		public string poster{
+			get{
+				return this["poster"];
+			}
+			set{
+				this["poster"]=value;
+			}
+		}
+		
+		/// <summary>The video frame height of the image in CSS pixels.</summary>
+		public ulong videoHeight{
+			get{
+				ImagePackage img=RawImage;
+				if(img==null || img.Contents==null || !img.Contents.Loaded){
+					return 0;
+				}
+				
+				return (ulong)img.Height;
+			}
+		}
+		
+		/// <summary>The video frame width of the image in CSS pixels.</summary>
+		public ulong videoWidth{
+			get{
+				ImagePackage img=RawImage;
+				if(img==null || img.Contents==null || !img.Contents.Loaded){
+					return 0;
+				}
+				
+				return (ulong)img.Width;
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
 		
 		public override bool OnAttributeChange(string property){
 			if(base.OnAttributeChange(property)){

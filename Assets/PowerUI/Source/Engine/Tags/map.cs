@@ -9,6 +9,9 @@
 //          www.kulestar.com
 //--------------------------------------
 
+using Dom;
+
+
 namespace PowerUI{
 	
 	/// <summary>
@@ -17,6 +20,31 @@ namespace PowerUI{
 	
 	[Dom.TagName("map")]
 	public class HtmlMapElement:HtmlElement{
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The areas associated with this map.</summary>
+		public HTMLCollection areas{
+			get{
+				return getElementsByTagName("area");
+			}
+		}
+		
+		/// <summary>The images associated with this map.</summary>
+		public NodeList images{
+			get{
+				// Get all elements with usemap="#name":
+				return document.getElementsByAttribute("usemap","#"+name);
+			}
+		}
 		
 	}
 	

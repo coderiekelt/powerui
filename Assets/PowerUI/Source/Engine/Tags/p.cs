@@ -21,6 +21,16 @@ namespace PowerUI{
 	[Dom.TagName("p")]
 	public class HtmlParagraphElement:HtmlElement{
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
 		/// Closely related to Element.OnLexerCloseNode.</summary>
 		/// <returns>True if this element handled itself.</returns>

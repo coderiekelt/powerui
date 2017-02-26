@@ -5,20 +5,29 @@
 //    if you have any issues, visit
 //        powerUI.kulestar.com
 //
-//    Copyright © 2013 Kulestar Ltd
+//    Copyright Â© 2013 Kulestar Ltd
 //          www.kulestar.com
 //--------------------------------------
 
 namespace PowerUI{
 	
 	/// <summary>
-	/// Handles the standard inline time element.
+	/// HTML mod element (used by del and ins).
 	/// </summary>
 	
-	[Dom.TagName("time")]
-	public class HtmlTimeElement:HtmlElement{
+	public class HtmlModElement:HtmlElement{
 		
-		/// <summary>The datetime text, if any.</summary>
+		/// <summary>The cite attribute.</summary>
+		public string cite{
+			get{
+				return this["cite"];
+			}
+			set{
+				this["cite"]=value;
+			}
+		}
+		
+		/// <summary>The datetime attribute.</summary>
 		public string datetime{
 			get{
 				return this["datetime"];

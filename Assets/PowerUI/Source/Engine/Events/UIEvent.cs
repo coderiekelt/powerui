@@ -82,6 +82,17 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>The view the event came from.</summary>
+		public PowerUI.Window view{
+			get{
+				HtmlDocument doc=htmlDocument;
+				if(doc==null){
+					return null;
+				}
+				return doc.window;
+			}
+		}
+		
 		/// <summary>A convenience shortcut to save casting 'target' to a HtmlElement.
 		/// It's like this because SVG can also generate events.</summary>
 		public HtmlElement htmlTarget{
@@ -173,6 +184,34 @@ namespace PowerUI{
 				
 				return (clientY-cs.OffsetTop) / cs.PixelHeight;
 				
+			}
+		}
+		
+		/// <summary>Alias for clientX.</summary>
+		public double x{
+			get{
+				return clientX;
+			}
+		}
+		
+		/// <summary>Alias for clientY.</summary>
+		public double y{
+			get{
+				return clientY;
+			}
+		}
+		
+		/// <summary>X Position relative to the parent.</summary>
+		public double offsetX{
+			get{
+				return localX;
+			}
+		}
+		
+		/// <summary>Y Position relative to the parent.</summary>
+		public double offsetY{
+			get{
+				return localY;
 			}
 		}
 		

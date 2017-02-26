@@ -317,7 +317,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Clears the document of all its content, including scripts and styles.</summary>
-		public void clear(){
+		public override void clear(){
 			
 			html=null;
 			body=null;
@@ -330,15 +330,11 @@ namespace PowerUI{
 				return;
 			}
 			
-			// Clear doc level events:
-			ClearEvents();
+			// Clear everything:
+			base.clear();
 			
-			// Gracefully clear the innerHTML:
-			empty();
-			
-			// Clear other caches:
+			// Clear scripts:
 			ClearCode();
-			ClearStyle();
 			
 		}
 		

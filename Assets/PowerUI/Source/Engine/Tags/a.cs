@@ -29,13 +29,187 @@ namespace PowerUI{
 	[Dom.TagName("a")]
 	public class HtmlAnchorElement:HtmlElement{
 		
-		/// <summary>The target url that should be loaded when clicked.</summary>
-		public string Href;
+		/// <summary>The target location that should be loaded when clicked.</summary>
+		private Location Href_;
 		
 		
 		public HtmlAnchorElement(){
-			// Make sure this tag is focusable:
+			// Make sure this element is focusable:
 			IsFocusable=true;
+		}
+		
+		/// <summary>The hash of the href.</summary>
+		public string hash{
+			get{
+				return GetLocation().hash;
+			}
+			set{
+				GetLocation().hash=value;
+			}
+		}
+		
+		/// <summary>The host of the href.</summary>
+		public string host{
+			get{
+				return GetLocation().host;
+			}
+			set{
+				GetLocation().host=value;
+			}
+		}
+		
+		/// <summary>The hostname of the href.</summary>
+		public string hostname{
+			get{
+				return GetLocation().hostname;
+			}
+			set{
+				GetLocation().hostname=value;
+			}
+		}
+		
+		/// <summary>The href attribute.</summary>
+		public string href{
+			get{
+				return this["href"];
+			}
+			set{
+				this["href"]=value;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The password from the href.</summary>
+		public string password{
+			get{
+				return GetLocation().password;
+			}
+			set{
+				GetLocation().password=value;
+			}
+		}
+		
+		/// <summary>The origin from the href.</summary>
+		public string origin{
+			get{
+				return GetLocation().origin;
+			}
+		}
+		
+		/// <summary>The pathname from the href.</summary>
+		public string pathname{
+			get{
+				return GetLocation().pathname;
+			}
+			set{
+				GetLocation().pathname=value;
+			}
+		}
+		
+		/// <summary>The port from the href.</summary>
+		public string port{
+			get{
+				return GetLocation().port;
+			}
+			set{
+				GetLocation().port=value;
+			}
+		}
+		
+		/// <summary>The protocol from the href.</summary>
+		public string protocol{
+			get{
+				return GetLocation().protocol;
+			}
+			set{
+				GetLocation().protocol=value;
+			}
+		}
+		
+		/// <summary>The rel attribute.</summary>
+		public string rel{
+			get{
+				return this["rel"];
+			}
+			set{
+				this["rel"]=value;
+			}
+		}
+		
+		/// <summary>The set of rel values.</summary>
+		public DOMTokenList relList{
+			get{
+				return new DOMTokenList(this,"rel");
+			}
+		}
+		
+		/// <summary>The query string of the href.</summary>
+		public string search{
+			get{
+				return GetLocation().search;
+			}
+			set{
+				GetLocation().search=value;
+			}
+		}
+		
+		/// <summary>The tabindex of this element.</summary>
+		public long tabindex{
+			get{
+				return tabIndex;
+			}
+			set{
+				tabIndex=(int)value;
+			}
+		}
+		
+		/// <summary>The target attribute.</summary>
+		public string target{
+			get{
+				return this["target"];
+			}
+			set{
+				this["target"]=value;
+			}
+		}
+		
+		/// <summary>Alias for textContent.</summary>
+		public string text{
+			get{
+				return textContent;
+			}
+			set{
+				textContent=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The username from the href.</summary>
+		public string username{
+			get{
+				return GetLocation().username;
+			}
+			set{
+				GetLocation().username=value;
+			}
 		}
 		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
@@ -90,19 +264,24 @@ namespace PowerUI{
 			}
 			
 			if(property=="href"){
-				Href=this["href"];
+				Href_=null;
 				return true;
 			}
 			
 			return false;
 		}
 		
-		public override void OnClickEvent(MouseEvent clickEvent){
+		/// <summary>Gets the location now.</summary>
+		private Location GetLocation(){
 			
-			// Time to go to our Href.
+			if(Href_!=null){
+				return Href_;
+			}
+			
+			// The target:
+			string href=this["href"];
 			
 			#if MOBILE || UNITY_METRO
-			
 			// First, look for <source> elements.
 			
 			// Grab the kids:
@@ -137,7 +316,7 @@ namespace PowerUI{
 						
 						if(type=="android" || childSrc.StartsWith("market:")){
 							
-							Href=childSrc;
+							href=childSrc;
 							
 						}
 						
@@ -145,7 +324,7 @@ namespace PowerUI{
 					
 						if(type=="w8" || type=="wp8" || type=="windows" || childSrc.StartsWith("ms-windows-store:")){
 							
-							Href=childSrc;
+							href=childSrc;
 							
 						}
 						
@@ -153,7 +332,7 @@ namespace PowerUI{
 						
 						if(type=="ios" || childSrc.StartsWith("itms:") || childSrc.StartsWith("itms-apps:")){
 							
-							Href=childSrc;
+							href=childSrc;
 							
 						}
 						
@@ -166,17 +345,25 @@ namespace PowerUI{
 			
 			#endif
 			
-			if(!string.IsNullOrEmpty(Href)){
-				
-				Location path=new Location(Href,document.basepath);
-				
-				// Do we have a file protocol handler available?
-				FileProtocol fileProtocol=path.Handler;
-				
-				if(fileProtocol!=null){
-					fileProtocol.OnFollowLink(this,path);
-				}
-				
+			if(href==null){
+				// Refresh.
+				href="";
+			}
+			
+			Href_=new Location(href,document.basepath);
+			return Href_;
+		}
+		
+		public override void OnClickEvent(MouseEvent clickEvent){
+			
+			// Time to go to our Href.
+			Location path=GetLocation();
+			
+			// Do we have a file protocol handler available?
+			FileProtocol fileProtocol=path.Handler;
+			
+			if(fileProtocol!=null){
+				fileProtocol.OnFollowLink(this,path);
 			}
 			
 		}

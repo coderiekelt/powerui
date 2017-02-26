@@ -141,6 +141,12 @@ namespace PowerUI{
 			}
 		}
 		
+		public bool canGoForward{
+			get{
+				return (forward_!=null);
+			}
+		}
+		
 		public void back(){
 			go(-1);
 		}

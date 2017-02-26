@@ -21,6 +21,26 @@ namespace PowerUI{
 	[TagName("optgroup")]
 	public class HtmlOptGroupElement:HtmlElement{
 		
+		/// <summary>A label for the group.</summary>
+		public string label{
+			get{
+				return this["label"];
+			}
+			set{
+				this["label"]=value;
+			}
+		}
+		
+		/// <summary>True if this element is disabled.</summary>
+		public bool disabled{
+			get{
+				return GetBoolAttribute("disabled");
+			}
+			set{
+				SetBoolAttribute("disabled",value);
+			}
+		}
+		
 		/// <summary>True if an implicit end is allowed.</summary>
 		public override ImplicitEndMode ImplicitEndAllowed{
 			get{

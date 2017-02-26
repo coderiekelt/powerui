@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using Dom;
 
 
-namespace PowerUI{
+namespace Dom{
 	
 	/// <summary>
 	/// Represents an attribute on an element.
@@ -34,17 +34,17 @@ namespace PowerUI{
 		/// <summary>Was this attribute specified?</summary>
 		public bool specified;
 		/// <summary>Owning element.</summary>
-		public HtmlElement ownerElement;
+		public Element ownerElement;
 		
 		
-		public AttributeNode(HtmlElement owner,string name,string val){
+		public AttributeNode(Element owner,string name,string val){
 			UnprefixedName=name;
 			ownerElement=owner;
 			specified=(val!=null);
 			value=val;
 		}
 		
-		public AttributeNode(HtmlElement owner,string name,string val,string ns){
+		public AttributeNode(Element owner,string name,string val,string ns){
 			UnprefixedName=name;
 			Namespace=MLNamespaces.GetPrefix(ns);
 			ownerElement=owner;

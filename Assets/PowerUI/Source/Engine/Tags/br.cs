@@ -38,6 +38,29 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The clear attribute.</summary>
+		public string clear{
+			get{
+				return this["clear"];
+			}
+			set{
+				this["clear"]=value;
+			}
+		}
+		
+		public override bool OnAttributeChange(string property){
+			if(base.OnAttributeChange(property)){
+				return true;
+			}
+			
+			if(property=="clear"){
+				Style.Computed.ChangeTagProperty("clear",this["clear"]);
+				return true;
+			}
+			
+			return false;
+		}
+		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			
 			// Get meta:

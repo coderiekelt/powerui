@@ -19,7 +19,17 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("ul")]
-	public class HtmlUlElement:HtmlElement{
+	public class HtmlUListElement:HtmlElement{
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
 		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
 		/// Closely related to Element.OnLexerCloseNode.</summary>

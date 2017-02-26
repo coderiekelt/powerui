@@ -22,9 +22,13 @@ namespace PowerUI{
 	public partial class HtmlElement{
 		
 		/// <summary>Resolves the target attribute to a document.</summary>
-		/// <returns>The targeted document. Null if there is no document at all and the target is essentially outside of Unity.</returns>
 		public HtmlDocument ResolveTarget(){
-			string target=this["target"];
+			return ResolveTarget(this["target"]);
+		}
+		
+		/// <summary>Resolves the given target to a document.</summary>
+		/// <returns>The targeted document. Null if there is no document at all and the target is essentially outside of Unity.</returns>
+		public HtmlDocument ResolveTarget(string target){
 			
 			// Grab the document the element is in:
 			HtmlDocument document=htmlDocument;

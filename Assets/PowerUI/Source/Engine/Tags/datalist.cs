@@ -9,6 +9,9 @@
 //          www.kulestar.com
 //--------------------------------------
 
+using Dom;
+
+
 namespace PowerUI{
 
 	/// <summary>
@@ -16,7 +19,16 @@ namespace PowerUI{
 	/// </summary>
 
 	[Dom.TagName("datalist")]
-	public class HtmlDatalistElement:HtmlElement{
+	public class HtmlDataListElement:HtmlElement{
+		
+		/// <summary>The set of options.</summary>
+		public HTMLCollection options{
+			get{
+				HTMLCollection hoc=new HTMLCollection();
+				HtmlSelectElement.CollectOptions(this,hoc);
+				return hoc;
+			}
+		}
 		
 	}
 	

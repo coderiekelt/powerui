@@ -22,6 +22,16 @@ namespace PowerUI{
 	[Dom.TagName("title")]
 	public class HtmlTitleElement:HtmlElement{
 		
+		/// <summary>The title text.</summary>
+		public string text{
+			get{
+				return innerHTML;
+			}
+			set{
+				innerHTML=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

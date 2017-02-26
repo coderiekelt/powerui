@@ -21,6 +21,26 @@ namespace PowerUI{
 	[Dom.TagName("base")]
 	public class HtmlBaseElement:HtmlElement{
 		
+		/// <summary>The href attribute.</summary>
+		public string href{
+			get{
+				return this["href"];
+			}
+			set{
+				this["href"]=value;
+			}
+		}
+		
+		/// <summary>The target attribute.</summary>
+		public string target{
+			get{
+				return this["target"];
+			}
+			set{
+				this["target"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

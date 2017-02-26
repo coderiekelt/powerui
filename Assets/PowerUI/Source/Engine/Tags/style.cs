@@ -27,6 +27,47 @@ namespace PowerUI{
 	[Dom.TagName("style")]
 	public class HtmlStyleElement:HtmlElement{
 		
+		/// <summary>The stylesheet.</summary>
+		private Css.StyleSheet StyleSheet_;
+		
+		
+		/// <summary>The media attribute.</summary>
+		public string media{
+			get{
+				return this["media"];
+			}
+			set{
+				this["media"]=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>True if this element is disabled.</summary>
+		public bool disabled{
+			get{
+				return GetBoolAttribute("disabled");
+			}
+			set{
+				SetBoolAttribute("disabled",value);
+			}
+		}
+		
+		/// <summary>The stylesheet that this is loading.</summary>
+		public Css.StyleSheet sheet{
+			get{
+				return StyleSheet_;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{
@@ -64,7 +105,7 @@ namespace PowerUI{
 			Node node=firstChild;
 			
 			if(node!=null){
-				htmlDocument.AddStyle(this,node.textContent);
+				StyleSheet_=htmlDocument.AddStyle(this,node.textContent);
 			}
 			
 		}

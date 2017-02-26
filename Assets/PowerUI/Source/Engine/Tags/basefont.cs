@@ -15,7 +15,7 @@ using Dom;
 namespace PowerUI{
 	
 	/// <summary>
-	/// Represents a HTML basefont element.
+	/// Represents a HTML basefont element. Don't use this!
 	/// </summary>
 	
 	[Dom.TagName("basefont")]

@@ -19,7 +19,49 @@ namespace PowerUI{
 	/// </summary>
 	
 	[Dom.TagName("col")]
-	public class HtmlColumnElement:HtmlElement{
+	public class HtmlTableColumnElement:HtmlElement{
+		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The span attribute.</summary>
+		public ulong span{
+			get{
+				ulong v;
+				ulong.TryParse(this["span"],out v);
+				return v;
+			}
+			set{
+				this["span"]=value.ToString();
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
+		
+		/// <summary>The valign attribute.</summary>
+		public string vAlign{
+			get{
+				return this["valign"];
+			}
+			set{
+				this["valign"]=value;
+			}
+		}
 		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{

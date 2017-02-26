@@ -21,6 +21,243 @@ namespace PowerUI{
 	[Dom.TagName("area")]
 	public class HtmlAreaElement:HtmlElement{
 		
+		/// <summary>The target location that should be loaded when clicked.</summary>
+		private Location Href_;
+		
+		
+		/// <summary>Gets the location now.</summary>
+		private Location GetLocation(){
+			
+			if(Href_!=null){
+				return Href_;
+			}
+			
+			// The target:
+			string href=this["href"];
+			
+			if(href==null){
+				// Refresh.
+				href="";
+			}
+			
+			Href_=new Location(href,document.basepath);
+			return Href_;
+		}
+		
+		/// <summary>The accessKey attribute.</summary>
+		public string accessKey{
+			get{
+				return this["accesskey"];
+			}
+			set{
+				this["accesskey"]=value;
+			}
+		}
+		
+		/// <summary>The alt attribute.</summary>
+		public string alt{
+			get{
+				return this["alt"];
+			}
+			set{
+				this["alt"]=value;
+			}
+		}
+		
+		/// <summary>The coords attribute.</summary>
+		public string coords{
+			get{
+				return this["coords"];
+			}
+			set{
+				this["coords"]=value;
+			}
+		}
+		
+		/// <summary>The hash of the href.</summary>
+		public string hash{
+			get{
+				return GetLocation().hash;
+			}
+			set{
+				GetLocation().hash=value;
+			}
+		}
+		
+		/// <summary>The host of the href.</summary>
+		public string host{
+			get{
+				return GetLocation().host;
+			}
+			set{
+				GetLocation().host=value;
+			}
+		}
+		
+		/// <summary>The hostname of the href.</summary>
+		public string hostname{
+			get{
+				return GetLocation().hostname;
+			}
+			set{
+				GetLocation().hostname=value;
+			}
+		}
+		
+		/// <summary>The href attribute.</summary>
+		public string href{
+			get{
+				return this["href"];
+			}
+			set{
+				this["href"]=value;
+			}
+		}
+		
+		/// <summary>The hreflang attribute.</summary>
+		public string hreflang{
+			get{
+				return this["hreflang"];
+			}
+			set{
+				this["hreflang"]=value;
+			}
+		}
+		
+		/// <summary>The media attribute.</summary>
+		public string media{
+			get{
+				return this["media"];
+			}
+			set{
+				this["media"]=value;
+			}
+		}
+		
+		/// <summary>The password from the href.</summary>
+		public string password{
+			get{
+				return GetLocation().password;
+			}
+			set{
+				GetLocation().password=value;
+			}
+		}
+		
+		/// <summary>The origin from the href.</summary>
+		public string origin{
+			get{
+				return GetLocation().origin;
+			}
+		}
+		
+		/// <summary>The pathname from the href.</summary>
+		public string pathname{
+			get{
+				return GetLocation().pathname;
+			}
+			set{
+				GetLocation().pathname=value;
+			}
+		}
+		
+		/// <summary>The port from the href.</summary>
+		public string port{
+			get{
+				return GetLocation().port;
+			}
+			set{
+				GetLocation().port=value;
+			}
+		}
+		
+		/// <summary>The protocol from the href.</summary>
+		public string protocol{
+			get{
+				return GetLocation().protocol;
+			}
+			set{
+				GetLocation().protocol=value;
+			}
+		}
+		
+		/// <summary>The referrerpolicy attribute.</summary>
+		public string referrerPolicy{
+			get{
+				return this["referrerpolicy"];
+			}
+			set{
+				this["referrerpolicy"]=value;
+			}
+		}
+		
+		/// <summary>The rel attribute.</summary>
+		public string rel{
+			get{
+				return this["rel"];
+			}
+			set{
+				this["rel"]=value;
+			}
+		}
+		
+		/// <summary>The set of rel values.</summary>
+		public DOMTokenList relList{
+			get{
+				return new DOMTokenList(this,"rel");
+			}
+		}
+		
+		/// <summary>The query string of the href.</summary>
+		public string search{
+			get{
+				return GetLocation().search;
+			}
+			set{
+				GetLocation().search=value;
+			}
+		}
+		
+		/// <summary>The shape attribute.</summary>
+		public string shape{
+			get{
+				return this["shape"];
+			}
+			set{
+				this["shape"]=value;
+			}
+		}
+		
+		/// <summary>The target attribute.</summary>
+		public string target{
+			get{
+				return this["target"];
+			}
+			set{
+				this["target"]=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The username from the href.</summary>
+		public string username{
+			get{
+				return GetLocation().username;
+			}
+			set{
+				GetLocation().username=value;
+			}
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			
@@ -52,6 +289,33 @@ namespace PowerUI{
 			get{
 				return true;
 			}
+		}
+		
+		public override bool OnAttributeChange(string property){
+			if(base.OnAttributeChange(property)){
+				return true;
+			}
+			
+			if(property=="href"){
+				Href_=null;
+				return true;
+			}
+			
+			return false;
+		}
+		
+		public override void OnClickEvent(MouseEvent clickEvent){
+			
+			// Time to go to our Href.
+			Location path=GetLocation();
+			
+			// Do we have a file protocol handler available?
+			FileProtocol fileProtocol=path.Handler;
+			
+			if(fileProtocol!=null){
+				fileProtocol.OnFollowLink(this,path);
+			}
+			
 		}
 		
 	}

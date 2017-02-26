@@ -21,6 +21,9 @@ namespace PowerUI{
 	[Dom.TagName("template")]
 	public class HtmlTemplateElement:HtmlElement{
 		
+		/// <summary>The fragment.</summary>
+		public DocumentFragment content;
+		
 		/// <summary>When the given lexer resets, this is called.</summary>
 		public override int SetLexerMode(bool last,Dom.HtmlLexer lexer){
 			
@@ -138,9 +141,6 @@ namespace PowerUI{
 			return true;
 			
 		}
-		
-		/// <summary>The fragment.</summary>
-		public DocumentFragment content;
 		
 		/// <summary>Called when the kids are all ready.</summary>
 		public override void OnChildrenLoaded(){

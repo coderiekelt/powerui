@@ -334,7 +334,7 @@ public static class UI{
 		
 		// Render Mesh.OutputGameObject with the GUI camera:
 		Renderer.RenderWithCamera(UI.Layer);
-		document=Renderer.RootDocument;
+		document=Renderer.RootDocument as HtmlDocument;
 		document.window.top=document.window;
 		
 		// Fire the camera event:

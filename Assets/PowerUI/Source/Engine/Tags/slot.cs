@@ -10,6 +10,10 @@
 //--------------------------------------
 
 using Dom;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Css;
 
 
 namespace PowerUI{
@@ -21,7 +25,43 @@ namespace PowerUI{
 	[Dom.TagName("slot")]
 	public class HtmlSlotElement:HtmlElement{
 		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
 		
+		/// <summary>The assigned nodes in this slot.</summary>
+		public IEnumerable<Node> assignedNodes(){
+			return assignedNodes(null);
+		}
+		
+		/// <summary>The assigned nodes in this slot.</summary>
+		public IEnumerable<Node> assignedNodes(object options){
+			
+			if(parentNode!=null){
+				
+				// Iterate the virtuals of the parent:
+				RenderableData cs=(parentNode as IRenderableNode).RenderData;
+				
+				if(cs.Virtuals!=null){
+					
+					// Return each one:
+					foreach(KeyValuePair<int,Node> kvp in cs.Virtuals.Elements){
+						
+						yield return kvp.Value;
+						
+					}
+					
+				}
+			
+			}
+			
+		}
 		
 	}
 	

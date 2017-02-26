@@ -29,10 +29,12 @@ namespace PowerUI{
 		
 		/// <summary>This is the caret element.</summary>
 		public HtmlCaretElement Caret;
+		/// <summary>The original value.</summary>
+		public string defaultValue;
 		/// <summary>The maximum length of text in this box.</summary>
 		public int MaxLength=int.MaxValue;
 		/// <summary>A placeholder value.</summary>
-		public string Placeholder="";
+		private string Placeholder_="";
 		
 		
 		public HtmlTextareaElement(){
@@ -47,6 +49,159 @@ namespace PowerUI{
 			}
 			set{
 				SetValue(value);
+			}
+		}
+		
+		/// <summary>The placeholder text, if any.</summary>
+		public string placeholder{
+			get{
+				return this["placeholder"];
+			}
+			set{
+				this["placeholder"]=value;
+			}
+		}
+		
+		/// <summary>True if this element can be autofocused.</summary>
+		public bool autofocus{
+			get{
+				return GetBoolAttribute("autofocus");
+			}
+			set{
+				SetBoolAttribute("autofocus",value);
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>True if this element is disabled.</summary>
+		public bool disabled{
+			get{
+				return GetBoolAttribute("disabled");
+			}
+			set{
+				SetBoolAttribute("disabled",value);
+			}
+		}
+		
+		/// <summary>The max length.</summary>
+		public long maxLength{
+			get{
+				
+				if(MaxLength>=int.MaxValue){
+					return -1;
+				}
+				
+				return MaxLength;
+			}
+			set{
+				this["maxlength"]=value.ToString();
+			}
+		}
+		
+		/// <summary>True if this element is required.</summary>
+		public bool required{
+			get{
+				return GetBoolAttribute("required");
+			}
+			set{
+				SetBoolAttribute("required",value);
+			}
+		}
+		
+		/// <summary>True if this element is readonly.</summary>
+		public bool readOnly{
+			get{
+				return GetBoolAttribute("readonly");
+			}
+			set{
+				SetBoolAttribute("readonly",value);
+			}
+		}
+		
+		/// <summary>The start of the selection, or the caret index.</summary>
+		public ulong selectionStart{
+			get{
+				if(Caret==null){
+					return 0;
+				}
+				
+				return Caret.selectionStart;
+			}
+		}
+		
+		/// <summary>The end of the selection, or the caret index+1.</summary>
+		public ulong selectionEnd{
+			get{
+				if(Caret==null){
+					return 0;
+				}
+				
+				return Caret.selectionEnd;
+			}
+		}
+		
+		/// <summary>Selection direction.</summary>
+		public string selectionDirection{
+			get{
+				return (selectionEnd>selectionStart) ? "forward" : "backward";
+			}
+		}
+		
+		/// <summary>The wrap attribute.</summary>
+		public string wrap{
+			get{
+				return this["wrap"];
+			}
+			set{
+				this["wrap"]=value;
+			}
+		}
+		
+		public override void OnFormReset(){
+			SetValue(defaultValue);
+		}
+		
+		/// <summary>Does this element get reset with the form?</summary>
+		internal override bool IsFormResettable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element get submitted with the form?</summary>
+		internal override bool IsFormSubmittable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal override bool IsFormListed{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>Can this element have a label?</summary>
+		internal override bool IsFormLabelable{
+			get{
+				return true;
+			}
+		}
+		
+		/// <summary>All labels targeting this select element.</summary>
+		public NodeList labels{
+			get{
+				return HtmlLabelElement.FindAll(this);
 			}
 		}
 		
@@ -141,8 +296,8 @@ namespace PowerUI{
 			
 			if(property=="placeholder"){
 				
-				Placeholder=this["placeholder"];
-				innerHTML=Placeholder;
+				Placeholder_=this["placeholder"];
+				innerHTML=Placeholder_;
 				
 				return true;
 				
@@ -198,8 +353,8 @@ namespace PowerUI{
 				MoveCaret(0);
 			}
 			
-			if(newValue=="" && Placeholder!=""){
-				newValue=Placeholder;
+			if(newValue=="" && Placeholder_!=""){
+				newValue=Placeholder_;
 			}
 			
 			// Write text content:
@@ -207,6 +362,13 @@ namespace PowerUI{
 			
 			// Redraw:
 			RequestLayout();
+			
+		}
+		
+		public override void OnChildrenLoaded(){
+			
+			// Save default value:
+			defaultValue=textContent;
 			
 		}
 		
@@ -370,7 +532,7 @@ namespace PowerUI{
 				return;
 			}
 			
-			if(innerHTML==Placeholder && Placeholder!=""){
+			if(innerHTML==Placeholder_ && Placeholder_!=""){
 				innerHTML="";
 			}
 			
@@ -389,8 +551,8 @@ namespace PowerUI{
 			Style.Computed.RemoveVirtual(HtmlCaretElement.Priority);
 			Caret=null;
 			
-			if(innerHTML=="" && Placeholder!=""){
-				innerHTML=Placeholder;
+			if(innerHTML=="" && Placeholder_!=""){
+				innerHTML=Placeholder_;
 			}
 			
 		}

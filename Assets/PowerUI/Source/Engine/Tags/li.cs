@@ -21,6 +21,28 @@ namespace PowerUI{
 	[Dom.TagName("li")]
 	public class HtmlLiElement:HtmlElement{
 		
+		/// <summary>The type.</summary>
+		public string type{
+			get{
+				return Style.Computed.GetString("list-style-type");
+			}
+			set{
+				Style.Set("list-style-type",value);
+			}
+		}
+		
+		/// <summary>The ordinal position of the list element.</summary>
+		public long Value{
+			get{
+				long v;
+				long.TryParse(this["value"],out v);
+				return v;
+			}
+			set{
+				this["value"]=value.ToString();
+			}
+		}
+		
 		/// <summary>True if an implicit end is allowed.</summary>
 		public override ImplicitEndMode ImplicitEndAllowed{
 			get{

@@ -21,6 +21,66 @@ namespace PowerUI{
 	[Dom.TagName("embed")]
 	public class HtmlEmbedElement:HtmlElement{
 		
+		/// <summary>The align attribute.</summary>
+		public string align{
+			get{
+				return this["align"];
+			}
+			set{
+				this["align"]=value;
+			}
+		}
+		
+		/// <summary>The height attribute.</summary>
+		public string height{
+			get{
+				return this["height"];
+			}
+			set{
+				this["height"]=value;
+			}
+		}
+		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
+		/// <summary>The src attribute.</summary>
+		public string src{
+			get{
+				return this["src"];
+			}
+			set{
+				this["src"]=value;
+			}
+		}
+		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
+		/// <summary>The width attribute.</summary>
+		public string width{
+			get{
+				return this["width"];
+			}
+			set{
+				this["width"]=value;
+			}
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			

@@ -199,7 +199,7 @@ namespace PowerUI{
 			// Apply the default scale:
 			transform.localScale=new Vector3(1/100f,1/100f,1f);
 			
-			document=Renderer.RootDocument;
+			document=Renderer.RootDocument as HtmlDocument;
 			
 			// Add it to the UI update linked list:
 			if(UI.FirstWorldUI==null){

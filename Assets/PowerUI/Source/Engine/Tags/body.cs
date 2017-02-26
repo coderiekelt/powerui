@@ -21,6 +21,16 @@ namespace PowerUI{
 	[TagName("body")]
 	public class HtmlBodyElement:HtmlElement{
 		
+		/// <summary>The bgcolor attribute.</summary>
+		public string bgColor{
+			get{
+				return this["bgcolor"];
+			}
+			set{
+				this["bgcolor"]=value;
+			}
+		}
+		
 		/// <summary>True if this element has special parsing rules.</summary>
 		public override bool IsSpecial{
 			get{

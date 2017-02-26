@@ -265,6 +265,34 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Does this element get reset with the form?</summary>
+		internal virtual bool IsFormResettable{
+			get{
+				return false;
+			}
+		}
+		
+		/// <summary>Does this element get submitted with the form?</summary>
+		internal virtual bool IsFormSubmittable{
+			get{
+				return false;
+			}
+		}
+		
+		/// <summary>Does this element list in form.elements?</summary>
+		internal virtual bool IsFormListed{
+			get{
+				return false;
+			}
+		}
+		
+		/// <summary>Can this element have a label?</summary>
+		internal virtual bool IsFormLabelable{
+			get{
+				return false;
+			}
+		}
+		
 		/// <summary>Gets the first element which matches the given selector.</summary>
 		public Element querySelector(string selector){
 			HTMLCollection results=querySelectorAll(selector,true);
@@ -593,7 +621,8 @@ namespace PowerUI{
 		public int contentHeight{
 			get{
 				RequireLayout();
-				return (int)Style.Computed.FirstBox.ContentHeight;
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.ContentHeight;
 			}
 		}
 		
@@ -601,7 +630,8 @@ namespace PowerUI{
 		public int contentWidth{
 			get{
 				RequireLayout();
-				return (int)Style.Computed.FirstBox.ContentWidth;
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.ContentWidth;
 			}
 		}
 		
@@ -609,7 +639,8 @@ namespace PowerUI{
 		public int pixelHeight{
 			get{
 				RequireLayout();
-				return (int)Style.Computed.FirstBox.Height;
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.Height;
 			}
 		}
 		
@@ -617,7 +648,40 @@ namespace PowerUI{
 		public int pixelWidth{
 			get{
 				RequireLayout();
-				return (int)Style.Computed.FirstBox.Width;
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.Width;
+			}
+		}
+		
+		/// <summary>The width of the top border of an element in pixels.</summary>
+		public int clientTop{
+			get{
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.Border.Top;
+			}
+		}
+		
+		/// <summary>The width of the left border of an element in pixels.</summary>
+		public int clientLeft{
+			get{
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.Border.Left;
+			}
+		}
+		
+		/// <summary>The inner width of this element, (minus scrollbars).</summary>
+		public int clientWidth{
+			get{
+				return scrollWidth;
+			}
+		}
+		
+		/// <summary>The inner height of this element, (minus scrollbars).</summary>
+		public int clientHeight{
+			get{
+				return scrollHeight;
 			}
 		}
 		
@@ -625,7 +689,8 @@ namespace PowerUI{
 		public int scrollHeight{
 			get{
 				RequireLayout();
-				return (int)Style.Computed.FirstBox.InnerHeight;
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.InnerHeight;
 			}
 		}
 		
@@ -633,37 +698,16 @@ namespace PowerUI{
 		public int scrollWidth{
 			get{
 				RequireLayout();
-				return (int)Style.Computed.FirstBox.InnerWidth;
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.InnerWidth;
 			}
 		}
 		
-		/// <summary>Gets or sets the checked state of this radio/checkbox input. Note that 'checked' is a C# keyword, thus the uppercase.
-		/// Nitro is not case-sensitive, so element.checked works fine there.</summary>
-		public bool Checked{
+		public virtual bool Checked{
 			get{
-				string check=this["checked"];
-				
-				if(!string.IsNullOrEmpty(check)){
-					
-					if(check=="0" || check.ToLower()=="false"){
-						
-						return false;
-						
-					}
-					
-					return true;
-					
-				}
-				
 				return false;
 			}
-			set{
-				if(value){
-					this["checked"]="1";
-				}else{
-					this["checked"]="";
-				}
-			}
+			set{}
 		}
 		
 		/// <summary>The attributes of this element (DOM spec compliant mapping for Properties).</summary>
@@ -855,7 +899,7 @@ namespace PowerUI{
 				string value=this["tabindex"];
 				
 				if(value==null){
-					return 0;
+					return -1;
 				}
 				
 				return int.Parse(value);

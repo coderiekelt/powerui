@@ -21,6 +21,16 @@ namespace PowerUI{
 	[Dom.TagName("applet")]
 	public class HtmlAppletElement:HtmlElement{
 		
+		/// <summary>The name attribute.</summary>
+		public string name{
+			get{
+				return this["name"];
+			}
+			set{
+				this["name"]=value;
+			}
+		}
+		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>
 		public override bool OnLexerAddNode(HtmlLexer lexer,int mode){
 			
