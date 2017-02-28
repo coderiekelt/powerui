@@ -411,11 +411,11 @@ namespace PowerUI{
 						out localPoint
 					);
 					
-					// Map the point (relative to the middle):
+					// Map the point (relative to the pivot):
 					Rect rectangle=rectTrans.rect;
 					
-					localPoint.x+=rectangle.width/2;
-					localPoint.y+=rectangle.height/2;
+					localPoint.x+=rectangle.width*rectTrans.pivot.x;
+					localPoint.y+=rectangle.height*rectTrans.pivot.y;
 					
 					screenPos.x=localPoint.x;
 					screenPos.y=( rectangle.height-1-localPoint.y);
