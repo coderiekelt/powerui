@@ -396,7 +396,77 @@ namespace PowerUI{
 		
 	}
 	
-	public class PointerEvent : Dom.Event{
+	public class PointerEvent : MouseEvent{
+		
+		/// <summary>A unique pointer ID.</summary>
+		public long pointerId{
+			get{
+				return trigger.pointerId;
+			}
+		}
+		
+		/// <summary>The width of the pointer area.</summary>
+		public double width{
+			get{
+				return trigger.width;
+			}
+		}
+		
+		/// <summary>The height of the pointer area.</summary>
+		public double height{
+			get{
+				return trigger.height;
+			}
+		}
+		
+		/// <summary>The triggers pressure.</summary>
+		public float pressure{
+			get{
+				return trigger.Pressure;
+			}
+		}
+		
+		/// <summary>Tangential pressure.</summary>
+		public float tangentialPressure{
+			get{
+				return trigger.tangentialPressure;
+			}
+		}
+		
+		/// <summary>X tilt of the trigger.</summary>
+		public float tiltX{
+			get{
+				return trigger.tiltX;
+			}
+		}
+		
+		/// <summary>Y tilt of the trigger.</summary>
+		public float tiltY{
+			get{
+				return trigger.tiltY;
+			}
+		}
+		
+		/// <summary>Twist of the trigger.</summary>
+		public float twist{
+			get{
+				return trigger.twist;
+			}
+		}
+		
+		/// <summary>The type of this pointer.</summary>
+		public string pointerType{
+			get{
+				return trigger.pointerType;
+			}
+		}
+		
+		/// <summary>True if this is the primary pointer.</summary>
+		public bool isPrimary{
+			get{
+				return trigger.isPrimary;
+			}
+		}
 		
 		public PointerEvent(){}
 		
@@ -497,10 +567,37 @@ namespace PowerUI{
 	
 	public class TouchEvent : UIEvent{
 		
+		/// <summary>A unique ID.</summary>
+		public long identifier{
+			get{
+				return trigger.pointerId;
+			}
+		}
+		
 		/// <summary>Cached touches that pressed down on the element that is the target of this event.</summary>
 		private TouchList targetTouches_;
 		/// <summary>Cached touches regardless of which element they're over.</summary>
 		private TouchList touches_;
+		/// <summary>Cached changed touches.</summary>
+		private TouchList changedTouches_;
+		
+		/// <summary>Touches which changed that have changed/ became active since the last event.</summary>
+		public TouchList changedTouches{
+			get{
+				
+				if(changedTouches_==null){
+					
+					// Create it:
+					changedTouches_=new TouchList();
+					
+					// Always only one - specifically the originating pointer:
+					changedTouches_.push(trigger as TouchPointer);
+					
+				}
+				
+				return changedTouches_;
+			}
+		}
 		
 		/// <summary>All touches that pressed down on the element that is the target of this event.</summary>
 		public TouchList targetTouches{

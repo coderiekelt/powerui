@@ -10,6 +10,13 @@ namespace PowerUI{
 	/// </summary>
 	public class FingerPointer : TouchPointer{
 		
+		/// <summary>The type of input pointer.</summary>
+		public override string pointerType{
+			get{
+				return "touch";
+			}
+		}
+		
 	}
 	
 }

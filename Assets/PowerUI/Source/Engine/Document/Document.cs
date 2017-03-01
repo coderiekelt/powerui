@@ -71,6 +71,9 @@ namespace PowerUI{
 				
 			}
 			
+			// Reset readyState (we don't reset resources loading because we haven't killed any that are currently loading):
+			ReadyStateChange(0);
+			
 			// Load the html:
 			DataPackage package=new DataPackage(value.absolute,null);
 			
@@ -537,10 +540,29 @@ namespace PowerUI{
 					close();
 				}
 				
+			}
+			
+			if(resourcesLoading<=0 && readyState!="complete"){
+				
+				// Fire onload now!
+				ReadyStateChange(2);
+				
+				// Fire event:
+				PowerUI.UIEvent de=new PowerUI.UIEvent("load");
+				de.SetTrusted(true);
+				dispatchEvent(de);
+				
+			}
+			
+		}
+		
+		internal override bool ResourceStatus(EventTarget package,int status){
+			if( base.ResourceStatus(package,status) ){
+				
 				// Run the onload event if we're in an iframe:
 				if(window.iframe!=null){
 					
-					// Dispatch (don't bubble):
+					// Dispatch to the element too (don't bubble):
 					Dom.Event e=new Dom.Event("load");
 					e.SetTrusted(false);
 					window.iframe.dispatchEvent(e);
@@ -550,8 +572,10 @@ namespace PowerUI{
 					
 				}
 				
+				return true;
 			}
 			
+			return false;	
 		}
 		
 		/// <summary>All the links on a page.</summary>

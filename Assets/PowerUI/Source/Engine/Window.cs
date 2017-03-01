@@ -416,6 +416,86 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Called when an element is no longer focused.</summary>
+		public FocusEventDelegate onblur{
+			get{
+				return GetFirstDelegate<FocusEventDelegate>("blur");
+			}
+			set{
+				addEventListener("blur",new FocusEventListener(value));
+			}
+		}
+		
+		/// <summary>Called just before this element is focused.</summary>
+		public FocusEventDelegate onfocusin{
+			get{
+				return GetFirstDelegate<FocusEventDelegate>("focusin");
+			}
+			set{
+				addEventListener("focusin",new FocusEventListener(value));
+			}
+		}
+		
+		/// <summary>Called just before this element is blurred.</summary>
+		public FocusEventDelegate onfocusout{
+			get{
+				return GetFirstDelegate<FocusEventDelegate>("focusout");
+			}
+			set{
+				addEventListener("focusout",new FocusEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when an element is focused.</summary>
+		public FocusEventDelegate onfocus{
+			get{
+				return GetFirstDelegate<FocusEventDelegate>("focus");
+			}
+			set{
+				addEventListener("focus",new FocusEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when an element is clicked.</summary>
+		public MouseEventDelegate onclick{
+			get{
+				return GetFirstDelegate<MouseEventDelegate>("click");
+			}
+			set{
+				addEventListener("click",new MouseEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when an element is clicked (mouse down).</summary>
+		public MouseEventDelegate onmousedown{
+			get{
+				return GetFirstDelegate<MouseEventDelegate>("mousedown");
+			}
+			set{
+				addEventListener("mousedown",new MouseEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when an element is clicked (mouse up).</summary>
+		public MouseEventDelegate onmouseup{
+			get{
+				return GetFirstDelegate<MouseEventDelegate>("mouseup");
+			}
+			set{
+				addEventListener("mouseup",new MouseEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when the document is now loaded.</summary>
+		public UIEventDelegate onload{
+			get{
+				return GetFirstDelegate<UIEventDelegate>("load");
+			}
+			set{
+				addEventListener("load",new UIEventListener(value));
+			}
+		}
+		
 		/// <summary>Called when the document is about to be unloaded.</summary>
 		public BeforeUnloadEventDelegate onbeforeunload{
 			get{
@@ -433,6 +513,46 @@ namespace PowerUI{
 			}
 			set{
 				addEventListener("hashchange",new HashChangeEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when the language changes.</summary>
+		public DomEventDelegate onlanguagechange{
+			get{
+				return GetFirstDelegate<DomEventDelegate>("languagechange");
+			}
+			set{
+				addEventListener("languagechange",new DomEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when the document ready state changes.</summary>
+		public DomEventDelegate onreadystatechange{
+			get{
+				return GetFirstDelegate<DomEventDelegate>("readystatechange");
+			}
+			set{
+				addEventListener("readystatechange",new DomEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when a form is reset.</summary>
+		public FormEventDelegate onreset{
+			get{
+				return GetFirstDelegate<FormEventDelegate>("reset");
+			}
+			set{
+				addEventListener("reset",new FormEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when a form is submitted.</summary>
+		public FormEventDelegate onsubmit{
+			get{
+				return GetFirstDelegate<FormEventDelegate>("submit");
+			}
+			set{
+				addEventListener("submit",new FormEventListener(value));
 			}
 		}
 		

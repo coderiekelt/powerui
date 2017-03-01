@@ -146,9 +146,20 @@ namespace PowerUI{
 					dispatchEvent(e);
 					
 				}
+				
+				if(value==1 || value==4){
+					
+					// Tell the doc:
+					if(hostDocument!=null){
+						hostDocument.ResourceStatus(this,4);
+					}
+					
+				}
 			}
 		}
 		
+		/// <summary>A document to inform when the resource has loaded.</summary>
+		public Document hostDocument;
 		/// <summary>A location that the request was redirected to.</summary>
 		public Location redirectedTo;
 		/// <summary>The URI that was requested.</summary>
@@ -258,6 +269,10 @@ namespace PowerUI{
 		protected void SetPath(string src,Location relativeTo){
 			location=new Location(src,relativeTo);
 			type=location.Filetype.ToLower();
+			
+			if(relativeTo!=null && relativeTo.document!=null){
+				hostDocument=relativeTo.document;
+			}
 		}
 		
 		/// <summary>True if there is no error and the text is ok.</summary>

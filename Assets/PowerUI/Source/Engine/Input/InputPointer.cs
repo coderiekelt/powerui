@@ -24,6 +24,9 @@ namespace PowerUI{
 		/// <summary>Selecting something.</summary>
 		public const int SELECTING=4;
 		
+		/// <summary>A globally unique ID.</summary>
+		private static long GlobalID=0;
+		
 		/// <summary>To avoid resizing this array repeatedly, we track how many are actually in use.</summary>
 		internal static int PointerCount;
 		/// <summary>The raw set of all available input pointers. PointerCount is how many indices are actually in use.</summary>
@@ -126,6 +129,60 @@ namespace PowerUI{
 		/// <summary>If WorldUI's receive input, a ray must be fired from CameraFor3DInput to attempt input.
 		/// This is the lastest ray result. UI.MouseOver updates this immediately; it's updated at the UI rate otherwise.</summary>
 		public UnityEngine.RaycastHit LatestHit;
+		/// <summary>A globally unique ID.</summary>
+		public long pointerId=0;
+		/// <summary>Is this the primary pointer? They all are by default in PowerUI
+		/// (everything receives the 'legacy' mouse events).</summary>
+		public bool isPrimary=true;
+		
+		/// <summary>The type of input pointer.</summary>
+		public virtual string pointerType{
+			get{
+				return "";
+			}
+		}
+		
+		/// <summary>The 'barrel' pressure when available.</summary>
+		public virtual float tangentialPressure{
+			get{
+				return 0f;
+			}
+		}
+		
+		/// <summary>The width of the active pointer area in CSS pixels.</summary>
+		public virtual double width{
+			get{
+				return 1;
+			}
+		}
+		
+		/// <summary>The height of the active pointer area in CSS pixels.</summary>
+		public virtual double height{
+			get{
+				return 1;
+			}
+		}
+		
+		/// <summary>The x tilt of the pointer.</summary>
+		public virtual float tiltX{
+			get{
+				return 0f;
+			}
+		}
+		
+		/// <summary>The y tilt of the pointer.</summary>
+		public virtual float tiltY{
+			get{
+				return 0f;
+			}
+		}
+		
+		/// <summary>The rotation angle of an input when available.</summary>
+		public virtual float twist{
+			get{
+				return 0f;
+			}
+		}
 		
 		/// <summary>True if this input is currently down.</summary>
 		public bool IsDown{
@@ -146,6 +203,11 @@ namespace PowerUI{
 			get{
 				return DownDocumentY;
 			}
+		}
+		
+		
+		public InputPointer(){
+			pointerId=GlobalID++;
 		}
 		
 		/// <summary>Adds this pointer to the available set so it'll get updated.

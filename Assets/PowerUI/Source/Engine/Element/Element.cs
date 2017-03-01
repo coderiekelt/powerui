@@ -62,6 +62,39 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>An enumerated version of the contenteditable attribute.</summary>
+		public string contentEditable{
+			get{
+				string rawValue=this["contenteditable"];
+				if(rawValue=="inherit"){
+					return rawValue;
+				}
+				
+				if(rawValue!=null && rawValue!="0" && rawValue!="false"){
+					return "true";
+				}
+				
+				return "false";
+			}
+			set{
+				this["contenteditable"]=value;
+			}
+		}
+		
+		/// <summary>Is this element content editable?</summary>
+		public bool isContentEditable{
+			get{
+				return GetBoolAttribute("contenteditable");
+			}
+			set{
+				if(value){
+					contentEditable="true";
+				}else{
+					contentEditable=null;
+				}
+			}
+		}
+		
 		/// <summary>Called by some tags when their content is loaded. E.g. img tag or iframe.</summary>
 		/// <param name="e">The load event.</param>
 		public virtual void OnLoadEvent(Dom.Event e){
@@ -171,13 +204,38 @@ namespace PowerUI{
 				return;
 			}
 			
-			FocusEvent fe=new FocusEvent("blur");
+			// Focus out first:
+			FocusEvent fe=new FocusEvent("focusout");
+			
 			// It's trusted but doesn't bubble:
 			fe.SetTrusted(false);
 			fe.focusing=this;
+			fe.relatedTarget=this;
+			
+			if(doc.activeElement!=null){
+				if(!doc.activeElement.dispatchEvent(fe)){
+					return;
+				}	
+			}
+			
+			// Focus in next:
+			fe.Reset();
+			fe.EventType="focusin";
+			fe.relatedTarget=doc.activeElement;
+			
+			if(!dispatchEvent(fe)){
+				return;
+			}
+			
+			// Blur next:
+			fe.Reset();
+			fe.relatedTarget=null;
+			fe.EventType="blur";
+			
 			PowerUI.Input.LastFocusedDocument=doc;
 			
 			if(doc.activeElement!=null){
+				
 				(doc.activeElement as HtmlElement).Unfocus(fe);
 			}
 			
@@ -650,6 +708,73 @@ namespace PowerUI{
 				RequireLayout();
 				LayoutBox box=Style.Computed.FirstBox;
 				return (box==null)? 0 :(int)box.Width;
+			}
+		}
+		
+		/// <summary>The height of this element.</summary>
+		public long offsetHeight{
+			get{
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.Height;
+			}
+		}
+		
+		/// <summary>The width of this element.</summary>
+		public long offsetWidth{
+			get{
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.Width;
+			}
+		}
+		
+		/// <summary>The parent that offsetTop and offsetLeft are relative to.</summary>
+		public Element offsetParent{
+			get{
+				// Body or the root element always returns null:
+				if(Tag=="body" || parentElement==null){
+					return null;
+				}
+				
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				if(box==null || RenderData.Ancestor==null || box.PositionMode==PositionMode.Fixed){
+					return null;
+				}
+				
+				// We've got a precomputed property available:
+				return RenderData.Ancestor.Node as Element;
+			}
+		}
+		
+		/// <summary>The top offset relative to the offsetParent.</summary>
+		public long offsetTop{
+			get{
+				
+				// Body element always returns 0:
+				if(Tag=="body"){
+					return 0;
+				}
+				
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.ParentOffsetTop;
+			}
+		}
+		
+		/// <summary>The left offset relative to the offsetParent.</summary>
+		public long offsetLeft{
+			get{
+				
+				// Body element always returns 0:
+				if(Tag=="body"){
+					return 0;
+				}
+				
+				RequireLayout();
+				LayoutBox box=Style.Computed.FirstBox;
+				return (box==null)? 0 :(int)box.ParentOffsetLeft;
 			}
 		}
 		

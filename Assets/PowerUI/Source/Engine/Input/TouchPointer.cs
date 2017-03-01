@@ -57,6 +57,27 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The width of the active pointer area in CSS pixels.</summary>
+		public override double width{
+			get{
+				return Radius*2;
+			}
+		}
+		
+		/// <summary>The height of the active pointer area in CSS pixels.</summary>
+		public override double height{
+			get{
+				return Radius*2;
+			}
+		}
+		
+		/// <summary>The twist/ rotationAngle.</summary>
+		public override float twist{
+			get{
+				return rotationAngle;
+			}
+		}
+		
 		/// <summary>Updates the stylus info.</summary>
 		public virtual void UpdateStylus(float angleX,float angleY){}
 		

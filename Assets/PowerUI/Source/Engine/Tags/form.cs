@@ -358,15 +358,25 @@ namespace PowerUI{
 		/// <summary>Resets this form.</summary>
 		public void reset(){
 			
-			// Get resettable elements:
-			HTMLFormControlsCollection allReset=GetAllInputs(InputSearchMode.Submittable);
+			// Dispatch the reset event:
+			FormEvent de=new FormEvent("reset");
+			de.SetTrusted(true);
+			// Hook up the form element:
+			de.form=this;
 			
-			foreach(Element e in allReset){
-				HtmlElement he=(e as HtmlElement);
+			if(dispatchEvent(de)){
 				
-				if(he!=null){
-					he.OnFormReset();
+				// Get resettable elements:
+				HTMLFormControlsCollection allReset=GetAllInputs(InputSearchMode.Submittable);
+				
+				foreach(Element e in allReset){
+					HtmlElement he=(e as HtmlElement);
+					
+					if(he!=null){
+						he.OnFormReset();
+					}
 				}
+				
 			}
 			
 		}
@@ -452,7 +462,7 @@ namespace PowerUI{
 			string action=GetOverriden("action",clickedButton);
 			
 			FormEvent formData=new FormEvent(uniqueValues);
-			formData.SetTrusted(false);
+			formData.SetTrusted(true);
 			formData.EventType="submit";
 			// Hook up the form element:
 			formData.form=this;

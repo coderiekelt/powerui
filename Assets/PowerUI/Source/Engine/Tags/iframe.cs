@@ -68,6 +68,36 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The frameborder attribute.</summary>
+		public string frameBorder{
+			get{
+				return this["frameborder"];
+			}
+			set{
+				this["frameborder"]=value;
+			}
+		}
+		
+		/// <summary>The marginheight attribute.</summary>
+		public string marginHeight{
+			get{
+				return this["marginheight"];
+			}
+			set{
+				this["marginheight"]=value;
+			}
+		}
+		
+		/// <summary>The marginwidth attribute.</summary>
+		public string marginWidth{
+			get{
+				return this["marginwidth"];
+			}
+			set{
+				this["marginwidth"]=value;
+			}
+		}
+		
 		/// <summary>The referrerpolicy attribute.</summary>
 		public string referrerPolicy{
 			get{
@@ -97,6 +127,14 @@ namespace PowerUI{
 				this["width"]=value;
 			}
 		}
+		
+		/*
+		public DOMSettableTokenList sandbox{
+			get{
+				return new DOMSettableTokenList(this,"sandbox");
+			}
+		}
+		*/
 		
 		/// <summary>Reloads the iframe.</summary>
 		public void reload(){

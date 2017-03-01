@@ -27,6 +27,8 @@ namespace PowerUI{
 		public UnityEngine.Event unityEvent;
 		/// <summary>The pointer that triggered this event.</summary>
 		public InputPointer trigger;
+		/// <summary>A related target, if there is one.</summary>
+		public EventTarget relatedTarget;
 		
 		
 		/// <summary>An empty UI event.</summary>

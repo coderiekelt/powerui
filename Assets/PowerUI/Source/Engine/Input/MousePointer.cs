@@ -15,6 +15,13 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>The type of input pointer.</summary>
+		public override string pointerType{
+			get{
+				return "mouse";
+			}
+		}
+		
 		public override bool Relocate(out Vector2 delta){
 			
 			// Get the current mouse position:

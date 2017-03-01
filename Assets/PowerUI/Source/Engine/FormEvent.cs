@@ -33,7 +33,9 @@ namespace PowerUI{
 		private Dictionary<string,string> RawFields;
 		
 		
-		/// <summary>Creates a new form with the given field/value pairs.</summary>
+		public FormEvent(string type):base(type){}
+		
+		/// <summary>Creates a new form event with the given field/value pairs.</summary>
 		/// <param name="fields">A dictionary holding the field/value pairs from the form.</param>
 		public FormEvent(Dictionary<string,string> fields){
 			RawFields=fields;
@@ -110,6 +112,29 @@ namespace PowerUI{
 			}
 			
 			return postString;
+		}
+		
+	}
+	
+	public delegate void FormEventDelegate(FormEvent e);
+	
+	/// Handler for FormEvent events.
+	public class FormEventListener : Dom.EventListener{
+		
+		public FormEventDelegate Listener;
+		
+		public FormEventListener(FormEventDelegate listener){
+			Listener=listener;
+		}
+		
+		public override object Internal{
+			get{
+				return Listener;
+			}
+		}
+		
+		public override void handleEvent(Dom.Event e){
+			Listener((FormEvent)e);
 		}
 		
 	}

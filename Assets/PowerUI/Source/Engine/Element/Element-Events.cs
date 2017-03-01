@@ -93,13 +93,33 @@ namespace Dom{
 			}
 		}
 		
-		/// <summary>Called when this element receives a load event (e.g. iframe).</summary>
-		public DomEventDelegate onload{
+		/// <summary>Called when a form is reset.</summary>
+		public FormEventDelegate onreset{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("load");
+				return GetFirstDelegate<FormEventDelegate>("reset");
 			}
 			set{
-				addEventListener("load",new DomEventListener(value));
+				addEventListener("reset",new FormEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when a form is submitted.</summary>
+		public FormEventDelegate onsubmit{
+			get{
+				return GetFirstDelegate<FormEventDelegate>("submit");
+			}
+			set{
+				addEventListener("submit",new FormEventListener(value));
+			}
+		}
+		
+		/// <summary>Called when this element receives a load event (e.g. iframe).</summary>
+		public UIEventDelegate onload{
+			get{
+				return GetFirstDelegate<UIEventDelegate>("load");
+			}
+			set{
+				addEventListener("load",new UIEventListener(value));
 			}
 		}
 		
@@ -110,6 +130,26 @@ namespace Dom{
 			}
 			set{
 				addEventListener("focus",new FocusEventListener(value));
+			}
+		}
+		
+		/// <summary>Called just before this element is focused.</summary>
+		public FocusEventDelegate onfocusin{
+			get{
+				return GetFirstDelegate<FocusEventDelegate>("focusin");
+			}
+			set{
+				addEventListener("focusin",new FocusEventListener(value));
+			}
+		}
+		
+		/// <summary>Called just before this element is blurred.</summary>
+		public FocusEventDelegate onfocusout{
+			get{
+				return GetFirstDelegate<FocusEventDelegate>("focusout");
+			}
+			set{
+				addEventListener("focusout",new FocusEventListener(value));
 			}
 		}
 		

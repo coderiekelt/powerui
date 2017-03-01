@@ -806,6 +806,7 @@ namespace PowerUI{
 							// Trigger a mouseout (bubbles):
 							mouseEvent.EventType="mouseout";
 							mouseEvent.SetTrusted();
+							mouseEvent.relatedTarget=newActiveOver;
 							oldActiveOver.dispatchEvent(mouseEvent);
 							
 							// And a mouseleave (doesn't bubble).
@@ -814,6 +815,7 @@ namespace PowerUI{
 								mouseEvent.Reset();
 								mouseEvent.bubbles=false;
 								mouseEvent.EventType="mouseleave";
+								mouseEvent.relatedTarget=newActiveOver;
 								oldActiveOver.dispatchEvent(mouseEvent);
 							}
 							
@@ -839,6 +841,7 @@ namespace PowerUI{
 						// Trigger a mouseover (bubbles):
 						mouseEvent.Reset();
 						mouseEvent.bubbles=true;
+						mouseEvent.relatedTarget=oldActiveOver;
 						mouseEvent.EventType="mouseover";
 						
 						if(newActiveOver==null){
@@ -862,6 +865,7 @@ namespace PowerUI{
 								mouseEvent.Reset();
 								mouseEvent.bubbles=false;
 								mouseEvent.EventType="mouseenter";
+								mouseEvent.relatedTarget=oldActiveOver;
 								newActiveOver.dispatchEvent(mouseEvent);
 							}
 							
