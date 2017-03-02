@@ -22,6 +22,7 @@ namespace PowerUI{
 	/// Represents a specific type of image format, e.g. a video or an SVG.
 	/// </summary>
 	
+	[Values.Preserve]
 	public class ImageFormat{
 		
 		/// <summary>The set of lowercase file types that this format will handle.</summary>

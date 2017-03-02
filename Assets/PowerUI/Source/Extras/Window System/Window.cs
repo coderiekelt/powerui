@@ -21,11 +21,13 @@ namespace Windows{
 	/// An instance of an open window.
 	/// </summary>
 	
+	[Values.Preserve]
 	public partial class Window : WindowGroup{
 		
 		/// <summary>
 		/// Closes the window that the given event originated from.
 		/// </summary>
+		[Values.Preserve]
 		public static void CloseThis(UIEvent e){
 			
 			// Get the window and close it:

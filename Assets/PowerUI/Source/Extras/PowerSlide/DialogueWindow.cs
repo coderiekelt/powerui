@@ -32,6 +32,7 @@ namespace Windows{
 		
 		/// <summary>A click to continue helper. This entirely ignores the event if an option is on the UI.
 		/// Otherwise, it simply acts the same as Windows.Window.Cue</summary>
+		[Values.Preserve]
 		public static void ClickToContinue(PowerUI.MouseEvent e){
 			
 			// The window:
@@ -68,6 +69,7 @@ namespace Windows{
 		}
 		
 		/// <summary>Occurs when an option is clicked.</summary>
+		[Values.Preserve]
 		public static void RunOption(PowerUI.MouseEvent e){
 			
 			Dom.Node targetNode=(e.target as Dom.Node);
@@ -258,6 +260,7 @@ namespace Windows{
 	public partial class Window{
 		
 		/// <summary>Cues dialogue within a window.</summary>
+		[Values.Preserve]
 		public static void Cue(PowerUI.MouseEvent me){
 			
 			// The window:

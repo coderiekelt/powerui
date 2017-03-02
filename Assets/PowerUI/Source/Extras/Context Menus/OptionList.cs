@@ -27,6 +27,7 @@ namespace ContextMenus{
 	public class OptionList{
 		
 		/// <summary>Used when an option is triggered (usually by an onclick attribute).</summary>
+		[Values.Preserve]
 		public static void ResolveOptionFromClick(Dom.Event e){
 			
 			// Get the src element:
@@ -54,7 +55,7 @@ namespace ContextMenus{
 			
 		}
 		
-		/// <summary>Resolves an option from a context menu window's document
+		/// <summary>Resolves an option from a context menu window's document.</summary>
 		public static Option ResolveOption(int index,Windows.Window window){
 			
 			// These windows are always 'ContextMenuWindow' objects.

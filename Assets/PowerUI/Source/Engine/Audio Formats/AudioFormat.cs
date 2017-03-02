@@ -22,6 +22,7 @@ namespace PowerUI{
 	/// Represents a specific type of audio format, e.g. a synth file or ogg.
 	/// </summary>
 	
+	[Values.Preserve]
 	public class AudioFormat{
 		
 		/// <summary>The clip to use during playback.</summary>

@@ -25,6 +25,7 @@ namespace PowerUI{
 	/// Then, setup its OnGetGraphic function.
 	/// </summary>
 	
+	[Values.Preserve]
 	public class FileProtocol{
 		
 		/// <summary>An event called when any request is started.

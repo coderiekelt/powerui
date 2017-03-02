@@ -24,6 +24,7 @@ namespace PowerUI.Compression{
 	/// An interface for a compression algorithm. Use e.g. Compression.Get("zlib") instead.
 	/// </summary>
 	
+	[Values.Preserve]
 	public class Compressor{
 		
 		/// <summary>The names of the compressor.</summary>
