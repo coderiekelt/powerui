@@ -110,7 +110,7 @@ namespace PowerUI{
 		*/
 		
 		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
-		public void GetWidthBounds(out float min,out float max){
+		public virtual void GetWidthBounds(out float min,out float max){
 			
 			min=0f;
 			max=0f;

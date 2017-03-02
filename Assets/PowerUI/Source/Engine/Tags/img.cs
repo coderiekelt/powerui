@@ -340,6 +340,27 @@ namespace PowerUI{
 		
 		}
 		
+		public override void GetWidthBounds(out float min,out float max){
+			
+			// May be relative to a declared height.
+			float fullHeight=Style.Computed.HeightFullX;
+			
+			// -1 indicates that no specific height was declared:
+			if(fullHeight == -1f){
+				
+				// Using the image width:
+				min=RawWidth;
+				
+			}else{
+				
+				// Relative to the defined height:
+				min=fullHeight * AspectRatio;
+				
+			}
+			
+			max=min;
+		}
+		
 		public override void OnComputeBox(Renderman renderer,Css.LayoutBox box,ref bool widthUndefined,ref bool heightUndefined){
 			
 			// Replaced:
