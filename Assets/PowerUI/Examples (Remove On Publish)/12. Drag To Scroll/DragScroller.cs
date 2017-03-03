@@ -19,6 +19,7 @@ public static class DragScroller{
 	
 	/// <summary>This gets called when the element is clicked on.
 	/// It's onmousedown points at this method.</summary>
+	[Values.Preserve]
 	public static void StartScroll(UIEvent e){
 		
 		if(!e.isLeftMouse){
@@ -39,6 +40,7 @@ public static class DragScroller{
 	}
 	
 	/// <summary>Called when the element scrolls.</summary>
+	[Values.Preserve]
 	public static void ScrollNow(UIEvent e){
 		
 		if(Scrolling==null){

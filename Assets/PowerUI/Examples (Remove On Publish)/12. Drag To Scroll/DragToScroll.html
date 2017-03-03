@@ -8,6 +8,9 @@ html{
 </style>
 
 <div style='background:#fff;border:3px solid #000;width:300px;height:300px;padding:20px;color:#000000;margin:auto;'>
+	
+	<!-- There's the magic attributes! onmousedown and onmousemove calling DragScroller.cs -->
+	
 	<div style='height:100%;width:100%;overflow:hidden;' onmousedown='DragScroller.StartScroll' onmousemove='DragScroller.ScrollNow'>
 	<center>
 		<u>Click and drag this element to get it to scroll</u><br><br>
@@ -15,9 +18,17 @@ html{
 		Note about <b>inertial scrolling:</b> Due to a patent held by Apple, we can't implement inertial scrolling. If you want it, see the source of DragToScroll.cs for notes on what to do.
 		<br>
 		<br>
-		This is done by C# methods which can be reused anywhere in the project. When this element is clicked, it gets focused and the C# script, DragScroller, stores the location of the mouse. 
-		Because it's focused, onmousemove also occurs. Mouse up might not occur on this element though, so the mousemove function looks out for a mouse up. 
-		When one occurs, it simply unfocuses this element.
+		This is done by C# methods which can be reused anywhere in the project. When this element is clicked, the C# script, DragScroller (which is in this example's files), stores the location of the mouse. 
+		onmousemove then updates the scroll value. As a side note, mouse events are triggered by touch events too.
+		<br>
+		<br>
+		<b>So, the magic is in adding this:</b>
+		<br>
+		<br>
+		onmousedown='DragScroller.StartScroll' onmousemove='DragScroller.ScrollNow'
+		<br>
+		<br>
+		<b>But make sure you copy DragScroller.cs out of this example!</b>
 		<br>
 		<br>
 		<br>

@@ -70,7 +70,13 @@ public class CSharpExample : MonoBehaviour {
 		
 	}
 	
-	/// <summary>Direct is called directly with onmousedown="CSharpExample.Direct".</summary>
+	/// <summary>Direct is called directly with onmousedown="CSharpExample.Direct".
+	/// It has a Preserve attribute which for IL2CPP. As far as it can tell, this function isn't used
+	/// so it would strip it out otherwise.
+	/// It doesn't matter which Preserve attribute you use - 
+	/// either UnityEngine.Scripting.Preserve, Values.Preserve or your own.
+	/// </summary>
+	[Values.Preserve] // <-- see above!
 	public static void Direct(MouseEvent mouseEvent){
 		
 		// mouseEvent.target is the element that actually got clicked.
