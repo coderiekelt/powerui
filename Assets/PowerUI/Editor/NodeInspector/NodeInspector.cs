@@ -95,30 +95,29 @@ namespace PowerUI{
 				// Get the computed style:
 				ComputedStyle cs=renderable.ComputedStyle;
 				
-				// All applied styles:
-				List<MatchingRoot> matches=cs.Matches;
+				// All applied styles (without allocating a new list):
+				MatchingRoot match=cs.FirstMatch;
 				
-				if(matches!=null){
+				while(match!=null){
 					
-					foreach(MatchingRoot matching in matches){
+					// Note! These nodes can be participants from other nearby elements.
+					// That happens with any combined selector.
+					// To filter those ones out, check if this element is the actual target:
+					if(match.IsTarget){
 						
-						// Note! These nodes can be participants from other nearby elements.
-						// That happens with any combined selector.
-						// To filter those ones out, check if this element is the actual target:
-						if(matching.IsTarget){
-							
-							// Rule is simply matching.Rule:
-							StyleRule rule=matching.Rule;
-							
-							// To get the underlying selector, it's rule.Selector:
-							Selector selector=rule.Selector;
-							
-							// Note that this builds the selector text - avoid calling from OnGUI!
-							result+=selector.selectorText+"\r\n";
-							
-						}
+						// Rule is simply matching.Rule:
+						StyleRule rule=match.Rule;
+						
+						// To get the underlying selector, it's rule.Selector:
+						Selector selector=rule.Selector;
+						
+						// Note that this builds the selector text - avoid calling from OnGUI!
+						result+=selector.selectorText+"\r\n";
 						
 					}
+					
+					// Next one:
+					match=match.NextInStyle;
 					
 				}
 				

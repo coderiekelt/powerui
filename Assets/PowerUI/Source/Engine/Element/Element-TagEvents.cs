@@ -78,7 +78,7 @@ namespace PowerUI{
 			}
 			
 			// Style refresh:
-			if(Style.Computed.Matches!=null){
+			if(Style.Computed.FirstMatch!=null){
 				// This is a runtime attribute change.
 				// We must consider if it's affecting the style or not:
 				Style.Computed.AttributeChanged(property);
