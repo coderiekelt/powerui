@@ -261,7 +261,7 @@ namespace Windows{
 		/// <summary>True if these windows stack.</summary>
 		public virtual StackMode StackMode{
 			get{
-				return StackMode.Over;
+				return StackMode.Close;
 			}
 		}
 		
@@ -377,16 +377,14 @@ namespace Windows{
 		/// <summary>Triggers a '{name}' event on the window itself, and optionally on the source element.</summary>
 		public void trigger(string name,Dictionary<string,object> globals){
 			
-			if(element==null){
-				return;
-			}
-			
 			// Create the event:
-			Dom.Event e=document.createEvent(name);
+			Dom.Event e=document.createEvent("uievent",name);
 			e.SetTrusted();
 			
-			// Trigger it now on the element:
-			element.dispatchEvent(e);
+			if(element!=null){
+				// Trigger it now on the element:
+				element.dispatchEvent(e);
+			}
 			
 			// On this object (which is an event target):
 			dispatchEvent(e);
@@ -557,6 +555,11 @@ namespace Windows{
 		
 		/// <summary>Writes the windows HTML now. Collects element and optionally an iframe.</summary>
 		public void SetHtml(string html){
+			
+			if(element!=null){
+				// Remove element:
+				element.parentNode.removeChild(element);
+			}
 			
 			// Either use before() or direct insert:
 			int domIndex=0;

@@ -97,7 +97,7 @@ namespace PowerUI{
 					return null;
 				}
 				
-				return ImageData_.Texture.EncodeToPNG();
+				return (ImageData_.Texture as Texture2D).EncodeToPNG();
 			}
 		}
 		

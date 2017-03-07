@@ -10,6 +10,10 @@ namespace PowerUI{
 			return createEvent(type,null,null);
 		}
 		
+		public Event createEvent(string type,string evtType){
+			return createEvent(type,evtType,null);
+		}
+		
 		public Event createEvent(string type,string evtType,object init){
 			
 			if(type==null){

@@ -149,7 +149,7 @@ namespace PowerUI{
 				texture=atlas.Texture;
 			}
 			
-			Material.SetTexture("_Atlas",texture);
+			Material.SetTexture("_MainTex",texture);
 		}
 		
 		public void SetGlobalMaterial(Shader shader){

@@ -1080,10 +1080,10 @@ namespace PowerUI{
 								Selection s=(pointer.ActivePressed.document as HtmlDocument).getSelection();
 								
 								// Safety check:
-								if(s.Ranges.Count>0){
+								if(s.ranges.Count>0){
 									
 									// Get the range:
-									Range range=s.Ranges[0];
+									Range range=s.ranges[0];
 									
 									// Get text node:
 									RenderableTextNode htn=(range.startContainer as RenderableTextNode);

@@ -24,6 +24,8 @@ body{
 
 <script type='text/nitro'>
 
+// NOTE: foreach(var letter in title.letters){} is generally better than the below.
+
 // Arch settings:
 var maxHeight=50f;
 var maxAngle=25f;
@@ -35,7 +37,7 @@ var title=(document.getElementById("title")):HtmlElement;
 title.lettering();
 
 // How many letters?
-var letterCount=title.childNodes.length;
+var letterCount=title.letterCount;
 
 var angle=0f;
 

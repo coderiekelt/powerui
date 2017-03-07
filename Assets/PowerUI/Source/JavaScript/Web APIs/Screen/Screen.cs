@@ -104,7 +104,7 @@ namespace PowerUI{
 		public bool lockOrientation(string orientation){
 			
 			// Get orientation:
-			ScreenOrientation orient=JSScreenOrientation.ToUnity(orientation);
+			ScreenOrientation orient=JSScreenOrientation.toUnity(orientation);
 			
 			// Apply:
 			UnityEngine.Screen.orientation=orient;

@@ -70,12 +70,17 @@ namespace PowerUI{
 		
 		/// <summary>If the package contains a video, this gets the material that the video will playback on.</summary>
 		public Material GetVideoMaterial(ShaderSet shaders){
-			return Contents.GetImageMaterial(shaders);
+			return Contents.GetImageMaterial(shaders.Isolated);
 		}
 		
 		/// <summary>A material with just the single frame on it.</summary>
 		public Material GetImageMaterial(ShaderSet shaders){
-			return Contents.GetImageMaterial(shaders);
+			return Contents.GetImageMaterial(shaders.Isolated);
+		}
+		
+		/// <summary>A material with just the single frame on it.</summary>
+		public Material GetImageMaterial(Shader shader){
+			return Contents.GetImageMaterial(shader);
 		}
 		
 		/// <summary>A material with just the single frame on it using the standard UI shader set.</summary>

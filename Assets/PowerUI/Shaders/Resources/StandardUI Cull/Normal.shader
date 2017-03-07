@@ -1,7 +1,7 @@
 Shader "PowerUI/StandardUI Cull/Normal" {
 	Properties {
 		_Font ("Font Texture", 2D) = "white" {}
-		_Atlas  ("Graphical Atlas", 2D) = "white" {}
+		_MainTex  ("Graphical Atlas", 2D) = "white" {}
 	}
 	
 	SubShader {
@@ -34,8 +34,8 @@ Shader "PowerUI/StandardUI Cull/Normal" {
 			sampler2D _Font;
 			uniform float4 _Font_ST;
 			
-			sampler2D _Atlas;
-			uniform float4 _Atlas_ST;
+			sampler2D _MainTex;
+			uniform float4 _MainTex_ST;
 			
 			appdata_t vert (appdata_t v) {
 				v.vertex = mul( UNITY_MATRIX_MVP, v.vertex );
@@ -46,7 +46,7 @@ Shader "PowerUI/StandardUI Cull/Normal" {
 				fixed4 col = i.color;
 				
 				if(i.texcoord0.y<=1){
-					col *= tex2D(_Atlas, i.texcoord0);
+					col *= tex2D(_MainTex, i.texcoord0);
 				}
 				
 				float smooth=0.25 / (4 * 16);

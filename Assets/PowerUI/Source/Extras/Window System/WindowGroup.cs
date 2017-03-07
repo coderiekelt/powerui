@@ -112,6 +112,24 @@ namespace Windows{
 			
 		}
 		
+		/// <summary>Closes a window. Just a convenience version of window.close();</summary>
+		public void close(string type,string url){
+			
+			// Try getting it:
+			Window w=get(type,url);
+			
+			if(w!=null){
+				w.close();
+			}
+			
+		}
+		
+		/// <summary>Closes an open window or opens it if it wasn't already 
+		/// optionally with globals. Of the form 'key',value,'key2',value..</summary>
+		public Window cycle(string type,string url,params object[] globalData){
+			return cycle(type,url,Manager.buildGlobals(globalData));
+		}
+		
 		/// <summary>Closes an open window or opens it if it wasn't already.</summary>
 		public Window cycle(string type,string url,Dictionary<string,object> globals){
 			
@@ -153,10 +171,15 @@ namespace Windows{
 			
 		}
 		
+		/// <summary>Opens a window optionally with globals. Of the form 'key',value,'key2',value..</summary>
+		public Window open(string typeName,string url,params object[] globalData){
+			return open(typeName,url,Manager.buildGlobals(globalData));
+		}
+		
 		/// <summary>Opens a window.</summary>
 		public Window open(string typeName,string url,Dictionary<string,object> globals){
 			
-			if(Manager.WindowTypes==null){
+			if(Manager.windowTypes==null){
 				
 				// Load the windows now!
 				Modular.AssemblyScanner.FindAllSubTypesNow(typeof(Windows.Window),
@@ -169,19 +192,19 @@ namespace Windows{
 			}
 			
 			Type type;
-			if(!Manager.WindowTypes.TryGetValue(typeName,out type)){
+			if(!Manager.windowTypes.TryGetValue(typeName,out type)){
 				return null;
 			}
 			
-			// instance it now:
-			Window w=Activator.CreateInstance(type) as Window;
-			
-			if(w==null){
-				return null;
-			}
+			// Get existing:
+			Window same=get(typeName,null);
 			
 			// Get stacking behaviour:
-			StackMode stacking=w.StackMode;
+			StackMode stacking=StackMode.Close;
+			
+			if(same!=null){
+				stacking=same.StackMode;
+			}
 			
 			object stackModeObj;
 			if(globals!=null && globals.TryGetValue("-spark-stack-mode",out stackModeObj)){
@@ -192,16 +215,33 @@ namespace Windows{
 					stacking=StackMode.Hide;
 				}else if(stackMode=="close"){
 					stacking=StackMode.Close;
+				}else if(stackMode=="hijack"){
+					stacking=StackMode.Hijack;
 				}else{
 					stacking=StackMode.Over;
 				}
 				
 			}
 			
+			if(stacking==StackMode.Hijack){
+				
+				// Hijack an existing window! Just load straight into it but clear its event handlers:
+				same.ClearEvents();
+				same.Load(url,globals);
+				
+				return same;
+			}
+			
+			// instance it now:
+			Window w=Activator.CreateInstance(type) as Window;
+			
+			if(w==null){
+				return null;
+			}
+			
 			if(stacking==StackMode.Hide){
 				
 				// Hides any window of the same type.
-				Window same=get(typeName,null);
 				
 				if(same!=null){
 					
@@ -212,14 +252,14 @@ namespace Windows{
 					w.HidWindow=same;
 				}
 				
-			}else if(stacking==StackMode.Close){
+			}else if(stacking==StackMode.Close && same!=null){
 				
 				// Close all windows of the same type.
 				
 				// For each one..
 				for(int i=Windows.Count-1;i>=0;i--){
 					
-					Window same=Windows[i];
+					same=Windows[i];
 					
 					// Match?
 					if(same.Type==typeName){

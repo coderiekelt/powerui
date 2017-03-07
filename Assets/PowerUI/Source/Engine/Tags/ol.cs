@@ -1,15 +1,16 @@
-//--------------------------------------
+﻿//--------------------------------------
 //               PowerUI
 //
 //        For documentation or 
 //    if you have any issues, visit
 //        powerUI.kulestar.com
 //
-//    Copyright � 2013 Kulestar Ltd
+//    Copyright © 2013 Kulestar Ltd
 //          www.kulestar.com
 //--------------------------------------
 
 using Dom;
+using Css;
 
 
 namespace PowerUI{
@@ -26,7 +27,7 @@ namespace PowerUI{
 		/// <summary>True if the numbering is reversed.</summary>
 		private bool Reversed_;
 		/// <summary>The type. 1, a, A, i, I.</summary>
-		private OrdinalType Type_=OrdinalType.Number;
+		private string Type_="decimal";
 		
 		
 		/// <summary>The type attribute.</summary>
@@ -59,40 +60,51 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Resolves the marker for the given computed style.</summary>
+		public static string GetOrdinal(ComputedStyle style,bool prefixed){
+			
+			// Get the list style type for this element:
+			Css.Value value=style[Css.Properties.ListStyleType.GlobalProperty];
+			
+			if(value==null){
+				
+				// Disc is the default:
+				return style.reflowDocument.GetOrdinal(style.Element.childElementIndex+1,"disc",prefixed)+" ";
+				
+			}else if(value.IsType(typeof(Css.Keywords.None))){
+				return "";
+			}
+			
+			// Get textual name:
+			string name=value.Text;
+		
+			// Is it a named set?
+			string result=style.reflowDocument.GetOrdinal(style.Element.childElementIndex+1,name,prefixed);
+			
+			if(result==null){
+				// It's possibly the symbols() function or alternatively it's just some text.
+				// Assume it's some text for now!
+				result=value.Text;
+			}
+			
+			return result;
+		}
+		
 		/// <summary>Figures out the ordinal type for the given type string. 1, a, A, i, I.</summary>
-		public static OrdinalType GetOrdinalType(string type){
+		public static string GetListStyleMode(string type){
 			
 			switch(type){
 				case "a":
-					return OrdinalType.AlphaLower;
+					return "lower-alpha";
 				case "A":
-					return OrdinalType.AlphaUpper;
+					return "upper-alpha";
 				case "i":
-					return OrdinalType.RomanLower;
+					return "lower-roman";
 				case "I":
-					return OrdinalType.RomanUpper;
+					return "upper-roman";
 				default:
 				case "1":
-					return OrdinalType.Number;
-			}
-			
-		}
-		
-		/// <summary>Gets the ordinal for a given index.</summary>
-		public static string GetOrdinal(int index,OrdinalType type){
-			
-			switch(type){
-				case OrdinalType.RomanUpper:
-					return ToRomanUpper(index+1);
-				case OrdinalType.RomanLower:
-					return ToRomanUpper(index+1).ToLower();
-				case OrdinalType.AlphaUpper:
-					return ToAlphaUpper(index);
-				case OrdinalType.AlphaLower:
-					return ToAlphaUpper(index).ToLower();
-				default:
-				case OrdinalType.Number:
-					return index.ToString();
+					return "decimal";
 			}
 			
 		}
@@ -104,7 +116,7 @@ namespace PowerUI{
 				index=-index;
 			}
 			
-			return GetOrdinal(Start_+index,Type_);
+			return (document as Css.ReflowDocument).GetOrdinal(Start_+index,Type_,true);
 		}
 		
 		/// <summary>Called when this node has been created and is being added to the given lexer.
@@ -147,7 +159,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="type"){
-				Type_=GetOrdinalType(this["type"]);
+				Type_=GetListStyleMode(this["type"]);
 			}else if(property=="start"){
 				int.TryParse(this["start"],out Start_);
 			}else if(property=="reversed"){
@@ -206,15 +218,6 @@ namespace PowerUI{
 			return result.ToString();
 		}
 		
-	}
-	
-	/// <summary>An ordinal type as used by the ol element.</summary>
-	public enum OrdinalType{
-		Number,
-		AlphaLower,
-		AlphaUpper,
-		RomanLower,
-		RomanUpper
 	}
 	
 }

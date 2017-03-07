@@ -82,11 +82,11 @@ namespace PowerUI{
 			return new PictureFormat();
 		}
 		
-		public override Material GetImageMaterial(ShaderSet shaders){
+		public override Material GetImageMaterial(Shader shader){
 			
 			if(IsolatedMaterial==null){
-				IsolatedMaterial=new Material(shaders.Isolated);
-				IsolatedMaterial.SetTexture("_Sprite",Image);
+				IsolatedMaterial=new Material(shader);
+				IsolatedMaterial.SetTexture("_MainTex",Image);
 				
 				// Clamp the image:
 				Image.wrapMode=TextureWrapMode.Clamp;
@@ -95,6 +95,12 @@ namespace PowerUI{
 			
 			return IsolatedMaterial;
 			
+		}
+		
+		public override Texture Texture{
+			get{
+				return Image;
+			}
 		}
 		
 		public override bool LoadFromAsset(UnityEngine.Object asset,ImagePackage package){

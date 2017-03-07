@@ -44,6 +44,13 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The texture this format holds (if any).</summary>
+		public virtual Texture Texture{
+			get{
+				return null;
+			}
+		}
+		
 		/// <summary>Get/set the filter mode.</summary>
 		public virtual FilterMode FilterMode{
 			get{
@@ -78,11 +85,11 @@ namespace PowerUI{
 		
 		/// <summary>A single-frame image material using the standard UI shader set. Used for e.g. videos and animations.</summary>
 		public Material GetImageMaterial(){
-			return GetImageMaterial(PowerUI.ShaderSet.Standard);
+			return GetImageMaterial(PowerUI.ShaderSet.Standard.Normal);
 		}
 		
 		/// <summary>A single-frame image material. Used for e.g. videos and animations.</summary>
-		public virtual Material GetImageMaterial(ShaderSet shaders){
+		public virtual Material GetImageMaterial(Shader shader){
 			return null;
 		}
 		

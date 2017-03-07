@@ -67,7 +67,7 @@ namespace PowerUI{
 			if(AfterClearBeforeSet!=null){
 				
 				// Invoke during load now:
-				AfterClearBeforeSet(createEvent("duringload"));
+				AfterClearBeforeSet(createEvent("event","duringload"));
 				
 			}
 			
@@ -567,9 +567,6 @@ namespace PowerUI{
 					e.SetTrusted(false);
 					window.iframe.dispatchEvent(e);
 					
-					// Always run the default:
-					window.iframe.OnLoadEvent(e);
-					
 				}
 				
 				return true;
@@ -659,7 +656,7 @@ namespace PowerUI{
 				if(AfterClearBeforeSet!=null){
 					
 					// Invoke during load now:
-					AfterClearBeforeSet(createEvent("duringload"));
+					AfterClearBeforeSet(createEvent("event","duringload"));
 					
 				}
 				

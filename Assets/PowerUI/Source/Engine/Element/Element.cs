@@ -95,11 +95,6 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>Called by some tags when their content is loaded. E.g. img tag or iframe.</summary>
-		/// <param name="e">The load event.</param>
-		public virtual void OnLoadEvent(Dom.Event e){
-		}
-		
 		/*
 		public override void OnChildrenLoaded(){
 			
@@ -712,7 +707,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The height of this element.</summary>
-		public long offsetHeight{
+		public int offsetHeight{
 			get{
 				RequireLayout();
 				LayoutBox box=Style.Computed.FirstBox;
@@ -721,7 +716,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The width of this element.</summary>
-		public long offsetWidth{
+		public int offsetWidth{
 			get{
 				RequireLayout();
 				LayoutBox box=Style.Computed.FirstBox;
@@ -749,7 +744,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The top offset relative to the offsetParent.</summary>
-		public long offsetTop{
+		public int offsetTop{
 			get{
 				
 				// Body element always returns 0:
@@ -764,7 +759,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>The left offset relative to the offsetParent.</summary>
-		public long offsetLeft{
+		public int offsetLeft{
 			get{
 				
 				// Body element always returns 0:
@@ -899,7 +894,7 @@ namespace PowerUI{
 						img=new BackgroundImage(RenderData);
 						RenderData.BGImage=img;
 					}
-					img.SetImage(new ImagePackage(value));
+					img.UpdateImage(value);
 				}
 			}
 		}

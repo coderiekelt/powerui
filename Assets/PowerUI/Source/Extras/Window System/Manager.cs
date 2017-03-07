@@ -37,6 +37,53 @@ namespace Windows{
 			Windows=new WindowGroup(this);
 		}
 		
+		/// <summary>Builds a set of globals from an array of data (of the form 'key',value,'key',value..).</summary>
+		public static Dictionary<string,object> buildGlobals(object[] data){
+			
+			if(data==null || data.Length==0){
+				return null;
+			}
+			
+			if(data.Length==1){
+				
+				if(data[0] is Dictionary<string,object>){
+					return data[0] as Dictionary<string,object>;
+				}
+				
+			}
+			
+			// Must be a multiple of 2:
+			if((data.Length % 2)!=0){
+				throw new Exception("Didn't recognise this as a valid globals set.");
+			}
+			
+			// # of globals:
+			int count=data.Length/2;
+			
+			// Create the set:
+			Dictionary<string,object> result=new Dictionary<string,object>(count);
+			
+			// Alternates between key and value:
+			int index=0;
+			
+			for(int i=0;i<count;i++){
+				
+				// Get k/v:
+				string key=data[index++] as string;
+				object value=data[index++] as object;
+				
+				if(key==null){
+					continue;
+				}
+				
+				// Add it:
+				result[key]=value;
+				
+			}
+			
+			return result;
+		}
+		
 		/// <summary>Gets a window by ID. Null if out of range.</summary>
 		public Window get(int id){
 			return this[id];
@@ -61,18 +108,22 @@ namespace Windows{
 		}
 		
 		/// <summary>Closes an open window or opens it if it wasn't already.</summary>
-		public Window cycle(string type,string url){
-			return Windows.cycle(type,url,null);
-		}
-		
-		/// <summary>Closes an open window or opens it if it wasn't already.</summary>
 		public Window cycle(string type,string url,Dictionary<string,object> globals){
 			return Windows.cycle(type,url,globals);
 		}
 		
-		/// <summary>Creates a new window of the given type and points it at the given URL.</summary>
-		public Window open(string type,string url){
-			return Windows.open(type,url,null);
+		/// <summary>Closes an open window or opens it if it wasn't already.
+		/// globalData alternates between a string (key) and a value (object).
+		/// I.e 'key',value,'key2',value..</summary>
+		public Window cycle(string type,string url,params object[] globalData){
+			return Windows.cycle(type,url,buildGlobals(globalData));
+		}
+		
+		/// <summary>Opens a window of the given type and points it at the given URL.
+		/// globalData alternates between a string (key) and a value (object).
+		/// I.e 'key',value,'key2',value..</summary>
+		public Window open(string type,string url,params object[] globalData){
+			return Windows.open(type,url,buildGlobals(globalData));
 		}
 		
 		/// <summary>Creates a new window of the given type and points it at the given URL.
@@ -81,15 +132,27 @@ namespace Windows{
 			return Windows.open(type,url,globals);
 		}
 		
+		/// <summary>Closes a window. Just a convenience version of window.close();</summary>
+		public void close(string type,string url){
+			
+			// Try getting it:
+			Window w=get(type,url);
+			
+			if(w!=null){
+				w.close();
+			}
+			
+		}
+		
 		/// <summary>The available window template types.</summary>
-		public static Dictionary<string,Type> WindowTypes;
+		public static Dictionary<string,Type> windowTypes;
 		
 		/// <summary>Adds the given type as an available window type.</summary>
 		public static void Add(Type type){
 			
-			if(WindowTypes==null){
+			if(windowTypes==null){
 				// Create the set now:
-				WindowTypes=new Dictionary<string,Type>();
+				windowTypes=new Dictionary<string,Type>();
 			}
 			
 			// Get the name attribute from it (don't inherit):
@@ -105,7 +168,7 @@ namespace Windows{
 			if(!string.IsNullOrEmpty(tag)){
 				
 				// Add now:
-				WindowTypes[tag]=type;
+				windowTypes[tag]=type;
 				
 			}
 			

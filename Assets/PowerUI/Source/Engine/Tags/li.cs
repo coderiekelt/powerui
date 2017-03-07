@@ -43,6 +43,19 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Ordinal text for this list element.</summary>
+		public string Ordinal{
+			get{
+				HtmlOListElement ol=parentNode as HtmlOListElement;
+				
+				if(ol==null){
+					return "";
+				}
+				
+				return ol.GetOrdinal(childIndex);
+			}
+		}
+		
 		/// <summary>True if an implicit end is allowed.</summary>
 		public override ImplicitEndMode ImplicitEndAllowed{
 			get{

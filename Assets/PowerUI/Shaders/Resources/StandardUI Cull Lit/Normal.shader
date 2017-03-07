@@ -1,7 +1,7 @@
 Shader "PowerUI/StandardUI Cull Lit/Normal" {
 	Properties {
 		_Font ("Font Texture", 2D) = "white" {}
-		_Atlas  ("Graphical Atlas", 2D) = "white" {}
+		_MainTex  ("Graphical Atlas", 2D) = "white" {}
 	}
 	
 	SubShader {
@@ -22,7 +22,7 @@ Shader "PowerUI/StandardUI Cull Lit/Normal" {
 		};
 		
 		sampler2D _Font;
-		sampler2D _Atlas;
+		sampler2D _MainTex;
 		
 		void vert(inout appdata_full i, out Input o){
 			
@@ -39,7 +39,7 @@ Shader "PowerUI/StandardUI Cull Lit/Normal" {
 			fixed4 col = IN.color;
 			
 			if(IN.texcoord0.y<=1){
-				col *= tex2D(_Atlas, IN.texcoord0);
+				col *= tex2D(_MainTex, IN.texcoord0);
 			}
 			
 			if(IN.texcoord1.y<=1){

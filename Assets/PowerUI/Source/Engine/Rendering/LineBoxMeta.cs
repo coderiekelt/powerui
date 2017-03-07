@@ -1010,8 +1010,7 @@ namespace PowerUI{
 				while(currentBox!=null){
 					// Calculate the offset to where the top left corner is (of the complete box, margin included):
 					
-					// Just margin for these ones:
-					float delta=-(currentBox.Margin.Bottom);
+					float delta=-currentBox.Margin.Bottom;
 					
 					if((currentBox.DisplayMode & DisplayMode.OutsideInline)!=0){
 						
@@ -1025,7 +1024,7 @@ namespace PowerUI{
 						
 					}
 					
-					currentBox.ParentOffsetTop=PenY+delta+lineHeight;
+					currentBox.ParentOffsetTop=PenY+delta;
 					
 					// Hop to the next one:
 					currentBox=currentBox.NextOnLine;

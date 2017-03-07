@@ -394,7 +394,24 @@ namespace PowerUI{
 			
 		}
 		
-		public override void OnLoadEvent(Dom.Event e){
+		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
+			
+			// Handle locally:
+			bool result=base.HandleLocalEvent(e,bubblePhase);
+			
+			// Always run this:
+			if(e.type=="load" && bubblePhase){
+				
+				// Run the load event handle:
+				OnLoadEvent(e);
+				
+			}
+			
+			return result;
+			
+		}
+		
+		private void OnLoadEvent(Dom.Event e){
 			
 			BackgroundImage bgImage=RenderData.BGImage;
 			

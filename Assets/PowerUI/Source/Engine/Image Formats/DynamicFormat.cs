@@ -224,13 +224,6 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>The texture.</summary>
-		public Texture2D Texture{
-			get{
-				return Texture_;
-			}
-		}
-		
 		/// <summary>Draws a pixel at the given x/y coordinates to the atlas.</summary>
 		/// <param name="x">The x coordinate in pixels from the left of the texture.</param>
 		/// <param name="y">The y coordinate in pixels from the bottom of the texture.</param>
@@ -392,14 +385,20 @@ namespace PowerUI{
 			return new string[]{"-spark-dyn"};
 		}
 		
-		public override Material GetImageMaterial(ShaderSet shaders){
+		public override Material GetImageMaterial(Shader shader){
 			
 			if(IsolatedMaterial==null){
-				IsolatedMaterial=new Material(shaders.Isolated);
-				IsolatedMaterial.SetTexture("_Sprite",Texture_);
+				IsolatedMaterial=new Material(shader);
+				IsolatedMaterial.SetTexture("_MainTex",Texture_);
 			}
 			
 			return IsolatedMaterial;
+		}
+		
+		public override Texture Texture{
+			get{
+				return Texture_;
+			}
 		}
 		
 		public override bool Isolate{

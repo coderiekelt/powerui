@@ -39,15 +39,21 @@ namespace PowerUI{
 			return new string[]{"mov","mpg","mpeg","mp4","avi","asf","ogg","ogv"};
 		}
 		
-		public override Material GetImageMaterial(ShaderSet shaders){
+		public override Material GetImageMaterial(Shader shader){
 			
 			if(IsolatedMaterial==null){
-				IsolatedMaterial=new Material(shaders.Isolated);
-				IsolatedMaterial.SetTexture("_Sprite",Video);
+				IsolatedMaterial=new Material(shader);
+				IsolatedMaterial.SetTexture("_MainTex",Video);
 			}
 			
 			return IsolatedMaterial;
 			
+		}
+		
+		public override Texture Texture{
+			get{
+				return Video;
+			}
 		}
 		
 		public override bool LoadFromAsset(UnityEngine.Object asset,ImagePackage package){

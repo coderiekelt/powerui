@@ -82,7 +82,7 @@ namespace Css{
 				if(FilterDrawInfo!=null){
 					
 					// Tidy it up:
-					FilterDrawInfo.Clear();
+					tex.Clear();
 					
 					FilterDrawInfo=null;
 				}
@@ -95,7 +95,7 @@ namespace Css{
 					if(Material!=null){
 						
 						// Hook up the output:
-						Material.SetTexture("_Sprite",Output);
+						Material.SetTexture("_MainTex",Output);
 						
 					}
 					
@@ -168,7 +168,7 @@ namespace Css{
 					if(Material!=null){
 						
 						// Hook up the output:
-						Material.SetTexture("_Sprite",Output);
+						Material.SetTexture("_MainTex",Output);
 						
 					}
 					
@@ -197,7 +197,7 @@ namespace Css{
 				if(Material!=null){
 					
 					// Hook up the output:
-					Material.SetTexture("_Sprite",Output);
+					Material.SetTexture("_MainTex",Output);
 					
 				}
 				
@@ -340,7 +340,7 @@ namespace Css{
 				Material=new Material(renderer.CurrentShaderSet.Isolated);
 				
 				// Hook up the output:
-				Material.SetTexture("_Sprite",Output);
+				Material.SetTexture("_MainTex",Output);
 				
 			}
 			

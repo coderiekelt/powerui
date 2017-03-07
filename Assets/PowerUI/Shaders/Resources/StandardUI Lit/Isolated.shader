@@ -1,6 +1,6 @@
 Shader "PowerUI/StandardUI Lit/Isolated" {
 	Properties {
-		_Sprite  ("Graphical Sprite", 2D) = "white" {}
+		_MainTex  ("Graphical Sprite", 2D) = "white" {}
 	}
 	
 	SubShader {
@@ -14,15 +14,15 @@ Shader "PowerUI/StandardUI Lit/Isolated" {
 		#pragma surface surf Lambert alpha:blend
 		
 		struct Input {
-			float2 uv_Sprite;
+			float2 uv_MainTex;
 			fixed4 color : COLOR;
 		};
 		
-		sampler2D _Sprite;
+		sampler2D _MainTex;
 		
 		void surf (Input IN, inout SurfaceOutput o) {
 			
-			fixed4 col = IN.color * tex2D(_Sprite, IN.uv_Sprite);
+			fixed4 col = IN.color * tex2D(_MainTex, IN.uv_MainTex);
 			
 			o.Albedo = col.rgb;
 			o.Alpha=col.a;

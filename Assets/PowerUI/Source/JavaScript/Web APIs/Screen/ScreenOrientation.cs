@@ -45,18 +45,18 @@ namespace PowerUI{
 				
 			}
 			
-			type=FromUnity(orient);
+			type=fromUnity(orient);
 		}
 		
 		/// <summary>The unity orientation type.</summary>
 		public ScreenOrientation unityType{
 			get{
-				return ToUnity(type);
+				return toUnity(type);
 			}
 		}
 		
 		/// <summary>Converts from a Unity type.</summary>
-		public static string FromUnity(UnityEngine.DeviceOrientation so){
+		public static string fromUnity(UnityEngine.DeviceOrientation so){
 			
 			switch(so){
 				
@@ -75,7 +75,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Converts to a Unity type.</summary>
-		public static ScreenOrientation ToUnity(string type){
+		public static ScreenOrientation toUnity(string type){
 			
 			switch(type){
 				
@@ -113,7 +113,7 @@ namespace PowerUI{
 				bool portraitFirst=(UnityEngine.Screen.width<UnityEngine.Screen.height);
 				
 				// Get orientation:
-				ScreenOrientation so=ToUnity(type);
+				ScreenOrientation so=toUnity(type);
 				
 				if(portraitFirst){
 					
@@ -155,8 +155,8 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Locks the orientation.</summary>
-		public bool Lock(){
-			UnityEngine.Screen.orientation=ToUnity(type);
+		public bool @lock(){
+			UnityEngine.Screen.orientation=toUnity(type);
 			return true;
 		}
 		

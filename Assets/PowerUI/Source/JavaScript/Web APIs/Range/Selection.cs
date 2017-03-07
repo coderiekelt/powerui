@@ -28,34 +28,34 @@ namespace PowerUI{
 	public partial class Selection{
 		
 		/// <suummary>All ranges (oddly, it's required to be exactly 1, but addRange exists)</summary>
-		public List<Range> Ranges=new List<Range>();
+		public List<Range> ranges=new List<Range>();
 		
 		/// <summary>Returns the Node in which the selection ends.</summary>
 		public Node focusNode{
 			get{
-				if(Ranges.Count==0){
+				if(ranges.Count==0){
 					return null;
 				}
 				
-				return Ranges[0].endContainer;
+				return ranges[0].endContainer;
 			}
 		}
 		
 		/// <summary>Returns the number of ranges in the selection</summary>
 		public int rangeCount{
 			get{
-				return Ranges.Count;
+				return ranges.Count;
 			}
 		}
 		
 		/// <summary>Returns the Node in which the selection starts.</summary>
 		public Node anchorNode{
 			get{
-				if(Ranges.Count==0){
+				if(ranges.Count==0){
 					return null;
 				}
 				
-				return Ranges[0].startContainer;
+				return ranges[0].startContainer;
 			}
 		}
 		
@@ -64,11 +64,11 @@ namespace PowerUI{
 		/// If anchorNode is an element, this is the number of child nodes of the anchorNode preceding the anchor.</summary>
 		public int anchorOffset{
 			get{
-				if(Ranges.Count==0){
+				if(ranges.Count==0){
 					return 0;
 				}
 				
-				return Ranges[0].startOffset;
+				return ranges[0].startOffset;
 			}
 		}
 		
@@ -77,29 +77,29 @@ namespace PowerUI{
 		/// If focusNode is an element, this is the number of child nodes of the focusNode preceding the focus.</summary>
 		public int focusOffset{
 			get{
-				if(Ranges.Count==0){
+				if(ranges.Count==0){
 					return 0;
 				}
 				
-				return Ranges[0].endOffset;
+				return ranges[0].endOffset;
 			}
 		}
 		
 		/// <summary>Returns a Boolean indicating whether the selection's start and end points are at the same position.</summary>
 		public bool isCollapsed{
 			get{
-				if(Ranges.Count==0){
+				if(ranges.Count==0){
 					return true;
 				}
 				
-				return Ranges[0].isCollapsed;
+				return ranges[0].isCollapsed;
 			}
 		}
 		
 		/// <summary>Removes a range from the selection.</summary>
 		public void removeRange(Range r){
 			
-			if(Ranges.Remove(r)){
+			if(ranges.Remove(r)){
 				UpdateSelection(false,r);
 			}
 			
@@ -187,37 +187,37 @@ namespace PowerUI{
 		/// <summary>Removes all ranges from the selection.</summary>
 		public void removeAllRanges(){
 			
-			for(int i=0;i<Ranges.Count;i++){
-				UpdateSelection(false,Ranges[i]);
+			for(int i=0;i<ranges.Count;i++){
+				UpdateSelection(false,ranges[i]);
 			}
 			
-			Ranges.Clear();
+			ranges.Clear();
 		}
 		
 		/// <summary>Adds a range to the selection.</summary>
 		public void addRange(Range r){
-			Ranges.Add(r);
+			ranges.Add(r);
 			UpdateSelection(true,r);
 		}
 		
 		/// <summary>A range object representing one of the ranges currently selected.</summary>
 		public Range getRangeAt(int index){
 			
-			if(index<0 || index>=Ranges.Count){
+			if(index<0 || index>=ranges.Count){
 				return null;
 			}
 			
-			return Ranges[index];
+			return ranges[index];
 		}
 		
 		/// <summary>The currently selected text.</summary>
 		public override string ToString(){
 			
-			if(Ranges.Count==0){
+			if(ranges.Count==0){
 				return "";
 			}
 			
-			return Ranges[0].ToString();
+			return ranges[0].ToString();
 		}
 		
 		/// <summary>Collapses the selection to the start of the range.</summary>
@@ -233,8 +233,8 @@ namespace PowerUI{
 		/// <summary>Collapses the selection to the start or end of the range.</summary>
 		public void collapse(bool toStart){
 			
-			for(int i=0;i<Ranges.Count;i++){
-				Range r=Ranges[i];
+			for(int i=0;i<ranges.Count;i++){
+				Range r=ranges[i];
 				UpdateSelection(false,r);
 				r.collapse(toStart);
 				UpdateSelection(true,r);
@@ -245,22 +245,22 @@ namespace PowerUI{
 		/// <summary>Deletes the selection's content from the document.</summary>
 		public void deleteFromDocument(){
 			
-			for(int i=0;i<Ranges.Count;i++){
-				Range r=Ranges[i];
+			for(int i=0;i<ranges.Count;i++){
+				Range r=ranges[i];
 				UpdateSelection(false,r);
 				r.deleteContents();
 			}
 			
-			Ranges.Clear();
+			ranges.Clear();
 			
 		}
 		
 		/// <summary>Indicates if a certain node is part of the selection.</summary>
 		public bool containsNode(Node n){
 			
-			for(int i=0;i<Ranges.Count;i++){
+			for(int i=0;i<ranges.Count;i++){
 				
-				if( Ranges[i].contains(n) ){
+				if( ranges[i].contains(n) ){
 					return true;
 				}
 				
@@ -275,16 +275,16 @@ namespace PowerUI{
 	public partial class Window{
 		
 		/// <summary>The current selection. Use the standard getSelection() method instead.</summary>
-		internal Selection CurrentSelection;
+		internal Selection currentSelection;
 		
 		/// <summary>Creates a range.</summary>
 		public Selection getSelection(){
 			
-			if(CurrentSelection==null){
-				CurrentSelection=new Selection();
+			if(currentSelection==null){
+				currentSelection=new Selection();
 			}
 			
-			return CurrentSelection;
+			return currentSelection;
 		}
 		
 	}
@@ -294,9 +294,9 @@ namespace PowerUI{
 		/// <summary>Clears any selection.</summary>
 		internal void clearSelection(){
 			
-			Selection s=window.CurrentSelection;
+			Selection s=window.currentSelection;
 			
-			if(s!=null && s.Ranges.Count>0){
+			if(s!=null && s.ranges.Count>0){
 				s.removeAllRanges();
 			}
 			

@@ -25,7 +25,9 @@ namespace Windows{
 		/// <summary>The newer window hides the older one. When the newer one is closed, the older one appears again.</summary>
 		Hide,
 		/// <summary>The newer window closes the older one.</summary>
-		Close
+		Close,
+		/// <summary>The newer window contents are loaded into the existing one, "hijacking" the frame.</summary>
+		Hijack
 		
 	}
 	
