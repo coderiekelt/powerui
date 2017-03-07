@@ -119,6 +119,22 @@ namespace Windows{
 			return Windows.cycle(type,url,buildGlobals(globalData));
 		}
 		
+		/// <summary>Loads a window of the given type.</summary>
+		public Promise load(string typeName){
+			return load(typeName,null,(Dictionary<string,object>)null);
+		}
+		
+		/// <summary>Opens a window optionally with globals. Of the form 'key',value,'key2',value..
+		/// returning a promise which runs when the windows 'load' event occurs.</summary>
+		public Promise load(string typeName,string url,params object[] globalData){
+			return Windows.load(typeName,url,Manager.buildGlobals(globalData));
+		}
+		
+		/// <summary>Opens a window, returning a promise which runs when the windows 'load' event occurs.</summary>
+		public Promise load(string typeName,string url,Dictionary<string,object> globals){
+			return Windows.load(typeName,url,globals);
+		}
+		
 		/// <summary>Opens a window of the given type and points it at the given URL.
 		/// globalData alternates between a string (key) and a value (object).
 		/// I.e 'key',value,'key2',value..</summary>
@@ -142,6 +158,11 @@ namespace Windows{
 				w.close();
 			}
 			
+		}
+		
+		/// <summary>True if the named window template is available.</summary>
+		public bool has(string template){
+			return windowTypes!=null && windowTypes.ContainsKey(template);
 		}
 		
 		/// <summary>The available window template types.</summary>

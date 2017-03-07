@@ -20,6 +20,9 @@ using Dom;
 
 namespace Windows{
 	
+	/// <summary>A delegate used just before a window loads.</summary.
+	public delegate void WindowDelegate(Window w);
+	
 	/// <summary>
 	/// A group of windows.
 	/// </summary>
@@ -171,13 +174,63 @@ namespace Windows{
 			
 		}
 		
+		/// <summary>Loads a window of the given type.</summary>
+		public Promise load(string typeName){
+			return load(typeName,null,(Dictionary<string,object>)null);
+		}
+		
+		/// <summary>Opens a window optionally with globals. Of the form 'key',value,'key2',value..
+		/// returning a promise which runs when the windows 'load' event occurs.</summary>
+		public Promise load(string typeName,string url,params object[] globalData){
+			return load(typeName,url,Manager.buildGlobals(globalData));
+		}
+		
+		/// <summary>Opens a window, returning a promise which runs when the windows 'load' event occurs.</summary>
+		public Promise load(string typeName,string url,Dictionary<string,object> globals){
+			
+			// Add an event listener just before Load is invoked:
+			Promise p=new Promise();
+			
+			open(
+				typeName,
+				url,
+				delegate(Window w){
+					
+					// Add an event cb:
+					if(w==null){
+						
+						// Rejected:
+						p.reject("Window '"+typeName+"' is missing.");
+						
+					}else{
+						
+						w.addEventListener("load",delegate(UIEvent e){
+							
+							// Ok!
+							p.resolve(w);
+							
+						});
+						
+					}
+				},
+				globals
+			);
+			
+			return p;
+		}
+		
 		/// <summary>Opens a window optionally with globals. Of the form 'key',value,'key2',value..</summary>
 		public Window open(string typeName,string url,params object[] globalData){
-			return open(typeName,url,Manager.buildGlobals(globalData));
+			return open(typeName,url,null,Manager.buildGlobals(globalData));
 		}
 		
 		/// <summary>Opens a window.</summary>
 		public Window open(string typeName,string url,Dictionary<string,object> globals){
+			return open(typeName,url,null,globals);
+		}
+		
+		/// <summary>Opens a window.</summary>
+		public Window open(string typeName,string url,WindowDelegate preload,Dictionary<string,object> globals){
 			
 			if(Manager.windowTypes==null){
 				
@@ -193,6 +246,14 @@ namespace Windows{
 			
 			Type type;
 			if(!Manager.windowTypes.TryGetValue(typeName,out type)){
+				
+				UnityEngine.Debug.Log("Warning: Requested to open a window called '"+typeName+"' but it doesn't exist.");
+				
+				if(preload!=null){
+					// Invoke the load method:
+					preload(null);
+				}
+				
 				return null;
 			}
 			
@@ -226,8 +287,15 @@ namespace Windows{
 			if(stacking==StackMode.Hijack){
 				
 				// Hijack an existing window! Just load straight into it but clear its event handlers:
+				same.RunLoad=true;
 				same.ClearEvents();
+				
+				if(preload!=null){
+					preload(same);
+				}
+				
 				same.Load(url,globals);
+				same.TryLoadEvent(globals);
 				
 				return same;
 			}
@@ -272,6 +340,10 @@ namespace Windows{
 			
 			// Apply type:
 			w.Type=typeName;
+			
+			if(preload!=null){
+				preload(w);
+			}
 			
 			// Add now:
 			SetupWindow(w,url,globals);
@@ -334,6 +406,7 @@ namespace Windows{
 			
 			// Next, load its content:
 			w.Load(url,globals);
+			w.TryLoadEvent(globals);
 			
 		}
 		

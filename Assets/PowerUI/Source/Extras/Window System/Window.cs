@@ -35,6 +35,8 @@ namespace Windows{
 			
 		}
 		
+		/// <summary>True if the load event should be triggered.</summary>
+		internal bool RunLoad=true;
 		/// <summary>Index in managers array.</summary>
 		private int Index_; 
 		/// <summary>Index in managers array.</summary>
@@ -595,6 +597,25 @@ namespace Windows{
 			
 			// Update the attribute:
 			element["-spark-window-id"]=Index.ToString();
+			
+		}
+		
+		/// <summary>Attempts to run the load event.</summary>
+		public void TryLoadEvent(Dictionary<string,object> globals){
+			
+			if(RunLoad){
+				LoadEvent(globals);
+			}
+			
+		}
+		
+		/// <summary>Triggers a load event.</summary>
+		protected void LoadEvent(Dictionary<string,object> globals){
+			
+			// Done! Trigger a 'load' event.
+			// It will run on element (the window itself), the Window object and 
+			// (if there is one), the original anchor tag.
+			trigger("load",globals);
 			
 		}
 		

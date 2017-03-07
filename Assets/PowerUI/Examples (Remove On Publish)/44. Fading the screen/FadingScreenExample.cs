@@ -38,26 +38,23 @@ public class FadingScreenExample : MonoBehaviour {
 			// This is using the method inside ScreenFade.cs (which is in this examples files).
 			// It returns a Promise (Web API) so we can chain events together in an interesting way!
 			
-			ScreenFade.Fade(document,Color.red,2f).then(delegate(object o){
+			document.fade(Color.red,2f).then(delegate(object o){
 				
 				// It's done!
 				Debug.Log("Red fade completed!");
 				
 				// Fading to a transparent colour removes it (or use ScreenFade.Close(document) to remove it that way).
 				
-				// Returning the promise means it gets passed to the following Then instead.
+				// Returning the promise means it gets passed to the following then instead.
 				
-				// Alternatively we could just put .Then at the end of it, 
+				// Alternatively we could just put .then at the end of it, 
 				// but this approach avoids heavy nesting and it's standardised anyway!
-				return ScreenFade.Fade(document,new Color(1f,0f,0f,0f),1f);
+				return document.fade(new Color(1f,0f,0f,0f),1f);
 				
 			}).then(delegate(object o){
 				
 				// We're back!
 				Debug.Log("Screen has faded back in!");
-				
-				// No need to return anything:
-				return null;
 				
 			});
 			

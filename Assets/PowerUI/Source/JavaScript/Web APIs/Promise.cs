@@ -8,6 +8,8 @@ namespace PowerUI{
 	/// <summray>A simple delegate for use by Promise.
 	/// They can optionally return a Promise which will be passed on to the next handler in the chain.</summary>
 	public delegate object PromiseDelegate(object info);
+	/// <summary>A delegate void which returns nothing.</summary>
+	public delegate void PromiseDelegateVoid(object info);
 	
 	/// <summary>A promise object for chaining events.</summary>
 	public class Promise{
@@ -42,8 +44,8 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Provides methods to run when this promise completes.</summary>
-		public Promise then(Promise onFulfil){
-			return then(onFulfil,(Promise)null);
+		public Promise then(Promise both){
+			return then(both,both);
 		}
 		
 		/// <summary>Provides methods to run when this promise completes.</summary>
@@ -114,6 +116,41 @@ namespace PowerUI{
 		/// <summary>Adds a rejection handler.</summary>
 		public Promise @catch(Promise onReject){
 			return then((PromiseDelegate)null,onReject);
+		}
+		
+		/// <summary>Provides methods to run when this promise completes.</summary>
+		public Promise then(PromiseDelegateVoid onFulfil){
+			return then(toDelegate(onFulfil),(Promise)null);
+		}
+		
+		/// <summary>Provides methods to run when this promise completes.</summary>
+		public Promise then(PromiseDelegateVoid onFulfil,PromiseDelegateVoid onReject){
+			return then(toDelegate(onFulfil),toDelegate(onReject));
+		}
+		
+		/// <summary>Provides methods to run when this promise completes.</summary>
+		public Promise then(Promise onFulfil,PromiseDelegateVoid onReject){
+			return then(toDelegate(true,onFulfil),toDelegate(onReject));
+		}
+		
+		/// <summary>Provides methods to run when this promise completes.</summary>
+		public Promise then(PromiseDelegateVoid onFulfil,Promise onReject){
+			return then(toDelegate(onFulfil),toDelegate(false,onReject));
+		}
+		
+		/// <summary>Provides methods to run when this promise completes.</summary>
+		public Promise then(PromiseDelegateVoid onFulfil,PromiseDelegate onReject){
+			return then(toDelegate(onFulfil),onReject);
+		}
+		
+		/// <summary>Provides methods to run when this promise completes.</summary>
+		public Promise then(PromiseDelegate onFulfil,PromiseDelegateVoid onReject){
+			return then(onFulfil,toDelegate(onReject));
+		}
+		
+		/// <summary>Adds a rejection handler.</summary>
+		public Promise @catch(PromiseDelegateVoid onReject){
+			return then((PromiseDelegate)null,toDelegate(onReject));
 		}
 		
 		/// <summary>Rejects the promise with the given reason.</summary>
@@ -222,6 +259,20 @@ namespace PowerUI{
 			}catch(Exception e){
 				Dom.Log.Add("Promise method failure: "+e.ToString());
 			}
+		}
+		
+		/// <summary>Creates a proxy delegate for one which returns void.</summrry>
+		private PromiseDelegate toDelegate(PromiseDelegateVoid deleg){
+			
+			if(deleg==null){
+				return null;
+			}
+			
+			return new PromiseDelegate(delegate(object x){
+				deleg(x);
+				return null;
+			});
+			
 		}
 		
 		/// <summary>Adds an object to the given set. If the set doesn't exist, it creates one.</summary>

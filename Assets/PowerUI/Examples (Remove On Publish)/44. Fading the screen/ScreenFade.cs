@@ -26,26 +26,7 @@ public class ScreenFade : Windows.Window{
 	public static Promise Fade(PowerUI.HtmlDocument doc,UnityEngine.Color to,float timeInSeconds){
 		
 		// Open up the window:
-		var w=doc.sparkWindows.open("screenfade",null,"to",to,"time",timeInSeconds);
-		
-		Promise p=new Promise();
-		
-		if(timeInSeconds<=0f){
-			// Instant:
-			p.resolve(w);
-		}else{
-			
-			// Add an event cb:
-			w.addEventListener("load",delegate(UIEvent e){
-				
-				// Ok!
-				p.resolve(w);
-				
-			});
-			
-		}
-		
-		return p;
+		return doc.sparkWindows.load("screenfade",null,"to",to,"time",timeInSeconds).then(new Promise());
 		
 	}
 	
@@ -67,12 +48,6 @@ public class ScreenFade : Windows.Window{
 	/// <summary>Called when asked to fade.</summary>
 	public override void Load(string url,Dictionary<string,object> globals){
 		
-		// Get the colour:
-		UnityEngine.Color colour=GetColour("to",globals,UnityEngine.Color.black);
-		
-		// Get the time:
-		float time=(float)GetDecimal("time",globals,0);
-		
 		// Element is not null when we 'hijacked' an existing window (and we're fading from its current color instead).
 		if(element==null){
 			
@@ -80,6 +55,15 @@ public class ScreenFade : Windows.Window{
 			SetHtml("<div style='width:100%;height:100%;position:fixed;top:0px;left:0px;'></div>");
 			
 		}
+		
+		// Don't run the load event - we're delaying it:
+		RunLoad=false;
+		
+		// Get the colour:
+		UnityEngine.Color colour=GetColour("to",globals,UnityEngine.Color.black);
+		
+		// Get the time:
+		float time=(float)GetDecimal("time",globals,0);
 		
 		// Run the animation:
 		element.animate("background-color:"+colour.ToCss()+";",time).OnDone(delegate(UIAnimation animation){
@@ -89,12 +73,23 @@ public class ScreenFade : Windows.Window{
 				close();
 			}
 			
-			// Done! Trigger a 'load' event.
-			// It will run on element (the window itself), the Window object and 
-			// (if there is one), the original anchor tag.
-			trigger("load",globals);
+			// Run the load event now!
+			LoadEvent(globals);
 			
 		});
+		
+	}
+	
+}
+
+namespace PowerUI{
+	
+	public partial class HtmlDocument{
+		
+		/// <summary>Fades the screen to the given colour in the given amount of time.</summary>
+		public Promise fade(UnityEngine.Color col,float time){
+			return ScreenFade.Fade(this,col,time);
+		}
 		
 	}
 	
