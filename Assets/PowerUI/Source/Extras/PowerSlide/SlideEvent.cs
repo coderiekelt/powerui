@@ -116,33 +116,14 @@ namespace PowerSlide{
 		
 		/// <summary>Opens a window with the given template and URL. Globals originate from this event.
 		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
-		public void open(string template,string url){
-			
-			htmlDocument.sparkWindows.open(template,url,globals);
-			
+		public Windows.Window open(string template,string url){
+			return htmlDocument.sparkWindows.open(template,url,globals);
 		}
 		
-	}
-	
-	public delegate void SlideEventDelegate(SlideEvent e);
-	
-	/// Handler for SlideEvent events.
-	public class SlideEventListener : EventListener{
-		
-		public SlideEventDelegate Listener;
-		
-		public SlideEventListener(SlideEventDelegate listener){
-			Listener=listener;
-		}
-		
-		public override object Internal{
-			get{
-				return Listener;
-			}
-		}
-		
-		public override void handleEvent(Dom.Event e){
-			Listener((SlideEvent)e);
+		/// <summary>Opens a window with the given template and URL and returns a promise. Globals originate from this event.
+		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
+		public PowerUI.Promise load(string template,string url){
+			return htmlDocument.sparkWindows.load(template,url,globals);
 		}
 		
 	}

@@ -48,7 +48,7 @@ namespace Dom{
 	public partial class EventTarget{
 		
 		// All event-specific addEventListener overloads (except for SVG).
-		// This avoids needing to manually create e.g. a KeyboardEventListener object.
+		// This avoids needing to manually create e.g. a EventListener<KeyboardEvent> object.
 		
 		public void addEventListener(string name,Nitro.DynamicMethod<Nitro.Void> listener){
 			addEventListener(name,new PowerUI.NitroEventListener(listener));

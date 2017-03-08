@@ -22,8 +22,8 @@ namespace Dom{
 	
 	public partial class EventTarget{
 		
-		public void addEventListener(string name,ContextEventDelegate method){
-			addEventListener(name,new ContextEventListener(method));
+		public void addEventListener(string name,Action<ContextEvent> method){
+			addEventListener(name,new EventListener<ContextEvent>(method));
 		}
 		
 	}

@@ -22,8 +22,8 @@ namespace Dom{
 	
 	public partial class EventTarget{
 		
-		public void addEventListener(string name,SlideEventDelegate method){
-			addEventListener(name,new SlideEventListener(method));
+		public void addEventListener(string name,Action<SlideEvent> method){
+			addEventListener(name,new EventListener<SlideEvent>(method));
 		}
 		
 	}

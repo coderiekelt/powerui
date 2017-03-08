@@ -118,7 +118,7 @@ namespace PowerSlide{
 				
 				foreach(Element e in targs){
 					
-					Dom.DomEventListener d=new Dom.DomEventListener(delegate(Dom.Event ev){
+					Dom.EventListener<Dom.Event> d=new Dom.EventListener<Dom.Event>(delegate(Dom.Event ev){
 						
 						// Cued by the cue point!
 						element.cue();
@@ -150,11 +150,11 @@ namespace PowerSlide{
 	internal class CueElementData{
 		
 		public string eventName;
-		public Dom.DomEventListener eventListener;
+		public Dom.EventListener<Dom.Event> eventListener;
 		public Element target;
 		
 		
-		internal CueElementData(string name,Dom.DomEventListener listener,Element target){
+		internal CueElementData(string name,Dom.EventListener<Dom.Event> listener,Element target){
 			
 			eventName=name;
 			eventListener=listener;

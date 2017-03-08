@@ -31,7 +31,7 @@ namespace PowerSlide{
 		private static int UniqueID_=1;
 		
 		/// <summary>Use this and partial class extensions to add custom info loaded from JSON.</summary>
-		public static event SlideEventDelegate OnLoad;
+		public static event Action<SlideEvent> OnLoad;
 		
 		/// <summary>
 		/// A unique ID (locally). Used to obtain a slide from e.g. a click event.

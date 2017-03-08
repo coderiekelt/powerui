@@ -407,152 +407,152 @@ namespace PowerUI{
 	public partial class Window{
 		
 		/// <summary>History pop event.</summary>
-		public PopStateEventDelegate onpopstate{
+		public Action<PopStateEvent> onpopstate{
 			get{
-				return GetFirstDelegate<PopStateEventDelegate>("popstate");
+				return GetFirstDelegate<Action<PopStateEvent>>("popstate");
 			}
 			set{
-				addEventListener("popstate",new PopStateEventListener(value));
+				addEventListener("popstate",new EventListener<PopStateEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when an element is no longer focused.</summary>
-		public FocusEventDelegate onblur{
+		public Action<FocusEvent> onblur{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("blur");
+				return GetFirstDelegate<Action<FocusEvent>>("blur");
 			}
 			set{
-				addEventListener("blur",new FocusEventListener(value));
+				addEventListener("blur",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called just before this element is focused.</summary>
-		public FocusEventDelegate onfocusin{
+		public Action<FocusEvent> onfocusin{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("focusin");
+				return GetFirstDelegate<Action<FocusEvent>>("focusin");
 			}
 			set{
-				addEventListener("focusin",new FocusEventListener(value));
+				addEventListener("focusin",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called just before this element is blurred.</summary>
-		public FocusEventDelegate onfocusout{
+		public Action<FocusEvent> onfocusout{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("focusout");
+				return GetFirstDelegate<Action<FocusEvent>>("focusout");
 			}
 			set{
-				addEventListener("focusout",new FocusEventListener(value));
+				addEventListener("focusout",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when an element is focused.</summary>
-		public FocusEventDelegate onfocus{
+		public Action<FocusEvent> onfocus{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("focus");
+				return GetFirstDelegate<Action<FocusEvent>>("focus");
 			}
 			set{
-				addEventListener("focus",new FocusEventListener(value));
+				addEventListener("focus",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when an element is clicked.</summary>
-		public MouseEventDelegate onclick{
+		public Action<MouseEvent> onclick{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("click");
+				return GetFirstDelegate<Action<MouseEvent>>("click");
 			}
 			set{
-				addEventListener("click",new MouseEventListener(value));
+				addEventListener("click",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when an element is clicked (mouse down).</summary>
-		public MouseEventDelegate onmousedown{
+		public Action<MouseEvent> onmousedown{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mousedown");
+				return GetFirstDelegate<Action<MouseEvent>>("mousedown");
 			}
 			set{
-				addEventListener("mousedown",new MouseEventListener(value));
+				addEventListener("mousedown",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when an element is clicked (mouse up).</summary>
-		public MouseEventDelegate onmouseup{
+		public Action<MouseEvent> onmouseup{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mouseup");
+				return GetFirstDelegate<Action<MouseEvent>>("mouseup");
 			}
 			set{
-				addEventListener("mouseup",new MouseEventListener(value));
+				addEventListener("mouseup",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the document is now loaded.</summary>
-		public UIEventDelegate onload{
+		public Action<UIEvent> onload{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("load");
+				return GetFirstDelegate<Action<UIEvent>>("load");
 			}
 			set{
-				addEventListener("load",new UIEventListener(value));
+				addEventListener("load",new EventListener<UIEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the document is about to be unloaded.</summary>
-		public BeforeUnloadEventDelegate onbeforeunload{
+		public Action<BeforeUnloadEvent> onbeforeunload{
 			get{
-				return GetFirstDelegate<BeforeUnloadEventDelegate>("beforeunload");
+				return GetFirstDelegate<Action<BeforeUnloadEvent>>("beforeunload");
 			}
 			set{
-				addEventListener("beforeunload",new BeforeUnloadEventListener(value));
+				addEventListener("beforeunload",new EventListener<BeforeUnloadEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the hash changes.</summary>
-		public HashChangeEventDelegate onhashchange{
+		public Action<HashChangeEvent> onhashchange{
 			get{
-				return GetFirstDelegate<HashChangeEventDelegate>("hashchange");
+				return GetFirstDelegate<Action<HashChangeEvent>>("hashchange");
 			}
 			set{
-				addEventListener("hashchange",new HashChangeEventListener(value));
+				addEventListener("hashchange",new EventListener<HashChangeEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the language changes.</summary>
-		public DomEventDelegate onlanguagechange{
+		public Action<Dom.Event> onlanguagechange{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("languagechange");
+				return GetFirstDelegate<Action<Dom.Event>>("languagechange");
 			}
 			set{
-				addEventListener("languagechange",new DomEventListener(value));
+				addEventListener("languagechange",new EventListener<Dom.Event>(value));
 			}
 		}
 		
 		/// <summary>Called when the document ready state changes.</summary>
-		public DomEventDelegate onreadystatechange{
+		public Action<Dom.Event> onreadystatechange{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("readystatechange");
+				return GetFirstDelegate<Action<Dom.Event>>("readystatechange");
 			}
 			set{
-				addEventListener("readystatechange",new DomEventListener(value));
+				addEventListener("readystatechange",new EventListener<Dom.Event>(value));
 			}
 		}
 		
 		/// <summary>Called when a form is reset.</summary>
-		public FormEventDelegate onreset{
+		public Action<FormEvent> onreset{
 			get{
-				return GetFirstDelegate<FormEventDelegate>("reset");
+				return GetFirstDelegate<Action<FormEvent>>("reset");
 			}
 			set{
-				addEventListener("reset",new FormEventListener(value));
+				addEventListener("reset",new EventListener<FormEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when a form is submitted.</summary>
-		public FormEventDelegate onsubmit{
+		public Action<FormEvent> onsubmit{
 			get{
-				return GetFirstDelegate<FormEventDelegate>("submit");
+				return GetFirstDelegate<Action<FormEvent>>("submit");
 			}
 			set{
-				addEventListener("submit",new FormEventListener(value));
+				addEventListener("submit",new EventListener<FormEvent>(value));
 			}
 		}
 		

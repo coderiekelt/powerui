@@ -24,162 +24,162 @@ namespace Dom{
 	public partial class Element{
 		
 		/// <summary>Called when this element receives a keyup.</summary>
-		public KeyboardEventDelegate onkeyup{
+		public Action<KeyboardEvent> onkeyup{
 			get{
-				return GetFirstDelegate<KeyboardEventDelegate>("keyup");
+				return GetFirstDelegate<Action<KeyboardEvent>>("keyup");
 			}
 			set{
-				addEventListener("keyup",new KeyboardEventListener(value));
+				addEventListener("keyup",new EventListener<KeyboardEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a keydown.</summary>
-		public KeyboardEventDelegate onkeydown{
+		public Action<KeyboardEvent> onkeydown{
 			get{
-				return GetFirstDelegate<KeyboardEventDelegate>("keydown");
+				return GetFirstDelegate<Action<KeyboardEvent>>("keydown");
 			}
 			set{
-				addEventListener("keydown",new KeyboardEventListener(value));
+				addEventListener("keydown",new EventListener<KeyboardEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a mouseup.</summary>
-		public MouseEventDelegate onmouseup{
+		public Action<MouseEvent> onmouseup{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mouseup");
+				return GetFirstDelegate<Action<MouseEvent>>("mouseup");
 			}
 			set{
-				addEventListener("mouseup",new MouseEventListener(value));
+				addEventListener("mouseup",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a mouseout.</summary>
-		public MouseEventDelegate onmouseout{
+		public Action<MouseEvent> onmouseout{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mouseout");
+				return GetFirstDelegate<Action<MouseEvent>>("mouseout");
 			}
 			set{
-				addEventListener("mouseout",new MouseEventListener(value));
+				addEventListener("mouseout",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a mousedown.</summary>
-		public MouseEventDelegate onmousedown{
+		public Action<MouseEvent> onmousedown{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mousedown");
+				return GetFirstDelegate<Action<MouseEvent>>("mousedown");
 			}
 			set{
-				addEventListener("mousedown",new MouseEventListener(value));
+				addEventListener("mousedown",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a mousemove. Note that it must be focused.</summary>
-		public MouseEventDelegate onmousemove{
+		public Action<MouseEvent> onmousemove{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mousemove");
+				return GetFirstDelegate<Action<MouseEvent>>("mousemove");
 			}
 			set{
-				addEventListener("mousemove",new MouseEventListener(value));
+				addEventListener("mousemove",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a mouseover.</summary>
-		public MouseEventDelegate onmouseover{
+		public Action<MouseEvent> onmouseover{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mouseover");
+				return GetFirstDelegate<Action<MouseEvent>>("mouseover");
 			}
 			set{
-				addEventListener("mouseover",new MouseEventListener(value));
+				addEventListener("mouseover",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when a form is reset.</summary>
-		public FormEventDelegate onreset{
+		public Action<FormEvent> onreset{
 			get{
-				return GetFirstDelegate<FormEventDelegate>("reset");
+				return GetFirstDelegate<Action<FormEvent>>("reset");
 			}
 			set{
-				addEventListener("reset",new FormEventListener(value));
+				addEventListener("reset",new EventListener<FormEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when a form is submitted.</summary>
-		public FormEventDelegate onsubmit{
+		public Action<FormEvent> onsubmit{
 			get{
-				return GetFirstDelegate<FormEventDelegate>("submit");
+				return GetFirstDelegate<Action<FormEvent>>("submit");
 			}
 			set{
-				addEventListener("submit",new FormEventListener(value));
+				addEventListener("submit",new EventListener<FormEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a load event (e.g. iframe).</summary>
-		public UIEventDelegate onload{
+		public Action<UIEvent> onload{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("load");
+				return GetFirstDelegate<Action<UIEvent>>("load");
 			}
 			set{
-				addEventListener("load",new UIEventListener(value));
+				addEventListener("load",new EventListener<UIEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element gets focused.</summary>
-		public FocusEventDelegate onfocus{
+		public Action<FocusEvent> onfocus{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("focus");
+				return GetFirstDelegate<Action<FocusEvent>>("focus");
 			}
 			set{
-				addEventListener("focus",new FocusEventListener(value));
+				addEventListener("focus",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called just before this element is focused.</summary>
-		public FocusEventDelegate onfocusin{
+		public Action<FocusEvent> onfocusin{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("focusin");
+				return GetFirstDelegate<Action<FocusEvent>>("focusin");
 			}
 			set{
-				addEventListener("focusin",new FocusEventListener(value));
+				addEventListener("focusin",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called just before this element is blurred.</summary>
-		public FocusEventDelegate onfocusout{
+		public Action<FocusEvent> onfocusout{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("focusout");
+				return GetFirstDelegate<Action<FocusEvent>>("focusout");
 			}
 			set{
-				addEventListener("focusout",new FocusEventListener(value));
+				addEventListener("focusout",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element is unfocused (blurred).</summary>
-		public FocusEventDelegate onblur{
+		public Action<FocusEvent> onblur{
 			get{
-				return GetFirstDelegate<FocusEventDelegate>("blur");
+				return GetFirstDelegate<Action<FocusEvent>>("blur");
 			}
 			set{
-				addEventListener("blur",new FocusEventListener(value));
+				addEventListener("blur",new EventListener<FocusEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when this element receives a full click.</summary>
-		public MouseEventDelegate onclick{
+		public Action<MouseEvent> onclick{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("click");
+				return GetFirstDelegate<Action<MouseEvent>>("click");
 			}
 			set{
-				addEventListener("click",new MouseEventListener(value));
+				addEventListener("click",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Used by e.g. input, select etc. Called when its value changes.</summary>
-		public DomEventDelegate onchange{
+		public Action<Dom.Event> onchange{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("change");
+				return GetFirstDelegate<Action<Dom.Event>>("change");
 			}
 			set{
-				addEventListener("change",new DomEventListener(value));
+				addEventListener("change",new EventListener<Dom.Event>(value));
 			}
 		}
 		

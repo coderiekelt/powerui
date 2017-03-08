@@ -24,12 +24,12 @@ namespace PowerUI{
 	public partial class JSScreen{
 		
 		/// <summary>Called when the ready state changes.</summary>
-		public DeviceOrientationEventDelegate onorientationchange{
+		public Action<DeviceOrientationEvent> onorientationchange{
 			get{
-				return GetFirstDelegate<DeviceOrientationEventDelegate>("orientationchange");
+				return GetFirstDelegate<Action<DeviceOrientationEvent>>("orientationchange");
 			}
 			set{
-				addEventListener("orientationchange",new DeviceOrientationEventListener(value));
+				addEventListener("orientationchange",new EventListener<DeviceOrientationEvent>(value));
 			}
 		}
 		

@@ -27,72 +27,72 @@ namespace PowerUI{
 	public partial class HtmlDocument{
 		
 		/// <summary>Called when the title of this document changes.</summary>
-		public DomEventDelegate ontitlechange{
+		public Action<Dom.Event> ontitlechange{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("titlechange");
+				return GetFirstDelegate<Action<Dom.Event>>("titlechange");
 			}
 			set{
-				addEventListener("titlechange",new DomEventListener(value));
+				addEventListener("titlechange",new EventListener<Dom.Event>(value));
 			}
 		}
 		
 		/// <summary>Called when the tooltip for this document changes.</summary>
-		public DomEventDelegate ontooltipchange{
+		public Action<Dom.Event> ontooltipchange{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("tooltipchange");
+				return GetFirstDelegate<Action<Dom.Event>>("tooltipchange");
 			}
 			set{
-				addEventListener("tooltipchange",new DomEventListener(value));
+				addEventListener("tooltipchange",new EventListener<Dom.Event>(value));
 			}
 		}
 		
 		/// <summary>Called when the document resizes.</summary>
-		public DomEventDelegate onresize{
+		public Action<Dom.Event> onresize{
 			get{
-				return GetFirstDelegate<DomEventDelegate>("resize");
+				return GetFirstDelegate<Action<Dom.Event>>("resize");
 			}
 			set{
-				addEventListener("resize",new DomEventListener(value));
+				addEventListener("resize",new EventListener<Dom.Event>(value));
 			}
 		}
 		
 		/// <summary>Called when a key goes up.</summary>
-		public KeyboardEventDelegate onkeyup{
+		public Action<KeyboardEvent> onkeyup{
 			get{
-				return GetFirstDelegate<KeyboardEventDelegate>("keyup");
+				return GetFirstDelegate<Action<KeyboardEvent>>("keyup");
 			}
 			set{
-				addEventListener("keyup",new KeyboardEventListener(value));
+				addEventListener("keyup",new EventListener<KeyboardEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when a key goes down.</summary>
-		public KeyboardEventDelegate onkeydown{
+		public Action<KeyboardEvent> onkeydown{
 			get{
-				return GetFirstDelegate<KeyboardEventDelegate>("keydown");
+				return GetFirstDelegate<Action<KeyboardEvent>>("keydown");
 			}
 			set{
-				addEventListener("keydown",new KeyboardEventListener(value));
+				addEventListener("keydown",new EventListener<KeyboardEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the mouse moves.</summary>
-		public MouseEventDelegate onmousemove{
+		public Action<MouseEvent> onmousemove{
 			get{
-				return GetFirstDelegate<MouseEventDelegate>("mousemove");
+				return GetFirstDelegate<Action<MouseEvent>>("mousemove");
 			}
 			set{
-				addEventListener("mousemove",new MouseEventListener(value));
+				addEventListener("mousemove",new EventListener<MouseEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the document is about to be unloaded.</summary>
-		public BeforeUnloadEventDelegate onbeforeunload{
+		public Action<BeforeUnloadEvent> onbeforeunload{
 			get{
-				return GetFirstDelegate<BeforeUnloadEventDelegate>("beforeunload");
+				return GetFirstDelegate<Action<BeforeUnloadEvent>>("beforeunload");
 			}
 			set{
-				addEventListener("beforeunload",new BeforeUnloadEventListener(value));
+				addEventListener("beforeunload",new EventListener<BeforeUnloadEvent>(value));
 			}
 		}
 		

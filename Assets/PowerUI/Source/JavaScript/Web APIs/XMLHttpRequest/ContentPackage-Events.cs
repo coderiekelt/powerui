@@ -19,52 +19,52 @@ namespace PowerUI{
 	public partial class ContentPackage{
 		
 		/// <summary>Called when the ready state changes.</summary>
-		public UIEventDelegate onreadystatechange{
+		public Action<UIEvent> onreadystatechange{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("readystatechange");
+				return GetFirstDelegate<Action<UIEvent>>("readystatechange");
 			}
 			set{
-				addEventListener("readystatechange",new UIEventListener(value));
+				addEventListener("readystatechange",new EventListener<UIEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when it's done loading.</summary>
-		public UIEventDelegate onload{
+		public Action<UIEvent> onload{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("load");
+				return GetFirstDelegate<Action<UIEvent>>("load");
 			}
 			set{
-				addEventListener("load",new UIEventListener(value));
+				addEventListener("load",new EventListener<UIEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the request times out.</summary>
-		public UIEventDelegate ontimeout{
+		public Action<UIEvent> ontimeout{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("timeout");
+				return GetFirstDelegate<Action<UIEvent>>("timeout");
 			}
 			set{
-				addEventListener("timeout",new UIEventListener(value));
+				addEventListener("timeout",new EventListener<UIEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the request errors.</summary>
-		public UIEventDelegate onerror{
+		public Action<UIEvent> onerror{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("error");
+				return GetFirstDelegate<Action<UIEvent>>("error");
 			}
 			set{
-				addEventListener("error",new UIEventListener(value));
+				addEventListener("error",new EventListener<UIEvent>(value));
 			}
 		}
 		
 		/// <summary>Called when the request is aborted.</summary>
-		public UIEventDelegate onabort{
+		public Action<UIEvent> onabort{
 			get{
-				return GetFirstDelegate<UIEventDelegate>("abort");
+				return GetFirstDelegate<Action<UIEvent>>("abort");
 			}
 			set{
-				addEventListener("abort",new UIEventListener(value));
+				addEventListener("abort",new EventListener<UIEvent>(value));
 			}
 		}
 		

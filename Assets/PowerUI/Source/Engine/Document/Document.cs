@@ -40,7 +40,7 @@ namespace PowerUI{
 		public Window window;
 		/// <summary>An event called after clear but before the new content is set.
 		/// Allows hooking up of various events.</summary>
-		public DomEventDelegate AfterClearBeforeSet;
+		public Action<Dom.Event> AfterClearBeforeSet;
 		
 		/// <summary>Don't use this directly; use location instead.</summary>
 		internal override void SetLocation(Location value,bool addHistory){

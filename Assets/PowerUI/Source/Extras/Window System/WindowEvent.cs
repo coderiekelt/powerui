@@ -34,25 +34,18 @@ namespace Windows{
 		
 	}
 	
-	public delegate void WindowEventDelegate(WindowEvent e);
+}
+
+namespace Dom{
 	
-	/// Handler for WindowEvent events.
-	public class WindowEventListener : EventListener{
+	/// <summary>
+	/// An event target can receive events and have event handlers.
+	/// <summary>
+	
+	public partial class EventTarget{
 		
-		public WindowEventDelegate Listener;
-		
-		public WindowEventListener(WindowEventDelegate listener){
-			Listener=listener;
-		}
-		
-		public override object Internal{
-			get{
-				return Listener;
-			}
-		}
-		
-		public override void handleEvent(Dom.Event e){
-			Listener((WindowEvent)e);
+		public void addEventListener(string name,Action<Windows.WindowEvent> method){
+			addEventListener(name,new EventListener<Windows.WindowEvent>(method));
 		}
 		
 	}

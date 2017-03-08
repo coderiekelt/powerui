@@ -28,7 +28,7 @@ namespace PowerSlide{
 	public partial class Track : EventTarget{
 		
 		/// <summary>Use this and partial class extensions to add custom info loaded from JSON.</summary>
-		public static event SlideEventDelegate OnLoad;
+		public static event Action<SlideEvent> OnLoad;
 		
 		/// <summary>Loads a track from the given track data.</summary>
 		public static Track LoadFromJson(Timeline timeline,JSObject json){

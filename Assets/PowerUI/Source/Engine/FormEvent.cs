@@ -116,27 +116,4 @@ namespace PowerUI{
 		
 	}
 	
-	public delegate void FormEventDelegate(FormEvent e);
-	
-	/// Handler for FormEvent events.
-	public class FormEventListener : Dom.EventListener{
-		
-		public FormEventDelegate Listener;
-		
-		public FormEventListener(FormEventDelegate listener){
-			Listener=listener;
-		}
-		
-		public override object Internal{
-			get{
-				return Listener;
-			}
-		}
-		
-		public override void handleEvent(Dom.Event e){
-			Listener((FormEvent)e);
-		}
-		
-	}
-	
 }

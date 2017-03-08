@@ -65,29 +65,6 @@ namespace ContextMenus{
 		
 	}
 	
-	public delegate void ContextEventDelegate(ContextEvent e);
-	
-	/// Handler for ContextEvent events.
-	public class ContextEventListener : EventListener{
-		
-		public ContextEventDelegate Listener;
-		
-		public ContextEventListener(ContextEventDelegate listener){
-			Listener=listener;
-		}
-		
-		public override object Internal{
-			get{
-				return Listener;
-			}
-		}
-		
-		public override void handleEvent(Dom.Event e){
-			Listener((ContextEvent)e);
-		}
-		
-	}
-	
 }
 
 
@@ -96,12 +73,12 @@ namespace Dom{
 	public partial class Element{
 		
 		/// <summary>Called when this element receives a contextmenu request.</summary>
-		public ContextMenus.ContextEventDelegate oncontextmenu{
+		public Action<ContextMenus.ContextEvent> oncontextmenu{
 			get{
-				return GetFirstDelegate<ContextMenus.ContextEventDelegate>("contextmenu");
+				return GetFirstDelegate<Action<ContextMenus.ContextEvent>>("contextmenu");
 			}
 			set{
-				addEventListener("contextmenu",new ContextMenus.ContextEventListener(value));
+				addEventListener("contextmenu",new EventListener<ContextMenus.ContextEvent>(value));
 			}
 		}
 		

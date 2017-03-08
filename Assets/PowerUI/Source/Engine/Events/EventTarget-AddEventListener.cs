@@ -22,210 +22,210 @@ namespace Dom{
 	public partial class EventTarget{
 		
 		// All event-specific addEventListener overloads (except for SVG).
-		// This avoids needing to manually create e.g. a KeyboardEventListener object.
+		// This avoids needing to manually create e.g. a EventListener<KeyboardEvent> object.
 		
-		public void addEventListener(string name,AnimationEventDelegate method){
-			addEventListener(name,new AnimationEventListener(method));
+		public void addEventListener(string name,Action<AnimationEvent> method){
+			addEventListener(name,new EventListener<AnimationEvent>(method));
 		}
 
-		public void addEventListener(string name,AudioProcessingEventDelegate method){
-			addEventListener(name,new AudioProcessingEventListener(method));
+		public void addEventListener(string name,Action<AudioProcessingEvent> method){
+			addEventListener(name,new EventListener<AudioProcessingEvent>(method));
 		}
 
-		public void addEventListener(string name,BeforeInputEventDelegate method){
-			addEventListener(name,new BeforeInputEventListener(method));
+		public void addEventListener(string name,Action<BeforeInputEvent> method){
+			addEventListener(name,new EventListener<BeforeInputEvent>(method));
 		}
 
-		public void addEventListener(string name,BeforeUnloadEventDelegate method){
-			addEventListener(name,new BeforeUnloadEventListener(method));
+		public void addEventListener(string name,Action<BeforeUnloadEvent> method){
+			addEventListener(name,new EventListener<BeforeUnloadEvent>(method));
 		}
 
-		public void addEventListener(string name,BlobEventDelegate method){
-			addEventListener(name,new BlobEventListener(method));
+		public void addEventListener(string name,Action<BlobEvent> method){
+			addEventListener(name,new EventListener<BlobEvent>(method));
 		}
 
-		public void addEventListener(string name,ClipboardEventDelegate method){
-			addEventListener(name,new ClipboardEventListener(method));
+		public void addEventListener(string name,Action<ClipboardEvent> method){
+			addEventListener(name,new EventListener<ClipboardEvent>(method));
 		}
 
-		public void addEventListener(string name,CloseEventDelegate method){
-			addEventListener(name,new CloseEventListener(method));
+		public void addEventListener(string name,Action<CloseEvent> method){
+			addEventListener(name,new EventListener<CloseEvent>(method));
 		}
 
-		public void addEventListener(string name,CompositionEventDelegate method){
-			addEventListener(name,new CompositionEventListener(method));
+		public void addEventListener(string name,Action<CompositionEvent> method){
+			addEventListener(name,new EventListener<CompositionEvent>(method));
 		}
 
-		public void addEventListener(string name,CustomEventDelegate method){
-			addEventListener(name,new CustomEventListener(method));
+		public void addEventListener(string name,Action<CustomEvent> method){
+			addEventListener(name,new EventListener<CustomEvent>(method));
 		}
 
-		public void addEventListener(string name,CSSFontFaceLoadEventDelegate method){
-			addEventListener(name,new CSSFontFaceLoadEventListener(method));
+		public void addEventListener(string name,Action<CSSFontFaceLoadEvent> method){
+			addEventListener(name,new EventListener<CSSFontFaceLoadEvent>(method));
 		}
 
-		public void addEventListener(string name,DeviceLightEventDelegate method){
-			addEventListener(name,new DeviceLightEventListener(method));
+		public void addEventListener(string name,Action<DeviceLightEvent> method){
+			addEventListener(name,new EventListener<DeviceLightEvent>(method));
 		}
 
-		public void addEventListener(string name,DeviceMotionEventDelegate method){
-			addEventListener(name,new DeviceMotionEventListener(method));
+		public void addEventListener(string name,Action<DeviceMotionEvent> method){
+			addEventListener(name,new EventListener<DeviceMotionEvent>(method));
 		}
 
-		public void addEventListener(string name,DeviceOrientationEventDelegate method){
-			addEventListener(name,new DeviceOrientationEventListener(method));
+		public void addEventListener(string name,Action<DeviceOrientationEvent> method){
+			addEventListener(name,new EventListener<DeviceOrientationEvent>(method));
 		}
 
-		public void addEventListener(string name,DeviceProximityEventDelegate method){
-			addEventListener(name,new DeviceProximityEventListener(method));
+		public void addEventListener(string name,Action<DeviceProximityEvent> method){
+			addEventListener(name,new EventListener<DeviceProximityEvent>(method));
 		}
 
-		public void addEventListener(string name,DomEventDelegate method){
-			addEventListener(name,new DomEventListener(method));
+		public void addEventListener(string name,Action<Dom.Event> method){
+			addEventListener(name,new EventListener<Dom.Event>(method));
 		}
 
-		public void addEventListener(string name,DOMTransactionEventDelegate method){
-			addEventListener(name,new DOMTransactionEventListener(method));
+		public void addEventListener(string name,Action<DOMTransactionEvent> method){
+			addEventListener(name,new EventListener<DOMTransactionEvent>(method));
 		}
 
-		public void addEventListener(string name,DragEventDelegate method){
-			addEventListener(name,new DragEventListener(method));
+		public void addEventListener(string name,Action<DragEvent> method){
+			addEventListener(name,new EventListener<DragEvent>(method));
 		}
 
-		public void addEventListener(string name,EditingBeforeInputEventDelegate method){
-			addEventListener(name,new EditingBeforeInputEventListener(method));
+		public void addEventListener(string name,Action<EditingBeforeInputEvent> method){
+			addEventListener(name,new EventListener<EditingBeforeInputEvent>(method));
 		}
 
-		public void addEventListener(string name,ErrorEventDelegate method){
-			addEventListener(name,new ErrorEventListener(method));
+		public void addEventListener(string name,Action<ErrorEvent> method){
+			addEventListener(name,new EventListener<ErrorEvent>(method));
 		}
 
-		public void addEventListener(string name,FetchEventDelegate method){
-			addEventListener(name,new FetchEventListener(method));
+		public void addEventListener(string name,Action<FetchEvent> method){
+			addEventListener(name,new EventListener<FetchEvent>(method));
 		}
 
-		public void addEventListener(string name,FocusEventDelegate method){
-			addEventListener(name,new FocusEventListener(method));
+		public void addEventListener(string name,Action<FocusEvent> method){
+			addEventListener(name,new EventListener<FocusEvent>(method));
 		}
 
-		public void addEventListener(string name,GamepadEventDelegate method){
-			addEventListener(name,new GamepadEventListener(method));
+		public void addEventListener(string name,Action<GamepadEvent> method){
+			addEventListener(name,new EventListener<GamepadEvent>(method));
 		}
 
-		public void addEventListener(string name,HashChangeEventDelegate method){
-			addEventListener(name,new HashChangeEventListener(method));
+		public void addEventListener(string name,Action<HashChangeEvent> method){
+			addEventListener(name,new EventListener<HashChangeEvent>(method));
 		}
 
-		public void addEventListener(string name,IDBVersionChangeEventDelegate method){
-			addEventListener(name,new IDBVersionChangeEventListener(method));
+		public void addEventListener(string name,Action<IDBVersionChangeEvent> method){
+			addEventListener(name,new EventListener<IDBVersionChangeEvent>(method));
 		}
 
-		public void addEventListener(string name,InputEventDelegate method){
-			addEventListener(name,new InputEventListener(method));
+		public void addEventListener(string name,Action<InputEvent> method){
+			addEventListener(name,new EventListener<InputEvent>(method));
 		}
 
-		public void addEventListener(string name,KeyboardEventDelegate method){
-			addEventListener(name,new KeyboardEventListener(method));
+		public void addEventListener(string name,Action<KeyboardEvent> method){
+			addEventListener(name,new EventListener<KeyboardEvent>(method));
 		}
 
-		public void addEventListener(string name,MediaStreamEventDelegate method){
-			addEventListener(name,new MediaStreamEventListener(method));
+		public void addEventListener(string name,Action<MediaStreamEvent> method){
+			addEventListener(name,new EventListener<MediaStreamEvent>(method));
 		}
 
-		public void addEventListener(string name,MessageEventDelegate method){
-			addEventListener(name,new MessageEventListener(method));
+		public void addEventListener(string name,Action<MessageEvent> method){
+			addEventListener(name,new EventListener<MessageEvent>(method));
 		}
 
-		public void addEventListener(string name,MouseEventDelegate method){
-			addEventListener(name,new MouseEventListener(method));
+		public void addEventListener(string name,Action<MouseEvent> method){
+			addEventListener(name,new EventListener<MouseEvent>(method));
 		}
 
-		public void addEventListener(string name,MutationEventDelegate method){
-			addEventListener(name,new MutationEventListener(method));
+		public void addEventListener(string name,Action<MutationEvent> method){
+			addEventListener(name,new EventListener<MutationEvent>(method));
 		}
 
-		public void addEventListener(string name,OfflineAudioCompletionEventDelegate method){
-			addEventListener(name,new OfflineAudioCompletionEventListener(method));
+		public void addEventListener(string name,Action<OfflineAudioCompletionEvent> method){
+			addEventListener(name,new EventListener<OfflineAudioCompletionEvent>(method));
 		}
 
-		public void addEventListener(string name,PageTransitionEventDelegate method){
-			addEventListener(name,new PageTransitionEventListener(method));
+		public void addEventListener(string name,Action<PageTransitionEvent> method){
+			addEventListener(name,new EventListener<PageTransitionEvent>(method));
 		}
 
-		public void addEventListener(string name,PointerEventDelegate method){
-			addEventListener(name,new PointerEventListener(method));
+		public void addEventListener(string name,Action<PointerEvent> method){
+			addEventListener(name,new EventListener<PointerEvent>(method));
 		}
 
-		public void addEventListener(string name,PopStateEventDelegate method){
-			addEventListener(name,new PopStateEventListener(method));
+		public void addEventListener(string name,Action<PopStateEvent> method){
+			addEventListener(name,new EventListener<PopStateEvent>(method));
 		}
 
-		public void addEventListener(string name,ProgressEventDelegate method){
-			addEventListener(name,new ProgressEventListener(method));
+		public void addEventListener(string name,Action<ProgressEvent> method){
+			addEventListener(name,new EventListener<ProgressEvent>(method));
 		}
 
-		public void addEventListener(string name,RelatedEventDelegate method){
-			addEventListener(name,new RelatedEventListener(method));
+		public void addEventListener(string name,Action<RelatedEvent> method){
+			addEventListener(name,new EventListener<RelatedEvent>(method));
 		}
 
-		public void addEventListener(string name,RTCDataChannelEventDelegate method){
-			addEventListener(name,new RTCDataChannelEventListener(method));
+		public void addEventListener(string name,Action<RTCDataChannelEvent> method){
+			addEventListener(name,new EventListener<RTCDataChannelEvent>(method));
 		}
 
-		public void addEventListener(string name,RTCIdentityErrorEventDelegate method){
-			addEventListener(name,new RTCIdentityErrorEventListener(method));
+		public void addEventListener(string name,Action<RTCIdentityErrorEvent> method){
+			addEventListener(name,new EventListener<RTCIdentityErrorEvent>(method));
 		}
 
-		public void addEventListener(string name,RTCIdentityEventDelegate method){
-			addEventListener(name,new RTCIdentityEventListener(method));
+		public void addEventListener(string name,Action<RTCIdentityEvent> method){
+			addEventListener(name,new EventListener<RTCIdentityEvent>(method));
 		}
 
-		public void addEventListener(string name,RTCPeerConnectionIceEventDelegate method){
-			addEventListener(name,new RTCPeerConnectionIceEventListener(method));
+		public void addEventListener(string name,Action<RTCPeerConnectionIceEvent> method){
+			addEventListener(name,new EventListener<RTCPeerConnectionIceEvent>(method));
 		}
 
-		public void addEventListener(string name,SensorEventDelegate method){
-			addEventListener(name,new SensorEventListener(method));
+		public void addEventListener(string name,Action<SensorEvent> method){
+			addEventListener(name,new EventListener<SensorEvent>(method));
 		}
 
-		public void addEventListener(string name,StorageEventDelegate method){
-			addEventListener(name,new StorageEventListener(method));
+		public void addEventListener(string name,Action<StorageEvent> method){
+			addEventListener(name,new EventListener<StorageEvent>(method));
 		}
 
-		public void addEventListener(string name,TextEventDelegate method){
-			addEventListener(name,new TextEventListener(method));
+		public void addEventListener(string name,Action<TextEvent> method){
+			addEventListener(name,new EventListener<TextEvent>(method));
 		}
 
-		public void addEventListener(string name,TimeEventDelegate method){
-			addEventListener(name,new TimeEventListener(method));
+		public void addEventListener(string name,Action<TimeEvent> method){
+			addEventListener(name,new EventListener<TimeEvent>(method));
 		}
 
-		public void addEventListener(string name,TouchEventDelegate method){
-			addEventListener(name,new TouchEventListener(method));
+		public void addEventListener(string name,Action<TouchEvent> method){
+			addEventListener(name,new EventListener<TouchEvent>(method));
 		}
 
-		public void addEventListener(string name,TrackEventDelegate method){
-			addEventListener(name,new TrackEventListener(method));
+		public void addEventListener(string name,Action<TrackEvent> method){
+			addEventListener(name,new EventListener<TrackEvent>(method));
 		}
 
-		public void addEventListener(string name,TransitionEventDelegate method){
-			addEventListener(name,new TransitionEventListener(method));
+		public void addEventListener(string name,Action<TransitionEvent> method){
+			addEventListener(name,new EventListener<TransitionEvent>(method));
 		}
 
-		public void addEventListener(string name,UIEventDelegate method){
-			addEventListener(name,new UIEventListener(method));
+		public void addEventListener(string name,Action<UIEvent> method){
+			addEventListener(name,new EventListener<UIEvent>(method));
 		}
 
-		public void addEventListener(string name,UserProximityEventDelegate method){
-			addEventListener(name,new UserProximityEventListener(method));
+		public void addEventListener(string name,Action<UserProximityEvent> method){
+			addEventListener(name,new EventListener<UserProximityEvent>(method));
 		}
 
-		public void addEventListener(string name,WebGLContextEventDelegate method){
-			addEventListener(name,new WebGLContextEventListener(method));
+		public void addEventListener(string name,Action<WebGLContextEvent> method){
+			addEventListener(name,new EventListener<WebGLContextEvent>(method));
 		}
 
-		public void addEventListener(string name,WheelEventDelegate method){
-			addEventListener(name,new WheelEventListener(method));
+		public void addEventListener(string name,Action<WheelEvent> method){
+			addEventListener(name,new EventListener<WheelEvent>(method));
 		}
 
 	}
