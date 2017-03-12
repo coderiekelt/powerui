@@ -16,13 +16,11 @@ using System.Collections.Generic;
 public class ScreenFade : Windows.Window{
 	
 	/// <summary>A helper function for instantly removing a screen fade.</summary>
-	[Values.Preserve]
 	public static void Close(PowerUI.HtmlDocument doc){
 		doc.sparkWindows.close("screenfade",null);
 	}
 	
 	/// <summary>A helper function for fading the screen in the given document.</summary>
-	[Values.Preserve]
 	public static Promise Fade(PowerUI.HtmlDocument doc,UnityEngine.Color to,float timeInSeconds){
 		
 		// Open up the window:

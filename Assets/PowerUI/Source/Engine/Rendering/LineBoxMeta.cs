@@ -540,7 +540,7 @@ namespace PowerUI{
 				while(activeFloat!=null){
 					
 					// Yes - how far down must we go?
-					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
+					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height + activeFloat.Margin.Bottom);
 					
 					if((penY+ClearY_)<requiredClear){
 						// Clear over it now:
@@ -567,7 +567,7 @@ namespace PowerUI{
 						// Is the current render point now higher than this floating object?
 						// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
 						
-						if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+						if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height + activeFloat.Margin.Bottom)){
 							
 							// Clear!
 							
@@ -604,7 +604,7 @@ namespace PowerUI{
 				while(activeFloat!=null){
 					
 					// Yes - how far down must we go?
-					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height);
+					float requiredClear=(activeFloat.ParentOffsetTop + activeFloat.Height + activeFloat.Margin.Bottom);
 					
 					if((penY+ClearY_)<requiredClear){
 						// Clear over it now:
@@ -629,7 +629,7 @@ namespace PowerUI{
 						// Is the current render point now higher than this floating object?
 						// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
 						
-						if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+						if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height + activeFloat.Margin.Bottom)){
 							
 							// Clear!
 							
@@ -1125,8 +1125,7 @@ namespace PowerUI{
 							
 							// Is the current render point now higher than this floating object?
 							// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
-							
-							if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height + activeFloat.Margin.Bottom)){
 								
 								// Clear!
 								
@@ -1158,7 +1157,7 @@ namespace PowerUI{
 							// Is the current render point now higher than this floating object?
 							// If so, we must reduce LineStart/ increase MaxX depending on which type of float it is.
 							
-							if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height)){
+							if((PenY+ClearY_)>=(activeFloat.ParentOffsetTop + activeFloat.Height + activeFloat.Margin.Bottom)){
 								
 								// Clear!
 								
@@ -1280,7 +1279,7 @@ namespace PowerUI{
 				BlockBoxMeta bbm=this as BlockBoxMeta;
 				
 				// Always apply top here (no vertical-align and must be after the above clear):
-				styleBox.ParentOffsetTop=bbm.PenY_ + bbm.ClearY_;
+				styleBox.ParentOffsetTop=bbm.PenY_ + bbm.ClearY_ + styleBox.Margin.Top;
 				
 				// Pen only advances for left:
 				if(

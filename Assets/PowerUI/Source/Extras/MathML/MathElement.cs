@@ -164,35 +164,101 @@ namespace MathML{
 		
 		public void OnRender(Renderman renderer){}
 		
-		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
+		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.
+		/// This does not include the elements own padding/margin/border.</summary>
 		public void GetWidthBounds(out float min,out float max){
 			
 			min=0f;
 			max=0f;
 			
 			// For each child, get its width bounds too.
-			if(childNodes_==null){
+			if(RenderData.FirstBox==null){
 				return;
 			}
 			
-			for(int i=0;i<childNodes_.length;i++){
+			if(childNodes_!=null){
 				
-				float cMin;
-				float cMax;
-				IRenderableNode renderable=(childNodes_[i] as IRenderableNode);
+				// Current line:
+				float cMin=0f;
+				float cMax=0f;
 				
-				if(renderable==null){
-					continue;
-				}
-				
-				renderable.GetWidthBounds(out cMin,out cMax);
-				
-				if(cMin>min){
-					min=cMin;
-				}
-				
-				if(cMax>max){
-					max=cMax;
+				for(int i=0;i<childNodes_.length;i++){
+					
+					Node child=childNodes_[i];
+					
+					IRenderableNode renderable=(child as IRenderableNode);
+					
+					if(renderable==null){
+						continue;
+					}
+					
+					float bMin;
+					float bMax;
+					
+					if(child is PowerUI.RenderableTextNode){
+						
+						// Always get bounds:
+						renderable.GetWidthBounds(out bMin,out bMax);
+						
+					}else{
+						
+						// Get the first box from the render data:
+						RenderableData rd=renderable.RenderData;
+						LayoutBox box=rd.FirstBox;
+						
+						if(box==null){
+							continue;
+						}
+						
+						// If it's inline (or float) then it's additive to the current line.
+						if((box.DisplayMode & DisplayMode.OutsideBlock)!=0 && box.FloatMode==FloatMode.None){
+							
+							// Line break!
+							cMin=0f;
+							cMax=0f;
+							
+						}
+						
+						// Get an explicit width:
+						bool wasAuto;
+						bMin=rd.GetWidth(true,out wasAuto);
+							
+						if(bMin==float.MinValue){
+							
+							// Get the bounds:
+							renderable.GetWidthBounds(out bMin,out bMax);
+							
+						}else{
+							
+							bMax=bMin;
+							
+						}
+						
+						// Add margins etc:
+						float extraStyle=(
+							box.Border.Left+box.Border.Right+
+							box.Padding.Left+box.Padding.Right+
+							box.Margin.Left+box.Margin.Right
+						);
+						
+						bMin+=extraStyle;
+						bMax+=extraStyle;
+						
+					}
+					
+					// Apply to line:
+					cMin+=bMin;
+					cMax+=bMax;
+					
+					// Longest line?
+					if(cMin>min){
+						min=cMin;
+					}
+					
+					if(cMax>max){
+						max=cMax;
+					}
+					
 				}
 				
 			}

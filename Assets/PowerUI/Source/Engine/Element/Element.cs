@@ -104,86 +104,111 @@ namespace PowerUI{
 		}
 		*/
 		
-		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.</summary>
+		/// <summary>Part of shrink-to-fit. Computes the maximum and minimum possible width for an element.
+		/// This does not include the elements own padding/margin/border.</summary>
 		public virtual void GetWidthBounds(out float min,out float max){
 			
 			min=0f;
 			max=0f;
 			
 			// For each child, get its width bounds too.
-			if(childNodes_==null){
+			if(RenderData.FirstBox==null){
 				return;
 			}
 			
-			// Current line:
-			float cMin=0f;
-			float cMax=0f;
-			
-			for(int i=0;i<childNodes_.length;i++){
+			if(childNodes_!=null){
 				
-				Node child=childNodes_[i];
+				// Current line:
+				float cMin=0f;
+				float cMax=0f;
 				
-				IRenderableNode renderable=(child as IRenderableNode);
-				
-				if(renderable==null){
-					continue;
-				}
-				
-				float bMin;
-				float bMax;
-				
-				if(child is RenderableTextNode){
+				for(int i=0;i<childNodes_.length;i++){
 					
-					// Always get bounds:
-					bMin=float.MinValue;
+					Node child=childNodes_[i];
 					
-				}else{
+					IRenderableNode renderable=(child as IRenderableNode);
 					
-					// Get the first box from the render data:
-					RenderableData rd=renderable.RenderData;
-					
-					if(rd.FirstBox==null){
+					if(renderable==null){
 						continue;
 					}
 					
-					// If it's inline then it's additive to the current line.
-					if((rd.FirstBox.DisplayMode & DisplayMode.OutsideBlock)!=0){
+					float bMin;
+					float bMax;
+					
+					if(child is RenderableTextNode){
 						
-						// Line break!
-						cMin=0f;
-						cMax=0f;
+						// Always get bounds:
+						renderable.GetWidthBounds(out bMin,out bMax);
+						
+					}else{
+						
+						// Get the first box from the render data:
+						ComputedStyle cs=renderable.ComputedStyle;
+						RenderableData rd=renderable.RenderData;
+						LayoutBox box=rd.FirstBox;
+						
+						if(box==null){
+							continue;
+						}
+						
+						int displayMode=box.DisplayMode;
+						
+						// If it's inline (or float) then it's additive to the current line.
+						if((displayMode & DisplayMode.OutsideBlock)!=0 && box.FloatMode==FloatMode.None){
+							
+							// Line break!
+							cMin=0f;
+							cMax=0f;
+							
+						}
+						
+						// Get an explicit width:
+						bool wasAuto;
+						bMin=rd.GetWidth(true,out wasAuto);
+						
+						if(bMin==float.MinValue){
+							
+							// Get the bounds:
+							renderable.GetWidthBounds(out bMin,out bMax);
+							
+						}else{
+							
+							bMax=bMin;
+							
+						}
+						
+						// Add margins etc (NB: These are calculated twice due to %):
+						BoxStyle padding=cs.GetPaddingBox(displayMode);
+						BoxStyle border=cs.GetBorderBox(displayMode);
+						
+						// Compute the initial margin:
+						bool marginAuto=false;
+						BoxStyle margin=cs.GetMarginBox(displayMode,box.FloatMode,ref marginAuto);
+						
+						float extraStyle=(
+							border.Left+border.Right+
+							padding.Left+padding.Right+
+							margin.Left+margin.Right
+						);
+						
+						bMin+=extraStyle;
+						bMax+=extraStyle;
 						
 					}
 					
-					// Get an explicit width:
-					bool wasAuto;
-					bMin=rd.GetWidth(true,out wasAuto);
+					// Apply to line:
+					cMin+=bMin;
+					cMax+=bMax;
 					
-				}
-				
-				if(bMin==float.MinValue){
+					// Longest line?
+					if(cMin>min){
+						min=cMin;
+					}
 					
-					// Get the bounds:
-					renderable.GetWidthBounds(out bMin,out bMax);
+					if(cMax>max){
+						max=cMax;
+					}
 					
-				}else{
-					
-					// It has an explicit size.
-					bMax=bMin;
-					
-				}
-				
-				// Apply to line:
-				cMin+=bMin;
-				cMax+=bMax;
-				
-				// Longest line?
-				if(cMin>min){
-					min=cMin;
-				}
-				
-				if(cMax>max){
-					max=cMax;
 				}
 				
 			}
