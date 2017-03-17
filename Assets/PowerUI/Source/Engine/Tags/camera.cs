@@ -187,6 +187,10 @@ namespace PowerUI{
 		
 		internal void ApplyNewRenderTexture(int w,int h){
 			
+			if(w<=0 || h<=0){
+				return;
+			}
+			
 			CreatedTexture=true;
 			
 			RenderTexture rt=new RenderTexture(w,h,24);
@@ -196,6 +200,11 @@ namespace PowerUI{
 			
 			// Element.image API:
 			image=rt;
+			
+			// Dispatch an event to signal the RT changed:
+			Dom.Event e=new Dom.Event("cameraresize");
+			e.SetTrusted(false);
+			dispatchEvent(e);
 			
 			// Setup the clear flags:
 			// Camera.clearFlags=CameraClearFlags.Depth;
@@ -352,14 +361,8 @@ namespace PowerUI{
 		
 		/// <summary>Called during the layout pass.</summary>
 		public override void OnRender(Renderman renderer){
+			
 			if(Camera==null){
-				return;
-			}
-			
-			// Get the texture:
-			RenderTexture rt=Camera.targetTexture;
-			
-			if(rt==null){
 				return;
 			}
 			
@@ -374,7 +377,15 @@ namespace PowerUI{
 			int w=(int)box.InnerWidth;
 			int h=(int)box.InnerHeight;
 			
-			if((rt.width!=w || rt.height!=h) && CanResize){
+			// Get the texture:
+			RenderTexture rt=Camera.targetTexture;
+			
+			if(rt==null){
+				
+				// Allocate it now (camera is set so one should be required):
+				ApplyNewRenderTexture(w,h);
+				
+			}else if((rt.width!=w || rt.height!=h) && CanResize){
 				
 				// Release it (can't resize):
 				rt.Release();
