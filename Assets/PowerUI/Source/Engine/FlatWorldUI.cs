@@ -25,8 +25,8 @@ namespace PowerUI{
 	
 	public partial class FlatWorldUI:WorldUI{
 		
-		/// <summary>Global position offset.</summary>
-		public static float GlobalOffset=-150f;
+		/// <summary>Global position offset on z.</summary>
+		private static float GlobalOffset=-1000f;
 		
 		/// <summary>The default layer to use for rendering FlatWorldUI's. If not set the PowerUI layer is used, Change by using yourWorldUI.Layer.</summary>
 		private int DefaultLayer=-1;
@@ -39,9 +39,6 @@ namespace PowerUI{
 		public GameObject CameraObject;
 		/// <summary>A handler which ensures the camera remains the right size.</summary>
 		private FlatWorldUIHandler Handler;
-		/// <summary>Flat world UI's get stacked up on top of each other in virtual space.
-		/// This is true if it will update the offset of one UI to another when SetDimensions is called.</summary>
-		private bool RequiresOffset;
 		
 		/// <summary>Creates a new Flat World UI with 100x100 pixels of space and a name of "new World UI".
 		/// The gameobjects origin sits at the middle of the UI by default. See <see cref="PowerUI.WorldUI.SetOrigin"/>. 
@@ -94,8 +91,10 @@ namespace PowerUI{
 			// Make it forward rendered (it deals with transparency):
 			SourceCamera.renderingPath=RenderingPath.Forward;
 			
+			float zSpace=UI.GetCameraDistance();
+			
 			// Setup the cameras distance:
-			SetCameraDistance(UI.GetCameraDistance());
+			SetCameraDistance(zSpace);
 			
 			// Call the camera creation method:
 			UI.CameraGotCreated(SourceCamera);
@@ -175,12 +174,9 @@ namespace PowerUI{
 				
 			}
 			
-			gameObject.transform.position=new Vector3(0f,GlobalOffset,0f);
+			gameObject.transform.position=new Vector3(0f,-150f,GlobalOffset);
+			GlobalOffset+=zSpace+1f;
 			
-			if(heightPX==0){
-				RequiresOffset=true;
-				GlobalOffset-=(float)heightPX * WorldPerPixel.y;
-			}
 		}
 		
 		/// <summary>Alias for Texture.</summary>
@@ -290,13 +286,6 @@ namespace PowerUI{
 			// Check for changes:
 			if(pixelWidth==x && pixelHeight==y){
 				return false;
-			}
-			
-			if(RequiresOffset){
-				
-				RequiresOffset=false;
-				GlobalOffset-=(float)y * WorldPerPixel.y;
-				
 			}
 			
 			// Set the base dimensions:

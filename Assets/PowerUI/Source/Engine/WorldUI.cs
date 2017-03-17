@@ -601,6 +601,18 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Resolves a hit into a 2D pixel coordinate.</summary>
+		public Vector2 ResolvePoint(RaycastHit hit){
+			
+			// Resolve to a relative point:
+			float x;
+			float y;
+			ResolvePoint(hit,out x,out y);
+			
+			// Map it from a relative point to a pixel one:
+			return RelativePoint(x,y);
+		}
+		
 		/// <summary>Parents this WorldUI to the given gameobject and then moves it to the transforms origin.</summary>
 		/// <param name="parent">The transform to parent to.</param>
 		public void ParentToOrigin(Transform parent){

@@ -49,8 +49,6 @@ Shader "PowerUI/StandardUI/Normal" {
 					col *= tex2D(_MainTex, i.texcoord0);
 				}
 				
-				float smooth=0.25 / (4 * 16);
-				
 				if(i.texcoord1.y<=1){
 					col.a *= smoothstep(i.texcoord2.x, i.texcoord2.y,tex2D(_Font,i.texcoord1).a);
 				}
