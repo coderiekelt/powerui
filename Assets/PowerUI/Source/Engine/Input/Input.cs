@@ -319,7 +319,11 @@ namespace PowerUI{
 					if(key==KeyCode.Tab && htmlDoc!=null){
 						
 						// Tab - hop to next input:
-						htmlDoc.TabNext();
+						if(e.shiftKey){
+							htmlDoc.TabPrevious();
+						}else{
+							htmlDoc.TabNext();
+						}
 						
 					}else if(e.ctrlKey){
 						

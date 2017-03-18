@@ -1042,12 +1042,13 @@ namespace PowerUI{
 		public int tabIndex{
 			get{
 				string value=this["tabindex"];
+				int v;
 				
-				if(value==null){
+				if(value==null || !int.TryParse(value, out v)){
 					return -1;
 				}
 				
-				return int.Parse(value);
+				return v;
 			}
 			set{
 				this["tabindex"]=value.ToString();

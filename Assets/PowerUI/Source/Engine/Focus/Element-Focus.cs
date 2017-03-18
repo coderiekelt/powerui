@@ -288,8 +288,80 @@ namespace PowerUI{
 		
 		/// <summary>Used for tab focus. Gets the next available focusable element.</summary>
 		/// <returns>The next available focusable element. Null if there is none.</returns>
+		public HtmlElement GetFocusedPrevious(){
+			
+			// These track the current best found element.
+			int bestSoFar=-1;
+			HtmlElement best=null;
+			
+			if(hasAttribute("tabindex")){
+				
+				// Get the current index:
+				int currentIndex=tabIndex;
+				
+				// Hunt before this, then after it.
+				if(!SearchFocusable(false,currentIndex,ref bestSoFar,ref best)){
+					
+					// No perfect match found before - wrap around and try after:
+					SearchFocusableReverse(false,currentIndex-1,ref bestSoFar,ref best);
+					
+				}
+				
+			}else{
+				
+				// No explicit tabindex (which means we're after all tabIndex elements).
+				
+				// Find the previous focusable element.
+				SearchFocusable(false,-1,ref bestSoFar,ref best);
+				
+				if(best==null){
+					
+					// Find the last element with a tabindex:
+					htmlDocument.body.SearchChildFocusable(null,false,int.MaxValue,ref bestSoFar,ref best);
+					
+				}
+				
+			}
+			
+			return best;
+		}
+		
+		/// <summary>Used for tab focus. Gets the next available focusable element.</summary>
+		/// <returns>The next available focusable element. Null if there is none.</returns>
 		public HtmlElement GetFocusedNext(){
-			return null;
+			
+			// These track the current best found element.
+			int bestSoFar=int.MaxValue;
+			HtmlElement best=null;
+			
+			if(hasAttribute("tabindex")){
+				
+				// Get the current index:
+				int currentIndex=tabIndex;
+				
+				// Hunt after this, then before it.
+				if(!SearchFocusable(true,currentIndex,ref bestSoFar,ref best)){
+					
+					// No perfect match found after - wrap around and try before:
+					if(!SearchFocusableReverse(true,currentIndex+1,ref bestSoFar,ref best) && best==null){
+						
+						// Find the first focusable node:
+						htmlDocument.body.SearchChildFocusable(null,true,-1,ref bestSoFar,ref best);
+						
+					}
+					
+				}
+				
+			}else{
+				
+				// No explicit tabindex (which means we're after all tabIndex elements).
+				
+				// Find the next focusable element.
+				SearchFocusable(true,-1,ref bestSoFar,ref best);
+				
+			}
+			
+			return best;
 		}
 		
 		/// <summary>Finds out the distance in pixels on the x and y axis the given point is away from this elements midpoint.</summary>
@@ -400,33 +472,26 @@ namespace PowerUI{
 		/// with a tab index of 1 or more. BestSoFar is the closest tabIndex found (if any).
 		/// An actual match results in this function halting and returning true.
 		/// </summary>
-		public bool SearchTabIndexBefore(int search,ref int bestSoFar,ref HtmlElement best){
+		public bool SearchFocusableReverse(bool forward,int search,ref int bestSoFar,ref HtmlElement best){
 			
-			// Must start at the very root of the DOM.
-			// Slight hack: set best to this to make it stop when it reaches it.
-			best=this;
-			htmlDocument.html.SearchChildTabIndex(search,ref bestSoFar,ref best);
+			// Must start at the very root of the DOM and terminate at this:
+			htmlDocument.html.SearchChildFocusable(this,forward,search,ref bestSoFar,ref best);
 			
 			return (bestSoFar==search);
 			
 		}
 		
-		/// <summary>
-		/// Searches for the closest tab index either after this element.
-		/// E.g. if search is 1, it will look for the nearest element after this element
-		/// with a tab index of 1 or more. BestSoFar is the closest tabIndex found (if any).
-		/// An actual match results in this function halting and returning true.
-		/// </summary>
-		public bool SearchTabIndexAfter(int search,ref int bestSoFar,ref HtmlElement best){
+		/// <summary>Finds any focusable element before / after this one.</summary>
+		public bool SearchFocusable(bool after,int search,ref int bestSoFar,ref HtmlElement best){
 			
 			// Current parent:
-			HtmlElement parent=ParentNode as HtmlElement ;
+			HtmlElement parent=parentNode as HtmlElement;
 			HtmlElement currentRelative=this;
-		
+			
 			// Go down the parent chain:
 			while(parent!=null){
 				
-				if(parent.SearchTabIndexRelativeTo(currentRelative,false,search,ref bestSoFar,ref best)){
+				if(parent.SearchRelativeFocusable(currentRelative,after,search,ref bestSoFar,ref best)){
 					
 					// Found an ideal match - stop.
 					return true;
@@ -436,7 +501,7 @@ namespace PowerUI{
 				currentRelative=parent;
 				
 				// Next parent:
-				parent=parent.parentNode_ as HtmlElement ;
+				parent=parent.parentNode_ as HtmlElement;
 			}
 			
 			return false;
@@ -447,26 +512,36 @@ namespace PowerUI{
 		/// Searches for the closest tab index either before or after the given relative element.
 		/// Note that relative is expected to be a child of this element.
 		/// </summary>
-		/// <param name='active'>True if you want to search before; false for after.</param>
-		private bool SearchTabIndexRelativeTo(HtmlElement relativeTo,bool active,int search,ref int bestSoFar,ref HtmlElement best){
+		/// <param name='forward'>True if you want to search forwards; false for backwards.</param>
+		private bool SearchRelativeFocusable(HtmlElement relativeTo,bool forward,int search,ref int bestSoFar,ref HtmlElement best){
 			
 			if(childNodes_==null){
 				return false;
 			}
 			
-			foreach(Node child in childNodes_){
+			int start=(relativeTo==null) ? -1 : relativeTo.childIndex;
+			
+			if(forward){
 				
-				if(child==relativeTo){
+				for(int i=start+1;i<childNodes_.length;i++){
 					
-					// Found it! Flip the active state:
-					active=!active;
-					
-				}else if(active){
-					
-					HtmlElement el=child as HtmlElement ;
+					HtmlElement el=childNodes_[i] as HtmlElement;
 					
 					// Search in this child node:
-					if(el!=null && el.SearchChildTabIndex(search,ref bestSoFar,ref best)){
+					if(el!=null && el.SearchChildFocusable(null,true,search,ref bestSoFar,ref best)){
+						return true;
+					}
+					
+				}
+				
+			}else{
+				
+				for(int i=start-1;i>=0;i--){
+					
+					HtmlElement el=childNodes_[i] as HtmlElement;
+					
+					// Search in this child node:
+					if(el!=null && el.SearchChildFocusable(null,false,search,ref bestSoFar,ref best)){
 						return true;
 					}
 					
@@ -475,32 +550,46 @@ namespace PowerUI{
 			}
 			
 			return false;
-			
 		}
 		
-		/// <summary>Searches for the closest tab index to the given one. Returns true if it gets a match.</summary>
-		public bool SearchChildTabIndex(int search,ref int bestSoFar,ref HtmlElement best){
+		/// <summary>Searches for the closest focusable element with/ without a tabindex. Returns true if it gets a match.</summary>
+		public bool SearchChildFocusable(HtmlElement stopAt,bool forward,int search,ref int bestSoFar,ref HtmlElement best){
 			
-			if(this==best){
+			if(this==best || this==stopAt){
 				// Terminate
 				return true;
 			}
 			
+			// It must not declare a tabindex:
 			if(focusable){
 				
-				// This element is focusable! Is its tabIndex suitable?
-				int index=tabIndex;
-				
-				if(index<bestSoFar && index>=search){
+				if(search==-1 && !hasAttribute("tabindex")){
 					
-					// This is the best one so far.
+					// This is the best one!
 					best=this;
-					bestSoFar=index;
+					return true;
 					
-					if(index==search){
+				}else if(search!=-1 && hasAttribute("tabindex")){
+					
+					// Is its tabIndex suitable?
+					int index=tabIndex;
+					
+					if(index>=0 && (
+						(forward && index<bestSoFar && index>=search) || 
+						(!forward && index>bestSoFar && index<=search)
+									)
+					){
 						
-						// Direct match - stop!
-						return true;
+						// This is the best one so far.
+						best=this;
+						bestSoFar=index;
+						
+						if(index==search){
+							
+							// Direct match - stop!
+							return true;
+							
+						}
 						
 					}
 					
@@ -513,13 +602,30 @@ namespace PowerUI{
 				return false;
 			}
 			
-			foreach(Node child in childNodes_){
+			if(forward){
 				
-				HtmlElement el=child as HtmlElement ;
+				for(int i=0;i<childNodes_.length;i++){
+					
+					HtmlElement el=childNodes_[i] as HtmlElement;
+					
+					// Search in it:
+					if(el!=null && el.SearchChildFocusable(stopAt,true,search,ref bestSoFar,ref best)){
+						return true;
+					}
+					
+				}
 				
-				// Search in it:
-				if(el!=null && el.SearchChildTabIndex(search,ref bestSoFar,ref best)){
-					return true;
+			}else{
+				
+				for(int i=childNodes_.length-1;i>=0;i--){
+					
+					HtmlElement el=childNodes_[i] as HtmlElement;
+					
+					// Search in it:
+					if(el!=null && el.SearchChildFocusable(stopAt,false,search,ref bestSoFar,ref best)){
+						return true;
+					}
+					
 				}
 				
 			}

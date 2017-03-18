@@ -27,6 +27,8 @@ namespace PowerUI{
 			UI.InternalUpdate();
 		}
 		
+		#if NoPowerUIInput
+		#else
 		public void OnGUI(){
 			
 			Event current=Event.current;
@@ -69,6 +71,7 @@ namespace PowerUI{
 			}
 			
 		}
+		#endif
 		
 		public void OnDisable(){
 			// Called when a scene changes.

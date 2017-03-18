@@ -47,7 +47,7 @@ namespace PowerUI{
 				#if !UNITY_4_6 && !UNITY_4_7 && PRE_UNITY5
 					new SettingTickbox("Isolate UI classes","IsolatePowerUI","This isolates the 'UI' class inside the PowerUI namespace just incase you've got a class called UI of your own."),
 				#endif
-				//new SettingTickbox("Input Tabbing","PowerUITabbing","Pressing tab will cause PowerUI to hop from an input box to another (tabindex)."),
+				new SettingTickbox("Disable Input","NoPowerUIInput","Disable PowerUI's input handling. You'll need to use e.g. Input.ElementFromPoint to find an element at a particular point on the UI.")
 				//new SettingTickbox("Focus Graph","PowerUIFGraph","Pressing the arrow keys will cause PowerUI to move focus to the nearest input.")
 			};
 			

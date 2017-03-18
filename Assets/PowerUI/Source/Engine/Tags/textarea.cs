@@ -399,7 +399,7 @@ namespace PowerUI{
 				
 				// It's a command character:
 				
-				KeyCode key=((KeyCode)pressEvent.keyCode);
+				KeyCode key=pressEvent.unityKeyCode;
 				
 				if(key==KeyCode.LeftArrow){
 					MoveCaret(CaretIndex-1,true);
@@ -467,7 +467,7 @@ namespace PowerUI{
 					}
 					SetValue(value);
 					MoveCaret(CaretIndex+1);
-					
+				
 				}
 				
 			}

@@ -112,9 +112,52 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Moves the focus to the next element as defined by tabindex. If there is no currently focused element,
-		/// a tabindex of 0 will be searched for. If that's not found, then the first focusable element in the DOM will be used.</summary>
-		public void TabNext(){
+		/// <summary>Moves the focus to the previous element as defined by tabindex.
+		/// All elements with an explicit tabindex are defined as being before all
+		/// elements which don't have an explicit tabindex.</summary>
+		/// <returns>True if anything happened.</returns>
+		public bool TabPrevious(){
+			
+			// These track the current best found element.
+			int bestSoFar=int.MaxValue;
+			HtmlElement best=null;
+			
+			// Get the current focused element:
+			HtmlElement focused=htmlActiveElement;
+			
+			if(focused==null){
+				
+				// Haven't got one - hunt for a node with *no* tabindex first:
+				body.SearchChildFocusable(null,false,-1,ref bestSoFar,ref best);
+				
+				if(best==null){
+					
+					// Find the last node with a tabIndex:
+					body.SearchChildFocusable(null,false,int.MaxValue,ref bestSoFar,ref best);
+					
+				}
+				
+			}else{
+				
+				best=focused.GetFocusedPrevious();
+				
+			}
+			
+			if(best!=null){
+				// Focus it now:
+				best.focus();
+				
+				return true;
+			}
+			
+			return false;
+		}
+		
+		/// <summary>Moves the focus to the next element as defined by tabindex. 
+		/// All elements with an explicit tabindex are defined as being before all
+		/// elements which don't have an explicit tabindex.</summary>
+		/// <returns>True if anything happened.</returns>
+		public bool TabNext(){
 			
 			// - From the current focused element, we check all elements after it to see which
 			//   has the 'closest' tabIndex to currentIndex.
@@ -130,29 +173,30 @@ namespace PowerUI{
 			
 			if(focused==null){
 				
-				// Haven't got one - hunt for anything:
-				UI.document.body.SearchChildTabIndex(0,ref bestSoFar,ref best);
+				// Haven't got one - hunt for a node with a tabindex first:
+				body.SearchChildFocusable(null,true,0,ref bestSoFar,ref best);
+				
+				if(best==null){
+					
+					// Find the first focusable node:
+					body.SearchChildFocusable(null,true,-1,ref bestSoFar,ref best);
+					
+				}
 				
 			}else{
 				
-				// Get the current index:
-				int currentIndex=(focused==null)?0:focused.tabIndex;
-				
-				// Hunt after focused, then before it.
-				if(!focused.SearchTabIndexAfter(currentIndex,ref bestSoFar,ref best)){
-					
-					// No perfect match found after - wrap around and try before:
-					focused.SearchTabIndexBefore(currentIndex,ref bestSoFar,ref best);
-				
-				}
+				best=focused.GetFocusedNext();
 				
 			}
 			
 			if(best!=null){
 				// Focus it now:
 				best.focus();
+				
+				return true;
 			}
 			
+			return false;
 		}
 		
 	}
