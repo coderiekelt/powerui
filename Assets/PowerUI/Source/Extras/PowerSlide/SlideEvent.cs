@@ -114,16 +114,16 @@ namespace PowerSlide{
 		
 		public SlideEvent(string type,object init):base(type,init){}
 		
-		/// <summary>Opens a window with the given template and URL. Globals originate from this event.
-		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
-		public Windows.Window open(string template,string url){
-			return htmlDocument.sparkWindows.open(template,url,globals);
+		/// <summary>Opens a widget with the given template and URL. Globals originate from this event.
+		/// Convenience method for thisEvent.document.widgets.open(template,url,thisEvent.globals);</summary>
+		public Widgets.Widget open(string template,string url){
+			return htmlDocument.widgets.open(template,url,globals);
 		}
 		
-		/// <summary>Opens a window with the given template and URL and returns a promise. Globals originate from this event.
-		/// Convenience method for thisEvent.document.sparkWindows.open(template,url,thisEvent.globals);</summary>
+		/// <summary>Opens a widget with the given template and URL and returns a promise. Globals originate from this event.
+		/// Convenience method for thisEvent.document.widgets.open(template,url,thisEvent.globals);</summary>
 		public PowerUI.Promise load(string template,string url){
-			return htmlDocument.sparkWindows.load(template,url,globals);
+			return htmlDocument.widgets.load(template,url,globals);
 		}
 		
 	}

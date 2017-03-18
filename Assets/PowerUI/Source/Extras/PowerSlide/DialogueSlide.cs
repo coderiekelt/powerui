@@ -255,10 +255,10 @@ namespace PowerSlide{
 			// Get the template to use:
 			string templateToUse=(template==null)? tl.template:template;
 			
-			// Open the window (which closes the prev one for us):
-			Windows.Window window=tl.OpenWindow(templateToUse);
+			// Open the widget (which closes the prev one for us):
+			Widgets.Widget widget=tl.OpenWidget(templateToUse);
 			
-			if(window!=null){
+			if(widget!=null){
 				// Trigger a dialogue start event:
 				SlideEvent s=new SlideEvent("dialoguestart",null);
 				s.slide=this;
@@ -285,7 +285,7 @@ namespace PowerSlide{
 		internal override void End(){
 			base.End();
 			
-			// Trigger dialogue end event if we have a window:
+			// Trigger dialogue end event if we have a widget:
 			Timeline tl=track.timeline;
 			
 			// Trigger a dialogue end event:
@@ -293,11 +293,11 @@ namespace PowerSlide{
 			s.slide=this;
 			tl.dispatchEvent(s);
 			
-			if(tl.currentWindow==null){
+			if(tl.currentWidget==null){
 				return;
 			}
 			
-			// Close the window if this is the last slide non-ignored slide.
+			// Close the widget if this is the last slide non-ignored slide.
 			bool last=true;
 			
 			for(int i=index+1;i<track.slides.Length;i++){
@@ -310,9 +310,9 @@ namespace PowerSlide{
 			}
 			
 			if(last){
-				// Close the window now:
-				tl.currentWindow.close();
-				tl.currentWindow=null;
+				// Close the widget now:
+				tl.currentWidget.close();
+				tl.currentWidget=null;
 			}
 			
 		}

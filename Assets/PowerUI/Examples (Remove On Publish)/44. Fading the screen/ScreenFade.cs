@@ -1,10 +1,10 @@
 // MIT license (Free to do whatever you want with)
 // Originates from the PowerUI Wiki: http://powerui.kulestar.com/wiki/index.php?title=Screen_Fading_(Fade_to_black/_Whiteouts)
-// It's formatted as a window so you can stack other things on top of it.
+// It's formatted as a widget so you can stack other things on top of it.
 
 using System;
 using PowerUI;
-using Windows;
+using Widgets;
 using System.Collections;
 using System.Collections.Generic;
 	
@@ -13,29 +13,29 @@ using System.Collections.Generic;
 /// </summary>
 
 [Dom.TagName("screenfade")]
-public class ScreenFade : Windows.Window{
+public class ScreenFade : Widgets.Widget{
 	
 	/// <summary>A helper function for instantly removing a screen fade.</summary>
 	public static void Close(PowerUI.HtmlDocument doc){
-		doc.sparkWindows.close("screenfade",null);
+		doc.widgets.close("screenfade",null);
 	}
 	
 	/// <summary>A helper function for fading the screen in the given document.</summary>
 	public static Promise Fade(PowerUI.HtmlDocument doc,UnityEngine.Color to,float timeInSeconds){
 		
-		// Open up the window:
-		return doc.sparkWindows.load("screenfade",null,"to",to,"time",timeInSeconds).then(new Promise());
+		// Open up the widget:
+		return doc.widgets.load("screenfade",null,"to",to,"time",timeInSeconds).then(new Promise());
 		
 	}
 	
 	public override StackMode StackMode{
 		get{
-			// Hijack an existing window so we can fade from the 'current' colour onwards
+			// Hijack an existing widget so we can fade from the 'current' colour onwards
 			return StackMode.Hijack;
 		}
 	}
 	
-	/// <summary>The depth that this type of window lives at.</summary>
+	/// <summary>The depth that this type of widget lives at.</summary>
 	public override int Depth{
 		get{
 			// Very high (always right at the front)
@@ -46,7 +46,7 @@ public class ScreenFade : Windows.Window{
 	/// <summary>Called when asked to fade.</summary>
 	public override void Load(string url,Dictionary<string,object> globals){
 		
-		// Element is not null when we 'hijacked' an existing window (and we're fading from its current color instead).
+		// Element is not null when we 'hijacked' an existing widget (and we're fading from its current color instead).
 		if(element==null){
 			
 			// Write the HTML now:
@@ -66,7 +66,7 @@ public class ScreenFade : Windows.Window{
 		// Run the animation:
 		element.animate("background-color:"+colour.ToCss()+";",time).OnDone(delegate(UIAnimation animation){
 			
-			// If the opacity is 0, close the window:
+			// If the opacity is 0, close the widget:
 			if(colour.a<=0.001f){
 				close();
 			}

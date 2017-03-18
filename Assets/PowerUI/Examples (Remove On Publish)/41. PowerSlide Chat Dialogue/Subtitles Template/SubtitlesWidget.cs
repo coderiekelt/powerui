@@ -5,14 +5,14 @@ using PowerUI;
 using PowerSlide;
 
 
-namespace Windows{
+namespace Widgets{
 	
 	/// <summary>
 	/// Displays dialogue in the middle at the bottom.
 	/// </summary>
 	
 	[Dom.TagName("subtitles")]
-	public class SubtitlesWindow : DialogueWindow{
+	public class SubtitlesWidget : DialogueWidget{
 		
 		/// <summary>This one can only display one slide at a time. This is the slide itself.
 		/// Note that you should use allActive instead of this.</summary>

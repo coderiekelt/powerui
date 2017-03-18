@@ -41,7 +41,7 @@ namespace ContextMenus{
 			}
 			
 			// Resolve the option from just an index and a document ref:
-			Option option=ResolveOption(index,src.sparkWindow);
+			Option option=ResolveOption(index,src.widget);
 			
 			if(option!=null){
 				
@@ -55,12 +55,12 @@ namespace ContextMenus{
 			
 		}
 		
-		/// <summary>Resolves an option from a context menu window's document.</summary>
-		public static Option ResolveOption(int index,Windows.Window window){
+		/// <summary>Resolves an option from a context menu widget's document.</summary>
+		public static Option ResolveOption(int index,Widgets.Widget widget){
 			
-			// These windows are always 'ContextMenuWindow' objects.
-			// They also only ever display one list - submenus are separate windows.
-			OptionList list=(window as Windows.ContextMenuWindow).List;
+			// These widgets are always 'ContextMenuWidget' objects.
+			// They also only ever display one list - submenus are separate widgets.
+			OptionList list=(widget as ContextMenuWidget).List;
 			
 			if(list==null){
 				return null;
@@ -77,8 +77,8 @@ namespace ContextMenus{
 		public OptionList parent;
 		/// <summary>The source trigger.</summary>
 		public IEventTarget trigger;
-		/// <summary>A visible window containing the list.</summary>
-		public Windows.Window window;
+		/// <summary>A visible widget containing the list.</summary>
+		public Widgets.Widget widget;
 		/// <summary>The element that this is a list for. Related to trigger.</summary>
 		public Element triggerElement;
 		/// <summary>The GO that this is the list for. Related to trigger.</summary>
@@ -93,10 +93,10 @@ namespace ContextMenus{
 			}
 		}
 		
-		/// <summary>True if this list is open on the UI. Also see window.</summary>
+		/// <summary>True if this list is open on the UI. Also see widget.</summary>
 		public bool isOpen{
 			get{
-				return window!=null;
+				return widget!=null;
 			}
 		}
 		
@@ -136,12 +136,12 @@ namespace ContextMenus{
 				options[i].buttonElement=null;
 			}
 			
-			// Got a window?
-			if(window!=null){
+			// Got a widget?
+			if(widget!=null){
 				
 				// Yep - close it!
-				window.close();
-				window=null;
+				widget.close();
+				widget=null;
 				
 			}
 			
@@ -159,11 +159,11 @@ namespace ContextMenus{
 			// If the parent menu is open then we're actually opening up a submenu.
 			if(parent.isOpen){
 				
-				// Opening a sub-menu. Get the parent window:
-				Windows.ContextMenuWindow cmw=(parent.window as Windows.ContextMenuWindow);
+				// Opening a sub-menu. Get the parent widget:
+				ContextMenuWidget cmw=(parent.widget as ContextMenuWidget);
 				
 				// Open it (relative to the parent - if the parent closes, it does too):
-				window=parent.window.open(cmw.SubMenuType,null,buildGlobals(null));
+				widget=parent.widget.open(cmw.SubMenuType,null,buildGlobals(null));
 				
 			}else{
 				
@@ -206,21 +206,21 @@ namespace ContextMenus{
 			// Even if it collected nothing, attempt to display it.
 			// The event contains the position for us.
 			
-			// Get the window manager:
-			Windows.Manager windowManager=(ce.contextDocument as HtmlDocument).sparkWindows;
+			// Get the widget manager:
+			Widgets.Manager widgets=(ce.contextDocument as HtmlDocument).widgets;
 			
-			// Open a window (closing an existing one):
-			window=windowManager.get(ce.template,null);
+			// Open a widget (closing an existing one):
+			widget=widgets.get(ce.template,null);
 			
-			if(window!=null){
-				window.close();
+			if(widget!=null){
+				widget.close();
 			}
 			
-			window=windowManager.open(ce.template,null,buildGlobals(ce));
+			widget=widgets.open(ce.template,null,buildGlobals(ce));
 			
 		}
 		
-		/// <summary>Creates the set of globals to pass through to a standard window.
+		/// <summary>Creates the set of globals to pass through to a standard widget.
 		/// Note that the only required value is 'options' (which is set to this list).
 		/// Others are 'x' and 'y' - pixel values which originate from the ContextEvent's clientX/Y.</summary>
 		public Dictionary<string,object> buildGlobals(ContextEvent ce){

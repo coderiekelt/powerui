@@ -52,14 +52,14 @@ namespace PowerSlide{
 			
 		}
 		
-		/// <summary>Gets the current instance for the given window (null if none found).</summary>
-		public static Timeline Get(Windows.Window window){
+		/// <summary>Gets the current instance for the given widget (null if none found).</summary>
+		public static Timeline Get(Widgets.Widget widget){
 			
 			Timeline current=First;
 			
 			while(current!=null){
 				
-				if(current.currentWindow==window){
+				if(current.currentWidget==widget){
 					return current;
 				}
 				
@@ -585,8 +585,8 @@ namespace PowerSlide{
 				document.dispatchEvent(e);
 			}
 			
-			if(currentWindow!=null){
-				currentWindow.dispatchEvent(e);
+			if(currentWidget!=null){
+				currentWidget.dispatchEvent(e);
 			}
 			
 		}
@@ -635,10 +635,10 @@ namespace PowerSlide{
 				current=current.NextRunning;
 			}
 			
-			// Window:
-			if(currentWindow!=null){
-				currentWindow.close();
-				currentWindow=null;
+			// Widget:
+			if(currentWidget!=null){
+				currentWidget.close();
+				currentWidget=null;
 			}
 			
 			if(fireEvent){

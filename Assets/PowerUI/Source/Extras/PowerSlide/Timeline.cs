@@ -48,9 +48,9 @@ namespace PowerSlide{
 		/// <summary>A list of event listeners that *must* be destroyed 
 		/// when either this timeline is killed or is un-paused.</summary>
 		internal List<CueElementData> CueElements;
-		/// <summary>If this timeline is using a window, the window itself.
+		/// <summary>If this timeline is using a widget, the widget itself.
 		/// Used by dialogue.</summary>
-		public Windows.Window currentWindow;
+		public Widgets.Widget currentWidget;
 		/// <summary>Host HTML document.</summary>
 		public HtmlDocument document;
 		
@@ -105,33 +105,29 @@ namespace PowerSlide{
 			
 		}
 		
-		/// <summary>Opens a window, passing this timeline as a global.</summary>
-		internal Windows.Window OpenWindow(string template){
+		/// <summary>Opens a widget, passing this timeline as a global.</summary>
+		internal Widgets.Widget OpenWidget(string template){
 			
 			if(document==null || template==null){
-				Dom.Log.Add("PowerSlide requested to open a window without a document/ template. Request was ignored.");
+				Dom.Log.Add("PowerSlide requested to open a widget without a document/ template. Request was ignored.");
 				return null;
 			}
 			
-			if(currentWindow!=null){
+			if(currentWidget!=null){
 				
-				if(currentWindow.Type==template){
+				if(currentWidget.Type==template){
 					// Unchanged template.
-					return currentWindow;
+					return currentWidget;
 				}
 				
-				currentWindow.close();
-				currentWindow=null;
+				currentWidget.close();
+				currentWidget=null;
 			}
 			
-			// Window globals:
-			Dictionary<string,object> globals=new Dictionary<string,object>();
-			globals["timeline"]=this;
-			
 			// Open it now:
-			currentWindow=document.sparkWindows.open(template,null,globals);
+			currentWidget=document.widgets.open(template,null,"timeline",this);
 			
-			return currentWindow;
+			return currentWidget;
 		}
 		
 		

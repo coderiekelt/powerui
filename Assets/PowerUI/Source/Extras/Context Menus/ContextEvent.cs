@@ -20,14 +20,14 @@ namespace ContextMenus{
 	/// <summary>
 	/// Represents a context event.
 	/// Extend this (with a partial class) if you want to add custom things 
-	/// to pass through to the window which will actually handle the display.
+	/// to pass through to the widget which will actually handle the display.
 	/// </summary>
 	
 	public partial class ContextEvent : UIEvent{
 		
-		/// <summary>The document that will host the context window.</summary>
+		/// <summary>The document that will host the context widget.</summary>
 		private Document contextDocument_;
-		/// <summary>The document that will host the context window. Defaults to the main UI.
+		/// <summary>The document that will host the context widget. Defaults to the main UI.
 		/// You can e.g. replace this with a WorldUI if you want.</summary>
 		public Document contextDocument{
 			get{
@@ -43,7 +43,7 @@ namespace ContextMenus{
 		}
 		/// <summary>The list which represents the group of options.</summary>
 		public OptionList list;
-		/// <summary>The name of the window template which will display the 
+		/// <summary>The name of the widget template which will display the 
 		/// context options. Set this during the oncontextmenu event.</summary>
 		public string template="menulist";
 		

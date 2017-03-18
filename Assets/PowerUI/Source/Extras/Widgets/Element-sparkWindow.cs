@@ -10,26 +10,27 @@
 //--------------------------------------
 
 using System;
-using Windows;
+using Widgets;
 
 
 namespace PowerUI{
 	
-	/// <summary>
-	/// A specialised window type for displaying OptionLists.
-	/// Context menus derive from this.
-	/// </summary>
-	
 	public partial class HtmlElement{
 		
-		/// <summary>Gets the spark window that holds this element.</summary>
-		public Windows.Window sparkWindow{
+		/// <summary>Gets the spark widget that holds this element.</summary>
+		public Widgets.Widget sparkWindow{
 			get{
+				return widget;
+			}
+		}
+		
+		/// <summary>Gets the widget that holds this element.</summary>
+		public Widgets.Widget widget{
+			get{
+				// Go up the dom looking for the first element with a '-spark-widget-id' attribute:
+				string widgetID=this["-spark-widget-id"];
 				
-				// Go up the dom looking for the first element with a '-spark-window-id' attribute:
-				string windowID=this["-spark-window-id"];
-				
-				if(windowID==null){
+				if(widgetID==null){
 					
 					Dom.Node parent=parentNode;
 					
@@ -48,16 +49,16 @@ namespace PowerUI{
 						return null;
 					}
 					
-					return parentHtml.sparkWindow;
+					return parentHtml.widget;
 					
 				}
 				
-				// Got a window!
+				// Got a widget!
 				int id;
-				if(int.TryParse(windowID,out id)){
+				if(int.TryParse(widgetID,out id)){
 					
 					// Get it by ID:
-					return htmlDocument.sparkWindows[id];
+					return htmlDocument.widgets[id];
 					
 				}
 				
@@ -73,10 +74,10 @@ namespace Dom{
 	
 	public partial class Event{
 		
-		/// <summary>The window that the *currentTarget* of the event is in.</summary>
-		public Windows.Window sparkWindow{
+		/// <summary>The widget that the *currentTarget* of the event is in.</summary>
+		public Widgets.Widget targetWidget{
 			get{
-				return (currentTarget as PowerUI.HtmlElement).sparkWindow;
+				return (currentTarget as PowerUI.HtmlElement).widget;
 			}
 		}
 		

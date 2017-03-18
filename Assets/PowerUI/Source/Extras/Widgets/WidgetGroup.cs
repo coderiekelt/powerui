@@ -18,38 +18,38 @@ using Nitro;
 using Dom;
 
 
-namespace Windows{
+namespace Widgets{
 	
-	/// <summary>A delegate used just before a window loads.</summary.
-	public delegate void WindowDelegate(Window w);
+	/// <summary>A delegate used just before a widget loads.</summary.
+	public delegate void WidgetDelegate(Widget w);
 	
 	/// <summary>
-	/// A group of windows.
+	/// A group of widgets.
 	/// </summary>
-	public class WindowGroup:EventTarget{
+	public class WidgetGroup:EventTarget{
 		
-		/// <summary>The window manager.</summary>
+		/// <summary>The widget manager.</summary>
 		public Manager Manager;
 		/// <summary>The parent group, if any.</summary>
-		public WindowGroup Parent;
-		/// <summary>An element to parent child windows to.</summary>
-		private HtmlElement WindowHostElement_;
-		/// <summary>All active windows, sorted by depth.</summary>
-		public List<Window> Windows=new List<Window>();
+		public WidgetGroup Parent;
+		/// <summary>An element to parent child widgets to.</summary>
+		private HtmlElement WidgetHostElement_;
+		/// <summary>All active widgets, sorted by depth.</summary>
+		public List<Widget> Widgets=new List<Widget>();
 		
 		
-		/// <summary>Creates a window group.</summary>
-		public WindowGroup(Manager manager){
+		/// <summary>Creates a widget group.</summary>
+		public WidgetGroup(Manager manager){
 			Manager=manager;
 		}
 		
-		public WindowGroup(){}
+		public WidgetGroup(){}
 		
-		/// <summary>The doc that hosts child windows.</summary>
-		public HtmlDocument WindowHostDocument{
+		/// <summary>The doc that hosts child widgets.</summary>
+		public HtmlDocument WidgetHostDocument{
 			get{
 				
-				Window w=this as Window;
+				Widget w=this as Widget;
 				
 				if(w==null){
 					
@@ -58,11 +58,11 @@ namespace Windows{
 					
 				}
 				
-				// Use the window's content doc:
+				// Use the widget's content doc:
 				if(w.contentDocument==null){
 					
 					// Go up a level:
-					return Parent.WindowHostDocument;
+					return Parent.WidgetHostDocument;
 					
 				}
 				
@@ -71,38 +71,38 @@ namespace Windows{
 			}
 		}
 		
-		/// <summary>An element to parent child windows to.</summary>
-		public HtmlElement WindowHostElement{
+		/// <summary>An element to parent child widgets to.</summary>
+		public HtmlElement WidgetHostElement{
 			get{
 				
-				if(WindowHostElement_==null){
+				if(WidgetHostElement_==null){
 					
 					// Get the host doc:
-					HtmlDocument hostDoc=WindowHostDocument;
+					HtmlDocument hostDoc=WidgetHostDocument;
 					
 					// Create a 100% * 100% fixed div inside it:
 					HtmlElement e=hostDoc.createElement("div") as HtmlElement;
-					e.className="spark-window-host";
+					e.className="spark-widget-host";
 					e.style.width="100%";
 					e.style.height="100%";
 					e.style.position="fixed";
 					hostDoc.html.appendChild(e);
-					WindowHostElement_=e;
+					WidgetHostElement_=e;
 					
 				}
 				
-				return WindowHostElement_;
+				return WidgetHostElement_;
 			}
 		}
 		
-		/// <summary>Gets a window of the given type and pointing at the given URL.</summary>
+		/// <summary>Gets a widget of the given type and pointing at the given URL.</summary>
 		/// <returns>Null if not found.</returns>
-		public Window get(string type,string url){
+		public Widget get(string type,string url){
 			
 			// For each one..
-			for(int i=Windows.Count-1;i>=0;i--){
+			for(int i=Widgets.Count-1;i>=0;i--){
 				
-				Window w=Windows[i];
+				Widget w=Widgets[i];
 				
 				// Match?
 				if(w.Type==type && (url==null || w.Location==url)){
@@ -115,11 +115,11 @@ namespace Windows{
 			
 		}
 		
-		/// <summary>Closes a window. Just a convenience version of window.close();</summary>
+		/// <summary>Closes a widget. Just a convenience version of widget.close();</summary>
 		public void close(string type,string url){
 			
 			// Try getting it:
-			Window w=get(type,url);
+			Widget w=get(type,url);
 			
 			if(w!=null){
 				w.close();
@@ -127,17 +127,17 @@ namespace Windows{
 			
 		}
 		
-		/// <summary>Closes an open window or opens it if it wasn't already 
+		/// <summary>Closes an open widget or opens it if it wasn't already 
 		/// optionally with globals. Of the form 'key',value,'key2',value..</summary>
-		public Window cycle(string type,string url,params object[] globalData){
+		public Widget cycle(string type,string url,params object[] globalData){
 			return cycle(type,url,Manager.buildGlobals(globalData));
 		}
 		
-		/// <summary>Closes an open window or opens it if it wasn't already.</summary>
-		public Window cycle(string type,string url,Dictionary<string,object> globals){
+		/// <summary>Closes an open widget or opens it if it wasn't already.</summary>
+		public Widget cycle(string type,string url,Dictionary<string,object> globals){
 			
 			// Try getting it:
-			Window w=get(type,url);
+			Widget w=get(type,url);
 			
 			if(w==null){
 				
@@ -149,18 +149,18 @@ namespace Windows{
 				
 				// It's actually hidden - unhide it (and hide the visible one).
 				
-				// Remove it from the linked list of hidden windows:
-				if(w.HidWindow!=null){
-					w.HidWindow.HidBy=w.HidBy;
+				// Remove it from the linked list of hidden widgets:
+				if(w.HidWidget!=null){
+					w.HidWidget.HidBy=w.HidBy;
 				}
 				
-				w.HidBy.HidWindow=w.HidWindow;
+				w.HidBy.HidWidget=w.HidWidget;
 				
 				// Make it visible:
 				w.Visibility(true,null);
 				
 				// Next, hide the visible one:
-				Window visible=w.GetVisibleWindow();
+				Widget visible=w.GetVisibleWidget();
 				visible.Visibility(false,w);
 				
 				return w;
@@ -174,18 +174,18 @@ namespace Windows{
 			
 		}
 		
-		/// <summary>Loads a window of the given type.</summary>
+		/// <summary>Loads a widget of the given type.</summary>
 		public Promise load(string typeName){
 			return load(typeName,null,(Dictionary<string,object>)null);
 		}
 		
-		/// <summary>Opens a window optionally with globals. Of the form 'key',value,'key2',value..
-		/// returning a promise which runs when the windows 'load' event occurs.</summary>
+		/// <summary>Opens a widget optionally with globals. Of the form 'key',value,'key2',value..
+		/// returning a promise which runs when the widgets 'load' event occurs.</summary>
 		public Promise load(string typeName,string url,params object[] globalData){
 			return load(typeName,url,Manager.buildGlobals(globalData));
 		}
 		
-		/// <summary>Opens a window, returning a promise which runs when the windows 'load' event occurs.</summary>
+		/// <summary>Opens a widget, returning a promise which runs when the widgets 'load' event occurs.</summary>
 		public Promise load(string typeName,string url,Dictionary<string,object> globals){
 			
 			// Add an event listener just before Load is invoked:
@@ -194,13 +194,13 @@ namespace Windows{
 			open(
 				typeName,
 				url,
-				delegate(Window w){
+				delegate(Widget w){
 					
 					// Add an event cb:
 					if(w==null){
 						
 						// Rejected:
-						p.reject("Window '"+typeName+"' is missing.");
+						p.reject("Widget '"+typeName+"' is missing.");
 						
 					}else{
 						
@@ -219,25 +219,25 @@ namespace Windows{
 			return p;
 		}
 		
-		/// <summary>Opens a window optionally with globals. Of the form 'key',value,'key2',value..</summary>
-		public Window open(string typeName,string url,params object[] globalData){
+		/// <summary>Opens a widget optionally with globals. Of the form 'key',value,'key2',value..</summary>
+		public Widget open(string typeName,string url,params object[] globalData){
 			return open(typeName,url,null,Manager.buildGlobals(globalData));
 		}
 		
-		/// <summary>Opens a window.</summary>
-		public Window open(string typeName,string url,Dictionary<string,object> globals){
+		/// <summary>Opens a widget.</summary>
+		public Widget open(string typeName,string url,Dictionary<string,object> globals){
 			return open(typeName,url,null,globals);
 		}
 		
-		/// <summary>Opens a window.</summary>
-		public Window open(string typeName,string url,WindowDelegate preload,Dictionary<string,object> globals){
+		/// <summary>Opens a widget.</summary>
+		public Widget open(string typeName,string url,WidgetDelegate preload,Dictionary<string,object> globals){
 			
-			if(Manager.windowTypes==null){
+			if(Manager.widgetTypes==null){
 				
-				// Load the windows now!
-				Modular.AssemblyScanner.FindAllSubTypesNow(typeof(Windows.Window),
+				// Load the widgets now!
+				Modular.AssemblyScanner.FindAllSubTypesNow(typeof(Widgets.Widget),
 					delegate(Type t){
-						// Add it as an available window:
+						// Add it as an available widget:
 						Manager.Add(t);
 					}
 				);
@@ -245,9 +245,9 @@ namespace Windows{
 			}
 			
 			Type type;
-			if(!Manager.windowTypes.TryGetValue(typeName,out type)){
+			if(!Manager.widgetTypes.TryGetValue(typeName,out type)){
 				
-				UnityEngine.Debug.Log("Warning: Requested to open a window called '"+typeName+"' but it doesn't exist.");
+				UnityEngine.Debug.Log("Warning: Requested to open a widget called '"+typeName+"' but it doesn't exist.");
 				
 				if(preload!=null){
 					// Invoke the load method:
@@ -258,7 +258,7 @@ namespace Windows{
 			}
 			
 			// Get existing:
-			Window same=get(typeName,null);
+			Widget same=get(typeName,null);
 			
 			// Get stacking behaviour:
 			StackMode stacking=StackMode.Close;
@@ -286,7 +286,7 @@ namespace Windows{
 			
 			if(stacking==StackMode.Hijack){
 				
-				// Hijack an existing window! Just load straight into it but clear its event handlers:
+				// Hijack an existing widget! Just load straight into it but clear its event handlers:
 				same.RunLoad=true;
 				same.ClearEvents();
 				
@@ -301,7 +301,7 @@ namespace Windows{
 			}
 			
 			// instance it now:
-			Window w=Activator.CreateInstance(type) as Window;
+			Widget w=Activator.CreateInstance(type) as Widget;
 			
 			if(w==null){
 				return null;
@@ -309,25 +309,25 @@ namespace Windows{
 			
 			if(stacking==StackMode.Hide){
 				
-				// Hides any window of the same type.
+				// Hides any widget of the same type.
 				
 				if(same!=null){
 					
 					// Make sure it's actually the visible one:
-					same=same.GetVisibleWindow();
+					same=same.GetVisibleWidget();
 					
 					same.Visibility(false,w);
-					w.HidWindow=same;
+					w.HidWidget=same;
 				}
 				
 			}else if(stacking==StackMode.Close && same!=null){
 				
-				// Close all windows of the same type.
+				// Close all widgets of the same type.
 				
 				// For each one..
-				for(int i=Windows.Count-1;i>=0;i--){
+				for(int i=Widgets.Count-1;i>=0;i--){
 					
-					same=Windows[i];
+					same=Widgets[i];
 					
 					// Match?
 					if(same.Type==typeName){
@@ -346,56 +346,56 @@ namespace Windows{
 			}
 			
 			// Add now:
-			SetupWindow(w,url,globals);
+			SetupWidget(w,url,globals);
 			
 			return w;
 			
 		}
 		
-		/// <summary>Removes the given window.</summary>
-		internal void Remove(Window w){
+		/// <summary>Removes the given widget.</summary>
+		internal void Remove(Widget w){
 			
-			if(Windows[w.Index]!=w){
+			if(Widgets[w.Index]!=w){
 				return;
 			}
 			
 			// Move everything else over:
-			for(int i=w.Index+1;i<Windows.Count;i++){
-				Windows[i].Index--;
+			for(int i=w.Index+1;i<Widgets.Count;i++){
+				Widgets[i].Index--;
 			}
 			
 			// Remove at its index now:
-			Windows.RemoveAt(w.Index);
+			Widgets.RemoveAt(w.Index);
 			
 		}
 		
-		/// <summary>Inserts the given window into the list of open windows and begins loading it.</summary>
-		private void SetupWindow(Window w,string url,Dictionary<string,object> globals){
+		/// <summary>Inserts the given widget into the list of open widgets and begins loading it.</summary>
+		private void SetupWidget(Widget w,string url,Dictionary<string,object> globals){
 			
 			// Get and apply depth:
-			int newWindowDepth=w.Depth;
-			w.ActiveDepth=newWindowDepth;
+			int newWidgetDepth=w.Depth;
+			w.ActiveDepth=newWidgetDepth;
 			w.Manager=Manager;
 			w.Parent=this;
 			
 			// Add to the end:
-			Windows.Add(w);
-			w.Index=Windows.Count-1;
+			Widgets.Add(w);
+			w.Index=Widgets.Count-1;
 			
 			// Shuffle it forward if it's a lower depth (but don't shuffle forward for ==):
 			
 			// For each one..
-			for(int i=Windows.Count-1;i>0;i--){
+			for(int i=Widgets.Count-1;i>0;i--){
 				
-				Window current=Windows[i-1];
+				Widget current=Widgets[i-1];
 				int depth=current.ActiveDepth;
 				
-				if(newWindowDepth<depth){
+				if(newWidgetDepth<depth){
 					
 					// Shuffle it forward:
 					current.Index=i;
-					Windows[i]=current;
-					Windows[i-1]=w;
+					Widgets[i]=current;
+					Widgets[i-1]=w;
 					w.Index=i-1;
 					
 				}else{

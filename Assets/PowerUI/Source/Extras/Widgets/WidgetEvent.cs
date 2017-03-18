@@ -15,21 +15,21 @@ using UnityEngine;
 using PowerUI;
 
 
-namespace Windows{
+namespace Widgets{
 	
 	/// <summary>
 	/// Represents a context event.
 	/// Extend this (with a partial class) if you want to add custom things 
-	/// to pass through to the window which will actually handle the display.
+	/// to pass through to the widget which will actually handle the display.
 	/// </summary>
 	
-	public partial class WindowEvent : UIEvent{
+	public partial class WidgetEvent : UIEvent{
 		
-		/// <summary>The origin window.</summary>
-		public Window window;
+		/// <summary>The origin widget.</summary>
+		public Widget widget;
 		
 		
-		public WindowEvent(string type,object init):base(type,init){
+		public WidgetEvent(string type,object init):base(type,init){
 		}
 		
 	}
@@ -44,8 +44,8 @@ namespace Dom{
 	
 	public partial class EventTarget{
 		
-		public void addEventListener(string name,Action<Windows.WindowEvent> method){
-			addEventListener(name,new EventListener<Windows.WindowEvent>(method));
+		public void addEventListener(string name,Action<Widgets.WidgetEvent> method){
+			addEventListener(name,new EventListener<Widgets.WidgetEvent>(method));
 		}
 		
 	}

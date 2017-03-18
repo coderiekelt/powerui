@@ -26,7 +26,7 @@ public class FadingScreenExample : MonoBehaviour {
 		
 		
 		
-		// - Using the fade method from script (rather than via the window protocol) -
+		// - Using the fade method from script (rather than via the widget protocol) -
 		
 		// Get the fade to red button:
 		var fade2red=document.getElementById("fade2red");

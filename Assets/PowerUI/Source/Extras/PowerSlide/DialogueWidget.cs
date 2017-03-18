@@ -16,30 +16,30 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace Windows{
+namespace Widgets{
 	
 	/// <summary>
-	/// A window which manages dialogue (speech). Used by PowerSlide.
+	/// A widget which manages dialogue (speech). Used by PowerSlide.
 	/// They typically display dialogue, but doing so isn't required.
 	/// I.e. they can manage a collection of WorldUI's instead.
 	/// </summary>
 	
-	public class DialogueWindow : Window{
+	public class DialogueWidget : Widget{
 		
 		/// <summary>The timeline in use</summary>
 		public PowerSlide.Timeline Timeline;
 		
 		
 		/// <summary>A click to continue helper. This entirely ignores the event if an option is on the UI.
-		/// Otherwise, it simply acts the same as Windows.Window.Cue</summary>
+		/// Otherwise, it simply acts the same as Widgets.Widget.Cue</summary>
 		[Values.Preserve]
 		public static void ClickToContinue(PowerUI.MouseEvent e){
 			
-			// The window:
-			Windows.Window window=e.htmlTarget.sparkWindow;
+			// The widget:
+			Widgets.Widget widget=e.htmlTarget.widget;
 			
-			// Is it a dialogue window?
-			DialogueWindow dw=window as DialogueWindow;
+			// Is it a dialogue widget?
+			DialogueWidget dw=widget as DialogueWidget;
 			
 			PowerSlide.Timeline tl;
 			
@@ -57,7 +57,7 @@ namespace Windows{
 			}else{
 				
 				// Get the timeline:
-				tl=PowerSlide.Timeline.Get(window);
+				tl=PowerSlide.Timeline.Get(widget);
 				
 			}
 			
@@ -81,11 +81,11 @@ namespace Windows{
 				return;
 			}
 			
-			// Get the window:
-			DialogueWindow dw=e.sparkWindow as DialogueWindow;
+			// Get the widget:
+			DialogueWidget dw=e.targetWidget as DialogueWidget;
 			
 			if(dw==null){
-				Dom.Log.Add("A dialogue option tried to run but it's not inside a DialogueWindow.");
+				Dom.Log.Add("A dialogue option tried to run but it's not inside a DialogueWidget.");
 				return;
 			}
 			
@@ -118,7 +118,7 @@ namespace Windows{
 			
 		}
 		
-		/// <summary>True if there is an option actively on this dialogue window.</summary>
+		/// <summary>True if there is an option actively on this dialogue widget.</summary>
 		public bool hasActiveOption{
 			get{
 				
@@ -149,10 +149,10 @@ namespace Windows{
 		}
 		
 		/// <summary>A convenience function for setting up onmousedown and unique-id attributes.
-		/// onmousedown points at Windows.DialogueWindow.RunOption.</summary>
+		/// onmousedown points at Widgets.DialogueWidget.RunOption.</summary>
 		protected string OptionMouseDown(PowerSlide.Slide option){
 			
-			return "onmousedown='Windows.DialogueWindow.RunOption' unique-id='"+option.uniqueID+"'";
+			return "onmousedown='Widgets.DialogueWidget.RunOption' unique-id='"+option.uniqueID+"'";
 			
 		}
 		
@@ -182,14 +182,14 @@ namespace Windows{
 			
 		}
 		
-		/// <summary>The depth that this type of window lives at.</summary>
+		/// <summary>The depth that this type of widget lives at.</summary>
 		public override int Depth{
 			get{
 				return 1100;
 			}
 		}
 		
-		/// <summary>Handles events on the window itself.</summary>
+		/// <summary>Handles events on the widget itself.</summary>
 		protected override void OnEvent(Dom.Event e){
 			
 			// Catch PowerSlide dialogue events and convert them to our virtual methods:
@@ -257,17 +257,17 @@ namespace Windows{
 		
 	}
 	
-	public partial class Window{
+	public partial class Widget{
 		
-		/// <summary>Cues dialogue within a window.</summary>
+		/// <summary>Cues dialogue within a widget.</summary>
 		[Values.Preserve]
 		public static void Cue(PowerUI.MouseEvent me){
 			
-			// The window:
-			Windows.Window window=me.htmlTarget.sparkWindow;
+			// The widget:
+			Widgets.Widget widget=me.htmlTarget.widget;
 			
 			// Get the timeline:
-			PowerSlide.Timeline tl=PowerSlide.Timeline.Get(window);
+			PowerSlide.Timeline tl=PowerSlide.Timeline.Get(widget);
 			
 			// Cue it:
 			if(tl!=null){

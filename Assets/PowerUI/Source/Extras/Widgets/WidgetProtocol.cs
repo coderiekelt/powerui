@@ -13,7 +13,7 @@
 using Css;
 using UnityEngine;
 using Dom;
-using Windows;
+using Widgets;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,25 +21,25 @@ using System.Collections.Generic;
 namespace PowerUI{
 	
 	/// <summary>
-	/// This window:// protocol enables a link to pop open or close a window.
+	/// This widget:// or window:// protocol enables a link to pop open or close a widget.
 	/// E.g. href="window://floating/bank" will open a 'floating' type window and load 'Resources/bank/index.html' into it.
 	/// </summary>
 	
-	public class WindowProtocol:FileProtocol{
+	public class WidgetProtocol:FileProtocol{
 		
 		public override string[] GetNames(){
-			return new string[]{"window"};
+			return new string[]{"window","widget"};
 		}
 		
 		public override void OnFollowLink(HtmlElement linkElement,Location path){
 			
-			// First get the window type by name:
+			// First get the widget type by name:
 			
 			// Get the doc:
 			HtmlDocument doc=linkElement.htmlDocument;
 			
-			// The 'domain' is the window type:
-			string windowType=path.host;
+			// The 'domain' is the widget type:
+			string widgetType=path.host;
 			
 			// The rest of the path is the URL (e.g. '/bank'):
 			string url=path.pathname;
@@ -78,8 +78,8 @@ namespace PowerUI{
 			// Add the anchor:
 			globals["-spark-anchor"]=linkElement;
 			
-			// Cycle the window (closes it if it's open):
-			doc.sparkWindows.cycle(windowType,url,globals);
+			// Cycle the widget (closes it if it's open):
+			doc.widgets.cycle(widgetType,url,globals);
 			
 		}
 		

@@ -91,8 +91,8 @@ namespace PowerUI{
 		/// Use {language} in your path to localise the file.
 		/// Kills any already running dialogue in the document.
 		/// </summary>
-		/// <param name="template">The window template to use. 
-		/// Note that the window doesn't need to be visual - it could, for example,
+		/// <param name="template">The widget template to use. 
+		/// Note that the widget doesn't need to be visual - it could, for example,
 		/// manage a bunch of WorldUI's instead.</param>
 		public void startDialogue(string startPath,string template){
 			startDialogue(startPath,template,true);
@@ -106,8 +106,8 @@ namespace PowerUI{
 		/// "cdn://...joey.json" => as is.
 		/// Use {language} in your path to localise the file.
 		/// </summary>
-		/// <param name="template">The window template to use. 
-		/// Note that the window doesn't need to be visual - it could, for example,
+		/// <param name="template">The widget template to use. 
+		/// Note that the widget doesn't need to be visual - it could, for example,
 		/// manage a bunch of WorldUI's instead.</param>
 		/// <param name="killRunning">Kills any open dialogue in the document.</param>
 		public void startDialogue(string startPath,string template,bool killRunning){
@@ -136,7 +136,7 @@ namespace PowerUI{
 				timeline.template=template;
 				timeline.document=this;
 				
-				// Start it (which may open windows):
+				// Start it (which may open widgets):
 				timeline.Start();
 				
 			});

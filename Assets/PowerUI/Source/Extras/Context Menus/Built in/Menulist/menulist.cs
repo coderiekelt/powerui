@@ -6,14 +6,14 @@ using ContextMenus;
 using System.Text;
 
 
-namespace Windows{
+namespace ContextMenus{
 	
 	/// <summary>
 	/// A no frills context menu which just lists out the options in a white box.
 	/// </summary>
 	
 	[Dom.TagName("menulist")]
-	public class MenuList : ContextMenuWindow{
+	public class MenuList : ContextMenuWidget{
 		
 		public override void BuildOption(StringBuilder builder,Option option){
 			

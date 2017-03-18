@@ -37,7 +37,7 @@ public class MyContextMenus : MonoBehaviour {
 		
 		myElement.oncontextmenu=delegate(ContextEvent ce){
 			
-			// If you'd like to use some other window template, you'd do that here:
+			// If you'd like to use some other widget template, you'd do that here:
 			// (This way, your 3D context menus can look totally different, for example).
 			// ce.template="menulist";
 			

@@ -15,21 +15,22 @@ using ContextMenus;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using Widgets;
 
 
-namespace Windows{
+namespace ContextMenus{
 	
 	/// <summary>
-	/// A specialised window type for displaying OptionLists.
+	/// A specialised widget type for displaying OptionLists.
 	/// Context menus derive from this.
 	/// </summary>
 	
-	public class ContextMenuWindow : Window{
+	public class ContextMenuWidget : Widget{
 		
 		/// <summary>The source option list.</summary>
 		public OptionList List;
 		
-		/// <summary>The depth that this type of window lives at.</summary>
+		/// <summary>The depth that this type of widget lives at.</summary>
 		public override int Depth{
 			get{
 				return 10000;
@@ -68,7 +69,7 @@ namespace Windows{
 			
 		}
 		
-		/// <summary>The submenu window type. It's just "the same as this" by default.
+		/// <summary>The submenu widget type. It's just "the same as this" by default.
 		/// You can detect if an OptionList is a submenu from the parent property.</summary>
 		public virtual string SubMenuType{
 			get{
