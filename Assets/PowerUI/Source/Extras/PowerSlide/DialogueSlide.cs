@@ -29,7 +29,7 @@ namespace PowerSlide{
 		/// <summary>
 		/// Loads the given json as a set of options.
 		/// </summary>
-		public static DialogueSlide[] LoadOptions(JSObject json,DialogueSlide parent){
+		public static DialogueSlide[] loadOptions(JSObject json,DialogueSlide parent){
 			
 			if(json==null){
 				return null;
@@ -82,7 +82,7 @@ namespace PowerSlide{
 		
 		/// <summary>True if this slide waits for a cue. It's true if the slide does not have a defined duration.
 		/// (because progression of dialogue is almost never regular enough for automatic durations to be usable).</summary>
-		public bool WaitForCue;
+		public bool waitForCue;
 		/// <summary>
 		/// One or more speakers who say this. Note that a single 'speaker' object can
 		/// be multiple actual speakers. For example, it might be referring to a 'clan member' object.
@@ -154,7 +154,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Begins playing any audio</summary>
-		private void PlayAudio(){
+		private void playAudio(){
 			
 			// Get a full path (also uses {language} and {mood} and is relative to resources://Dialogue):
 			
@@ -168,7 +168,7 @@ namespace PowerSlide{
 			);
 			
 			// Apply the audio package to the slides set:
-			TimingLeadBy(req);
+			timingLeadBy(req);
 			
 			req.onload=delegate(UIEvent e){
 				
@@ -183,7 +183,7 @@ namespace PowerSlide{
 				// Skip this frame:
 				Dom.Log.Add("Audio file unavailable - PowerSlide will playback without it.");
 				
-				EndTimingLead();
+				endTimingLead();
 				
 			};
 			
@@ -193,7 +193,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Swaps {mood} with the mood of this slide.</summary>
-		public string ApplyMood(string url){
+		public string applyMood(string url){
 			
 			if(url==null){
 				return null;
@@ -231,13 +231,13 @@ namespace PowerSlide{
 		/// something like 'click to continue' on them.</summary>
 		public bool cued{
 			get{
-				return WaitForCue && !isOptions;
+				return waitForCue && !isOptions;
 			}
 		}
 		
 		/// <summary>This slide is now starting.</summary>
-		internal override void Start(){
-			base.Start();
+		internal override void start(){
+			base.start();
 			
 			Timeline tl=track.timeline;
 			
@@ -248,7 +248,7 @@ namespace PowerSlide{
 				
 				// Play the audio now.
 				// Note that PowerSlide will follow the lead of the audio engine.
-				PlayAudio();
+				playAudio();
 				
 			}
 			
@@ -256,7 +256,7 @@ namespace PowerSlide{
 			string templateToUse=(template==null)? tl.template:template;
 			
 			// Open the widget (which closes the prev one for us):
-			Widgets.Widget widget=tl.OpenWidget(templateToUse);
+			Widgets.Widget widget=tl.openWidget(templateToUse);
 			
 			if(widget!=null){
 				// Trigger a dialogue start event:
@@ -265,16 +265,16 @@ namespace PowerSlide{
 				tl.dispatchEvent(s);
 			}
 			
-			if(WaitForCue){
+			if(waitForCue){
 				
 				// Wait! Advance to the end of the slide now too 
 				// (because it has an auto duration which doesn't have any meaning).
-				tl.SetPause(true);
+				tl.setPause(true);
 				
-				if(tl.Backwards){
-					tl.CurrentTime=computedStart;
+				if(tl.backwards){
+					tl.currentTime=computedStart;
 				}else{
-					tl.CurrentTime=computedEnd;
+					tl.currentTime=computedEnd;
 				}
 				
 			}
@@ -282,8 +282,8 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>This dialogue is now offscreen.</summary>
-		internal override void End(){
-			base.End();
+		internal override void end(){
+			base.end();
 			
 			// Trigger dialogue end event if we have a widget:
 			Timeline tl=track.timeline;
@@ -326,7 +326,7 @@ namespace PowerSlide{
 		
 		/// <summary>Gets a value from a localised set at the given language code.
 		/// Optionally falls back onto the default language choice (usually 'en').</summary>
-		private string GetFromSet(string language,bool fallbackOnDefault,Dictionary<string,string> set){
+		private string getFromSet(string language,bool fallbackOnDefault,Dictionary<string,string> set){
 			
 			if(language==null){
 				// Default language:
@@ -355,7 +355,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Uses the speaker set from a previous slide which defined them.</summary>
-		private void UsePrevious(bool mood){
+		private void usePrevious(bool mood){
 			
 			// Step backwards until we hit one
 			// (because of how load works, this should *always* stop at the previous slide).
@@ -382,14 +382,14 @@ namespace PowerSlide{
 		public override void load(JSObject json){
 			
 			// Was duration set?
-			WaitForCue=(json["duration"]==null);
+			waitForCue=(json["duration"]==null);
 			
 			// If it's just a string, then we've only got markup here:
 			// ["Hello","I'm Dave"]
 			if(json is JSValue){
 				
 				// Use the previous slide to obtain the speakers and mood.
-				UsePrevious(true);
+				usePrevious(true);
 				
 				// markup only:
 				markup=json.ToString();
@@ -404,12 +404,12 @@ namespace PowerSlide{
 			markup=json.String("markup");
 			
 			// Raw options:
-			options_=LoadOptions(json["options"],this);
+			options_=loadOptions(json["options"],this);
 			
 			if(options_!=null){
 				// If options are present we'll almost always be waiting for a cue 
 				// (from the player when they select an option).
-				WaitForCue=true;
+				waitForCue=true;
 			}
 			
 			// Audio track:
@@ -422,9 +422,9 @@ namespace PowerSlide{
 			string wfc=json.String("wait-for-cue");
 			
 			if(wfc=="false"){
-				WaitForCue=false;
+				waitForCue=false;
 			}else if(wfc=="true"){
-				WaitForCue=true;
+				waitForCue=true;
 			}
 			
 			// Speakers:
@@ -437,7 +437,7 @@ namespace PowerSlide{
 			if(speakers==null){
 				
 				// Use previous speakers (but not previous mood):
-				UsePrevious(false);
+				usePrevious(false);
 				
 			}else{
 				
@@ -451,7 +451,7 @@ namespace PowerSlide{
 				if(speakerSet==null){
 					
 					// Just one.
-					LoadSpeaker(0,speakers);
+					loadSpeaker(0,speakers);
 					
 				}else if(speakerSet.IsIndexed){
 					
@@ -466,14 +466,14 @@ namespace PowerSlide{
 						int.TryParse(kvp.Key,out index);
 						
 						// Set it up:
-						LoadSpeaker(index,kvp.Value);
+						loadSpeaker(index,kvp.Value);
 						
 					}
 					
 				}else{
 					
 					// Just one (but as an object, with a type).
-					LoadSpeaker(0,speakers);
+					loadSpeaker(0,speakers);
 					
 				}
 				
@@ -485,7 +485,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Sets up a speaker at the given index in the Speakers set.</summary>
-		internal void LoadSpeaker(int index,JSObject data){
+		internal void loadSpeaker(int index,JSObject data){
 			
 			if(speakers==null){
 				speakers=new Speaker[1];

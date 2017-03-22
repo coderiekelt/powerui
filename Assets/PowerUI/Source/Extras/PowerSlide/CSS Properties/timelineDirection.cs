@@ -17,18 +17,18 @@ using PowerSlide;
 namespace Css.Properties{
 	
 	/// <summary>
-	/// Represents the slides-direction: css property.
+	/// Represents the timeline-direction: css property.
 	/// </summary>
 	
-	public class SlidesDirection:CssProperty{
+	public class TimelineDirection:CssProperty{
 		
 		public override string[] GetProperties(){
-			return new string[]{"slides-direction"};
+			return new string[]{"slides-direction","timeline-direction"};
 		}
 		
 		public override ApplyState Apply(ComputedStyle style,Value value){
 		
-			Timeline si=Timeline.Get(style);
+			Timeline si=Timeline.get(style);
 			
 			if(si==null){
 				
@@ -63,7 +63,7 @@ namespace Css.Properties{
 				
 			}
 			
-			si.Direction=direction;
+			si.direction=direction;
 			
 			// Ok!
 			return ApplyState.Ok;

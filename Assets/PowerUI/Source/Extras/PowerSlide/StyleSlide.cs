@@ -36,7 +36,7 @@ namespace PowerSlide{
 		internal HTMLCollection latestTargets;
 		
 		
-		internal override void SetPause(bool paused){
+		internal override void setPause(bool paused){
 			
 			if(latestTargets==null){
 				return;
@@ -134,7 +134,7 @@ namespace PowerSlide{
 			}
 		}
 		
-		internal void OnStart(){
+		internal void onStart(){
 			
 			// Query the elements now!
 			HTMLCollection allTargets=targets;
@@ -157,12 +157,12 @@ namespace PowerSlide{
 			
 		}
 		
-		internal override void Start(){
+		internal override void start(){
 			
 			// Apply anim-duration, anim-direction and the rest of the style
 			// (style must be last, as it contains animation-name):
 			
-			string dir=track.timeline.Backwards?"backwards" : "forwards";
+			string dir=track.timeline.backwards?"backwards" : "forwards";
 			
 			foreach(Element e in latestTargets){
 				
@@ -194,7 +194,7 @@ namespace PowerSlide{
 				
 			}
 			
-			base.Start();
+			base.start();
 			
 		}
 		

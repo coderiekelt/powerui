@@ -65,13 +65,13 @@ namespace PowerSlide{
 			
 			if(startText!=null){
 				// Load the start value:
-				start=Css.Value.Load(startText);
+				startValue=Css.Value.Load(startText);
 			}
 			
 			base.load(json);
 			
 			// Duration is always zero:
-			duration=ZERO;
+			durationValue=ZERO;
 			
 		}
 		
@@ -99,16 +99,16 @@ namespace PowerSlide{
 			}
 		}
 		
-		internal override void Start(){
+		internal override void start(){
 			
 			// Pause it now!
 			Timeline tl=track.timeline;
-			tl.SetPause(true);
+			tl.setPause(true);
 			
-			if(tl.Backwards){
-				tl.CurrentTime=1f-computedStart;
+			if(tl.backwards){
+				tl.currentTime=1f-computedStart;
 			}else{
-				tl.CurrentTime=computedStart;
+				tl.currentTime=computedStart;
 			}
 			
 			// Hook up cue elements now:
@@ -128,11 +128,11 @@ namespace PowerSlide{
 					CueElementData ced=new CueElementData(eventName,d,e);
 					
 					// Add to a list on the timeline:
-					if(track.timeline.CueElements==null){
-						track.timeline.CueElements=new List<CueElementData>();
+					if(track.timeline.cueElements==null){
+						track.timeline.cueElements=new List<CueElementData>();
 					}
 					
-					track.timeline.CueElements.Add(ced);
+					track.timeline.cueElements.Add(ced);
 					
 					// Add listener:
 					e.addEventListener(eventName,d);
@@ -141,7 +141,7 @@ namespace PowerSlide{
 				
 			}
 			
-			base.Start();
+			base.start();
 			
 		}
 		

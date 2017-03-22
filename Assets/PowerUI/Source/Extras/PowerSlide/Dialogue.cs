@@ -20,57 +20,21 @@ using Json;
 namespace PowerSlide{
 	
 	/// <summary>
-	/// Used when a set of slides has been loaded.
-	/// </summary>
-	public delegate void OnDialogueLoad(Timeline timeline);
-	
-	/// <summary>
 	/// Used to start dialogue (speech).
 	/// </summary>
 	
 	public static class Dialogue{
 		
+		/// <summary>The location that dialogue is relative to by default (resources://Dialogue/).</summary>
+		internal static Dom.Location basePath = new Dom.Location("resources://Dialogue/",null);
+		
 		/// <summary>
 		/// Loads a set of dialogue options at the given path.
 		/// </summary>
-		internal static void Load(string startPath,OnDialogueLoad onLoad){
+		internal static Promise open(string startPath){
 			
-			// Append .json if it's needed:
-			if(!startPath.Contains(".") && !startPath.Contains("://")){
-				
-				startPath+=".json";
-				
-			}
-			
-			// Localise it:
-			startPath=startPath.Replace("{language}",UI.Language);
-			
-			// Load the file now:
-			DataPackage req=new DataPackage(
-				startPath,
-				new Dom.Location("resources://Dialogue/",null)
-			);
-			
-			// Delegate:
-			req.onload=delegate(UIEvent e){
-				
-				// Response is a block of options:
-				JSObject options=JSON.Parse(req.responseText);
-				
-				// Load it up and run the callback:
-				Timeline tl=new Timeline(null);
-				tl.load(options);
-				
-				onLoad(tl);
-				
-			};
-			
-			req.onerror=delegate(UIEvent e){
-				Dom.Log.Add("Dialogue '"+startPath+"' failed. Open the PowerUI Network Inspector and try again for more.");
-			};
-			
-			// Send!
-			req.send();
+			// Load a timeline now:
+			return Timeline.open(startPath,basePath);
 			
 		}
 		
@@ -94,8 +58,9 @@ namespace PowerUI{
 		/// <param name="template">The widget template to use. 
 		/// Note that the widget doesn't need to be visual - it could, for example,
 		/// manage a bunch of WorldUI's instead.</param>
-		public void startDialogue(string startPath,string template){
-			startDialogue(startPath,template,true);
+		/// <returns>A promise which runs when the dialogue loaded and started up.</returns>
+		public Promise startDialogue(string startPath,string template){
+			return startDialogue(startPath,template,true);
 		}
 		
 		/// <summary>
@@ -110,26 +75,32 @@ namespace PowerUI{
 		/// Note that the widget doesn't need to be visual - it could, for example,
 		/// manage a bunch of WorldUI's instead.</param>
 		/// <param name="killRunning">Kills any open dialogue in the document.</param>
-		public void startDialogue(string startPath,string template,bool killRunning){
+		/// <returns>A promise which runs when the dialogue loaded and started up.</returns>
+		public Promise startDialogue(string startPath,string template,bool killRunning){
 			
 			if(killRunning){
 				
 				// Find all timelines in the document itself (and marked with 'isDialogue') and stop them:
-				PowerSlide.Timeline current=PowerSlide.Timeline.First;
+				PowerSlide.Timeline current=PowerSlide.Timeline.first;
 				
 				while(current!=null){
 					if(current.isDialogue && current.document==this){
 						// Kill it!
-						current.Stop(false);
+						current.stop(false);
 					}
 					
-					current=current.After;
+					current=current.after;
 				}
 				
 			}
 			
-			// Load the options:
-			PowerSlide.Dialogue.Load(startPath,delegate(PowerSlide.Timeline timeline){
+			Promise p=new Promise();
+			
+			// Load the slides:
+			PowerSlide.Dialogue.open(startPath).then(delegate(object o){
+				
+				// It's a timeline:
+				PowerSlide.Timeline timeline=o as PowerSlide.Timeline;
 				
 				// Set the default template/doc:
 				timeline.isDialogue=true;
@@ -137,10 +108,65 @@ namespace PowerUI{
 				timeline.document=this;
 				
 				// Start it (which may open widgets):
-				timeline.Start();
+				timeline.start();
 				
-			});
+				// Just resolve the promise here:
+				p.resolve(timeline);
+				
+			},p);
 			
+			return p;
+			
+		}
+		
+		/// <summary>
+		/// The same as startDialogue, only the promise this one returns runs when the dialogue is over.
+		/// (It hooks up to the timelineend event triggered on the timeline itself).
+		/// </summary>
+		/// <param name="template">The widget template to use. 
+		/// Note that the widget doesn't need to be visual - it could, for example,
+		/// manage a bunch of WorldUI's instead.</param>
+		/// <returns>A promise which runs when the dialogue finished.</returns>
+		public Promise playDialogue(string startPath,string template){
+			return playDialogue(startPath,template,true);
+		}
+		
+		/// <summary>
+		/// The same as startDialogue, only the promise this one returns runs when the dialogue is over.
+		/// (It hooks up to the timelineend event triggered on the timeline itself).
+		/// </summary>
+		/// <param name="template">The widget template to use. 
+		/// Note that the widget doesn't need to be visual - it could, for example,
+		/// manage a bunch of WorldUI's instead.</param>
+		/// <param name="killRunning">Kills any open dialogue in the document.</param>
+		/// <returns>A promise which runs when the dialogue finished.</returns>
+		public Promise playDialogue(string startPath,string template,bool killRunning){
+			
+			Promise p=new Promise();
+			
+			startDialogue(startPath,template,killRunning).then(delegate(object o){
+				
+				PowerSlide.Timeline timeline=(o as PowerSlide.Timeline);
+				
+				// Add a done event handler:
+				timeline.addEventListener("timelineend",delegate(PowerSlide.SlideEvent e){
+					
+					// Ok!
+					p.resolve(timeline);
+					
+				});
+				
+				// Catch the slides cancel event (called when it was quit early):
+				timeline.addEventListener("timelinecancel",delegate(PowerSlide.SlideEvent se){
+					
+					// Resolve it now:
+					p.reject(timeline);
+					
+				});
+				
+			},p);
+			
+			return p;
 		}
 		
 	}

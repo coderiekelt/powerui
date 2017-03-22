@@ -55,9 +55,9 @@ namespace PowerSlide{
 		/// </summary>
 		public ITimingLeader timing;
 		/// <summary>Specified start value.</summary>
-		public Css.Value start;
+		public Css.Value startValue;
 		/// <summary>Specified duration value.</summary>
-		public Css.Value duration;
+		public Css.Value durationValue;
 		/// <summary>The computed start value.</summary>
 		public float computedStart=0f;
 		/// <summary>The computed duration.</summary>
@@ -65,11 +65,11 @@ namespace PowerSlide{
 		/// <summary>
 		/// Actions to trigger.
 		/// </summary>
-		public Action[] Actions;
+		public Action[] actions;
 		/// <summary>The linked list of running slides.</summary>
-		internal Slide NextRunning;
+		internal Slide nextRunning;
 		/// <summary>The linked list of running slides.</summary>
-		internal Slide PreviousRunning;
+		internal Slide previousRunning;
 		
 		
 		/// <summary>The computed end value.</summary>
@@ -95,7 +95,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Ends this slides timing lead.</summary>
-		public void EndTimingLead(){
+		public void endTimingLead(){
 			
 			if(track.timeline.timingLeader==this){
 				
@@ -112,7 +112,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>The timeline will now have its timing lead by the given leader.</summary>
-		public void TimingLeadBy(ITimingLeader leader){
+		public void timingLeadBy(ITimingLeader leader){
 		
 			// Set the leader:
 			timing=leader;
@@ -123,7 +123,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>This slide is now done.</summary>
-		internal virtual void End(){
+		internal virtual void end(){
 			
 			// Dispatch a "slideend" event.
 			SlideEvent se=createEvent("end");
@@ -139,7 +139,7 @@ namespace PowerSlide{
 			}
 			
 			// Quit timing lead:
-			EndTimingLead();
+			endTimingLead();
 			
 		}
 		
@@ -159,18 +159,18 @@ namespace PowerSlide{
 		/// <summary>The element which the timeline is running on.</summary>
 		public Element element{
 			get{
-				if(timeline.Style==null){
+				if(timeline.style==null){
 					return null;
 				}
 				
-				return timeline.Style.Element as Element;
+				return timeline.style.Element as Element;
 			}
 		}
 		
 		/// <summary>This slide is now starting.</summary>
-		internal virtual void Start(){
+		internal virtual void start(){
 			
-			// Dispatch a "slidestart" event.
+			// Dispatch a "timelinestart" event.
 			SlideEvent se=createEvent("start");
 			
 			// Dispatch here:
@@ -205,16 +205,16 @@ namespace PowerSlide{
 				
 				
 				// Cue all actions (always after text):
-				if(Actions!=null){
+				if(actions!=null){
 					
 					// Param set:
 					object[] arr=new object[]{cue};
 					
 					// Cue! Run each action now:
-					for(int i=0;i<Actions.Length;i++){
+					for(int i=0;i<actions.Length;i++){
 						
 						// Get it:
-						Action a=Actions[i];
+						Action a=actions[i];
 						
 						// Update event:
 						cue.action=a;
@@ -231,27 +231,27 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Ends this slide if it's done.</summary>
-		internal void EndIfDone(bool backwards,float progress){
+		internal void endIfDone(bool backwards,float progress){
 		
-			float end=backwards ? (1f-computedStart) : computedEnd;
+			float endAt=backwards ? (1f-computedStart) : computedEnd;
 			
-			if(end<=progress){
+			if(endAt<=progress){
 				
 				// Remove from running:
-				if(NextRunning==null){
-					timeline.LastRunning=PreviousRunning;
+				if(nextRunning==null){
+					timeline.lastRunning=previousRunning;
 				}else{
-					NextRunning.PreviousRunning=PreviousRunning;
+					nextRunning.previousRunning=previousRunning;
 				}
 				
-				if(PreviousRunning==null){
-					timeline.FirstRunning=NextRunning;
+				if(previousRunning==null){
+					timeline.firstRunning=nextRunning;
 				}else{
-					PreviousRunning.NextRunning=NextRunning;
+					previousRunning.nextRunning=nextRunning;
 				}
 				
 				// Done! This can "pause" to make it wait for a cue.
-				End();
+				end();
 				
 			}
 			
@@ -268,12 +268,12 @@ namespace PowerSlide{
 		/// I.e. it's actively running.</summary>
 		public bool isActive{
 			get{
-				return timeline.IsActive(this);
+				return timeline.isActive(this);
 			}
 		}
 		
 		/// <summary>Called when the timeline is paused/ resumed and this slide is running.</summary>
-		internal virtual void SetPause(bool paused){}
+		internal virtual void setPause(bool paused){}
 		
 		/// <summary>Loads a slide from the given JSON.</summary>
 		public virtual void load(JSObject json){
@@ -283,53 +283,53 @@ namespace PowerSlide{
 			
 			if(startText!=null){
 				// Load the start value:
-				start=Css.Value.Load(startText);
+				startValue=Css.Value.Load(startText);
 			}
 			
 			// Duration:
 			string durationText=json.String("duration");
 			
 			if(durationText!=null){
-				// Load the start value:
-				duration=Css.Value.Load(durationText);
+				// Load the duration value:
+				durationValue=Css.Value.Load(durationText);
 			}
 			
 			// Action:
-			JSArray actions=json["actions"] as JSArray;
+			JSArray acts=json["actions"] as JSArray;
 			
-			if(actions!=null){
+			if(acts!=null){
 				
-				if(actions.IsIndexed){
+				if(acts.IsIndexed){
 					
 					// Multiple actions:
 					
 					// For each one..
-					foreach(KeyValuePair<string,JSObject> kvp in actions.Values){
+					foreach(KeyValuePair<string,JSObject> kvp in acts.Values){
 						
 						// index is..
 						int index;
 						int.TryParse(kvp.Key,out index);
 						
 						// Set it up:
-						LoadAction(index,kvp.Value);
+						loadAction(index,kvp.Value);
 						
 					}
 					
 				}else{
 					
 					// Should be an array but we'll also accept just one.
-					LoadAction(0,actions);
+					loadAction(0,acts);
 					
 				}
 				
 			}else{
 				
 				// Check if they mis-named as just 'action':
-				actions=json["action"] as JSArray;
+				acts=json["action"] as JSArray;
 				
-				if(actions!=null){
+				if(acts!=null){
 					
-					LoadAction(0,actions);
+					loadAction(0,acts);
 					
 				}
 				
@@ -358,15 +358,15 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Sets up an action at the given index in the Actions set.</summary>
-		internal void LoadAction(int index,JSObject data){
+		internal void loadAction(int index,JSObject data){
 			
-			if(Actions==null){
-				Actions=new Action[1];
+			if(actions==null){
+				actions=new Action[1];
 			}
 			
 			// Create and add:
 			Action a=new Action(this,data);
-			Actions[index]=a;
+			actions[index]=a;
 			
 		}
 		

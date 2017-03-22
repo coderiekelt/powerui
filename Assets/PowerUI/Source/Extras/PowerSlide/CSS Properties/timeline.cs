@@ -16,13 +16,13 @@ using PowerSlide;
 namespace Css.Properties{
 	
 	/// <summary>
-	/// Represents the slides: composite css property.
+	/// Represents the timeline: or slides: composite css property.
 	/// </summary>
 	
-	public class SlidesCompProperty:CssCompositeProperty{
+	public class TimelineCompProperty:CssCompositeProperty{
 		
 		public override string[] GetProperties(){
-			return new string[]{"slides"};
+			return new string[]{"slides","timeline"};
 		}
 		
 		public override void OnReadValue(Style styleBlock,Css.Value value){
@@ -125,16 +125,16 @@ namespace Css.Properties{
 				
 			}
 			
-			styleBlock.SetComposite("slides-duration",duration,value);
-			styleBlock.SetComposite("slides-timing-function",timing,value);
-			styleBlock.SetComposite("slides-delay",delay,value);
-			styleBlock.SetComposite("slides-iteration-count",itCount,value);
-			styleBlock.SetComposite("slides-direction",direction,value);
-			// styleBlock.SetComposite("slides-fill-mode",fillMode,value);
-			// styleBlock.SetComposite("slides-play-state",playState,value);
+			styleBlock.SetComposite("timeline-duration",duration,value);
+			styleBlock.SetComposite("timeline-timing-function",timing,value);
+			styleBlock.SetComposite("timeline-delay",delay,value);
+			styleBlock.SetComposite("timeline-iteration-count",itCount,value);
+			styleBlock.SetComposite("timeline-direction",direction,value);
+			// styleBlock.SetComposite("timeline-fill-mode",fillMode,value);
+			// styleBlock.SetComposite("timeline-play-state",playState,value);
 			
 			// Declaring name last prevents weird jitters:
-			styleBlock.SetComposite("slides-name",name,value);
+			styleBlock.SetComposite("timeline-name",name,value);
 		}
 		
 	}
@@ -152,6 +152,16 @@ namespace Css{
 			}
 			get{
 				return GetString("slides");
+			}
+		}
+		
+		/// <summary>The PowerSlide CSS property. Works just like "animation" does.</summary>
+		public string timeline{
+			set{
+				Set("timeline",value);
+			}
+			get{
+				return GetString("timeline");
 			}
 		}
 		

@@ -27,7 +27,7 @@ namespace Widgets{
 	public class DialogueWidget : Widget{
 		
 		/// <summary>The timeline in use</summary>
-		public PowerSlide.Timeline Timeline;
+		public PowerSlide.Timeline timeline;
 		
 		
 		/// <summary>A click to continue helper. This entirely ignores the event if an option is on the UI.
@@ -46,7 +46,7 @@ namespace Widgets{
 			if(dw!=null){
 				
 				// Get the timeline:
-				tl=dw.Timeline;
+				tl=dw.timeline;
 				
 				// Is there an option on the UI at the moment?
 				if(dw.hasActiveOption){
@@ -57,13 +57,13 @@ namespace Widgets{
 			}else{
 				
 				// Get the timeline:
-				tl=PowerSlide.Timeline.Get(widget);
+				tl=PowerSlide.Timeline.get(widget);
 				
 			}
 			
 			// Cue it:
 			if(tl!=null){
-				tl.Cue();
+				tl.cue();
 			}
 			
 		}
@@ -105,13 +105,28 @@ namespace Widgets{
 				
 				// Acts just like a continue does.
 				// Just cue it:
-				dw.Timeline.Cue();
+				dw.timeline.cue();
 				return;
 				
 			}
 			
-			// Load it now (killing existing dialogue):
-			dw.Timeline.document.startDialogue(gotoUrl,dw.Timeline.template);
+			// Load it now (into the existing timeline):
+			PowerSlide.Timeline.open(gotoUrl,PowerSlide.Dialogue.basePath,dw.timeline).then(delegate(object o){
+				
+				// Successfully opened it! Should already be running, but just incase:
+				PowerSlide.Timeline timeline=o as PowerSlide.Timeline;
+				
+				// Start:
+				timeline.start();
+				
+			},delegate(object failure){
+				
+				// Failed!
+				Dom.Log.Add("Failed to load a timeline from an option URI: "+failure);
+				
+			});
+			
+			// dw.timeline.document.startDialogue(gotoUrl,dw.Timeline.template);
 			
 			// Kill the event:
 			e.stopPropagation();
@@ -122,12 +137,12 @@ namespace Widgets{
 		public bool hasActiveOption{
 			get{
 				
-				if(Timeline==null){
+				if(timeline==null){
 					return false;
 				}
 				
 				// Check running slides:
-				PowerSlide.Slide current=Timeline.FirstRunning;
+				PowerSlide.Slide current=timeline.firstRunning;
 				
 				while(current!=null){
 					
@@ -141,7 +156,7 @@ namespace Widgets{
 						
 					}
 					
-					current=current.NextRunning;
+					current=current.nextRunning;
 				}
 				
 				return false;
@@ -158,13 +173,13 @@ namespace Widgets{
 		
 		/// <summary>Gets an active slide by its unique ID.</summary>
 		public PowerSlide.Slide getSlide(int uniqueID){
-			return Timeline.getSlide(uniqueID);
+			return timeline.getSlide(uniqueID);
 		}
 		
 		/// <summary>Gets all dialogue slides which are currently active.</summary>
 		public List<PowerSlide.DialogueSlide> allActive{
 			get{
-				return Timeline.GetActive<PowerSlide.DialogueSlide>();
+				return timeline.getActive<PowerSlide.DialogueSlide>();
 			}
 		}
 		
@@ -176,7 +191,7 @@ namespace Widgets{
 			if(globals.TryGetValue("timeline",out timelineObj)){
 				
 				// Get the timeline:
-				Timeline=timelineObj as PowerSlide.Timeline;
+				timeline=timelineObj as PowerSlide.Timeline;
 				
 			}
 			
@@ -211,7 +226,7 @@ namespace Widgets{
 				// Hide:
 				Hide(se.slide as PowerSlide.DialogueSlide);
 				
-			}else if(e.type=="slidespause"){
+			}else if(e.type=="timelinepause"){
 				
 				// The slides just paused (and are now waiting for a cue)
 				se=e as PowerSlide.SlideEvent;
@@ -219,7 +234,7 @@ namespace Widgets{
 				// Waiting for a cue:
 				WaitForCue(se);
 				
-			}else if(e.type=="slidesplay"){
+			}else if(e.type=="timelineplay"){
 				
 				// The slides just cued (and are now continuing).
 				se=e as PowerSlide.SlideEvent;
@@ -267,11 +282,11 @@ namespace Widgets{
 			Widgets.Widget widget=me.htmlTarget.widget;
 			
 			// Get the timeline:
-			PowerSlide.Timeline tl=PowerSlide.Timeline.Get(widget);
+			PowerSlide.Timeline tl=PowerSlide.Timeline.get(widget);
 			
 			// Cue it:
 			if(tl!=null){
-				tl.Cue();
+				tl.cue();
 			}
 			
 		}

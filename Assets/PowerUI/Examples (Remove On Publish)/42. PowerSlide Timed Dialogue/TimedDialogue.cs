@@ -52,6 +52,8 @@ public class TimedDialogue : MonoBehaviour {
 			// Note: Use {language} to localise the path. E.g. "myTimedDialogue_{language}" => "Dialogue/myTimedDialogue_en.json"
 			document.startDialogue("myTimedDialogue_{language}","subtitles");
 			
+			// you can use startDialogue or playDialogue and use the promise they return (Like example #41)
+			
 		};
 		
 	}

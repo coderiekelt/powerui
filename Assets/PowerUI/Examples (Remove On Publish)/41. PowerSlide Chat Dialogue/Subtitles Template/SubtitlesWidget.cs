@@ -70,7 +70,7 @@ namespace Widgets{
 				if(!string.IsNullOrEmpty(headUrl)){
 					
 					// Great - apply mood:
-					headUrl=dialogue.ApplyMood(headUrl);
+					headUrl=dialogue.applyMood(headUrl);
 					
 					// Display it:
 					html+="<div class='subtitle-chathead'><img src='"+headUrl+"'></div>";

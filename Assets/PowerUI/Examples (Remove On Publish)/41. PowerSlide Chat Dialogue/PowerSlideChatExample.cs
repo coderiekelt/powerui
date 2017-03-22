@@ -51,7 +51,17 @@ public class PowerSlideChatExample : MonoBehaviour {
 			
 			// Note: Use {language} to localise the path. E.g. "myDialogue_{language}" => "Dialogue/myDialogue_en.json"
 			
-			document.startDialogue("myDialogue","subtitles");
+			// playDialogue is slightly different from startDialogue:
+			// -> The promise returned by playDialogue runs when the dialogue has *finished*
+			// -> The promise returned by startDialogue runs when the dialogue has loaded and *started*
+			
+			document.playDialogue("myDialogue","subtitles").then(delegate(object o){
+				
+				// You could also listen out for the slidesend event 
+				// on the document if you prefer.
+				Debug.Log("Dialogue finished!");
+				
+			});
 			
 		};
 		

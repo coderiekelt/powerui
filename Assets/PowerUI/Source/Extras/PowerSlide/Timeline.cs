@@ -25,8 +25,82 @@ namespace PowerSlide{
 	/// A track (e.g a style track or a dialogue track) is a series of slides.
 	/// </summary>
 	
-	public partial class Timeline{
+	public partial class Timeline : Dom.EventTarget{
 		
+		public const short TIMELINE_LOADING = 0;
+		public const short TIMELINE_INVALID = 1;
+		public const short TIMELINE_UNAVAILABLE = 2;
+		public const short TIMELINE_READY = 3;
+		public const short TIMELINE_STARTED = 4;
+		public const short TIMELINE_ENDED = 5;
+		public const short TIMELINE_CANCELLED = 6;
+		
+		/// <summary>Loads a slides JSON file at the given path (relative to the given location).</summary>
+		internal static Promise open(string startPath,Dom.Location relativeTo){
+			return open(startPath,relativeTo,null);
+		}
+		
+		/// <summary>Loads a slides JSON file at the given path (relative to the given location)
+		/// optionally into the given timeline.</summary>
+		internal static Promise open(string startPath,Dom.Location relativeTo,Timeline into){
+			
+			// Use this to establish when it's ready:
+			Promise p=new Promise();
+			
+			// Append .json if it's needed:
+			if(!startPath.Contains(".") && !startPath.Contains("://")){
+				
+				startPath+=".json";
+				
+			}
+			
+			// Localise it:
+			startPath=startPath.Replace("{language}",UI.Language);
+			
+			// Load the file now:
+			DataPackage req=new DataPackage(
+				startPath,
+				relativeTo
+			);
+			
+			if(into==null){
+				into=new Timeline(null);
+			}
+			
+			// Delegate:
+			req.onload=delegate(UIEvent e){
+				
+				try{
+					// Response is a block of options:
+					JSObject options=JSON.Parse(req.responseText);
+					
+					// Load it up and run the callback:
+					into.load(options);
+					
+				}catch{
+					// Invalid json.
+					p.reject(into);
+					return;
+				}
+				
+				// Run the promise now:
+				p.resolve(into);
+				
+			};
+			
+			req.onerror=delegate(UIEvent e){
+				into.status_=TIMELINE_UNAVAILABLE;
+				p.reject(into);
+			};
+			
+			// Send!
+			req.send();
+			
+			return p;
+		}
+		
+		/// <summary>The timeline status.</summary>
+		private short status_;
 		/// <summary>True if this is a dialogue timeline.</summary>
 		internal bool isDialogue=false;
 		/// <summary>The default language for this timeline.</summary>
@@ -40,14 +114,15 @@ namespace PowerSlide{
 		public string src;
 		/// <summary>Default template to use.</summary>
 		public string template;
+		
 		/// <summary>A time leading slide (usually one with audio/ video) 
 		/// which this timeline will follow for timing purposes.</summary>
 		public Slide timingLeader;
 		/// <summary>The ComputedStyle that this was applied to (can be null).</summary>
-		public ComputedStyle Style;
+		public ComputedStyle style;
 		/// <summary>A list of event listeners that *must* be destroyed 
 		/// when either this timeline is killed or is un-paused.</summary>
-		internal List<CueElementData> CueElements;
+		internal List<CueElementData> cueElements;
 		/// <summary>If this timeline is using a widget, the widget itself.
 		/// Used by dialogue.</summary>
 		public Widgets.Widget currentWidget;
@@ -56,7 +131,7 @@ namespace PowerSlide{
 		
 		
 		public Timeline(ComputedStyle style){
-			Style=style;
+			this.style=style;
 			
 			if(style!=null){
 				document=style.document as HtmlDocument;
@@ -64,11 +139,18 @@ namespace PowerSlide{
 			
 		}
 		
+		/// <summary>The status of this timeline.</summary>
+		public short status{
+			get{
+				return status_;
+			}
+		}
+		
 		/// <summary>The node that this timeline is on.</summary>
 		public Dom.Node node{
 			get{
-				if(Style!=null){
-					return Style.Element;
+				if(style!=null){
+					return style.Element;
 				}
 				
 				return document;
@@ -106,7 +188,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Opens a widget, passing this timeline as a global.</summary>
-		internal Widgets.Widget OpenWidget(string template){
+		internal Widgets.Widget openWidget(string template){
 			
 			if(document==null || template==null){
 				Dom.Log.Add("PowerSlide requested to open a widget without a document/ template. Request was ignored.");
@@ -134,13 +216,13 @@ namespace PowerSlide{
 		/// <summary>
 		/// Tidies up any event handlers added by cue nodes.
 		/// </summary>
-		public void ClearCues(){
+		public void clearCues(){
 			
-			if(CueElements==null){
+			if(cueElements==null){
 				return;
 			}
 			
-			foreach(CueElementData ced in CueElements){
+			foreach(CueElementData ced in cueElements){
 				
 				Dom.Element node=ced.target;
 				
@@ -150,12 +232,60 @@ namespace PowerSlide{
 			}
 			
 			// Ok!
-			CueElements=null;
+			cueElements=null;
+			
+		}
+		
+		/// <summary>Resets this timeline so it can start over.</summary>
+		public void reset(){
+			
+			// Clear cues:
+			clearCues();
+			
+			if(first==null && updater!=null){
+				
+				// Stop the updater:
+				updater.Stop();
+				updater=null;
+				
+			}
+			
+			// Kill any running slides:
+			Slide current=firstRunning;
+			
+			while(current!=null){
+				
+				// Done!
+				current.end();
+				paused=false;
+				
+				current=current.nextRunning;
+			}
+			
+			// Widget:
+			if(currentWidget!=null){
+				currentWidget.close();
+				currentWidget=null;
+			}
+			
+			// Clear various settings:
+			currentTime=0f;
+			backwards=false;
+			direction=KeyframesAnimationDirection.Forward;
+			repeatCount=1;
+			status_=TIMELINE_LOADING;
 			
 		}
 		
 		/// <summary>Loads a timeline from the given JSON.</summary>
 		public void load(Json.JSObject json){
+			
+			if(started){
+				// Reset if needed:
+				reset();
+			}
+			
+			duration=null;
 			
 			// First, check for the 'tracks' field:
 			Json.JSObject trackData=json["tracks"];
@@ -164,7 +294,7 @@ namespace PowerSlide{
 				
 				// Considered to be a single track.
 				// Try loading it now:
-				Track track=Track.LoadFromJson(this,json);
+				Track track=Track.loadFromJson(this,json);
 				
 				if(track==null){
 					
@@ -193,7 +323,7 @@ namespace PowerSlide{
 				var trackArray=trackData as Json.JSIndexedArray;
 				
 				if(trackArray==null){
-					LoadFailed("'tracks' must be an indexed array.",this);
+					loadFailed("'tracks' must be an indexed array.",this);
 				}
 				
 				// Fully defined timeline.
@@ -206,7 +336,7 @@ namespace PowerSlide{
 				for(int i=0;i<length;i++){
 					
 					// Load the track now:
-					tracks[i]=Track.LoadFromJson(this,trackArray[i]);
+					tracks[i]=Track.loadFromJson(this,trackArray[i]);
 					
 				}
 				
@@ -221,15 +351,18 @@ namespace PowerSlide{
 				}
 				
 			}
+			
+			status_=TIMELINE_STARTED;
 		}
 		
 		/// <summary>Called when a timeline fails to load.</summary>
-		internal static void LoadFailed(string message,Timeline timeline){	
+		internal static void loadFailed(string message,Timeline timeline){	
 			
 			string src=null;
 			
 			if(timeline!=null){
 				src=timeline.src;
+				timeline.status_=TIMELINE_INVALID;
 			}
 			
 			message="PowerSlide timeline ";

@@ -17,18 +17,18 @@ using PowerSlide;
 namespace Css.Properties{
 	
 	/// <summary>
-	/// Represents the slides-duration: css property.
+	/// Represents the timeline-delay: css property.
 	/// </summary>
 	
-	public class SlidesDuration:CssProperty{
+	public class TimelineDelay:CssProperty{
 		
 		public override string[] GetProperties(){
-			return new string[]{"slides-duration"};
+			return new string[]{"slides-delay","timeline-delay"};
 		}
 		
 		public override ApplyState Apply(ComputedStyle style,Value value){
 			
-			Timeline si=Timeline.Get(style);
+			Timeline si=Timeline.get(style);
 			
 			if(si==null){
 				
@@ -37,10 +37,10 @@ namespace Css.Properties{
 				
 			}
 			
-			if(value==null){
-				si.AppliedDuration=float.MinValue;
+			if(value==null || value.Type==ValueType.Text){
+				si.delay=0;
 			}else{
-				si.AppliedDuration=value.GetDecimal(style.RenderData,this);
+				si.delay=value.GetDecimal(style.RenderData,this);
 			}
 			
 			// Ok!

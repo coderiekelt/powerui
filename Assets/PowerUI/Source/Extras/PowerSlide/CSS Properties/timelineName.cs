@@ -18,13 +18,13 @@ using PowerUI;
 namespace Css.Properties{
 	
 	/// <summary>
-	/// Represents the slides-name: css property.
+	/// Represents the timeline-name: css property.
 	/// </summary>
 	
-	public class SlidesName:CssProperty{
+	public class TimelineName:CssProperty{
 		
 		public override string[] GetProperties(){
-			return new string[]{"slides-name"};
+			return new string[]{"slides-name","timeline-name"};
 		}
 		
 		public override ApplyState Apply(ComputedStyle style,Value value){
@@ -44,14 +44,14 @@ namespace Css.Properties{
 			}
 			
 			// Already running a slides instance?
-			Timeline timeline=Timeline.Get(style);
+			Timeline timeline=Timeline.get(style);
 			
 			if(name==null){
 				// Clear:
 				
 				if(timeline!=null){
 					// Stop without triggering done:
-					timeline.Stop(false);
+					timeline.stop(false);
 				}
 				
 				// Reset matched styles
@@ -69,13 +69,13 @@ namespace Css.Properties{
 				Because the user must've got past the values being non-identical check.
 				
 				if(timeline.src==name){
-					// Stop there - already running this slides instance.
+					// Stop there - already running this timeline instance.
 					return ApplyState.Ok;
 				}
 				*/
 				
 				// Stop it without done:
-				timeline.Stop(false);
+				timeline.stop(false);
 				
 				// Reset matched:
 				style.ApplyMatchedStyles();
@@ -87,42 +87,32 @@ namespace Css.Properties{
 			timeline.src=name;
 			
 			// Enqueue it (adds to the update queue, but not the same as a start call):
-			timeline.Enqueue();
+			timeline.enqueue();
 			
 			// Reapply other values:
-			Reapply(style,"slides-duration");
-			Reapply(style,"slides-timing-function");
-			Reapply(style,"slides-delay");
-			Reapply(style,"slides-iteration-count");
-			Reapply(style,"slides-direction");
-			//Reapply(style,"slides-fill-mode");
-			//Reapply(style,"slides-play-state");
+			Reapply(style,"timeline-duration");
+			Reapply(style,"timeline-timing-function");
+			Reapply(style,"timeline-delay");
+			Reapply(style,"timeline-iteration-count");
+			Reapply(style,"timeline-direction");
+			//Reapply(style,"timeline-fill-mode");
+			//Reapply(style,"timeline-play-state");
 			
-			// Load it now!
-			DataPackage package=new DataPackage(name,style.Element.document.basepath);
-			
-			package.onload=delegate(UIEvent e){
+			Timeline.open(name,style.Element.document.basepath,timeline).then(delegate(object o){
 				
-				// Check we're still the same instance:
-				Timeline tl=Timeline.Get(style);
-				
-				if(tl!=timeline){
-					return;
+				// Still enqueued?
+				if(timeline.isEnqueued){
+					
+					// Start it now!
+					timeline.start();
+					
 				}
 				
-				// Response:
-				string slides=package.responseText;
+			},delegate(object fail){
 				
-				// Load the timeline now:
-				timeline.load(Json.JSON.Parse(slides));
+				Dom.Log.Add("Failed to start PowerSlide (via CSS): "+fail);
 				
-				// Start it now!
-				timeline.Start();
-				
-			};
-			
-			// Send:
-			package.send();
+			});
 			
 			// Ok!
 			return ApplyState.Ok;

@@ -26,26 +26,43 @@ namespace PowerSlide{
 	public partial class Timeline{
 		
 		/// <summary>The linked list of active timelines.</summary>
-		public static Timeline First;
+		public static Timeline first;
 		/// <summary>The linked list of active timelines.</summary>
-		public static Timeline Last;
+		public static Timeline last;
 		/// <summary>Used to periodically call UpdateAll.
 		/// Similar to a UITimer but instead this runs 
 		/// on the Unity main thread and it's syncable with redraws.</summary>
-		private static OnUpdateCallback Updater;
+		private static OnUpdateCallback updater;
 		
 		
-		/// <summary>Gets the current instance for the given element (null if none found).</summary>
-		public static Timeline Get(ComputedStyle style){
+		/// <summary>Stops all timelines running on the given style.</summary>
+		public static void stopAll(ComputedStyle style){
 			
-			Timeline current=First;
+			Timeline current=first;
 			
 			while(current!=null){
-				if(current.Style==style){
+				
+				if(current.style==style){
+					// Interrupt it:
+					current.stop(false);
+				}
+				
+				current=current.after;
+			}
+			
+		}
+		
+		/// <summary>Gets the current instance for the given element (null if none found).</summary>
+		public static Timeline get(ComputedStyle style){
+			
+			Timeline current=first;
+			
+			while(current!=null){
+				if(current.style==style){
 					return current;
 				}
 				
-				current=current.After;
+				current=current.after;
 			}
 			
 			return null;
@@ -53,9 +70,9 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Gets the current instance for the given widget (null if none found).</summary>
-		public static Timeline Get(Widgets.Widget widget){
+		public static Timeline get(Widgets.Widget widget){
 			
-			Timeline current=First;
+			Timeline current=first;
 			
 			while(current!=null){
 				
@@ -63,7 +80,7 @@ namespace PowerSlide{
 					return current;
 				}
 				
-				current=current.After;
+				current=current.after;
 			}
 			
 			return null;
@@ -71,69 +88,76 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Removes all active slides.</summary>
-		public static void Clear(){
-			Last=First=null;
+		public static void clear(){
+			last=first=null;
 		}
 		
 		/// <summary>Called at the UI update rate to progress the currently running slides.</summary>
-		public static void UpdateAll(){
+		public static void updateAll(){
 			
 			// redraw frame?
-			if(First==null || !UI.IsRedrawUpdate){
+			if(first==null || !UI.IsRedrawUpdate){
 				return;
 			}
 			
 			// Get the frame time:
 			float frameTime=UI.CurrentFrameTime;
 			
-			Timeline current=First;
+			Timeline current=first;
 			
 			while(current!=null){
-				current.Update(frameTime);
-				current=current.After;	
+				current.update(frameTime);
+				current=current.after;	
 			}
 			
 		}
 		
 		/// <summary>The duration of the whole thing. Overrides timeline.duration, if it has one.</summary>
-		public float AppliedDuration=float.MinValue;
+		public float appliedDuration=float.MinValue;
 		/// <summary>The "actual" duration - the one which considers timeline too.</summary>
-		public float ActualDuration;
+		public float actualDuration;
 		/// <summary>The current time in seconds that has passed since it started.</summary>
-		public float CurrentTime;
+		public float currentTime;
 		/// <summary>The sampler used when progressing.</summary>
-		public Blaze.CurveSampler ProgressSampler;
+		public Blaze.CurveSampler progressSampler;
 		/// <summary>Current instances are stored in a linked list. This is the next one in the list.</summary>
-		public Timeline After;
+		internal Timeline after;
 		/// <summary>Current instances are stored in a linked list. This is the one before this in the list.</summary>
-		public Timeline Before;
+		internal Timeline before;
 		/// <summary>The delay before this plays, in s.</summary>
-		public float Delay;
+		public float delay;
 		/// <summary>Currently running backwards?</summary>
-		public bool Backwards;
+		public bool backwards;
 		/// <summary>The amount this should repeat.</summary>
-		public int RepeatCount=1;
+		public int repeatCount=1;
 		/// <summary>The direction to run.</summary>
-		public KeyframesAnimationDirection Direction=KeyframesAnimationDirection.Forward;
+		public KeyframesAnimationDirection direction=KeyframesAnimationDirection.Forward;
 		/// <summary>Started yet?</summary>
-		public bool Started;
+		public bool started;
 		/// <summary>Is it paused?</summary>
-		public bool Paused;
+		public bool paused;
 		/// <summary>True if this instance is in the update queue.</summary>
-		private bool Enqueued;
+		private bool enqueued;
 		/// <summary>The first currently running slide (from any track).</summary>
-		internal Slide FirstRunning;
+		internal Slide firstRunning;
 		/// <summary>The last currently running slide (from any track).</summary>
-		internal Slide LastRunning;
+		internal Slide lastRunning;
 		
+		
+		/// <summary>True if this instance is in the update queue.</summary>
+		public bool isEnqueued{
+			get{
+				return enqueued;
+			}
+		}
 		
 		/// <summary>Gets all active slides of the given type.</summary>
-		public List<T> GetActive<T>() where T:Slide{
+		public List<T> getActive<T>() where T:Slide{
 			
 			// Create results:
 			List<T> result=new List<T>();
 			
-			Slide current=FirstRunning;
+			Slide current=firstRunning;
 			
 			while(current!=null){
 				
@@ -141,16 +165,16 @@ namespace PowerSlide{
 					result.Add((T)current);
 				}
 				
-				current=current.NextRunning;
+				current=current.nextRunning;
 			}
 			
 			return result;
 		}
 		
 		/// <summary>True if the given slide is currently running.</summary>
-		public bool IsActive(Slide s){
+		public bool isActive(Slide s){
 			
-			Slide current=FirstRunning;
+			Slide current=firstRunning;
 			
 			while(current!=null){
 				
@@ -158,61 +182,62 @@ namespace PowerSlide{
 					return true;
 				}
 				
-				current=current.NextRunning;
+				current=current.nextRunning;
 			}
 			
 			return false;
 		}
 		
 		/// <summary>Starts this instance.</summary>
-		public void Start(){
+		public void start(){
 			
-			if(Paused || Started || tracks==null){
+			if(paused || started || tracks==null){
 				// Block start request.
 				return;
 			}
 			
-			Started=true;
+			started=true;
+			status_=TIMELINE_STARTED;
 			
-			if(!Enqueued){
-				Enqueue();
+			if(!enqueued){
+				enqueue();
 			}
 			
 		}
 		
 		/// <summary>Adds this instance to the update queue.</summary>
-		public void Enqueue(){
+		public void enqueue(){
 			
-			if(Enqueued){
+			if(enqueued){
 				return;
 			}
 			
-			Enqueued=true;
-			After=null;
-			Before=Last;
+			enqueued=true;
+			after=null;
+			before=last;
 			
-			if(First==null){
-				First=Last=this;
+			if(first==null){
+				first=last=this;
 				
 				// Enqueue in the update system:
-				Updater=OnUpdate.Add(UpdateAll);
+				updater=OnUpdate.Add(updateAll);
 				
 			}else{
-				Last.After=this;
-				Last=this;
+				last.after=this;
+				last=this;
 			}
 			
 		}
 		
 		/// <summary>Advances this instance by the given amount.</summary>
-		public void Update(float deltaTime){
+		public void update(float deltaTime){
 			
-			if(!Started || Paused){
+			if(!started || paused){
 				// Awaiting data, usually.
 				return;
 			}
 			
-			if(CurrentTime==0f){
+			if(currentTime==0f){
 				
 				if(deltaTime>0.5f){
 					// Block slow frames.
@@ -221,11 +246,11 @@ namespace PowerSlide{
 				}
 				
 				// Clear running:
-				FirstRunning=null;
-				LastRunning=null;
+				firstRunning=null;
+				lastRunning=null;
 				
 				// Establish duration:
-				float rawDuration=AppliedDuration;
+				float rawDuration=appliedDuration;
 				
 				if(rawDuration<0f){
 					
@@ -239,15 +264,15 @@ namespace PowerSlide{
 						}
 						
 					}else{
-						rawDuration=duration.GetDecimal(Style==null? null : Style.RenderData,null);
+						rawDuration=duration.GetDecimal(style==null? null : style.RenderData,null);
 					}
 					
 				}
 				
-				ActualDuration=rawDuration;
+				actualDuration=rawDuration;
 				
 				// Starting backwards?
-				Backwards=( ((int)Direction & 1) == 1);
+				backwards=( ((int)direction & 1) == 1);
 				
 				// Update durations for each track:
 				for(int i=0;i<tracks.Length;i++){
@@ -257,13 +282,13 @@ namespace PowerSlide{
 						continue;
 					}
 					
-					track.OnStart();
+					track.onStart();
 					
 					// Set start/duration:
-					track.SetStartAndDuration(rawDuration);
+					track.setStartAndDuration(rawDuration);
 					
 					// Reset current index:
-					if(Backwards){
+					if(backwards){
 						track.currentSlide=track.slides.Length;
 					}else{
 						track.currentSlide=-1;
@@ -272,12 +297,12 @@ namespace PowerSlide{
 				}
 				
 				// Dispatch start:
-				Dispatch("start");
+				dispatch("start");
 				
 				// Instant?
-				if(ActualDuration==0f){
+				if(actualDuration==0f){
 					
-					Stop(true);
+					stop(true);
 					
 					return;
 				}
@@ -287,7 +312,7 @@ namespace PowerSlide{
 			// If we have a timing leader, then current time is..
 			if(timingLeader!=null){
 				
-				CurrentTime=timingLeader.computedStart;
+				currentTime=timingLeader.computedStart;
 				
 				if(timingLeader.timing!=null){
 					
@@ -295,26 +320,26 @@ namespace PowerSlide{
 					float duration=timingLeader.timing.GetDuration();
 					float current=timingLeader.timing.GetCurrentTime();
 					
-					CurrentTime+=current;
+					currentTime+=current;
 					
 					if(duration!=-1f && current>=duration){
 						
 						// It's finished! Quit the timing leader:
 						// (This occurs if the lead time is shorter than the slide's duration).
-						timingLeader.EndTimingLead();
+						timingLeader.endTimingLead();
 						
 					}
 					
 				}
 				
 			}else{
-				CurrentTime+=deltaTime;
+				currentTime+=deltaTime;
 			}
 			
-			if(Style!=null && !Style.Element.isRooted){
+			if(style!=null && !style.Element.isRooted){
 				
 				// Immediately stop - the element was removed (don't call the finished event):
-				Stop(false);
+				stop(false);
 				
 				return;
 				
@@ -322,11 +347,11 @@ namespace PowerSlide{
 			
 			// Set ActiveValue by sampling from the curve (if there is one):
 			
-			if(ProgressSampler!=null){
+			if(progressSampler!=null){
 				
 				// Map through the progression curve:
-				ProgressSampler.Goto(CurrentTime / ActualDuration,true);
-				CurrentTime=ProgressSampler.CurrentValue * ActualDuration;
+				progressSampler.Goto(currentTime / actualDuration,true);
+				currentTime=progressSampler.CurrentValue * actualDuration;
 				
 			}
 			
@@ -344,20 +369,20 @@ namespace PowerSlide{
 				
 				int index=track.currentSlide;
 				
-				if(Backwards){
+				if(backwards){
 					index--;
 				}else{
 					index++;
 				}
 				
-				while( (Backwards && index>=0) || (!Backwards && index<length) ){
+				while( (backwards && index>=0) || (!backwards && index<length) ){
 					
 					// Get the slide:
 					Slide slideToStart=track.slides[index];
 					
 					if(slideToStart.ignore){
 						// Skip:
-						if(Backwards){
+						if(backwards){
 							index--;
 						}else{
 							index++;
@@ -368,40 +393,40 @@ namespace PowerSlide{
 					}
 					
 					// Startable?
-					if(Backwards){
+					if(backwards){
 						
-						if((1f-slideToStart.computedEnd)>=CurrentTime){
+						if((1f-slideToStart.computedEnd)>=currentTime){
 							// Nope!
 							break;
 						}
 						
-					}else if(slideToStart.computedStart>=CurrentTime){
+					}else if(slideToStart.computedStart>=currentTime){
 						// Nope!
 						break;
 					}
 					
 					// Add to queue:
-					slideToStart.NextRunning=null;
-					slideToStart.PreviousRunning=LastRunning;
+					slideToStart.nextRunning=null;
+					slideToStart.previousRunning=lastRunning;
 					
-					if(FirstRunning==null){
-						FirstRunning=LastRunning=slideToStart;
+					if(firstRunning==null){
+						firstRunning=lastRunning=slideToStart;
 					}else{
-						LastRunning.NextRunning=slideToStart;
-						LastRunning=slideToStart;
+						lastRunning.nextRunning=slideToStart;
+						lastRunning=slideToStart;
 					}
 					
 					// Start it now:
-					slideToStart.Start();
+					slideToStart.start();
 					
 					// Next:
 					track.currentSlide=index;
 					
-					if(Paused){
+					if(paused){
 						return;
 					}
 					
-					if(Backwards){
+					if(backwards){
 						index--;
 					}else{
 						index++;
@@ -412,55 +437,55 @@ namespace PowerSlide{
 			}
 			
 			// Kill any slides which are now done:
-			EndDoneSlides();
+			endDoneSlides();
 			
-			if(CurrentTime >= ActualDuration){
+			if(currentTime >= actualDuration){
 				
 				// Done!
-				CompletedCycle();
+				completedCycle();
 				
 			}
 			
 		}
 		
-		internal void EndDoneSlides(){
+		internal void endDoneSlides(){
 			
 			// Kill any slides which are now done:
-			Slide current=FirstRunning;
+			Slide current=firstRunning;
 			
 			while(current!=null){
 				
-				current.EndIfDone(Backwards,CurrentTime);
+				current.endIfDone(backwards,currentTime);
 				
-				current=current.NextRunning;
+				current=current.nextRunning;
 			}
 			
 		}
 		
 		/// <summary>Called when a cycle is completed.</summary>
-		private void CompletedCycle(){
+		private void completedCycle(){
 			
 			// Can we repeat? -1 is infinite.
-			if(RepeatCount!=-1){
+			if(repeatCount!=-1){
 				
-				RepeatCount--;
+				repeatCount--;
 				
 				// Got to stop?
-				if(RepeatCount==0){
-					Stop(true);
+				if(repeatCount==0){
+					stop(true);
 					return;
 				}
 				
 			}
 			
-			Dispatch("iteration");
+			dispatch("iteration");
 			
 			// If alternate, flip the direction:
-			if( ((int)Direction & 2) == 2){
-				Backwards=!Backwards;
+			if( ((int)direction & 2) == 2){
+				backwards=!backwards;
 			}else{
 				// Start running backwards?
-				Backwards=( ((int)Direction & 1) == 1);
+				backwards=( ((int)direction & 1) == 1);
 			}
 			
 			// Set the current frame:
@@ -472,7 +497,7 @@ namespace PowerSlide{
 					return;
 				}
 				
-				if(Backwards){
+				if(backwards){
 					track.currentSlide=track.slides.Length;
 				}else{
 					track.currentSlide=-1;
@@ -481,37 +506,37 @@ namespace PowerSlide{
 			}
 			
 			// Run again:
-			CurrentTime=0f;
+			currentTime=0f;
 			
 		}
 		
 		/// <summary>Cues this timeline (unpauses it).</summary>
-		public void Cue(){
-			SetPause(false);
+		public bool cue(){
+			return setPause(false);
 		}
 		
 		/// <summary>Changes the paused state of this animation.</summary>
-		public void SetPause(bool value){
+		public bool setPause(bool value){
 			
-			if(Paused==value){
-				return;
+			if(paused==value){
+				return false;
 			}
 			
 			if(value){
-				Dispatch("pause");
+				dispatch("pause");
 			}else{
-				Dispatch("play");
+				dispatch("play");
 			}
 			
-			Paused=value;
+			paused=value;
 			
-			Slide s=FirstRunning;
+			Slide s=firstRunning;
 			
 			while(s!=null){
 				
 				// Pause each slide:
-				s.SetPause(value);
-				s=s.NextRunning;
+				s.setPause(value);
+				s=s.nextRunning;
 				
 			}
 			
@@ -519,22 +544,24 @@ namespace PowerSlide{
 			if(!value){
 				
 				// Kill any slides which are now done:
-				EndDoneSlides();
+				endDoneSlides();
 				
 			}
 			
 			// Clear cues:
-			ClearCues();
+			clearCues();
 			
 			if(!value){
-				Start();
+				start();
 			}
+			
+			return true;
 		}
 		
 		/// <summary>
 		/// Sets a time curve which progresses the overall slides animation.
 		/// Almost always linear but change it for advanced effects.</summary>
-		public void SetTimingFunction(Css.Value timingFunc){
+		public void setTimingFunction(Css.Value timingFunc){
 			
 			// The function to use:
 			Blaze.VectorPath path=null;
@@ -543,14 +570,14 @@ namespace PowerSlide{
 				
 				// Get the defined vector path:
 				path=timingFunc.GetPath(
-					Style==null? null : Style.RenderData,
-					Css.Properties.SlidesTimingFunction.GlobalProperty
+					style==null? null : style.RenderData,
+					Css.Properties.TimelineTimingFunction.GlobalProperty
 				);
 				
 			}
 			
 			if(path==null){
-				ProgressSampler=null;
+				progressSampler=null;
 			}else{
 				
 				if(!(path is Blaze.RasterVectorPath)){
@@ -562,25 +589,25 @@ namespace PowerSlide{
 					
 				}
 				
-				ProgressSampler=new Blaze.CurveSampler(path);
-				ProgressSampler.Reset();
+				progressSampler=new Blaze.CurveSampler(path);
+				progressSampler.Reset();
 			}
 			
 		}
 		
 		/// <summary>Dispatches an event of the given name.</summary>
-		public void Dispatch(string name){
-			SlideEvent se=new SlideEvent("slides"+name,null);
+		public void dispatch(string name){
+			SlideEvent se=new SlideEvent("timeline"+name,null);
 			se.timeline=this;
 			se.SetTrusted(true);
 			dispatchEvent(se);
 		}
 		
 		/// <summary>Dispatch an event.</summary>
-		public void dispatchEvent(Dom.Event e){
+		protected override bool HandleLocalEvent(Event e,bool bubblePhase){
 			
-			if(Style!=null){
-				Style.Element.dispatchEvent(e);
+			if(style!=null){
+				style.Element.dispatchEvent(e);
 			}else if(document!=null){
 				document.dispatchEvent(e);
 			}
@@ -589,60 +616,40 @@ namespace PowerSlide{
 				currentWidget.dispatchEvent(e);
 			}
 			
+			return base.HandleLocalEvent(e,bubblePhase);
+			
 		}
 		
 		/// <summary>Stops this instance, optionally firing an event.</summary>
-		public void Stop(bool fireEvent){
+		public void stop(bool fireEvent){
 			
-			if(!Enqueued){
+			if(!enqueued){
 				return;
 			}
 			
-			Enqueued=false;
+			enqueued=false;
 			
-			if(Before==null){
-				First=After;
+			if(before==null){
+				first=after;
 			}else{
-				Before.After=After;
+				before.after=after;
 			}
 			
-			if(After==null){
-				Last=Before;
+			if(after==null){
+				last=before;
 			}else{
-				After.Before=Before;
+				after.before=before;
 			}
 			
-			// Clear cues:
-			ClearCues();
-			
-			if(First==null && Updater!=null){
-				
-				// Stop the updater:
-				Updater.Stop();
-				Updater=null;
-				
-			}
-			
-			// Kill any running slides:
-			Slide current=FirstRunning;
-			
-			while(current!=null){
-				
-				// Done!
-				current.End();
-				Paused=false;
-				
-				current=current.NextRunning;
-			}
-			
-			// Widget:
-			if(currentWidget!=null){
-				currentWidget.close();
-				currentWidget=null;
-			}
+			// Reset:
+			reset();
 			
 			if(fireEvent){
-				Dispatch("end");
+				status_=TIMELINE_ENDED;
+				dispatch("end");
+			}else{
+				status_=TIMELINE_CANCELLED;
+				dispatch("cancel");
 			}
 			
 		}

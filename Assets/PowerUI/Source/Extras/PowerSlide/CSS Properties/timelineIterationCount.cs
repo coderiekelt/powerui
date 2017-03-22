@@ -17,18 +17,18 @@ using PowerSlide;
 namespace Css.Properties{
 	
 	/// <summary>
-	/// Represents the slides-iteration-count: css property.
+	/// Represents the timeline-iteration-count: css property.
 	/// </summary>
 	
-	public class SlidesIterationCount:CssProperty{
+	public class TimelineIterationCount:CssProperty{
 		
 		public override string[] GetProperties(){
-			return new string[]{"slides-iteration-count"};
+			return new string[]{"slides-iteration-count","timeline-iteration-count"};
 		}
 		
 		public override ApplyState Apply(ComputedStyle style,Value value){
 			
-			Timeline si=Timeline.Get(style);
+			Timeline si=Timeline.get(style);
 			
 			if(si==null){
 				
@@ -38,12 +38,12 @@ namespace Css.Properties{
 			}
 			
 			if(value==null || value.IsType(typeof(Css.Keywords.None))){
-				si.RepeatCount=1;
+				si.repeatCount=1;
 			}else if(value.Type==ValueType.Text){
 				// Infinite
-				si.RepeatCount=-1;
+				si.repeatCount=-1;
 			}else{
-				si.RepeatCount=value.GetInteger(style.RenderData,this);
+				si.repeatCount=value.GetInteger(style.RenderData,this);
 			}
 			
 			// Ok!

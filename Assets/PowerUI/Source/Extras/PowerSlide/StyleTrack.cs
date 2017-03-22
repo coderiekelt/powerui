@@ -37,7 +37,7 @@ namespace PowerSlide{
 			}
 		}
 		
-		internal override void OnStart(){
+		internal override void onStart(){
 			
 			if(slides==null){
 				return;
@@ -53,7 +53,7 @@ namespace PowerSlide{
 				}
 				
 				// Start:
-				slide.OnStart();
+				slide.onStart();
 				
 			}
 			

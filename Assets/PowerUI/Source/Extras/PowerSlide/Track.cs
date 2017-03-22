@@ -27,11 +27,8 @@ namespace PowerSlide{
 	
 	public partial class Track : EventTarget{
 		
-		/// <summary>Use this and partial class extensions to add custom info loaded from JSON.</summary>
-		public static event Action<SlideEvent> OnLoad;
-		
 		/// <summary>Loads a track from the given track data.</summary>
-		public static Track LoadFromJson(Timeline timeline,JSObject json){
+		public static Track loadFromJson(Timeline timeline,JSObject json){
 			
 			// First, is it an indexed array?
 			// ["Hello!","I'm Dave"]      <- A basic dialogue track
@@ -46,7 +43,7 @@ namespace PowerSlide{
 				
 				if(string.IsNullOrEmpty(type)){
 					
-					Timeline.LoadFailed(
+					Timeline.loadFailed(
 						"A track was an object but didn't contain a "+
 						"'type' field to state what kind of track it is.",timeline
 					);
@@ -58,7 +55,7 @@ namespace PowerSlide{
 				
 				if(intenalTrackData==null){
 					// Nope!
-					Timeline.LoadFailed("A track was an object but didn't contain a 'track' field.",timeline);
+					Timeline.loadFailed("A track was an object but didn't contain a 'track' field.",timeline);
 				}
 				
 				// Try and create a track of the specified type:
@@ -76,7 +73,7 @@ namespace PowerSlide{
 					
 				}else{
 					
-					Timeline.LoadFailed("Didn't recognise '"+type+"' as a track type.",timeline);
+					Timeline.loadFailed("Didn't recognise '"+type+"' as a track type.",timeline);
 					
 				}
 				
@@ -103,7 +100,7 @@ namespace PowerSlide{
 			if(firstEntry==null){
 				
 				// Invalid track.
-				Timeline.LoadFailed("invalid track",timeline);
+				Timeline.loadFailed("invalid track",timeline);
 				
 			}
 			
@@ -139,7 +136,7 @@ namespace PowerSlide{
 			}else{
 				
 				// Fail otherwise:
-				Timeline.LoadFailed("Unable to recognise this as a track.",timeline);
+				Timeline.loadFailed("Unable to recognise this as a track.",timeline);
 				
 			}
 			
@@ -160,12 +157,12 @@ namespace PowerSlide{
 		public int id;
 		/// <summary>The slides which appear one after the other whilst this track is running.</summary>
 		public Slide[] slides;
-		/// <summary>The json the track originated from. NOTE: Only set if OnLoad is not null.</summary>
+		/// <summary>The json the track originated from.</summary>
 		public JSObject rawJson;
 		
 		public Track(){}
 		
-		internal virtual void OnStart(){}
+		internal virtual void onStart(){}
 		
 		/// <summary>The defined duration.</summary>
 		internal float definedDuration{
@@ -179,14 +176,14 @@ namespace PowerSlide{
 					
 					float startDec=start;
 					
-					if(slide.start!=null){
+					if(slide.startValue!=null){
 						
-						if(slide.start is Css.Units.PercentUnit){
+						if(slide.startValue is Css.Units.PercentUnit){
 							continue;
 						}
 						
 						// Get the raw dec:
-						startDec=slide.start.GetRawDecimal();
+						startDec=slide.startValue.GetRawDecimal();
 						
 						if(startDec>start){
 							start=startDec;
@@ -195,12 +192,12 @@ namespace PowerSlide{
 					}
 					
 					// Get the duration:
-					if(slide.duration==null || slide.duration is Css.Units.PercentUnit){
+					if(slide.durationValue==null || slide.durationValue is Css.Units.PercentUnit){
 						continue;
 					}
 					
 					// Get the end:
-					startDec+=slide.duration.GetRawDecimal();
+					startDec+=slide.durationValue.GetRawDecimal();
 					
 					if(startDec>start){
 						start=startDec;
@@ -214,7 +211,7 @@ namespace PowerSlide{
 		
 		/// <summary>Updates the computedStart and computedDuration values.</summary>
 		/// <param name="length">Total track length.</param>
-		internal void SetStartAndDuration(float length){
+		internal void setStartAndDuration(float length){
 			
 			// Go through each slide and setup start/duration.
 			if(slides==null){
@@ -239,12 +236,12 @@ namespace PowerSlide{
 				}
 				
 				// Explicit duration:
-				if(slide.duration!=null){
+				if(slide.durationValue!=null){
 					
 					// Get the raw dec so we can resolve %:
-					float durDec=slide.duration.GetRawDecimal();
+					float durDec=slide.durationValue.GetRawDecimal();
 					
-					if(slide.duration is Css.Units.PercentUnit){
+					if(slide.durationValue is Css.Units.PercentUnit){
 						durDec *= length;
 					}
 					
@@ -253,9 +250,9 @@ namespace PowerSlide{
 				}
 				
 				// Compute start:
-				if(slide.start==null){
+				if(slide.startValue==null){
 					
-					if(slide.duration!=null){
+					if(slide.durationValue!=null){
 						
 						// Duration only - it starts at the end of the previous frame.
 						// That's computed in the following loop when we know more start times.
@@ -267,9 +264,9 @@ namespace PowerSlide{
 				}else{
 					
 					// Get the raw dec so we can resolve %:
-					float startDec=slide.start.GetRawDecimal();
+					float startDec=slide.startValue.GetRawDecimal();
 					
-					if(slide.start is Css.Units.PercentUnit){
+					if(slide.startValue is Css.Units.PercentUnit){
 						startDec *= length;
 					}
 					
@@ -278,7 +275,7 @@ namespace PowerSlide{
 					if(firstNoStart!=-1){
 						
 						// Plug the gap from firstNoStart to i-1.
-						PlugStartGaps(firstNoStart,i,ignoreSlides,startDec);
+						plugStartGaps(firstNoStart,i,ignoreSlides,startDec);
 						
 						// Clear:
 						firstNoStart=-1;
@@ -294,7 +291,7 @@ namespace PowerSlide{
 			if(firstNoStart!=-1){
 				
 				// Plug the gap from firstNoStart to length-1.
-				PlugStartGaps(firstNoStart,slides.Length,ignoreSlides,length);
+				plugStartGaps(firstNoStart,slides.Length,ignoreSlides,length);
 				
 			}
 			
@@ -308,7 +305,7 @@ namespace PowerSlide{
 					continue;
 				}
 				
-				if(slide.start==null && slide.duration!=null){
+				if(slide.startValue==null && slide.durationValue!=null){
 					
 					// No start time, but we do have a duration. It's the end of the previous non-ignored slide:
 					int prevIndex=i-1;
@@ -340,7 +337,7 @@ namespace PowerSlide{
 				}
 				
 				// Compute duration:
-				if(slide.duration==null){
+				if(slide.durationValue==null){
 					
 					// It's just next non-ignored Start - myStart:
 					if(i==slides.Length-1){
@@ -379,7 +376,7 @@ namespace PowerSlide{
 		}
 		
 		/// <summary>Sets start between firstNoStart and max-1 using the given start value for max.</summary>
-		private void PlugStartGaps(int firstNoStart,int max,int ignoreSlides,float maxStart){
+		private void plugStartGaps(int firstNoStart,int max,int ignoreSlides,float maxStart){
 			
 			float gapStart=0f;
 			
@@ -428,9 +425,9 @@ namespace PowerSlide{
 			}
 		}
 		
-		/// <summary>Creates an event relative to this track. Prepends "slides" to the given type.</summary>
+		/// <summary>Creates an event relative to this track. Prepends "timeline" to the given type.</summary>
 		public SlideEvent createEvent(string type){
-			return createRawEvent("slides"+type);
+			return createRawEvent("timeline"+type);
 		}
 		
 		/// <summary>Creates an event relative to this track. Type is 'as-is'.</summary>
@@ -505,14 +502,10 @@ namespace PowerSlide{
 				
 			}
 			
-			if(OnLoad!=null){
-				
-				// Dispatch the load event which enables any custom info being added:
-				rawJson=json;
-				SlideEvent de=createEvent("load");
-				OnLoad(de);
-				
-			}
+			// Dispatch the load event which enables any custom info being added:
+			rawJson=json;
+			SlideEvent de=createEvent("trackload");
+			timeline.dispatchEvent(de);
 			
 		}
 		

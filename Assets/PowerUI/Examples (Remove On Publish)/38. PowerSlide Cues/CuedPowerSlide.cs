@@ -25,19 +25,14 @@ public class CuedPowerSlide : MonoBehaviour {
 			// Runs Resources/powerSlideExample.json on the 'toptips' example, making the whole thing last for 3s.
 			// The json file doesn't declare any durations so the 4s is split evenly amongst the slides.
 			
-			// To allow interruptions, you must clear it first (i.e. spam the button - it resets the animation):
-			tips.style.slides=null;
-			
-			tips.style.slides="url(PowerSlideCues.json) 3s";
+			tips.slide("PowerSlideCues.json",3).then(delegate(object o){
+				
+				// Done! You could also listen for slidesend on tips.
+				Dom.Log.Add("Slide complete!");
+				
+			});
 			
 		};
-		
-		// Catch the slides end event:
-		tips.addEventListener("slidesend",delegate(PowerSlide.SlideEvent se){
-			
-			Dom.Log.Add("Slide complete!");
-			
-		});
 		
 	}
 	

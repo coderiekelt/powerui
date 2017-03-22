@@ -17,24 +17,18 @@ using PowerSlide;
 namespace Css.Properties{
 	
 	/// <summary>
-	/// Represents the slides-timing-function: css property
+	/// Represents the timeline-duration: css property.
 	/// </summary>
 	
-	public class SlidesTimingFunction:CssProperty{
-		
-		public static SlidesTimingFunction GlobalProperty;
-		
-		public SlidesTimingFunction(){
-			GlobalProperty=this;
-		}
+	public class TimelineDuration:CssProperty{
 		
 		public override string[] GetProperties(){
-			return new string[]{"slides-timing-function"};
+			return new string[]{"slides-duration","timeline-direction"};
 		}
 		
 		public override ApplyState Apply(ComputedStyle style,Value value){
 			
-			Timeline si=Timeline.Get(style);
+			Timeline si=Timeline.get(style);
 			
 			if(si==null){
 				
@@ -43,7 +37,11 @@ namespace Css.Properties{
 				
 			}
 			
-			si.SetTimingFunction(value);
+			if(value==null){
+				si.appliedDuration=float.MinValue;
+			}else{
+				si.appliedDuration=value.GetDecimal(style.RenderData,this);
+			}
 			
 			// Ok!
 			return ApplyState.Ok;

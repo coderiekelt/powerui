@@ -222,6 +222,16 @@ namespace PowerUI{
 			request=System.Text.Encoding.UTF8.GetBytes(toPost);
 		}
 		
+		/// <summary>The request body as text.</summary>
+		public string requestText{
+			get{
+				if(request==null){
+					return null;
+				}
+				return System.Text.Encoding.UTF8.GetString(request);
+			}
+		}
+		
 		/// <summary>Gets or sets the raw response headers.</summary>
 		public string rawResponseHeaders{
 			get{
