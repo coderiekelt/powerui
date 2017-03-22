@@ -1,8 +1,0 @@
-<linker>
-	<assembly fullname="Assembly-CSharp-firstpass">
-		<type fullname="*" preserve="all"/>
-	</assembly>
-	<assembly fullname="Assembly-CSharp">
-		<type fullname="*" preserve="all"/>
-	</assembly>
-</linker>
