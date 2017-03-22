@@ -221,9 +221,24 @@ namespace PowerUI{
 			// First, whats the point relative to the box?
 			Vector3 point=transform.InverseTransformPoint(hit.point);
 			
-			// Great - we now have a relative point from +-0.5 in x and y.
-			x=point.x;
-			y=point.y;
+			// Consider scale:
+			Vector3 scale=transform.localScale;
+			
+			x=point.x * scale.x * 0.5f;
+			y=-(point.y * scale.y * 0.5f);
+			
+			// Clip:
+			if(x<-0.5f){
+				x=-0.5f;
+			}else if(x>0.5f){
+				x=0.5f;
+			}
+			
+			if(y<-0.5f){
+				y=-0.5f;
+			}else if(y>0.5f){
+				y=0.5f;
+			}
 			
 		}
 		
