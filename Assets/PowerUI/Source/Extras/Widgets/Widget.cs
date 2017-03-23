@@ -353,8 +353,8 @@ namespace Widgets{
 			trigger("open");
 			trigger("animateshow");
 			
-			// Create the location (relative to resources:// by default):
-			Dom.Location loc=new Dom.Location(url,null);
+			// Create the location (relative to basepath by default):
+			Dom.Location loc=new Dom.Location(url,document.basepath);
 			
 			// Navigate CD now:
 			contentDocument.location=loc;

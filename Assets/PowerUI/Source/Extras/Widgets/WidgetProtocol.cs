@@ -54,11 +54,6 @@ namespace PowerUI{
 				url=url.Substring(0,url.Length-1);
 			}
 			
-			// Build the 'full' url:
-			if(!url.Contains("://")){
-				url="resources://"+url;
-			}
-			
 			// Any query string is passed in as extras:
 			Dictionary<string,string> searchParams=path.searchParams;
 			
