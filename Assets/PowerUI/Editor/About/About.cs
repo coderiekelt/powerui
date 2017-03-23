@@ -54,7 +54,7 @@ namespace PowerUI{
 		
 		void OnGUI(){
 			
-			PowerUIEditor.HelpBox("PowerUI is a large UI framework which renders HTML and CSS.\r\n\r\nHelp: http://powerui.kulestar.com/\r\n\r\nVersion: "+UI.Version);
+			PowerUIEditor.HelpBox("PowerUI is a large UI framework which renders HTML and CSS.\r\n\r\nHelp: https://powerui.kulestar.com/\r\n\r\nVersion: "+UI.Version);
 			
 		}
 		
