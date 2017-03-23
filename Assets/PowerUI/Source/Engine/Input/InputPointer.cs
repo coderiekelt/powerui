@@ -177,6 +177,39 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>A convenience method which looks out for mousedown/mouseup events and runs them as Click() and Release().
+		/// You'd use this from an OnGUI method.</summary>
+		/// <returns>True if it did something with the event.</returns>
+		public bool HandleEvent(){
+			return HandleEvent(UnityEngine.Event.current);
+		}
+		
+		/// <summary>A convenience method which looks out for mousedown/mouseup events and runs them as Click() and Release().
+		/// You'd use this from an OnGUI method.</summary>
+		/// <param name='current'>An optional event - usually just Event.current.</param>
+		/// <returns>True if it did something with the event.</returns>
+		public virtual bool HandleEvent(UnityEngine.Event current){
+			
+			UnityEngine.EventType type=current.type;
+			
+			// Look out for mouse events:
+			if(type==UnityEngine.EventType.MouseUp){
+				
+				// Release it:
+				SetPressure(current.button,0f);
+				
+			}else if(type==UnityEngine.EventType.MouseDown){
+				
+				// Press it down:
+				SetPressure(current.button,1f);
+				
+			}else{
+				return false;
+			}
+			
+			return true;
+		}
+		
 		/// <summary>The rotation angle of an input when available.</summary>
 		public virtual float twist{
 			get{
@@ -317,26 +350,51 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Clicks this pointer - same as SetPressure(1).</summary>
+		/// <summary>This is the same as Down(button) then Up(button).</summary>
 		public void Click(int unityButtonID){
-			
-			// Set button ID:
-			SetButton(unityButtonID);
-			
-			// Always full pressure:
-			SetPressure(1f);
-			
+			Down(unityButtonID);
+			Up(unityButtonID);
 		}
 		
-		/// <summary>Releases this pointer - same as SetPressure(0).</summary>
+		/// <summary>Mouseup (right button). The same as Up(1).</summary>
+		public void RightUp(){
+			SetPressure(1,0f);
+		}
+		
+		/// <summary>Mousedown (right button). The same as Down(1).</summary>
+		public void RightDown(){
+			SetPressure(1,1f);
+		}
+		
+		/// <summary>Mouseup (left button). The same as Up(0).</summary>
+		public void LeftUp(){
+			SetPressure(0,0f);
+		}
+		
+		/// <summary>Mousedown (left button). The same as Down(0).</summary>
+		public void LeftDown(){
+			SetPressure(0,1f);
+		}
+		
+		/// <summary>Presses this pointer down. Essentially sets the pressure to 1.</summary>
+		public void Down(int unityButtonID){
+			SetPressure(unityButtonID,1f);
+		}
+		
+		/// <summary>Releases this pointer (same as Release). Essentially sets the pressure to 0.</summary>
+		public void Up(int unityButtonID){
+			SetPressure(unityButtonID,0f);
+		}
+		
+		/// <summary>Releases this pointer (same as Up). Essentially sets the pressure to 0.</summary>
 		public void Release(int unityButtonID){
-			
-			// Set button ID:
+			SetPressure(unityButtonID,0f);
+		}
+		
+		/// <summary>Sets the current button and the pressure.</summary>
+		public void SetPressure(int unityButtonID,float pressure){
 			SetButton(unityButtonID);
-			
-			// Clear pressure:
-			SetPressure(0f);
-			
+			SetPressure(pressure);
 		}
 		
 		/// <summary>Attempts to resolve LatestHit to an event target. Prefers to use Input.TargetResolver but falls back searching for 

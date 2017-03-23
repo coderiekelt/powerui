@@ -198,7 +198,7 @@ namespace PowerUI{
 		#endif
 		
 		/// <summary>Called by the file handler when the contents are available.</summary>
-		internal override void ReceivedData(byte[] buffer,int offset,int count){
+		public override void ReceivedData(byte[] buffer,int offset,int count){
 			
 			if(Contents.LoadData(buffer,this)){
 				

@@ -50,23 +50,8 @@ namespace PowerUI{
 				
 			}else if(Input.SystemMouse!=null){
 				
-				// Look out for mouse events:
-				if(type==EventType.MouseUp){
-					
-					// Release it:
-					PowerUI.Input.SystemMouse.Release(current.button);
-					
-				}else if(type==EventType.MouseDown){
-					
-					// Press it down:
-					PowerUI.Input.SystemMouse.Click(current.button);
-					
-				}else if(type==EventType.ScrollWheel){
-					
-					// Trigger the scrollwheel event:
-					PowerUI.Input.OnScrollWheel(current.delta);
-					
-				}
+				// Handle it:
+				Input.SystemMouse.HandleEvent(current);
 				
 			}
 			

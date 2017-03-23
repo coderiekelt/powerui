@@ -22,6 +22,20 @@ namespace PowerUI{
 			}
 		}
 		
+		public override bool HandleEvent(UnityEngine.Event current){
+			
+			// Consider scroll too:
+			if(current.type==EventType.ScrollWheel){
+				
+				// Trigger the scrollwheel event:
+				PowerUI.Input.OnScrollWheel(current.delta);
+				return true;
+				
+			}
+			
+			return base.HandleEvent(current);
+		}
+		
 		public override bool Relocate(out Vector2 delta){
 			
 			// Get the current mouse position:

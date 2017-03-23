@@ -90,7 +90,7 @@ namespace PowerUI{
 		/// <summary>Got data is called by the file handler when the response is received.</summary>
 		/// <param name="data">The data that was recieved, if any.</param>
 		/// <param name="status">The HTTP status code.</param>
-		internal override void ReceivedData(byte[] data,int offset,int count){
+		public override void ReceivedData(byte[] data,int offset,int count){
 			this.responseBytes=data;
 			base.ReceivedData(data,offset,count);
 		}
@@ -569,9 +569,15 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Received text data.</summary>
+		public void ReceivedText(string text){
+			byte[] data=System.Text.Encoding.UTF8.GetBytes(text);
+			ReceivedData(data,0,data.Length);
+		}
+		
 		/// <summary>Received a block of data.</summary>
 		/// <param name="buffer">The data that was recieved.</param>
-		internal virtual void ReceivedData(byte[] buffer,int offset,int count){
+		public virtual void ReceivedData(byte[] buffer,int offset,int count){
 			
 			if(readyState_==1){
 				// No headers received; trigger it anyway:

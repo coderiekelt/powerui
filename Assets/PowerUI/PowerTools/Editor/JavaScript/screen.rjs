@@ -1,0 +1,122 @@
+/*
+Handles loading up screens.
+*/
+
+var screen = (function(parameters,ajax){
+	
+	var cache={};
+	
+	function nodeName( elem, name ) {
+		return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
+	}
+	
+	function evalScript( elem ) {
+		var src=elem.src;
+		
+		var head = document.getElementsByTagName("head")[0] || document.documentElement,
+		script = document.createElement("script");
+		script.type = "text/javascript";
+		
+		if(src){
+			script.src=src;
+		}else{
+			var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
+			script.appendChild( document.createTextNode( data ) );
+		}
+		
+		head.insertBefore( script, head.firstChild );
+		head.removeChild( script );
+
+		if ( elem.parentNode ) {
+			elem.parentNode.removeChild( elem );
+		}
+	}
+	
+	var global={
+		
+		loader : function(){
+			return global.center("<img src='Images/loading.gif'/><br><h2>Loading - we'll be with you shortly!</h2>");
+		},
+		
+		center : function(text){
+			
+			return "<table class='fullsize' cellpadding=0 cellspacing=0>"+
+			"<tr class='fullsize'>"+
+				"<td class='fullsize' style='vertical-align:middle; text-align:center;padding:40px;'>"+
+					text+
+				"</td>"+
+			"</tr></table>";
+		},
+		
+		/*
+		Inserts HTML into the given element (which may also include scripts).
+		*/
+		insertAndExecute : function(domelement, text){
+			domelement.innerHTML = text;
+			var scripts = [];
+			
+			var ret = domelement.childNodes;
+			for ( var i = 0; ret[i]; i++ ) {
+				if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
+					scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
+				}
+			}
+			
+			for(var script in scripts)
+			{
+				evalScript(scripts[script]);
+			}
+		},
+
+		
+		open : function(name){
+			
+			var content=document.getElementById("content");
+			
+			if(cache[name]){
+				
+				// It's cached!
+				return new Promise(function(success,reject){
+					success(cache[name]);
+				});
+				
+			}
+			
+			content.innerHTML=global.loader();
+			
+			// Get:
+			return ajax.get("Screens/"+name+"/index.html").then(function(e){
+				
+				// Ok!
+				cache[name]=e;
+				global.insertAndExecute(content,e);
+				
+			},function(f){
+				
+				// Failed!
+				content.innerHTML=global.center(
+					"<h1>'"+name+
+					"' is unavailable</h1><br>A screen called "+name+
+					" is unavailable - have you got all the PowerTools files in your project/ uploaded to your site?<br><br>"+
+					"PowerTools doesn't work locally in Chrome/ WebKit (Webkit doesn't allow us to load file:// url's via XHR) - "+
+					"either use another browser like Firefox or upload PowerTools to the web."
+				);
+				
+			});
+			
+		}
+		
+	};
+	
+	// Handle the screen from the URL now:
+	var current=parameters["screen"];
+	
+	if(!current){
+		current="About";
+	}
+	
+	global.open(current);
+	
+	return global;
+	
+})(parameters,ajax);
