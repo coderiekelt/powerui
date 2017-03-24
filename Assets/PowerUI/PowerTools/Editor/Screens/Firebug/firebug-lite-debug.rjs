@@ -1,4 +1,4 @@
-(function(){
+screen.safe(function(){
 
 /*!*************************************************************
  *
@@ -30739,7 +30739,10 @@ FirebugChrome.Skin =
 FBL.initialize();
 // ************************************************************************************************
 
-})();
+Firebug.Console.logFormatted(["This is a proof of concept - it does not currently bind to PowerUI documents."], Firebug.context, "warn");
 
+service.getList("document/list").then(function(docList){
+	Firebug.Console.logFormatted(["PowerUI documents: ",docList], Firebug.context, "info");
+});
 
- Firebug.Console.logFormatted(["This is a proof of concept - it does not currently bind to PowerUI documents."], Firebug.context, "warn");
+});

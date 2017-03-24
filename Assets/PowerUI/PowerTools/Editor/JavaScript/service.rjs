@@ -15,12 +15,13 @@ var service = (function(parameters){
 		/*
 		Adds a service host.
 		*/
-		add : function(niceName,desc,basePath,beforeSend){
+		add : function(niceName,desc,basePath,version,beforeSend){
 			
 			var host={
 				name:name,
 				description:desc,
 				path:basePath,
+				version:version,
 				beforeSend:beforeSend,
 				select : function(){
 					global.select(this);
@@ -60,13 +61,49 @@ var service = (function(parameters){
 			return parameters["editor"]=="1";
 		},
 		
+		/*
+		Gets the given API path. Prepends the version.
+		*/
+		get : function(path){
+			return ajax.get("v"+currentHost.version+"/"+path);
+		},
+		
+		/*
+		Gets the given API path as a JSON list. Prepends the version.
+		*/
+		getList : function(path){
+			return new Promise(function(s,r){
+				ajax.get("v"+currentHost.version+"/"+path).then(function(e){
+					s(jsonList.load(e));
+				},r);
+			});
+		},
+		
+		/*
+		Gets the given API path as JSON. Prepends the version.
+		*/
+		getJson : function(path){
+			return new Promise(function(s,r){
+				ajax.get("v"+currentHost.version+"/"+path).then(function(e){
+					s(JSON.parse(e));
+				},r);
+			});
+		},
+		
+		/*
+		Posts to the given API path. Prepends the version.
+		*/
+		post : function(path,postData){
+			return ajax.post("v"+currentHost.version+"/"+path,postData);
+		}
+		
 	};
 	
 	// If we're in the Unity editor then add an editor endpoint:
 	if(global.editorMode()){
 		
 		// Add it:
-		global.add("Unity Editor","The Unity Editor.","http://localhost:7823/").select();
+		global.add("Unity Editor","The Unity Editor.","http://localhost:7823/",1).select();
 		
 	}
 	

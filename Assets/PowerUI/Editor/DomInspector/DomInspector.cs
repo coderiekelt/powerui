@@ -77,6 +77,34 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Gets a document by its unique ID.</summary>
+		public static Document GetByUniqueID(uint uniqueID){
+			
+			// First, search UI.document:
+			Document result=SearchForID(UI.document,uniqueID);
+			
+			if(result!=null){
+				return result;
+			}
+			
+			// Search every WorldUI:
+			WorldUI current=UI.LastWorldUI;
+			
+			while(current!=null){
+				
+				// Search it too:
+				result=SearchForID(current.document,uniqueID);
+				
+				if(result!=null){
+					return result;
+				}
+				
+				current=current.UIBefore;
+			}
+			
+			return null;
+		}
+		
 		/// <summary>Collects all available documents from the main UI and any WorldUI's.</summary>
 		public static List<DocumentEntry> GetDocuments(bool refresh){
 			
@@ -167,6 +195,42 @@ namespace PowerUI{
 			// Must always pull from all docs (as a refresh may result in the object changing).
 			return AllDocuments_[selectedIndex];
 			
+		}
+		
+		/// <summary>Searches a document for any sub-documents (inside iframes).</summary>
+		public static Document SearchForID(Document doc,uint id){
+			
+			if(doc==null){
+				return null;
+			}
+			
+			if(doc.uniqueID==id){
+				return doc;
+			}
+			
+			// Search for iframe's:
+			Dom.HTMLCollection set=doc.getElementsByTagName("iframe");
+			
+			foreach(Element node in set){
+				
+				// Get as a HTML element:
+				HtmlElement htmlElement=node as HtmlElement;
+				
+				// Double check it's not some evil iframe twin:
+				if(htmlElement!=null){
+					
+					// Search content doc:
+					Document result=SearchForID(htmlElement.contentDocument,id);
+					
+					if(result!=null){
+						return result;
+					}
+					
+				}
+				
+			}
+			
+			return null;
 		}
 		
 		/// <summary>Searches a document for any sub-documents (inside iframes).</summary>

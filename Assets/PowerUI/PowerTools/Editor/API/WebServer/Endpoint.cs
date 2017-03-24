@@ -55,7 +55,10 @@ namespace PowerTools{
 		/// E.g. /v1/hello/all.</summary>
 		public static Endpoint Get(string path){
 			
-			if(All==null){
+			if(All==null || All.Count==0){
+				
+				// Make sure this assembly has been started:
+				Modular.Start.Now(typeof(Endpoint));
 				
 				// Create the set:
 				All=new Dictionary<string,Endpoint>();

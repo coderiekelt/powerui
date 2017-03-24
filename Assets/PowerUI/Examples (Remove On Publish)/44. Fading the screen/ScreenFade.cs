@@ -24,7 +24,7 @@ public class ScreenFade : Widgets.Widget{
 	public static Promise Fade(PowerUI.HtmlDocument doc,UnityEngine.Color to,float timeInSeconds){
 		
 		// Open up the widget:
-		return doc.widgets.load("screenfade",null,"to",to,"time",timeInSeconds).then(new Promise());
+		return doc.widgets.load("screenfade",null,"to",to,"time",timeInSeconds);
 		
 	}
 	

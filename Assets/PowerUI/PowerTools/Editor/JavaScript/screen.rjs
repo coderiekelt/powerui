@@ -48,6 +48,24 @@ var screen = (function(parameters,ajax){
 			"</tr></table>";
 		},
 		
+		safe : function(js){
+			try{
+				js();
+			}catch(e){
+				global.displayObject(e);
+			}
+		},
+		
+		displayObject : function(obj){
+			var vDebug = "<h1>Uh oh! There was a Javascript error :(</h1>"; 
+			for (var prop in obj) 
+			{  
+			   vDebug += "property: "+ prop+ " value: ["+ obj[prop]+ "]<br>"; 
+			} 
+			vDebug += "toString(): " + " value: [" + obj.toString() + "]"; 
+			document.body.innerHTML=vDebug;
+		},
+		
 		/*
 		Inserts HTML into the given element (which may also include scripts).
 		*/
