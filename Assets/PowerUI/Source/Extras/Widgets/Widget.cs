@@ -36,11 +36,11 @@ namespace Widgets{
 		}
 		
 		/// <summary>True if the load event should be triggered.</summary>
-		internal bool RunLoad=true;
+		public bool RunLoad=true;
 		/// <summary>Index in managers array.</summary>
 		private int Index_; 
 		/// <summary>Index in managers array.</summary>
-		internal int Index{
+		public int Index{
 			get{
 				return Index_;
 			}
@@ -55,21 +55,21 @@ namespace Widgets{
 			}
 		}
 		/// <summary>The widget type. E.g. "floating".</summary>
-		internal string Type;
+		public string Type;
 		/// <summary>This widgets actual depth.</summary>
-		internal int ActiveDepth;
+		public int ActiveDepth;
 		/// <summary>The location of this widget.</summary>
-		internal string Location;
+		public string Location;
 		/// <summary>The root element which contains this widget. All templates must have one root only (watch out for comments and text!).</summary>
-		internal HtmlElement element;
+		public HtmlElement element;
 		/// <summary>The iframe. May be null.</summary>
-		internal HtmlElement frame;
+		public HtmlElement frame;
 		/// <summary>If this widget is in the 'hide other' stacking mode, this is the widget it hid.</summary>
-		internal Widget HidWidget;
+		public Widget HidWidget;
 		/// <summary>If this widget is hidden, the one that hid it.</summary>
-		internal Widget HidBy;
+		public Widget HidBy;
 		/// <summary>The document to load content into. May be null.</summary>
-		internal HtmlDocument contentDocument;
+		public HtmlDocument contentDocument;
 		
 		
 		/// <summary>The document this widget is in.</summary>
@@ -299,7 +299,7 @@ namespace Widgets{
 		
 		/// <summary>Navigates the widget to the given URL. Should only be used once; 
 		/// close and open another widget (or use links inside the iframe).</summary>
-		internal virtual void Goto(string url,Dictionary<string,object> globals){
+		public virtual void Goto(string url,Dictionary<string,object> globals){
 			
 			// Set location:
 			Location=url;

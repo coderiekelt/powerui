@@ -184,7 +184,7 @@ namespace Widgets{
 		}
 		
 		/// <summary>Called when the template is ready.</summary>
-		internal override void Goto(string url,Dictionary<string,object> globals){
+		public override void Goto(string url,Dictionary<string,object> globals){
 			
 			// Just get the timeline:
 			object timelineObj;

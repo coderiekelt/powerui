@@ -123,7 +123,7 @@ namespace PowerSlide{
 		/// <summary>
 		/// The markup to show.
 		/// </summary>
-		internal string markup;
+		public string markup;
 		
 		
 		/// <summary>Gets a slide by a unique ID.</summary>

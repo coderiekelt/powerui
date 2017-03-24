@@ -190,13 +190,8 @@ public static class UI{
 		// Setup the character entities such as &nbsp;
 		CharacterEntities.Setup();
 		
-		// Start modules now! UI is always precompiled; Manager never is.
-		// Starting them both will either start just one module or two 
-		// (depending on if we're precompiled or not).
-		// Essentially that'll automatically catch all custom tags etc 
-		// regardless of where they are in the project.
+		// Start modules now! UI is always available so we use that:
 		Modular.Start.Now(typeof(UI));
-		Modular.Start.Now(typeof(PowerUI.Manager));
 		
 		// Setup language metadata:
 		Languages.globalLoader.Setup();
