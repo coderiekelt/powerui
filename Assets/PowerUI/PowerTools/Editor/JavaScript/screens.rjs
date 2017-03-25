@@ -2,7 +2,7 @@
 Handles loading up screens.
 */
 
-var screen = (function(parameters,ajax){
+var screens = (function(parameters,ajax){
 	
 	var cache={};
 	
@@ -85,11 +85,20 @@ var screen = (function(parameters,ajax){
 				evalScript(scripts[script]);
 			}
 		},
-
+		
+		ele : function(){
+			return document.getElementById("content");
+		},
+		
+		write : function(text){
+			global.ele().innerHTML=text;
+		},
+		
+		error : function(title,msg){
+			global.write(global.center("<h1>"+title+"</h1><br>"+msg));
+		},
 		
 		open : function(name){
-			
-			var content=document.getElementById("content");
 			
 			if(cache[name]){
 				
@@ -100,21 +109,19 @@ var screen = (function(parameters,ajax){
 				
 			}
 			
-			content.innerHTML=global.loader();
+			global.write(global.loader());
 			
 			// Get:
 			return ajax.get("Screens/"+name+"/index.html").then(function(e){
 				
 				// Ok!
 				cache[name]=e;
-				global.insertAndExecute(content,e);
+				global.insertAndExecute(global.ele(),e);
 				
 			},function(f){
 				
 				// Failed!
-				content.innerHTML=global.center(
-					"<h1>'"+name+
-					"' is unavailable</h1><br>A screen called "+name+
+				global.error("'"+name+"' is unavailable","A screen called "+name+
 					" is unavailable - have you got all the PowerTools files in your project/ uploaded to your site?<br><br>"+
 					"PowerTools doesn't work locally in Chrome/ WebKit (Webkit doesn't allow us to load file:// url's via XHR) - "+
 					"either use another browser like Firefox or upload PowerTools to the web."
@@ -126,15 +133,9 @@ var screen = (function(parameters,ajax){
 		
 	};
 	
-	// Handle the screen from the URL now:
-	var current=parameters["screen"];
-	
-	if(!current){
-		current="About";
-	}
-	
-	global.open(current);
-	
 	return global;
 	
 })(parameters,ajax);
+
+// Handle the screen from the URL now:
+screens.open(parameters["screen"] ? parameters["screen"] : "About");
