@@ -321,7 +321,7 @@ var findLocation =  function findLocation()
 	loc.sourceDir = "Screens/Firebug/";
 	loc.baseDir = "Screens/Firebug/";
 	loc.skinDir = loc.baseDir + "skins/" + Env.skin + "/"; 
-	loc.skin = loc.skinDir + "firebug.html";
+	loc.skin = loc.skinDir + "firebug.html.bytes";
 	loc.app = "Screens/Firebug/firebug-lite-debug.rjs";
 };
 
@@ -9335,7 +9335,7 @@ var getChromeTemplate = function(isPopup)
     
     /*
     r[++i] = '</title><link href="';
-    r[++i] = Env.Location.skinDir + 'firebug.css';
+    r[++i] = Env.Location.skinDir + 'firebug.css.bytes';
     r[++i] = '" rel="stylesheet" type="text/css" />';
     /**/
     
@@ -13570,7 +13570,7 @@ var offscreenStyle = resetStyle + "top:-1234px; left:-1234px;";
 
 var inspectStyle = resetStyle + "z-index: 2147483500;";
 var inspectFrameStyle = resetStyle + "z-index: 2147483550; top:0; left:0; background:url(" +
-                        Env.Location.skinDir + "pixel_transparent.gif);";
+                        Env.Location.skinDir + "pixel_transparent.gif.bytes);";
 
 //if (Env.Options.enableTrace) inspectFrameStyle = resetStyle + "z-index: 2147483550; top: 0; left: 0; background: #ff0; opacity: 0.05; _filter: alpha(opacity=5);";
 
