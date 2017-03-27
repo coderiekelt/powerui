@@ -13,6 +13,7 @@ using System;
 using System.Threading;
 using Nitro;
 using Dom;
+using UnityEngine;
 
 
 namespace PowerUI{
@@ -170,18 +171,25 @@ namespace PowerUI{
 		
 		/// <summary>Stops this timer from running anymore.</summary>
 		public void Stop(){
+			
+			#if UNITY_WP8
 			if(InternalTimer==null){
 				return;
 			}
 			
-			#if UNITY_WP8
 			InternalTimer.Dispose();
+			InternalTimer=null;
+			
 			#elif UNITY_METRO
 			#else
+			if(InternalTimer==null){
+				return;
+			}
+			
 			InternalTimer.Enabled=false;
+			InternalTimer=null;
 			#endif
 			
-			InternalTimer=null;
 			
 			if(!OneOff){
 				
