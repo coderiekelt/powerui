@@ -43,16 +43,10 @@ namespace PowerUI{
 			}
 		}
 		
-		/// <summary>Ordinal text for this list element.</summary>
+		/// <summary>Ordinal text for this list element (prefixed).</summary>
 		public string Ordinal{
 			get{
-				HtmlOListElement ol=parentNode as HtmlOListElement;
-				
-				if(ol==null){
-					return "";
-				}
-				
-				return ol.GetOrdinal(childIndex);
+				return HtmlOListElement.GetOrdinal(Style.Computed,true);
 			}
 		}
 		
