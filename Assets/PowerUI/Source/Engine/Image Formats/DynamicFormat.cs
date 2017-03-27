@@ -52,7 +52,10 @@ namespace PowerUI{
 		/// <summary>An isolated material for this image.</summary>
 		private Material IsolatedMaterial;
 		
-		
+		/// <summary>A cached Texture_.height. Use Height instead.</summary>
+		private int Height_;
+		/// <summary>A cached Texture_.width. Use Width instead.</summary>
+		private int Width_;
 		/// <summary>The pixels of this texture.</summary>
 		public Color32[] Pixels;
 		/// <summary>True if this texture needs a refresh this frame.</summary>
@@ -79,13 +82,13 @@ namespace PowerUI{
 		/// <summary>Resize this texture on the X axis.</summary>
 		/// <param name="width">The new width.</param>
 		public void ResizeX(int width){
-			Resize(width,Height,false);
+			Resize(width,Height_,false);
 		}
 		
 		/// <summary>Resize this texture on the Y axis.</summary>
 		/// <param name="height">The new height.</param>
 		public void ResizeY(int height){
-			Resize(Width,height,false);
+			Resize(Width_,height,false);
 		}
 		
 		/// <summary>The filter mode of this dynamic texture. The default filtering is point.</summary>
@@ -112,14 +115,16 @@ namespace PowerUI{
 			
 			if(Texture_!=null){
 				
-				int prevWidth=Texture_.width;
-				int prevHeight=Texture_.height;
+				int prevWidth=Width_;
+				int prevHeight=Height_;
 				
 				if(width==prevWidth && height==prevHeight){
 					// No change.
 					return false;
 				}
 				
+				Height_=height;
+				Width_=width;
 				Texture_.Resize(width,height);
 				
 				// Transfer the pixels:
@@ -163,6 +168,8 @@ namespace PowerUI{
 			// Create the texture:
 			Texture_=new Texture2D(width,height,TextureFormat.ARGB32,false);
 			Texture_.filterMode=FilterMode.Point;
+			Height_=height;
+			Width_=width;
 			
 			// Setup the pixels:
 			Pixels=new Color32[width * height];
@@ -229,10 +236,10 @@ namespace PowerUI{
 		/// <param name="y">The y coordinate in pixels from the bottom of the texture.</param>
 		/// <param name="colour">The colour of the pixel to draw.</param>
 		public void DrawPixel(int x,int y,Color32 colour){
-			if(x<0 || Texture_==null || x>=Texture_.width || y<0 || y>=Texture_.height){
+			if(x<0 || x>=Width_ || y<0 || y>=Height_){
 				return;
 			}
-			Pixels[(y*Texture_.width)+x]=colour;
+			Pixels[(y*Width_)+x]=colour;
 			RequestPaint();
 		}
 		
@@ -413,19 +420,13 @@ namespace PowerUI{
 		
 		public override int Height{
 			get{
-				if(Texture_==null){
-					return 0;
-				}
-				return Texture_.height;
+				return Height_;
 			}
 		}
 		
 		public override int Width{
 			get{
-				if(Texture_==null){
-					return 0;
-				}
-				return Texture_.width;
+				return Width_;
 			}
 		}
 		

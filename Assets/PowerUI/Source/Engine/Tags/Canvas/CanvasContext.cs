@@ -27,10 +27,47 @@ namespace PowerUI{
 	
 	public class CanvasContext{
 		
+		/*
+		#region GPU Accelerated Canvas
+		
+		/// <summary>Used by Loonim in GPU draw mode. The draw target.</summary>
+		public Loonim.DrawStack DrawSurface;
+		/// <summary>Used by Loonim in GPU draw mode. 
+		/// This is the thing we draw to the draw surface.</summary>
+		public Loonim.MaterialStackNodeCleared DrawNode;
+		/// <summary>Helps build stroke meshes.</summary>
+		private Loonim.StrokePathMesh StrokeHelper=null;
+		
+		
+		/// <summary>Runs this context in GPU mode.</summary>
+		public void Accelerate(){
+			
+			// Create the DrawStack (which holds the actual target texture; 
+			// they're stacks because Loonim would normally stack nodes in there):
+			DrawSurface = new Loonim.DrawStack();
+			
+			// (We only ever need one of these nodes as canvas doesn't retain any other information by design)
+			// I.e. it just needs to be able to splat 1 mesh at a time.
+			DrawNode = new Loonim.MaterialStackNodeCleared();
+			DrawNode.Stack = DrawSurface;
+			
+			// It'll always use the 'clipping path' node (#114):
+			DrawNode.Material = new Material(Shader.Find("Loonim/114"));
+			
+			// Next, we need both a triangulator (fill) and a stroke helper (stroke):
+			StrokeHelper=new Loonim.StrokePathMesh();
+			
+		}
+		
+		#endregion
+		*/
+		
 		/// <summary>The rasteriser used to fill with.</summary>
 		public Scanner Rasteriser;
 		
-		
+		/// <summary>True if the path requires clipping for stroke/fill.
+		/// A path is clipped to avoid huge delays caused by points at infinity.</summary>
+		internal bool Clip_;
 		/// <summary>The underlying path.</summary>
 		public VectorPath Path;
 		/// <summary>The element for the canvas that this is a context for.</summary>
@@ -58,6 +95,13 @@ namespace PowerUI{
 			Path=new VectorPath();
 			ImageData_=new DynamicTexture();
 			canvas.SetImage(ImageData_);
+		}
+		
+		/// <summary>True if the canvas has data ready to be uploaded to the GPU.</summary>
+		public bool AlreadyDrawnTo{
+			get{
+				return ImageData.RefreshRequired;
+			}
 		}
 		
 		/// <summary>Creates an infinitext glyph from the path you've just made.</summary>
@@ -105,11 +149,13 @@ namespace PowerUI{
 		public void beginPath(){
 			// Just clear the path:
 			Path.Clear();
+			Clip_=false;
 		}
 		
 		/// <summary>Closes the current path such that it forms a loop by drawing a line to the first node.</summary>
 		public void closePath(){
 			Path.ClosePath();
+			Clip_=true;
 		}
 		
 		/// <summary>The current number of nodes on the current path.</summary>
@@ -130,6 +176,8 @@ namespace PowerUI{
 			}
 			
 			Path.LineTo(x,y);
+			Clip_=true;
+			
 		}
 		
 		/// <summary>Creates an arc around the given circle center. Note that nothing will
@@ -218,7 +266,7 @@ namespace PowerUI{
 			
 			// Add the other end:
 			Path.AddPathNode(arcNode);
-			
+			Clip_=true;
 		}
 		
 		/// <summary>Is the specified point in (not on) the current path?</summary>
@@ -245,10 +293,12 @@ namespace PowerUI{
 		
 		public void curveTo(float c1x,float c1y,float c2x,float c2y,float x,float y){
 			Path.CurveTo(c1x,c1y,c2x,c2y,x,y);
+			Clip_=true;
 		}
 		
 		public void quadraticCurveTo(float cx,float cy,float x,float y){
 			Path.QuadraticCurveTo(cx,cy,x,y);
+			Clip_=true;
 		}
 		
 		/// <summary>Tidies up this context.</summary>
@@ -339,7 +389,7 @@ namespace PowerUI{
 			
 			// Add the other end:
 			Path.AddPathNode(arcNode);
-			
+			Clip_=true;
 		}
 		
 		/// <summary>Gets the signed angle from one vector, the first, to another.</summary>
@@ -350,6 +400,14 @@ namespace PowerUI{
 		
 		/// <summary>Draws the outline of path you created, and doesn't reset the path, using the stroke style.</summary>
 		public void stroke(){
+			
+			if(Clip_){
+				// Clip the path first.
+				Clip_=false;
+				
+				// Clip with a 50px safety zone on all sides for strokes.
+				Path.Clip(-50f,-50f,ImageData.Width+50f,ImageData.Height+50f);
+			}
 			
 			// For each line..
 			
@@ -382,6 +440,14 @@ namespace PowerUI{
 			
 			if(Path.FirstPathNode==null){
 				return;
+			}
+			
+			if(Clip_){
+				// Clip the path first.
+				Clip_=false;
+				
+				// Clip with a 50px safety zone on all sides for strokes.
+				Path.Clip(-50f,-50f,ImageData.Width+50f,ImageData.Height+50f);
 			}
 			
 			if(Rasteriser==null){
