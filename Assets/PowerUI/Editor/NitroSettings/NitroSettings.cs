@@ -126,7 +126,7 @@ namespace PowerUI{
 		
 		private string NitroPath{
 			get{
-				return PowerUIEditor.GetPowerUIPath()+"/Source/Nitro/Engine";
+				return PowerUIEditor.GetPowerUIPath()+"/Source/JavaScript/NitroV1/Engine";
 			}
 		}
 		
