@@ -10,13 +10,7 @@
 //--------------------------------------
 
 using System;
-
-
-#if !UNITY_METRO
-
 using System.Threading;
-
-#endif
 
 
 namespace PowerUI{
@@ -35,24 +29,6 @@ namespace PowerUI{
 		/// <summary>Queues the given delegate in order to run it on the main Unity thread.</summary>
 		public static void MainThread(MainThreadDelegate toRun){
 			
-			#if UNITY_METRO && UNITY_EDITOR
-			
-			toRun();
-			return;
-			
-			#elif UNITY_METRO
-			
-			if(Environment.CurrentManagedThreadId==Callbacks.MainThread){
-				toRun();
-				return;
-			}
-			
-			// Enqueue:
-			Callbacks.Add(new Callback(toRun));
-			
-			#else
-			
-			
 			if(Thread.CurrentThread==Callbacks.MainThread){
 				toRun();
 				return;
@@ -60,8 +36,6 @@ namespace PowerUI{
 			
 			// Enqueue:
 			Callbacks.Add(new Callback(toRun));
-			
-			#endif
 			
 		}
 		
@@ -83,21 +57,7 @@ namespace PowerUI{
 		/// <summary>True if callbacks will run immediately with no delay.</summary>
 		public static bool WillRunImmediately{
 			get{
-
-				#if UNITY_METRO && UNITY_EDITOR
-				
-				return true;
-				
-				#elif UNITY_METRO
-				
-				return (Environment.CurrentManagedThreadId==Callbacks.MainThread);
-				
-				#else
-			
 				return (Thread.CurrentThread==Callbacks.MainThread);
-				
-				#endif
-				
 			}
 		}
 		
@@ -105,20 +65,8 @@ namespace PowerUI{
 		public static bool WillDelay{
 			get{
 				
-				#if UNITY_METRO && UNITY_EDITOR
-				
-				return false;
-				
-				#elif UNITY_METRO
-				
-				return (Environment.CurrentManagedThreadId!=Callbacks.MainThread);
-				
-				#else
-	
 				return (Thread.CurrentThread!=Callbacks.MainThread);
 				
-				#endif
-
 			}
 		}
 		

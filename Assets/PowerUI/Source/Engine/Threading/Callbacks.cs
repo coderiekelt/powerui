@@ -10,12 +10,8 @@
 //--------------------------------------
 
 using System;
-
-#if !UNITY_METRO
-
 using System.Threading;
 
-#endif
 
 namespace PowerUI{
 	
@@ -26,12 +22,8 @@ namespace PowerUI{
 	
 	
 		/// <summary>Unity's main thread.</summary>
-		#if UNITY_METRO
-		internal static int MainThread;
-		#else
 		internal static Thread MainThread;
-		#endif
-
+		
 		/// <summary>The main callback queue. Stored as a linked list - this is the tail of the queue.</summary>
 		internal static Callback LastToRun;
 		/// <summary>The main callback queue. Stored as a linked list - this is the head of the queue.</summary>
@@ -41,20 +33,7 @@ namespace PowerUI{
 		/// <summary>Sets up the callback system. Always called on Unity's main thread.</summary>
 		internal static void Start(){
 			
-			#if UNITY_METRO && UNITY_EDITOR
-			
-			// Unable to resolve this one.
-			MainThread=-1;
-			
-			#elif UNITY_METRO
-			
-			MainThread=Environment.CurrentManagedThreadId;
-			
-			#else
-			
 			MainThread=Thread.CurrentThread;
-			
-			#endif
 			
 		}
 		
