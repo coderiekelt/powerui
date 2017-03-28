@@ -31,14 +31,18 @@ namespace PowerUI{
 		/// <summary>The default layer to use for rendering FlatWorldUI's. If not set the PowerUI layer is used, Change by using yourWorldUI.Layer.</summary>
 		private int DefaultLayer=-1;
 		
-		/// <summary>The raw texture. Note that for Unity Pro users, this is always a RenderTexture (and a Texture2D for free users).</summary>
-		public Texture Texture;
+		/// <summary>The raw texture. If this changes because you resized your FlatWorldUI, 
+		/// an imagechange event will be fired on the window (type of Dom.Event).</summary>
+		public RenderTexture Texture;
 		/// <summary>The internal camera being used to render it flat.</summary>
 		public Camera SourceCamera;
 		/// <summary>The internal camera's gameobject being used.</summary>
 		public GameObject CameraObject;
-		/// <summary>A handler which ensures the camera remains the right size.</summary>
-		private FlatWorldUIHandler Handler;
+		/// <summary>A filter to apply.</summary>
+		private Loonim.SurfaceTexture Filter_;
+		/// <summary>The draw info which draws the filter.</summary>
+		private Loonim.DrawInfo FilterDrawInfo;
+		
 		
 		/// <summary>Creates a new Flat World UI with 100x100 pixels of space and a name of "new World UI".
 		/// The gameobjects origin sits at the middle of the UI by default. See <see cref="PowerUI.WorldUI.SetOrigin"/>. 
@@ -91,6 +95,10 @@ namespace PowerUI{
 			// Make it forward rendered (it deals with transparency):
 			SourceCamera.renderingPath=RenderingPath.Forward;
 			
+			// Disable the camera object so we 
+			// can manually redraw at the UI rate:
+			CameraObject.SetActive(false);
+			
 			float zSpace=UI.GetCameraDistance();
 			
 			// Setup the cameras distance:
@@ -104,62 +112,12 @@ namespace PowerUI{
 			
 			// Set the orthographic size:
 			SetOrthographicSize();
-		
-			// Start our handler:
-			Handler=CameraObject.AddComponent<FlatWorldUIHandler>();
 			
-			// And the location too:
-			Handler.Location=new Rect(0,0,widthPX,heightPX);
+			// Next it's time for the texture itself!
+			// We now always have a RenderTexture.
 			
-			// Apply aspect:
-			Handler.Aspect=(float)widthPX / (float)heightPX;
-			
-			// Hook up the camera:
-			Handler.Camera=SourceCamera;
-			
-			// Next it's time for the texture itself! We're going to try using a RenderTexture first.
-			
-			RenderTexture renderTexture=null;
-			
-			#if UNITY_5_5_OR_NEWER
-			
-			// Create a render texture:
-			renderTexture=new RenderTexture(widthPX,heightPX,16,RenderTextureFormat.ARGB32);
-			
-			// Apply it to the texture:
-			Texture=renderTexture;
-			
-			// Hook it up:
-			SourceCamera.targetTexture=renderTexture;
-			
-			#else
-			
-			if(SystemInfo.supportsRenderTextures){
-				
-				// Create a render texture:
-				renderTexture=new RenderTexture(widthPX,heightPX,16,RenderTextureFormat.ARGB32);
-				
-				// Apply it to the texture:
-				Texture=renderTexture;
-				
-				// Hook it up:
-				SourceCamera.targetTexture=renderTexture;
-				
-			}else{
-				// No RT support. Time to use our workaround instead!
-				
-				// Create the texture:
-				Texture2D texture=new Texture2D(widthPX,heightPX);
-				
-				// Hook it up now:
-				Handler.Output=texture;
-				
-				// Apply it:
-				Texture=texture;
-				
-			}
-			
-			#endif
+			// Update the render texture:
+			ChangeImage(widthPX,heightPX);
 			
 			// Change the layer of the gameobject and also the camera.
 			
@@ -179,8 +137,90 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Updates the render texture.</summary>
+		private void ChangeImage(int width,int height){
+			
+			if(Texture!=null){
+				
+				// Destroy existing one:
+				GameObject.Destroy(Texture);
+			
+			}
+			
+			// Create tex:
+			Texture=new RenderTexture(width,height,16,RenderTextureFormat.ARGB32);
+			
+			// Hook it up:
+			SourceCamera.targetTexture=Texture;
+			
+			// If we have a filter, update its input:
+			if(Filter_==null){
+				
+				// Fire an imagechange event into the window:
+				Dom.Event e=new Dom.Event("imagechange");
+				e.SetTrusted(false);
+				document.window.dispatchEvent(e);
+				
+			}else{
+				// Connect up the filter
+				// (which will fire an imagechange for us):
+				ConnectFilter();
+			}
+			
+		}
+		
+		/// <summary>Connects a filter to the camera's output.
+		/// Fires an imagechange event too as this updates Texture to the filtered version.</summary>
+		private void ConnectFilter(){
+			
+			if(Filter_!=null){
+				
+				if(FilterDrawInfo==null){
+					FilterDrawInfo=new Loonim.DrawInfo();
+				}
+				
+				// Update draw info:
+				FilterDrawInfo.SetSize(pixelWidth,pixelHeight);
+				
+				// Update source:
+				Filter_.Set("source0",SourceCamera.targetTexture);
+				
+				// Reallocate the filter:
+				Filter_.PreAllocate(FilterDrawInfo);
+				
+				// Grab the main output (always a RT):
+				Texture=Filter_.Texture as RenderTexture;
+				
+				if(Texture==null){
+					
+					// This isn't a valid filter!
+					// It either had no nodes or e.g. e.g. a solid colour.
+					Debug.Log("Invalid filter was set to a FlatWorldUI - removed it.");
+					Filter_=null;
+					
+				}
+				
+			}
+			
+			if(Filter_==null){
+				
+				// Clear draw info:
+				FilterDrawInfo=null;
+				
+				// Revert to the camera's output:
+				Texture=SourceCamera.targetTexture;
+				
+			}
+			
+			// Fire an imagechange event into the window:
+			Dom.Event e=new Dom.Event("imagechange");
+			e.SetTrusted(false);
+			document.window.dispatchEvent(e);
+			
+		}
+		
 		/// <summary>Alias for Texture.</summary>
-		public Texture texture{
+		public RenderTexture texture{
 			get{
 				return Texture;
 			}
@@ -291,35 +331,10 @@ namespace PowerUI{
 			// Set the base dimensions:
 			base.SetDimensions(x,y);
 			
-			if(Handler!=null){
-				// Update handler location too:
-				Handler.Location=new Rect(0,0,x,y);
-				
-				// Apply aspect:
-				Handler.Aspect=(float)x / (float)y;
-			}
-			
 			if(Texture!=null){
 				
-				if(Texture is RenderTexture){
-					
-					// Destroy it:
-					GameObject.Destroy(Texture);
-					
-					// Must recreate it unfortunately!
-					RenderTexture renderTexture=new RenderTexture(x,y,16,RenderTextureFormat.ARGB32);
-					
-					// Re-apply:
-					Texture=renderTexture;
-					
-					// Hook it up:
-					SourceCamera.targetTexture=renderTexture;
-					
-				}else{
-					
-					Debug.LogWarning("Resizing a Flat world UI without RT support is inefficient.");
-					
-				}
+				// Recreate:
+				ChangeImage(x,y);
 				
 			}
 			
@@ -327,7 +342,6 @@ namespace PowerUI{
 			SetOrthographicSize();
 			
 			return true;
-			
 		}
 		
 		private void SetOrthographicSize(){
@@ -338,6 +352,58 @@ namespace PowerUI{
 			
 			// Grab the world per pixel size:
 			SourceCamera.orthographicSize=pixelHeight / 2f * WorldPerPixel.y;
+			
+		}
+		
+		/// <summary>A filter to apply to this FWUI's output.</summary>
+		public Loonim.SurfaceTexture Filter{
+			get{
+				return Filter_;
+			}
+			set{
+				Filter_=value;
+				
+				if(SourceCamera.targetTexture!=null){
+					
+					// Already got a texture - hook up the filter now:
+					ConnectFilter();
+					
+				}
+			}
+		}
+		
+		public override void Update(){
+			base.Update();
+			
+			if(Renderer==null){
+				return;
+			}
+			
+			// Apply aspect ratio - we do this in update as 
+			// changing the screen size affects our FWUI cams too:
+			SourceCamera.aspect=Ratio;
+			
+			// Render now!
+			SourceCamera.Render();
+			
+			// If we have Loonim filters, redraw those too.
+			if(Filter_!=null){
+				Filter_.ForceDraw(FilterDrawInfo);
+			}
+			
+		}
+		
+		public override void Destroy(){
+			
+			base.Destroy();
+			
+			if(Texture!=null){
+				
+				// Destroy it:
+				GameObject.Destroy(Texture);
+				Texture=null;
+				
+			}
 			
 		}
 		

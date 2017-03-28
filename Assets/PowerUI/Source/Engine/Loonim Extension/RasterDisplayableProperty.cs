@@ -23,19 +23,21 @@ namespace Css{
 	
 	public partial class RasterDisplayableProperty:DisplayableProperty{
 		
-		/// <summary>The raster output.
-		/// Usually originates from either the FlatWorldUI renderer or via a filter.</summary>
-		public Texture Output;
+		/// <summary>The raster output.</summary>
+		public RenderTexture Output{
+			get{
+				return Renderer.Texture;
+			}
+		}
+		
 		/// <summary>A material displaying the output.</summary>
 		private Material Material;
 		/// <summary>A flatWorldUI which helps with the process of rendering the element.</summary>
 		public FlatWorldUI Renderer;
 		/// <summary>An AtlasLocation object used to describe where the image is.</summary>
 		private AtlasLocation LocatedAt;
-		/// <summary>A filter to apply.</summary>
-		public Loonim.SurfaceTexture Filter;
-		/// <summary>The draw info which draws the filter.</summary>
-		public Loonim.DrawInfo FilterDrawInfo;
+		/// <summary>A filter to apply when the renderer is available.</summary>
+		private Loonim.SurfaceTexture PendingFilter;
 		
 		
 		/// <summary>Creates a new solid background colour property for the given element.</summary>
@@ -75,46 +77,13 @@ namespace Css{
 		/// <summary>Sets a filter to apply. This is what rasterising elements is all for!</summary>
 		public void SetFilter(Loonim.SurfaceTexture tex){
 			
-			Filter=tex;
-			
-			if(tex==null){
-				
-				if(FilterDrawInfo!=null){
-					
-					// Tidy it up:
-					tex.Clear();
-					
-					FilterDrawInfo=null;
-				}
-				
-				if(Renderer!=null){
-					
-					// Update it now:
-					Output=Renderer.Texture;
-					
-					if(Material!=null){
-						
-						// Hook up the output:
-						Material.SetTexture("_MainTex",Output);
-						
-					}
-					
-				}
-				
+			if(Renderer==null){
+				// We've now got a filter waiting for the renderer:
+				PendingFilter=tex;
 			}else{
-				
-				// Create the draw info (for GPU mode):
-				FilterDrawInfo=new Loonim.DrawInfo();
-				
-				if(Renderer!=null){
-					
-					// Update it now:
-					Filter.Set("source0",Renderer.Texture);
-					
-					// Note that the next draw will update Output for us.
-					
-				}
-				
+				// Setting the filter will typically trigger an imagechange event.
+				// That then updates the material image.
+				Renderer.Filter=tex;
 			}
 			
 		}
@@ -156,91 +125,58 @@ namespace Css{
 			int w=(int)width;
 			int h=(int)height;
 			
-			if(Renderer.SetDimensions(w,h)){
-				
-				// Output texture changed.
-				
-				if(Filter==null){
-					
-					// Update output:
-					Output=Renderer.Texture;
-					
-					if(Material!=null){
-						
-						// Hook up the output:
-						Material.SetTexture("_MainTex",Output);
-						
-					}
-					
-				}else{
-					
-					Filter.Set("source0",Renderer.Texture);
-					// Output will be updated shortly.
-					
-					// Always mark as changed:
-					Filter.Changed=true;
-					
-				}
-				
-			}
+			// Resize the renderer (which will emit a changed image event):
+			Renderer.SetDimensions(w,h);
 			
-			// Redraw:
-			if(Filter!=null){
-				
-				if(FilterDrawInfo!=null){
-					FilterDrawInfo.SetSize(w,h);
-				}
-				
-				// Draw now:
-				Output=Filter.Draw(FilterDrawInfo);
-				
-				if(Material!=null){
-					
-					// Hook up the output:
-					Material.SetTexture("_MainTex",Output);
-					
-				}
-				
-			}
-			
-			// Temporarily set the positioning of box such that it's at the origin:
-			float _x=box.X;
-			float _y=box.Y;
-			float _pX=box.ParentOffsetLeft;
-			float _pY=box.ParentOffsetTop;
+			// Temporarily set the positioning of 'box' such that it's at the origin:
 			int _pos=box.PositionMode;
+			BoxStyle _position=box.Position;
 			
 			// Clear:
-			box.X=-box.Border.Left;
-			box.Y=-box.Border.Top;
-			box.ParentOffsetTop=box.X;
-			box.ParentOffsetLeft=box.Y;
+			box.Position=new BoxStyle(0f,float.MaxValue,float.MaxValue,0f);
 			box.PositionMode=PositionMode.Fixed;
 			
 			// Put the RenderData in the render only queue of *Renderer* and ask it to layout now:
 			RenderableData _next=RenderData.Next;
 			UpdateMode _mode=RenderData.NextUpdateMode;
+			RenderableData _ancestor=RenderData.Ancestor;
 			
 			// Clear:
 			RenderData.Next=null;
 			RenderData.NextUpdateMode=UpdateMode.Render;
+			RenderData.Ancestor=null;
 			
 			// Queue:
 			Renderer.Renderer.StylesToUpdate=RenderData;
+			Renderer.Renderer.HighestUpdateMode=UpdateMode.Render;
 			
 			// Draw now!
 			Renderer.Renderer.Update();
 			
 			// Restore (box):
-			box.X=_x;
-			box.Y=_y;
-			box.ParentOffsetTop=_pX;
-			box.ParentOffsetLeft=_pY;
+			box.Position=_position;
 			box.PositionMode=_pos;
 			
 			// Restore (queue):
 			RenderData.Next=_next;
 			RenderData.NextUpdateMode=_mode;
+			RenderData.Ancestor=_ancestor;
+			
+		}
+		
+		/// <summary>Called when the output changes.
+		/// Essentially forwards an imagechange event to this node.</summary>
+		private void ChangedOutputEvent(Dom.Event e){
+			
+			// Dispatch the event here too:
+			RenderData.Node.dispatchEvent(e);
+			
+			if(Material!=null){
+				
+				// Hook up the output:
+				Material.SetTexture("_MainTex",Output);
+				
+			}
 			
 		}
 		
@@ -259,13 +195,23 @@ namespace Css{
 				Renderer=new FlatWorldUI("#Internal-PowerUI-Raster-"+RasterID,(int)width,(int)height);
 				RasterID++;
 				
-				if(Filter!=null){
-					// Set source:
-					Filter.Set("source0",Renderer.Texture);
-				}
+				// Add the listener:
+				Renderer.document.window.addEventListener("imagechange",delegate(Dom.Event ev){
+					ChangedOutputEvent(ev);
+				});
 				
-				// Grab the output texture:
-				Output=Renderer.Texture;
+				if(PendingFilter!=null){
+					
+					// Setting the filter will cause an imagechange event anyway:
+					Renderer.Filter=PendingFilter;
+					PendingFilter=null;
+					
+				}else{
+					// Invoke our change event now:
+					Dom.Event e=new Dom.Event("imagechange");
+					e.SetTrusted(false);
+					ChangedOutputEvent(e);
+				}
 				
 			}
 			
@@ -273,7 +219,6 @@ namespace Css{
 			if(renderer==Renderer.Renderer){
 				
 				// Yes! We're actually drawing the element.
-				
 				return;
 				
 			}

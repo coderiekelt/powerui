@@ -533,7 +533,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Updates this UI. Called internally by UI.Update.</summary>
-		public void Update(){
+		public virtual void Update(){
 			if(gameObject==null){
 				Destroy();
 				return;
@@ -715,7 +715,7 @@ namespace PowerUI{
 		
 		/// <summary>Destroys this UI. Note that this also occurs if the gameobject is destroyed;
 		/// Just destroying the gameobject or a parent gameObject is all that is required.</summary>
-		public void Destroy(){
+		public virtual void Destroy(){
 			
 			if(Renderer==null){
 				return;

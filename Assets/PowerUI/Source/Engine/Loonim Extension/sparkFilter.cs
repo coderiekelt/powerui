@@ -68,7 +68,7 @@ namespace Css.Properties{
 				// - One or more filter functions
 				if(value is Css.CssFunction){
 					
-					// Just one
+					// Just one:
 					first=last=value.ToLoonimNode(context);
 					
 				}else if(value is Css.ValueSet){
@@ -91,7 +91,7 @@ namespace Css.Properties{
 							first=last=next;
 						}else{
 							// Add it to the chain:
-							last.Sources[0]=next;
+							next.Sources[0]=last;
 							last=next;
 						}
 						
@@ -101,12 +101,12 @@ namespace Css.Properties{
 				
 				SurfaceTexture st=null;
 				
-				if(first!=null){
+				if(last!=null){
 					
 					// Create the texture:
 					st=new SurfaceTexture();
-					st["source0"]=new Values.TextureValue(null);
-					st.Root=first;
+					st.Set("source0",(UnityEngine.Texture)null);
+					st.Root=last;
 					first.Sources[0]=new Loonim.Property(st,"source0");
 				}
 				
