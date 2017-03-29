@@ -45,6 +45,11 @@ namespace PowerUI{
 		/// <summary>The document that this is managing.</summary>
 		public HtmlDocument Document;
 		
+		[SerializeField]
+		[HideInInspector] 
+		/// <summary>The file path to the Html file. Used by the caching system as an ID.</summary>
+		private string HtmlFilePath;
+		
 		/// <summary>Applies either Url or HtmlFile to the given document.</summary>
 		public void Navigate(HtmlDocument document){
 			
@@ -53,6 +58,9 @@ namespace PowerUI{
 			
 			// Apply zooms:
 			UpdateZoom(false);
+			
+			// Set the cache path:
+			document.cachePath = HtmlFilePath;
 			
 			// Give it some content:
 			if (!string.IsNullOrEmpty(Url)) {
@@ -75,6 +83,29 @@ namespace PowerUI{
 			}
 			
 		}
+		
+		#if UNITY_EDITOR
+		/// <summary>Called when e.g. the Url or HtmlFile is changed.</summary>
+		public void OnValidate(){
+			
+			if(Application.isPlaying){
+				return;
+			}
+			
+			// Got a HtmlFile?
+			if(HtmlFile==null){
+				
+				HtmlFilePath=null;
+				
+			}else{
+				
+				// Get the full asset path (we need something unique to identify the file):
+				HtmlFilePath=UnityEditor.AssetDatabase.GetAssetPath(HtmlFile);
+				
+			}
+			
+		}
+		#endif
 		
 		// OnEnable is called when the game starts, or when the manager script component is enabled.
 		public virtual void OnEnable () {

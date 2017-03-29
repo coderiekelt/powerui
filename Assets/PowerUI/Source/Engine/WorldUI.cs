@@ -423,15 +423,31 @@ namespace PowerUI{
 				return false;
 			}
 			
+			// Inform media rules if we have any too:
+			var media=document.MediaIfExists;
+			
+			// Resize:
 			if(widthPX!=pixelWidth){
 				pixelWidth=widthPX;
 				document.Viewport.Width=widthPX;
+				
+				if(media!=null){
+					// Nudge it!
+					media.Width=widthPX;
+				}
+				
 			}
 			
 			if(heightPX!=pixelHeight){
 				pixelHeight=heightPX;
 				PixelHeightF=(float)pixelHeight;
 				document.Viewport.Height=heightPX;
+				
+				if(media!=null){
+					// Nudge it!
+					media.Height=heightPX;
+				}
+				
 			}
 			
 			// Update ratio:
@@ -446,6 +462,9 @@ namespace PowerUI{
 				e.SetTrusted();
 				document.dispatchEvent(e);
 			}
+			
+			// Request a layout too:
+			document.RequestLayout();
 			
 			return true;
 			

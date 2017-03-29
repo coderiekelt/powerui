@@ -38,6 +38,29 @@ namespace PowerUI{
 		internal bool IsOpen;
 		/// <summary>The window that this document belongs to.</summary>
 		public Window window;
+		/// <summary>A unique path for this document. It's usually the document location
+		/// unless this document was loaded from an asset file 
+		/// (in which case it's a path starting with Assets).</summary>
+		private string cachePath_;
+		/// <summary>A unique path for this document. It's usually the document location
+		/// unless this document was loaded from an asset file 
+		/// (in which case it's a path starting with Assets).</summary>
+		public string cachePath{
+			get{
+				if(cachePath_==null){
+					if(document.location==null){
+						return null;
+					}
+					
+					return document.location.absoluteNoHash;
+				}
+				
+				return cachePath_;
+			}
+			set{
+				cachePath_=value;
+			}
+		}
 		/// <summary>An event called after clear but before the new content is set.
 		/// Allows hooking up of various events.</summary>
 		public Action<Dom.Event> AfterClearBeforeSet;
@@ -52,6 +75,9 @@ namespace PowerUI{
 			if(value==null){
 				return;
 			}
+			
+			// Clear cache path:
+			cachePath=null;
 			
 			// Update location:
 			location_=value;

@@ -31,6 +31,8 @@ namespace PowerUI{
 		/// <summary>The default layer to use for rendering FlatWorldUI's. If not set the PowerUI layer is used, Change by using yourWorldUI.Layer.</summary>
 		private int DefaultLayer=-1;
 		
+		/// <summary>A delegate called when the Update event is fired, right before the WorldUI redraws.</summary>
+		public UpdateMethod OnUpdate;
 		/// <summary>The raw texture. If this changes because you resized your FlatWorldUI, 
 		/// an imagechange event will be fired on the window (type of Dom.Event).</summary>
 		public RenderTexture Texture;
@@ -373,6 +375,11 @@ namespace PowerUI{
 		}
 		
 		public override void Update(){
+			
+			if(OnUpdate!=null){
+				OnUpdate();
+			}
+			
 			base.Update();
 			
 			if(Renderer==null){

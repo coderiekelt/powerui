@@ -71,11 +71,23 @@ namespace PowerUI{
 			// The UI should accept input:
 			HtmlUI.AcceptInput=true;
 			
-			// Grab the texture:
-			Texture texture=HtmlUI.Texture;
+			// Apply texture:
+			img.texture=HtmlUI.Texture;
 			
-			// Apply material:
-			img.texture=texture;
+			// Add an updater which looks out for resizes right before the FWUI redraws:
+			HtmlUI.OnUpdate=delegate(){
+				
+				// Get the current rectangle:
+				Rect currentRect=dimensions.rect;
+				
+				if(HtmlUI.SetDimensions((int)currentRect.width,(int)currentRect.height)){
+					
+					// Resized! Get the texture again:
+					img.texture=HtmlUI.Texture;
+					
+				}
+				
+			};
 			
 			// Include the Unity UI when handling input:
 			if(PowerUI.Input.UnityUICaster==null){
