@@ -228,6 +228,39 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>This FlatWorldUI will accept input from the given collider. Note that it will use the textureCoord's of the hit point
+		/// (this will work with mesh colliders too).</summary>
+		public void AcceptInputFrom(Collider collider){
+			AcceptInputFrom(collider.transform);
+		}
+		
+		/// <summary>This FlatWorldUI will accept input from a gameobject with one or more colliders.
+		/// Note that it will use the textureCoord's of the hit point
+		/// (this will work with mesh colliders too).</summary>
+		public void AcceptInputFrom(GameObject colliderObject){
+			AcceptInputFrom(colliderObject.transform);
+		}
+		
+		/// <summary>This FlatWorldUI will accept input from a gameobject with one or more colliders.
+		/// Note that it will use the textureCoord's of the hit point
+		/// (this will work with mesh colliders too).</summary>
+		public void AcceptInputFrom(Transform colliderTransform){
+			
+			if(transform!=null){
+				// Remove from the physics lookup if already in there:
+				if(PhysicsLookup!=null){
+					PhysicsLookup.Remove(transform);
+				}
+			}
+			
+			// Set transform:
+			transform=colliderTransform;
+			
+			// Accept input (which will add it to the physics lookup):
+			AcceptInput=true;
+			
+		}
+		
 		/// <summary>Resolves a hit to a point on this WorldUI.
 		/// Note that x and y are 'relative' in the -0.5 to +0.5 range.</summary>
 		public override void ResolvePoint(RaycastHit hit,out float x,out float y){

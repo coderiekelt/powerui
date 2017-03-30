@@ -518,6 +518,14 @@ namespace PowerUI{
 		/// <summary>True if this WorldUI accepts input. It's false by default.</summary>
 		public bool AcceptInput{
 			get{
+				
+				if(this is FlatWorldUI){
+					
+					// Check if transform is not null instead:
+					return transform!=null;
+					
+				}
+				
 				return (Renderer.PhysicsModeCollider!=null);
 			}
 			set{
@@ -526,7 +534,10 @@ namespace PowerUI{
 					return;
 				}
 				
-				Renderer.SetInputMode(value);
+				// Don't create a collider for FWUI's.
+				if(!(this is FlatWorldUI)){
+					Renderer.SetInputMode(value);
+				}
 				
 				if(value){
 					
@@ -537,8 +548,15 @@ namespace PowerUI{
 					
 					PhysicsLookup[transform]=this;
 					
-				}else{
-					PhysicsLookup=null;
+				}else if(PhysicsLookup!=null){
+					
+					// Try removing the transform:
+					PhysicsLookup.Remove(transform);
+					
+					if(PhysicsLookup.Count==0){
+						PhysicsLookup=null;
+					}
+					
 				}
 				
 				if(Renderer.PhysicsModeCollider!=null){
@@ -739,7 +757,16 @@ namespace PowerUI{
 			if(Renderer==null){
 				return;
 			}
-		
+			
+			// Remove from the physics lookup if needed:
+			if(PhysicsLookup!=null && transform!=null){
+				PhysicsLookup.Remove(transform);
+				
+				if(PhysicsLookup.Count==0){
+					PhysicsLookup=null;
+				}
+			}
+			
 			Renderer.Destroy();
 			Renderer=null;
 			

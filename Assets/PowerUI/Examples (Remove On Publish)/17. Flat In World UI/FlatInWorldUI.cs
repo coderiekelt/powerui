@@ -4,9 +4,6 @@ using PowerUI;
 
 public class FlatInWorldUI : PowerUI.Manager, Dom.IEventTarget {
 	
-	/// <summary>Is input enabled for WorldUI's?</summary>
-	[Tooltip("Disable input for extra performance")]
-	public bool InputEnabled=true;
 	/// <summary>Amount of pixel space the UI has.</summary>
 	public int Width=600;
 	/// <summary>Amount of pixel space the UI has.</summary>
@@ -24,8 +21,9 @@ public class FlatInWorldUI : PowerUI.Manager, Dom.IEventTarget {
 		// Use PowerUI.Manager's Navigate function (which reads either Url or HtmlFile depending on which you set):
 		Navigate(FlatUI.document);
 		
-		// Optionally accept input:
-		FlatUI.AcceptInput=InputEnabled;
+		// For a FlatWorldUI to accept input, you'll need to use the following method:
+		// (Your object must have a collider of any kind).
+		// FlatUI.AcceptInputFrom(gameObject);
 		
 		// Apply to the material on this gameObjects mesh renderer:
 		// (Note: You can also just grab FlatUI.Texture - this is just a convenience function)
@@ -36,7 +34,7 @@ public class FlatInWorldUI : PowerUI.Manager, Dom.IEventTarget {
 	/// <summary>Called when an event is being dispatched here.</summary>
 	public bool dispatchEvent(Dom.Event e){
 		
-		Debug.Log("EVENT DISPATCHED!");
+		Debug.Log("Event dispatched!");
 		
 		// Ok!
 		return true;
