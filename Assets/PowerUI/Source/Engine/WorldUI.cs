@@ -218,14 +218,11 @@ namespace PowerUI{
 		public virtual void ResolvePoint(RaycastHit hit,out float x,out float y){
 			
 			// Next, we need to map the location on the front of the box to our 2D point.
-			// First, whats the point relative to the box?
-			Vector3 point=transform.InverseTransformPoint(hit.point);
+			// First, whats the point relative to the batch box?
+			Vector3 point=hit.transform.InverseTransformPoint(hit.point);
 			
-			// Consider scale:
-			Vector3 scale=transform.localScale;
-			
-			x=point.x * scale.x * 0.5f;
-			y=-(point.y * scale.y * 0.5f);
+			x=point.x;
+			y=point.y;
 			
 			// Clip:
 			if(x<-0.5f){
