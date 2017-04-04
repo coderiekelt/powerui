@@ -694,11 +694,12 @@ namespace PowerUI{
 					for(int p=InputPointer.PointerCount-1;p>=0;p--){
 						
 						// Get the pointer:
-						pointer=InputPointer.AllRaw[p];
+						InputPointer current=InputPointer.AllRaw[p];
 						
-						if(pointer.ID==touch.fingerId){
+						if(current.ID==touch.fingerId){
 							
 							// Got it!
+							pointer=current;
 							break;
 							
 						}
@@ -727,6 +728,7 @@ namespace PowerUI{
 						#endif
 						
 						// Add it to the available set:
+						tp.ID=touch.fingerId;
 						tp.Add();
 						
 					}else{
@@ -742,18 +744,17 @@ namespace PowerUI{
 					
 					#if UNITY_5_3_OR_NEWER
 					
-					tp.LatestPressure=touch.pressure;
 					tp.Radius=touch.radius;
 					tp.RadiusVariance=touch.radiusVariance;
+					tp.LatestPressure=touch.pressure;
 					
 					// Is it a stylus?
 					if(tp is StylusPointer){
 						tp.UpdateStylus(touch.azimuthAngle,touch.altitudeAngle);
 					}
 					
-					// Always a pressure of 1 otherwise (which is set by default).
+					// Always a pressure of 1 otherwise (the default).
 					#endif
-					
 				}
 				
 			}
@@ -773,6 +774,36 @@ namespace PowerUI{
 				if(pointer.Removed){
 					// It got removed! (E.g. a finger left the screen).
 					pointerRemoved=true;
+					
+					// Clear pressure (mouseup etc):
+					pointer.SetPressure(0f);
+					
+					if(pointer.ActiveOver!=null){
+						
+						// Shared event:
+						MouseEvent mouseEvent=new MouseEvent(pointer.ScreenX,pointer.ScreenY,pointer.ButtonID,false);
+						mouseEvent.trigger=pointer;
+						mouseEvent.clientX=pointer.DocumentX;
+						mouseEvent.clientY=pointer.DocumentY;
+						mouseEvent.SetModifiers();
+						mouseEvent.SetTrusted();
+						
+						// Trigger a mouseout (bubbles):
+						mouseEvent.EventType="mouseout";
+						mouseEvent.SetTrusted();
+						pointer.ActiveOver.dispatchEvent(mouseEvent);
+						
+						// And a mouseleave (doesn't bubble).
+						mouseEvent.Reset();
+						mouseEvent.bubbles=false;
+						mouseEvent.EventType="mouseleave";
+						pointer.ActiveOver.dispatchEvent(mouseEvent);
+						
+						// Update the CSS (hover; typically out):
+						(pointer.ActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
+						
+					}
+					
 					continue;
 				}
 				
@@ -803,7 +834,6 @@ namespace PowerUI{
 					
 					// If overElement has changed from the previous one..
 					if(newActiveOver!=oldActiveOver){
-						
 						
 						if(oldActiveOver!=null){
 							
@@ -900,9 +930,7 @@ namespace PowerUI{
 					// Set the pressure (which triggers mousedown/up for us too):
 					TouchPointer tp=(pointer as TouchPointer);
 					
-					if(tp.LatestPressure!=tp.Pressure){
-						tp.SetPressure(tp.LatestPressure);
-					}
+					tp.SetPressure(tp.LatestPressure);
 					
 					// We test touch move down here because it must happen after we've
 					// transferred 'ActiveOver' to 'ActiveDown' which happens inside SetPressure.
@@ -918,7 +946,6 @@ namespace PowerUI{
 						te.clientX=pointer.DocumentX;
 						te.clientY=pointer.DocumentY;
 						te.SetModifiers();
-						
 						
 						if(pointer.ActivePressed==null){
 							

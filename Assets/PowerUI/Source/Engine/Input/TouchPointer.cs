@@ -11,7 +11,7 @@ namespace PowerUI{
 	public class TouchPointer : InputPointer{
 		
 		public Vector2 LatestPosition;
-		/// <summary>Set if pressure is available.</summary>
+		/// <summary>The latest pointer pressure. It's usually 1 for fingers.</summary>
 		public float LatestPressure=1f;
 		public float Radius;
 		public float RadiusVariance;
@@ -97,6 +97,8 @@ namespace PowerUI{
 				return true;
 			}
 			
+			// Clear still alive:
+			StillAlive=false;
 			Vector2 position=LatestPosition;
 			
 			// Position's Y value is inverted, so flip it:
