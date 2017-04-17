@@ -308,7 +308,7 @@ namespace PowerUI{
 			// Dispatch onload (doesn't bubble):
 			
 			if(body!=null){
-				Dom.Event e=new Dom.Event("load");
+				UIEvent e=new UIEvent("load");
 				e.SetTrusted(false);
 				body.dispatchEvent(e);
 			}
@@ -589,7 +589,7 @@ namespace PowerUI{
 				if(window.iframe!=null){
 					
 					// Dispatch to the element too (don't bubble):
-					Dom.Event e=new Dom.Event("load");
+					UIEvent e=new UIEvent("load");
 					e.SetTrusted(false);
 					window.iframe.dispatchEvent(e);
 					

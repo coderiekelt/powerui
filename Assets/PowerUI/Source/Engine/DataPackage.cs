@@ -133,17 +133,18 @@ namespace PowerUI{
 				if(value==4){
 					
 					// load or error too:
-					e.Reset();
+					UIEvent uie=new UIEvent();
+					uie.SetTrusted();
 					
 					if(ok){
 						// Load event:
-						e.EventType="load";
+						uie.EventType="load";
 					}else{
 						// Non 2xx response status (and not a redirect).
-						e.EventType="error";
+						uie.EventType="error";
 					}
 					
-					dispatchEvent(e);
+					dispatchEvent(uie);
 					
 				}
 				
