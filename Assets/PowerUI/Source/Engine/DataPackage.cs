@@ -125,7 +125,7 @@ namespace PowerUI{
 					
 				}
 				
-				UIEvent e=new UIEvent();
+				Dom.Event e=new Dom.Event();
 				e.SetTrusted();
 				e.EventType="readystatechange";
 				dispatchEvent(e);

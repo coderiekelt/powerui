@@ -136,7 +136,7 @@ namespace PowerUI{
 			
 			Request.open("get","http://powerui.kulestar.com/emoji/phantomOpenEmoji.unitypackage");
 			
-			Request.onreadystatechange=delegate(UIEvent e){
+			Request.onreadystatechange=delegate(Dom.Event e){
 				
 				if(Request.readyState==4){
 					

@@ -19,12 +19,12 @@ namespace PowerUI{
 	public partial class ContentPackage{
 		
 		/// <summary>Called when the ready state changes.</summary>
-		public Action<UIEvent> onreadystatechange{
+		public Action<Dom.Event> onreadystatechange{
 			get{
-				return GetFirstDelegate<Action<UIEvent>>("readystatechange");
+				return GetFirstDelegate<Action<Dom.Event>>("readystatechange");
 			}
 			set{
-				addEventListener("readystatechange",new EventListener<UIEvent>(value));
+				addEventListener("readystatechange",new EventListener<Dom.Event>(value));
 			}
 		}
 		

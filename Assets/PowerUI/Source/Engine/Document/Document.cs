@@ -103,7 +103,7 @@ namespace PowerUI{
 			// Load the html:
 			DataPackage package=new DataPackage(value.absolute,null);
 			
-			package.onreadystatechange=delegate(UIEvent e){
+			package.onreadystatechange=delegate(Dom.Event e){
 				
 				if(package.readyState==4){
 					
