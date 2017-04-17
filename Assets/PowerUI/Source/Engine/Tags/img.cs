@@ -370,11 +370,25 @@ namespace PowerUI{
 				
 				if(heightUndefined){
 					
-					// Both undefined - use the base and clip by min/max-width:
-					box.InnerWidth=Style.Computed.ClipWidth(box.DisplayMode,RawWidth);
+					// Both undefined - establish which we'll be primarily clipping by.
 					
-					// Derive height from the aspect ratio:
-					box.InnerHeight=box.InnerWidth * AspectRatio;
+					if(Style.Computed.ShouldClipHeight()){
+						
+						// Height priority. Clip by min/max-height:
+						box.InnerHeight=Style.Computed.ClipHeight(box.DisplayMode,RawHeight);
+						
+						// Derive height from the aspect ratio:
+						box.InnerWidth=box.InnerHeight * AspectRatio;
+						
+					}else{
+						
+						// Width priority. Clip by min/max-width:
+						box.InnerWidth=Style.Computed.ClipWidth(box.DisplayMode,RawWidth);
+						
+						// Derive height from the aspect ratio:
+						box.InnerHeight=box.InnerWidth * InverseAspectRatio;
+						
+					}
 					
 				}else{
 					
