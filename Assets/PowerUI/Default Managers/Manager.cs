@@ -50,6 +50,14 @@ namespace PowerUI{
 		/// <summary>The file path to the Html file. Used by the caching system as an ID.</summary>
 		private string HtmlFilePath;
 		
+		
+		/// <summary>The document that this is managing.</summary>
+		public virtual HtmlDocument document{
+			get{
+				return Document;
+			}
+		}
+		
 		/// <summary>Applies either Url or HtmlFile to the given document.</summary>
 		public void Navigate(HtmlDocument document){
 			

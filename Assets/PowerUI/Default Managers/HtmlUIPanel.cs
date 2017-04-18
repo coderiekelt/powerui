@@ -41,7 +41,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>A quick route to the DOM document (useful for e.g. doc.getElementById).</summary>
-		public HtmlDocument document{
+		public override HtmlDocument document{
 			get{
 				return HtmlUI.document;
 			}
