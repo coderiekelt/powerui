@@ -34,7 +34,7 @@ namespace PowerUI{
 			// The element must be one of the active pointed ones:
 			for(int i=0;i<InputPointer.PointerCount;i++){
 				
-				if(InputPointer.AllRaw[i].ActiveOver==this){
+				if(InputPointer.AllRaw[i].ActiveOverTarget==this){
 					// Great, got it!
 					return true;
 				}
@@ -51,7 +51,7 @@ namespace PowerUI{
 			// The element must be one of the active pointed ones:
 			for(int i=0;i<InputPointer.PointerCount;i++){
 				
-				if(InputPointer.AllRaw[i].ActivePressed==this){
+				if(InputPointer.AllRaw[i].ActivePressedTarget==this){
 					// Great, got it!
 					return true;
 				}

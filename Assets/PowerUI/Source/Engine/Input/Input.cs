@@ -21,7 +21,7 @@
 	#define PRE_UNITY5
 #endif
 
-#if UNITY_4_6 || UNITY_4_7 || !PRE_UNITY5
+#if (UNITY_4_6 || UNITY_4_7 || !PRE_UNITY5) && !DisableUnityUIInput
 	#define HANDLE_UNITY_UI
 #endif
 
@@ -274,18 +274,20 @@ namespace PowerUI{
 			
 			if(target == Unhandled){
 				// It's going to be wasted, so let's try the moused over element first.
-				if(SystemMouse!=null && SystemMouse.ActiveOver!=null){
+				if(SystemMouse!=null && SystemMouse.ActiveOverTarget!=null){
 					// Send it there instead:
-					target = SystemMouse.ActiveOver;
+					target = SystemMouse.ActiveOverTarget;
 				}
 			}
 			
 			// Dispatch the event to the focused element:
 			if(target.dispatchEvent(e)){
 				
-				if(target is HtmlElement){
+				HtmlElement htmlTarget = (target as HtmlElement);
+				
+				if(htmlTarget!=null){
 					// Run the default:
-					(target as HtmlElement).OnWheelEvent(e);
+					htmlTarget.OnWheelEvent(e);
 				}
 				
 			}
@@ -466,17 +468,31 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Finds an element from the given screen location.
+		/// <summary>Finds an Element from the given screen location.
 		/// This fires a ray into the scene if the point isn't on the main UI and caches the hit in the given pointer.
 		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
 		public static Element ElementFromPoint(ref float x,ref float y){
-			return ElementFromPoint(ref x,ref y,null);
+			return TargetFromPoint(ref x,ref y,null) as Element;
 		}
 		
-		/// <summary>Finds an element from the given screen location.
+		/// <summary>Finds an Element from the given screen location.
 		/// This fires a ray into the scene if the point isn't on the main UI and caches the hit in the given pointer.
 		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
 		public static Element ElementFromPoint(ref float x,ref float y,InputPointer pointer){
+			return TargetFromPoint(ref x,ref y,pointer) as Element;
+		}
+		
+		/// <summary>Finds an EventTarget from the given screen location.
+		/// This fires a ray into the scene if the point isn't on the main UI and caches the hit in the given pointer.
+		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
+		public static EventTarget TargetFromPoint(ref float x,ref float y){
+			return TargetFromPoint(ref x,ref y,null);
+		}
+		
+		/// <summary>Finds an EventTarget from the given screen location.
+		/// This fires a ray into the scene if the point isn't on the main UI and caches the hit in the given pointer.
+		/// X and Y are updated with the document-relative point if it's on a WorldUI/ on the Unity UI.</summary>
+		public static EventTarget TargetFromPoint(ref float x,ref float y,InputPointer pointer){
 			
 			Element result=null;
 			
@@ -576,7 +592,7 @@ namespace PowerUI{
 			// Cache it:
 			if(pointer!=null){
 				pointer.LatestHit=worldUIHit;
-				pointer.LatestHitSuccess=false;
+				pointer.LatestHitSuccess=true;
 			}
 			
 			// Did it hit a worldUI?
@@ -584,8 +600,12 @@ namespace PowerUI{
 			
 			if(worldUI==null){
 				
-				// Nope!
+				// Nope! Get the eventTarget for the gameObject:
+				#if Enable3DInput
+				return worldUIHit.transform.gameObject.getEventTarget();
+				#else
 				return null;
+				#endif
 			}
 			
 			// Resolve the hit into a -0.5 to +0.5 point:
@@ -786,7 +806,7 @@ namespace PowerUI{
 					// Clear pressure (mouseup etc):
 					pointer.SetPressure(0f);
 					
-					if(pointer.ActiveOver!=null){
+					if(pointer.ActiveOverTarget!=null){
 						
 						// Shared event:
 						MouseEvent mouseEvent=new MouseEvent(pointer.ScreenX,pointer.ScreenY,pointer.ButtonID,false);
@@ -799,16 +819,20 @@ namespace PowerUI{
 						// Trigger a mouseout (bubbles):
 						mouseEvent.EventType="mouseout";
 						mouseEvent.SetTrusted();
-						pointer.ActiveOver.dispatchEvent(mouseEvent);
+						pointer.ActiveOverTarget.dispatchEvent(mouseEvent);
 						
 						// And a mouseleave (doesn't bubble).
 						mouseEvent.Reset();
 						mouseEvent.bubbles=false;
 						mouseEvent.EventType="mouseleave";
-						pointer.ActiveOver.dispatchEvent(mouseEvent);
+						pointer.ActiveOverTarget.dispatchEvent(mouseEvent);
 						
 						// Update the CSS (hover; typically out):
-						(pointer.ActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
+						IRenderableNode irn = (pointer.ActiveOverTarget as IRenderableNode);
+						
+						if(irn!=null){
+							irn.ComputedStyle.RefreshLocal(true);
+						}
 						
 					}
 					
@@ -823,14 +847,14 @@ namespace PowerUI{
 					// to one which is relative to the document (used by e.g. a WorldUI).
 					float documentX=pointer.ScreenX;
 					float documentY=pointer.ScreenY;
-					Element newActiveOver=ElementFromPoint(ref documentX,ref documentY,pointer);
+					EventTarget newActiveOver=TargetFromPoint(ref documentX,ref documentY,pointer);
 					
 					// Update docX/Y:
 					pointer.DocumentX=documentX;
 					pointer.DocumentY=documentY;
 					
 					// Get the old one:
-					Element oldActiveOver=pointer.ActiveOver;
+					EventTarget oldActiveOver=pointer.ActiveOverTarget;
 					
 					// Shared event:
 					MouseEvent mouseEvent=new MouseEvent(documentX,documentY,pointer.ButtonID,pointer.IsDown);
@@ -853,7 +877,7 @@ namespace PowerUI{
 							
 							// And a mouseleave (doesn't bubble).
 							// Only triggered if newActiveOver is *not* the parent of oldActiveOver.
-							if(oldActiveOver.parentNode_!=newActiveOver){
+							if(oldActiveOver.eventTargetParentNode!=newActiveOver){
 								mouseEvent.Reset();
 								mouseEvent.bubbles=false;
 								mouseEvent.EventType="mouseleave";
@@ -864,20 +888,24 @@ namespace PowerUI{
 						}
 						
 						// Update it:
-						pointer.ActiveOver=newActiveOver;
+						pointer.ActiveOverTarget=newActiveOver;
 						
 						if(oldActiveOver!=null){
-							
 							// Update the CSS (hover; typically out):
-							(oldActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
+							IRenderableNode irn = (oldActiveOver as IRenderableNode);
 							
+							if(irn!=null){
+								irn.ComputedStyle.RefreshLocal(true);
+							}
 						}
 						
 						if(newActiveOver!=null){
-							
 							// Update the CSS (hover; typically in)
-							(newActiveOver as IRenderableNode).ComputedStyle.RefreshLocal(true);
+							IRenderableNode irn = (newActiveOver as IRenderableNode);
 							
+							if(irn!=null){
+								irn.ComputedStyle.RefreshLocal(true);
+							}
 						}
 						
 						// Trigger a mouseover (bubbles):
@@ -899,11 +927,11 @@ namespace PowerUI{
 							newActiveOver.dispatchEvent(mouseEvent);
 							
 							// Set the tooltip if we've got one:
-							UI.document.tooltip=newActiveOver["title"];
+							UI.document.tooltip=newActiveOver.getTitle();
 							
 							// And a mouseenter (doesn't bubble).
 							// Only triggered if newActiveOver is *not* a child of oldActiveOver.
-							if(newActiveOver.parentNode_!=oldActiveOver){
+							if(newActiveOver.eventTargetParentNode!=oldActiveOver){
 								mouseEvent.Reset();
 								mouseEvent.bubbles=false;
 								mouseEvent.EventType="mouseenter";
@@ -955,14 +983,14 @@ namespace PowerUI{
 						te.clientY=pointer.DocumentY;
 						te.SetModifiers();
 						
-						if(pointer.ActivePressed==null){
+						if(pointer.ActivePressedTarget==null){
 							
 							// Trigger on unhandled:
 							Unhandled.dispatchEvent(te);
 							
 						}else{
 						
-							pointer.ActivePressed.dispatchEvent(te);
+							pointer.ActivePressedTarget.dispatchEvent(te);
 						
 						}
 						
@@ -980,7 +1008,7 @@ namespace PowerUI{
 						if(pointer.MinDragDistance==0f){
 							
 							// Find if we've got a draggable element:
-							pointer.ActiveUpdating=GetDraggable(pointer.ActivePressed);
+							pointer.ActiveUpdatingTarget=GetDraggable(pointer.ActivePressedTarget as Element);
 							
 							// Find the min drag distance:
 							pointer.MinDragDistance=pointer.GetMinDragDistance();
@@ -992,7 +1020,7 @@ namespace PowerUI{
 							// Possibly dragging.
 							
 							// Actually marked as 'draggable'?
-							if(pointer.ActiveUpdating!=null){
+							if(pointer.ActiveUpdatingTarget!=null){
 								
 								// Try start drag:
 								DragEvent de=new DragEvent("dragstart");
@@ -1004,7 +1032,7 @@ namespace PowerUI{
 								de.clientX=pointer.DocumentX;
 								de.clientY=pointer.DocumentY;
 								
-								if(pointer.ActivePressed.dispatchEvent(de)){
+								if(pointer.ActivePressedTarget.dispatchEvent(de)){
 									
 									// We're now dragging!
 									pointer.DragStatus=InputPointer.DRAGGING;
@@ -1019,29 +1047,35 @@ namespace PowerUI{
 							}else{
 								
 								// Selectable?
-								ComputedStyle cs=(pointer.ActivePressed as IRenderableNode).ComputedStyle;
-								Css.Value userSelect=cs[Css.Properties.UserSelect.GlobalProperty];
+								IRenderableNode irn = (pointer.ActivePressedTarget as IRenderableNode);
 								
-								if(userSelect!=null && !(userSelect.IsType(typeof(Css.Keywords.None))) && !userSelect.IsAuto){
+								if(irn!=null){
+									// It's renderable; can it be selected?
+									ComputedStyle cs=irn.ComputedStyle;
+									Css.Value userSelect=cs[Css.Properties.UserSelect.GlobalProperty];
 									
-									// Selectable!
-									Css.Properties.UserSelect.BeginSelect(pointer,userSelect);
-									
-									// Set status:
-									pointer.DragStatus=InputPointer.SELECTING;
-									
-									// Focus it if needed:
-									HtmlElement html=(pointer.ActivePressed as HtmlElement);
-									
-									if(html!=null){
-										html.focus();
+									if(userSelect!=null && !(userSelect.IsType(typeof(Css.Keywords.None))) && !userSelect.IsAuto){
+										
+										// Selectable!
+										Css.Properties.UserSelect.BeginSelect(pointer,userSelect);
+										
+										// Set status:
+										pointer.DragStatus=InputPointer.SELECTING;
+										
+										// Focus it if needed:
+										HtmlElement html=(pointer.ActivePressedTarget as HtmlElement);
+										
+										if(html!=null){
+											html.focus();
+										}
+										
+									}else{
+										
+										// This status prevents it from spamming, at least until we release.
+										pointer.DragStatus=InputPointer.DRAG_NOT_AVAILABLE;
+										
 									}
-									
-								}else{
-									
-									// This status prevents it from spamming, at least until we release.
-									pointer.DragStatus=InputPointer.DRAG_NOT_AVAILABLE;
-									
+								
 								}
 								
 							}
@@ -1051,7 +1085,7 @@ namespace PowerUI{
 					}else if(pointer.DragStatus==InputPointer.DRAGGING){
 						
 						// Move the dragged element (the event goes to everybody):
-						if(pointer.ActivePressed!=null){
+						if(pointer.ActivePressedTarget!=null){
 							
 							DragEvent de=new DragEvent("drag");
 							de.trigger=pointer;
@@ -1062,10 +1096,16 @@ namespace PowerUI{
 							de.clientX=pointer.DocumentX;
 							de.clientY=pointer.DocumentY;
 							
-							if(pointer.ActivePressed.dispatchEvent(de)){
+							if(pointer.ActivePressedTarget.dispatchEvent(de)){
 								
 								// Note that onDrag runs on the *dragging* element only.
-								Element dragging=(pointer.ActiveUpdating==null)? pointer.ActivePressed : pointer.ActiveUpdating;
+								Element dragging;
+								
+								if(pointer.ActiveUpdatingTarget==null){
+									dragging = (Element)pointer.ActivePressedTarget;
+								}else{
+									dragging = (Element)pointer.ActiveUpdatingTarget;
+								}
 								
 								if(dragging.OnDrag(de)){
 									
@@ -1104,7 +1144,7 @@ namespace PowerUI{
 						
 						// Update the selection.
 						
-						if(pointer.ActivePressed!=null){
+						if(pointer.ActivePressedTarget!=null){
 							
 							DragEvent de=new DragEvent("drag");
 							de.trigger=pointer;
@@ -1113,10 +1153,13 @@ namespace PowerUI{
 							de.clientX=pointer.DocumentX;
 							de.clientY=pointer.DocumentY;
 							
-							if(pointer.ActivePressed.dispatchEvent(de)){
+							if(pointer.ActivePressedTarget.dispatchEvent(de)){
+								
+								// We can only select elements:
+								Element pressedElement = (Element)pointer.ActivePressedTarget;
 								
 								// Get the current selection:
-								Selection s=(pointer.ActivePressed.document as HtmlDocument).getSelection();
+								Selection s=(pressedElement.document as HtmlDocument).getSelection();
 								
 								// Safety check:
 								if(s.ranges.Count>0){

@@ -95,11 +95,25 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>If the target is an EvetTarget3D then this will get the GameObject.
+		/// Null otherwise.</summary>
+		public GameObject targetGameObject{
+			get{
+				EventTarget3D et3D = (target as EventTarget3D);
+				
+				if(et3D==null){
+					return null;
+				}
+				
+				return et3D.gameObject;
+			}
+		}
+		
 		/// <summary>A convenience shortcut to save casting 'target' to a HtmlElement.
 		/// It's like this because SVG can also generate events.</summary>
 		public HtmlElement htmlTarget{
 			get{
-				return target as HtmlElement ;
+				return target as HtmlElement;
 			}
 		}
 		

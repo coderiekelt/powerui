@@ -613,7 +613,7 @@ namespace PowerUI{
 						
 						InputPointer pointer=InputPointer.AllRaw[i];
 						
-						if(pointer.ActivePressed!=target){
+						if(pointer.ActivePressedTarget!=target){
 							continue;
 						}
 						

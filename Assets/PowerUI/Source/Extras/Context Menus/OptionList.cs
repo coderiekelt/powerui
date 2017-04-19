@@ -80,9 +80,23 @@ namespace ContextMenus{
 		/// <summary>A visible widget containing the list.</summary>
 		public Widgets.Widget widget;
 		/// <summary>The element that this is a list for. Related to trigger.</summary>
-		public Element triggerElement;
+		public Element triggerElement{
+			get{
+				return trigger as Element;
+			}
+		}
 		/// <summary>The GO that this is the list for. Related to trigger.</summary>
-		public GameObject triggerGameObject;
+		public GameObject triggerGameObject{
+			get{
+				EventTarget3D et3D = (trigger as EventTarget3D);
+				
+				if(et3D==null){
+					return null;
+				}
+				
+				return et3D.gameObject;
+			}
+		}
 		/// <summary>The available options.</summary>
 		public List<Option> options=new List<Option>();
 		
@@ -245,7 +259,6 @@ namespace ContextMenus{
 		
 		/// <summary>Collects options at the given pointer location.</summary>
 		public ContextEvent collectOptions(InputPointer ip){
-			
 			// Create an oncontextmenu event:
 			ContextEvent ce=createEvent();
 			ce.trigger=ip;
@@ -253,37 +266,17 @@ namespace ContextMenus{
 			ce.clientY=ip.DocumentY;
 			
 			// Collect from a 2D element:
-			triggerElement=ip.ActiveOver;
-			trigger=triggerElement;
+			trigger=ip.ActiveOverTarget;
 			
 			if(trigger!=null){
 				
 				// Collect:
 				trigger.dispatchEvent(ce);
-				
-				triggerGameObject=null;
 				return ce;
 				
 			}
 			
-			// Collect from a 3D object:
-			if(ip.LatestHitSuccess){
-				
-				// Try to resolve the hit gameobject to an IEventTarget:
-				triggerGameObject=ip.LatestHit.transform.gameObject;
-				trigger=ip.ResolveTarget();
-				
-				if(trigger!=null){
-					
-					// Great - dispatch to it:
-					trigger.dispatchEvent(ce);
-					
-				}
-				
-			}
-			
 			return ce;
-			
 		}
 		
 		/// <summary>Gets the 2D location the root list will appear at.
@@ -348,7 +341,7 @@ namespace ContextMenus{
 		/// <summary>Collects options from the given gameobject (or any parent in the hierarchy).</summary>
 		public ContextEvent collectOptions(GameObject go){
 			
-			triggerGameObject=go;
+			trigger=go.getEventTarget();
 			
 			if(go==null){
 				return null;
@@ -378,7 +371,6 @@ namespace ContextMenus{
 		/// <summary>Collects options from the given HTML element.</summary>
 		public ContextEvent collectOptions(Element e){
 			
-			triggerElement=e;
 			trigger=e;
 			
 			if(e==null){

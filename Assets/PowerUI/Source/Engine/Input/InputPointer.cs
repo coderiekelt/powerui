@@ -114,12 +114,35 @@ namespace PowerUI{
 		public bool Removed;
 		/// <summary>The current minimum drag distance.</summary>
 		public float MinDragDistance;
-		/// <summary>Used by e.g. dragging. The element that is "pressed" can be different from the one being actually dragged.</summary>
-		public Element ActiveUpdating;
-		/// <summary>The element that this pointer is currently over.</summary>
-		public Element ActiveOver;
+		/// <summary>Used by e.g. dragging. The target that is "pressed" can be different from the one being actually dragged.</summary>
+		public EventTarget ActiveUpdatingTarget;
+		/// <summary>Same as ActiveOver, only this can also include GameObjects. See also ActiveOverGameObject.
+		/// It'll be an EventTarget3D if that's the case. The object that this pointer is currently over.</summary>
+		public EventTarget ActiveOverTarget;
 		/// <summary>The element that this pointer last pressed/ clicked on.</summary>
-		public Element ActivePressed;
+		public EventTarget ActivePressedTarget;
+		
+		/// <summary>The element that this pointer is currently over.</summary>
+		public Element ActiveOver{
+			get{
+				return ActiveOverTarget as Element;
+			}
+		}
+		
+		/// <summary>Used by e.g. dragging. The element that is "pressed" can be different from the one being actually dragged.</summary>
+		public Element ActiveUpdating{
+			get{
+				return ActiveUpdatingTarget as Element;
+			}
+		}
+		
+		/// <summary>The element that this pointer last pressed/ clicked on.</summary>
+		public Element ActivePressed{
+			get{
+				return ActivePressedTarget as Element;
+			}
+		}
+		
 		/// <summary>The latest pressure.</summary>
 		public float Pressure;
 		/// <summary>The latest button that went down.</summary>
@@ -134,6 +157,20 @@ namespace PowerUI{
 		/// <summary>Is this the primary pointer? They all are by default in PowerUI
 		/// (everything receives the 'legacy' mouse events).</summary>
 		public bool isPrimary=true;
+		
+		
+		/// <summary>The gameObject this pointer is currently over (if any).</summary>
+		public UnityEngine.GameObject ActiveOverGameObject{
+			get{
+				EventTarget3D et3D = ActiveOverTarget as EventTarget3D;
+				
+				if(et3D==null){
+					return null;
+				}
+				
+				return et3D.gameObject;
+			}
+		}
 		
 		/// <summary>The type of input pointer.</summary>
 		public virtual string pointerType{
@@ -262,7 +299,7 @@ namespace PowerUI{
 		public float GetMinDragDistance(){
 			
 			// If we've got a 'draggable' element, that is preferred:
-			Element draggable=(ActiveUpdating==null)?ActivePressed : ActiveUpdating;
+			Element draggable=( (ActiveUpdatingTarget==null)?ActivePressedTarget : ActiveUpdatingTarget ) as Element;
 			
 			if(draggable==null){
 				return Input.MinimumDragStartDistance;
@@ -278,7 +315,7 @@ namespace PowerUI{
 					
 					// Unspecified.
 					// Default depends if we're actually a 'draggable' or not:
-					if(ActiveUpdating==null){
+					if(ActiveUpdatingTarget==null){
 						distance=Input.MinimumDragStartDistance;
 					}else{
 						// 1:
@@ -303,7 +340,7 @@ namespace PowerUI{
 			get{
 				
 				// If we've got a 'draggable' element, that is preferred:
-				Element draggable=(ActiveUpdating==null) ? ActivePressed : ActiveUpdating;
+				EventTarget draggable=(ActiveUpdatingTarget==null) ? ActivePressedTarget : ActiveUpdatingTarget;
 				
 				if(draggable==null){
 					return false;
@@ -422,14 +459,18 @@ namespace PowerUI{
 				}else{
 					
 					// It's up now. Clear:
-					Element oldActivePressed=ActivePressed;
+					EventTarget oldActivePressed=ActivePressedTarget;
 					
 					// Clear:
-					ActivePressed=null;
-						
+					ActivePressedTarget=null;
+					
 					if(oldActivePressed!=null){
 						// Refresh CSS (active):
-						(oldActivePressed as IRenderableNode).ComputedStyle.RefreshLocal();
+						IRenderableNode irn = (oldActivePressed as IRenderableNode);
+						
+						if(irn!=null){
+							irn.ComputedStyle.RefreshLocal();
+						}
 					}
 					
 					// Trigger up event.
@@ -445,7 +486,7 @@ namespace PowerUI{
 					}
 					
 					// Click if needed:
-					if(oldActivePressed==ActiveOver && DragStatus==0){
+					if(oldActivePressed==ActiveOverTarget && DragStatus==0){
 						
 						// Click!
 						e.Reset();
@@ -462,10 +503,10 @@ namespace PowerUI{
 							
 							if(h!=null){
 								h.OnClickEvent(e);
+								
+								// Clear selection if there is one:
+								(h.document as HtmlDocument).clearSelection();
 							}
-							
-							// Clear selection if there is one:
-							(oldActivePressed.document as HtmlDocument).clearSelection();
 							
 						}
 						
@@ -504,7 +545,7 @@ namespace PowerUI{
 							// Trigger a drop event next:
 							de.Reset();
 							de.EventType="drop";
-							if(ActiveOver!=null && ActiveOver.dispatchEvent(de)){
+							if(ActiveOverTarget!=null && ActiveOverTarget.dispatchEvent(de)){
 								
 								// Proceed to try and drop it into the dropzone (ActiveOver).
 								
@@ -538,27 +579,29 @@ namespace PowerUI{
 				DownDocumentY=DocumentY;
 				
 				// Cache down:
-				ActivePressed=ActiveOver;
+				ActivePressedTarget=ActiveOverTarget;
 				
 				// Trigger down event.
 				
-				if(ActivePressed!=null){
-					
+				if(ActivePressedTarget!=null){
 					// Refresh CSS (active):
-					(ActivePressed as IRenderableNode).ComputedStyle.RefreshLocal();
+					IRenderableNode irn = (ActivePressedTarget as IRenderableNode);
 					
+					if(irn!=null){
+						irn.ComputedStyle.RefreshLocal();
+					}
 				}
-			
+				
 				// Trigger down event.
 				MouseEvent e=new MouseEvent(DocumentX,DocumentY,ButtonID,true);
 				e.trigger=this;
 				e.EventType="mousedown";
 				e.SetModifiers();
 				
-				if(ActivePressed==null){
+				if(ActivePressedTarget==null){
 					Input.Unhandled.dispatchEvent(e);
 				}else{
-					ActivePressed.dispatchEvent(e);
+					ActivePressedTarget.dispatchEvent(e);
 				}
 				
 				if(FireTouchEvents){
@@ -571,10 +614,10 @@ namespace PowerUI{
 					te.SetTrusted();
 					te.SetModifiers();
 					
-					if(ActivePressed==null){
+					if(ActivePressedTarget==null){
 						Input.Unhandled.dispatchEvent(te);
 					}else{
-						ActivePressed.dispatchEvent(te);
+						ActivePressedTarget.dispatchEvent(te);
 					}
 					
 				}

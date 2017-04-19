@@ -27,17 +27,20 @@ namespace PowerUI{
 		public float Expiry=0f;
 		/// <summary>The worldUI instance. Available after OnEnable.</summary>
 		internal WorldUI WorldUI;
+		[Tooltip("Renders your WorldUI to a texture so it's totally flat. "+
+			"Don't use this if you want to use lighting or text-extrude, but do use it if you have a large DOM.")]
+		public bool MakeItFlat;
 		
 		
 		public override void OnEnable () {
 			
-			// Dump renderer/filter:
+			// Dump renderer/filter, unless it's flat:
 			MeshRenderer mr=gameObject.GetComponent<MeshRenderer>();
 			
 			// True if we've got the visual guide:
 			bool hasGuide=false;
 			
-			if( mr!=null && mr.material!=null && mr.material.name.StartsWith("worldUIMaterial") ){
+			if( !MakeItFlat && mr!=null && mr.material!=null && mr.material.name.StartsWith("worldUIMaterial") ){
 				
 				// Remove it:
 				GameObject.Destroy(mr);
@@ -57,49 +60,76 @@ namespace PowerUI{
 			
 			// First, figure out the 'aspect ratio' of the scale:
 			Vector3 scale=transform.localScale;
-			transform.localScale=Vector3.one;
 			float yAspect=scale.z / scale.x;
 			
 			// Calc the number of pixels:
 			int height=(int)((float)PixelWidth * yAspect);
 			
-			// Generate a new UI (the name is optional).
-			// The two numbers are the dimensions of our virtual screen:
-			WorldUI=new WorldUI(gameObject.name,PixelWidth,height);
-			
-			// Settings:
-			WorldUI.PixelPerfect=PixelPerfect;
-			WorldUI.AlwaysFaceCamera=AlwaysFaceTheCamera;
-			
-			if(Expiry!=0f){
+			if(MakeItFlat){
 				
-				WorldUI.SetExpiry(Expiry);
+				// Create it as a FlatWorldUI instead:
+				FlatWorldUI fwUI = new FlatWorldUI(PixelWidth,height);
+				WorldUI = fwUI;
+				
+				// Grab the texture and apply it to the material:
+				if(mr!=null){
+					Material mat = new Material(Shader.Find("Diffuse"));
+					mat.mainTexture = fwUI.texture;
+					mr.material=mat;
+					
+					// The flat version is upside down relative to the 3D one:
+					mat.mainTextureScale = new Vector2(-1f, -1f);
+					mat.mainTextureOffset = new Vector2(1f, 1f);
+				}
+				
+				// Give it some content using PowerUI.Manager's Navigate method:
+				// (Just so we can use the same Html/ Url fields - it's completely optional)
+				Navigate(WorldUI.document);
+				
+			}else{
+				
+				// Reset local scale:
+				transform.localScale=Vector3.one;
+				
+				// Generate a new UI (the name is optional).
+				// The two numbers are the dimensions of our virtual screen:
+				WorldUI=new WorldUI(gameObject.name,PixelWidth,height);
+				
+				// Settings:
+				WorldUI.PixelPerfect=PixelPerfect;
+				WorldUI.AlwaysFaceCamera=AlwaysFaceTheCamera;
+				
+				if(Expiry!=0f){
+					
+					WorldUI.SetExpiry(Expiry);
+					
+				}
+				
+				// Give it some content using PowerUI.Manager's Navigate method:
+				// (Just so we can use the same Html/ Url fields - it's completely optional)
+				Navigate(WorldUI.document);
+				
+				// Parent it to the GO:
+				WorldUI.ParentToOrigin(transform);
+				
+				if(hasGuide){
+					// Rotate it 90 degrees about x (to match up with the guide):
+					WorldUI.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
+				}
+				
+				// Set the scale such that the width "fits".
+				// The panel will be PixelWidth wide, so we want to divide by that to get to '1'.
+				// Note that the 10 is because a plane is 10 units wide.
+				// We then multiply it by whatever scale (on x) the user originally wanted.
+				// The y scale is accounted for by the computed pixel height (we don't want to distort it).
+				float scaleFactor=(10f * scale.x) / (float)PixelWidth;
+				
+				WorldUI.transform.localScale=new Vector3(scaleFactor,scaleFactor,scale.y);
+				
+				// Optionally accept input:
+				WorldUI.AcceptInput=InputEnabled;
 				
 			}
-			
-			// Give it some content using PowerUI.Manager's Navigate method:
-			// (Just so we can use the same Html/ Url fields - it's completely optional)
-			Navigate(WorldUI.document);
-			
-			// Parent it to the GO:
-			WorldUI.ParentToOrigin(transform);
-			
-			if(hasGuide){
-				// Rotate it 90 degrees about x (to match up with the guide):
-				WorldUI.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
-			}
-			
-			// Set the scale such that the width "fits".
-			// The panel will be PixelWidth wide, so we want to divide by that to get to '1'.
-			// Note that the 10 is because a plane is 10 units wide.
-			// We then multiply it by whatever scale (on x) the user originally wanted.
-			// The y scale is accounted for by the computed pixel height (we don't want to distort it).
-			float scaleFactor=(10f * scale.x) / (float)PixelWidth;
-			
-			WorldUI.transform.localScale=new Vector3(scaleFactor,scaleFactor,scale.y);
-			
-			// Optionally accept input:
-			WorldUI.AcceptInput=InputEnabled;
 			
 		}
 		

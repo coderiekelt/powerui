@@ -31,6 +31,7 @@ public class AboveHeadTextExample : MonoBehaviour {
 	public void Start(){
 		
 		// White cube says hello!
+		// The white cube is also clickable if you tick the Window > PowerUI > Handle 3D Input box.
 		ShowMessage("Hello <b>people</b>!",WhiteCubesMessageNode);
 		
 		// Black cube says hello!
