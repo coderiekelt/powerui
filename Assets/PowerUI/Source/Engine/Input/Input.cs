@@ -272,6 +272,14 @@ namespace PowerUI{
 			
 			EventTarget target=ActiveReceiver;
 			
+			if(target == Unhandled){
+				// It's going to be wasted, so let's try the moused over element first.
+				if(SystemMouse!=null && SystemMouse.ActiveOver!=null){
+					// Send it there instead:
+					target = SystemMouse.ActiveOver;
+				}
+			}
+			
 			// Dispatch the event to the focused element:
 			if(target.dispatchEvent(e)){
 				

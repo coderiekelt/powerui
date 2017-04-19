@@ -93,6 +93,16 @@ namespace Dom{
 			}
 		}
 		
+		/// <summary>Called when this element receives a scrollwheel event.</summary>
+		public Action<WheelEvent> onwheel{
+			get{
+				return GetFirstDelegate<Action<WheelEvent>>("wheel");
+			}
+			set{
+				addEventListener("wheel",new EventListener<WheelEvent>(value));
+			}
+		}
+		
 		/// <summary>Called when a form is reset.</summary>
 		public Action<FormEvent> onreset{
 			get{
