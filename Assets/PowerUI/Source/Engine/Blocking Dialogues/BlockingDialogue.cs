@@ -29,8 +29,10 @@ namespace PowerUI{
 		public string Type;
 		/// <summary>The response from the user.</summary>
 		public object Response;
+		#if !NETFX_CORE
 		/// <summary>The blocked JS thread.</summary>
 		internal System.Threading.Thread Thread;
+		#endif
 		/// <summary>The UI element of the background. Contains the whole prompt.</summary>
 		public HtmlElement Element;
 		
@@ -67,8 +69,10 @@ namespace PowerUI{
 			// Update the response:
 			Response=response;
 			
+			#if !NETFX_CORE
 			// Give it a kick!
 			Thread.Interrupt();
+			#endif
 			
 		}
 		

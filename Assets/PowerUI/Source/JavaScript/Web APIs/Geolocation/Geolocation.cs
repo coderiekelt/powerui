@@ -27,7 +27,7 @@ namespace PowerUI{
 	public class Geolocation{
 		
 		/// <summary>The last recorded position. Stored to compute approximate speed.</summary>
-		internal static GeoPosition Latest;
+		public static GeoPosition Latest;
 		/// <summary>First waiting request.</summary>
 		internal static PendingLocationRequest FirstQueued;
 		/// <summary>Calls our update function for us, but only when we actually need it to.</summary>

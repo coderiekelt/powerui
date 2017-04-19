@@ -100,15 +100,9 @@ namespace Modular{
 			
 			// Ok great - Get each method and obtain 
 			// any other starter settings:
-			#if NETFX_CORE
-			MethodInfo[] methods=type.GetTypeInfo().GetMethods(
-				BindingFlags.Static | BindingFlags.Public
-			);
-			#else
 			MethodInfo[] methods=type.GetMethods(
 				BindingFlags.Static | BindingFlags.Public
 			);
-			#endif
 			
 			if(methods==null || methods.Length==0){
 				// No modules in this assembly.
@@ -123,7 +117,11 @@ namespace Modular{
 			for(int i=0;i<methods.Length;i++){
 				
 				// Get the meta attribute:
+				#if NETFX_CORE
+				Meta metaAttribute=methods[i].GetCustomAttribute(typeof(Meta),false) as Meta;
+				#else
 				Meta metaAttribute=Attribute.GetCustomAttribute(methods[i],typeof(Meta),false) as Meta;
+				#endif
 				
 				int priority=0;
 				

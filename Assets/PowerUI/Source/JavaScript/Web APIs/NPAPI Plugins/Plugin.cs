@@ -32,7 +32,7 @@ namespace PowerUI{
 		public string version;
 		public string vendor;
 		
-		internal string dllPath;
+		public string dllPath;
 		
 		/// <summary>The mime types.</summary>
 		public PluginMimeType[] mimeTypes;

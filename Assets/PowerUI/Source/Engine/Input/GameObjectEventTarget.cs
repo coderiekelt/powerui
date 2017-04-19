@@ -126,7 +126,11 @@ namespace PowerUI{
 					Type listenerType = typeof(EventListener<>).MakeGenericType(pType);
 					
 					// Create our action delegate and hook it up:
+					#if NETFX_CORE
+					object deleg = method.CreateDelegate(delegateType, script);
+					#else
 					object deleg = Delegate.CreateDelegate(delegateType, script, method);
+					#endif
 					
 					// Create the listener object:
 					EventListener listener = Activator.CreateInstance(listenerType,deleg) as EventListener;

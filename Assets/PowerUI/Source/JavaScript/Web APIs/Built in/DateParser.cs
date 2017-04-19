@@ -154,7 +154,7 @@ namespace PowerUI{
 				var temp1 = PopulateDayOfWeekNames();
 				var temp2 = PopulateMonthNames();
 				var temp3 = PopulateTimeZones();
-				System.Threading.Thread.MemoryBarrier();
+				// System.Threading.Thread.MemoryBarrier();
 				dayOfWeekNames = temp1;
 				monthNames = temp2;
 				timeZoneNames = temp3;
@@ -350,7 +350,7 @@ namespace PowerUI{
 		/// </summary>
 		private static Dictionary<string, int> PopulateMonthNames()
 		{
-			var monthNames = new Dictionary<string, int>(48, StringComparer.InvariantCultureIgnoreCase);
+			var monthNames = new Dictionary<string, int>(48);
 
 			// Add the abbreviated month names for the culture to the dictionary.
 			var abbreviatedNames = CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedMonthNames;
@@ -374,7 +374,7 @@ namespace PowerUI{
 		/// </summary>
 		private static Dictionary<string, int> PopulateTimeZones()
 		{
-			var result = new Dictionary<string, int>(15, StringComparer.InvariantCultureIgnoreCase)
+			var result = new Dictionary<string, int>(15)
 			{
 				{ "UT", 0 },
 				{ "UTC", 0 },

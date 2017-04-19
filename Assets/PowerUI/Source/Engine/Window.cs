@@ -49,8 +49,11 @@ namespace PowerUI{
 			document_=doc;
 		}
 		
+		#if !NETFX_CORE
 		/// <summary>The thread that can be blocked in this window. It's the main JS thread.</summary>
 		internal System.Threading.Thread BlockableThread;
+		#endif
+		
 		/// <summary>The currently open blocking dialogue in this window.</summary>
 		internal BlockingDialogue BlockingDialogue;
 		

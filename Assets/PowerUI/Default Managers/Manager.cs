@@ -48,7 +48,7 @@ namespace PowerUI{
 		[SerializeField]
 		[HideInInspector] 
 		/// <summary>The file path to the Html file. Used by the caching system as an ID.</summary>
-		private string HtmlFilePath;
+		public string HtmlFilePath;
 		
 		
 		/// <summary>The document that this is managing.</summary>
