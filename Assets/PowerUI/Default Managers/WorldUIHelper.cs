@@ -86,6 +86,19 @@ namespace PowerUI{
 				// (Just so we can use the same Html/ Url fields - it's completely optional)
 				Navigate(WorldUI.document);
 				
+				if(InputEnabled){
+					
+					// Input resolves on the Z axis:
+					fwUI.ResolveOnZ=true;
+					
+					// Create a box collider:
+					BoxCollider bc = gameObject.AddComponent<BoxCollider>();
+					
+					// Accept input from it:
+					fwUI.AcceptInputFrom(bc);
+					
+				}
+				
 			}else{
 				
 				// Reset local scale:

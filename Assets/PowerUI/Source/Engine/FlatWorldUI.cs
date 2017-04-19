@@ -261,17 +261,6 @@ namespace PowerUI{
 			
 		}
 		
-		/// <summary>Resolves a hit to a point on this WorldUI.
-		/// Note that x and y are 'relative' in the -0.5 to +0.5 range.</summary>
-		public override void ResolvePoint(RaycastHit hit,out float x,out float y){
-			// Get the point in UV space as the collider could be anything:
-			Vector2 point=hit.textureCoord;
-			
-			// Great - this time the point is from 0-1 in x and y.
-			x=point.x-0.5f;
-			y=point.y-0.5f;
-		}
-		
 		/// <summary>Applies Texture to the sharedMaterial on the gameobject.</summary>
 		public void ApplyTo(GameObject gameObject){
 			

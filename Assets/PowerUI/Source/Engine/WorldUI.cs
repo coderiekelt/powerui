@@ -109,6 +109,10 @@ namespace PowerUI{
 			return null;
 		}
 		
+		/// <summary>True if the point resolve y axis (or z if ResolveOnZ is true) should be inverted.</summary>
+		public bool ResolveInverted;
+		/// <summary>True if the point resolve should use the z axis.</summary>
+		public bool ResolveOnZ;
 		/// <summary>True if this UI is rendering flat.</summary>
 		public bool Flat;
 		/// <summary>The width/height ratio.</summary>
@@ -217,12 +221,43 @@ namespace PowerUI{
 		/// Note that x and y are 'relative' in the -0.5 to +0.5 range.</summary>
 		public virtual void ResolvePoint(RaycastHit hit,out float x,out float y){
 			
-			// Next, we need to map the location on the front of the box to our 2D point.
-			// First, whats the point relative to the batch box?
-			Vector3 point=hit.transform.InverseTransformPoint(hit.point);
+			// Get it as a box collider:
+			BoxCollider bc = (hit.collider as BoxCollider);
 			
-			x=point.x;
-			y=point.y;
+			if(bc==null){
+				
+				// Assuming mesh colliders in here.
+				
+				// Get the point in UV space as the collider could be anything:
+				Vector2 point=hit.textureCoord;
+				
+				// Great - this time the point is from 0-1 in x and y.
+				if(ResolveInverted){
+					x=0.5f-point.x;
+					y=0.5f-point.y;
+				}else{
+					x=point.x-0.5f;
+					y=point.y-0.5f;
+				}
+				
+			}else{
+				// Next, we need to map the location on the front of the box to our 2D point.
+				// First, what's the point relative to the box collider?
+				Vector3 point=hit.transform.InverseTransformPoint(hit.point);
+				x=point.x / bc.size.x;
+				
+				if(ResolveOnZ){
+					y=point.z / bc.size.z;
+				}else{
+					y=point.y / bc.size.y;
+				}
+				
+				if(ResolveInverted){
+					// Invert y:
+					y=-y;
+				}
+				
+			}
 			
 			// Clip:
 			if(x<-0.5f){
@@ -346,8 +381,8 @@ namespace PowerUI{
 			gameObject.layer=id;
 		}
 		
-		/// <summary>The collider's transform if WorldUI's are in Screen input mode. This will have a BoxCollider attached.</summary>
-		public Transform PhysicsModeCollider{
+		/// <summary>The collider if the WorldUI is accepting input.</summary>
+		public Collider PhysicsModeCollider{
 			get{
 				return Renderer.PhysicsModeCollider;
 			}
@@ -477,8 +512,6 @@ namespace PowerUI{
 			WorldScreenOrigin=new Vector2(-((float)pixelWidth)*x,
 										  -PixelHeightF*y
 										 );
-										 
-			Renderer.RelocateCollider();
 		}
 		
 		/// <summary>Called when CameraToFace changes by calling a FaceCamera overload.</summary>
@@ -553,13 +586,6 @@ namespace PowerUI{
 					if(PhysicsLookup.Count==0){
 						PhysicsLookup=null;
 					}
-					
-				}
-				
-				if(Renderer.PhysicsModeCollider!=null){
-					
-					// Scale the collider:
-					Renderer.PhysicsModeCollider.localScale=new Vector3((float)pixelWidth,PixelHeightF,0.01f);
 					
 				}
 				
