@@ -13,7 +13,6 @@ using System;
 using System.Threading;
 using Nitro;
 using Dom;
-using UnityEngine;
 
 
 namespace PowerUI{
@@ -71,7 +70,7 @@ namespace PowerUI{
 			
 			while(current!=null){
 				
-				current.CurrentTime+=Time.deltaTime;
+				current.CurrentTime+=UnityEngine.Time.deltaTime;
 				
 				if(current.CurrentTime>current.MaxTime){
 					// Tick!
@@ -179,7 +178,6 @@ namespace PowerUI{
 			
 			InternalTimer.Dispose();
 			InternalTimer=null;
-			
 			#elif UNITY_METRO
 			#else
 			if(InternalTimer==null){
@@ -189,7 +187,6 @@ namespace PowerUI{
 			InternalTimer.Enabled=false;
 			InternalTimer=null;
 			#endif
-			
 			
 			if(!OneOff){
 				
