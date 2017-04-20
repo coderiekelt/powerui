@@ -88,9 +88,6 @@ namespace PowerUI{
 				
 				if(InputEnabled){
 					
-					// Input resolves on the Z axis:
-					fwUI.ResolveOnZ=true;
-					
 					// Create a box collider:
 					BoxCollider bc = gameObject.AddComponent<BoxCollider>();
 					
@@ -143,6 +140,9 @@ namespace PowerUI{
 				WorldUI.AcceptInput=InputEnabled;
 				
 			}
+			
+			// Input is always inverted for these:
+			WorldUI.InvertResolve=true;
 			
 		}
 		

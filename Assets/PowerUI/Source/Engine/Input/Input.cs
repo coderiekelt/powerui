@@ -577,7 +577,9 @@ namespace PowerUI{
 			}
 			
 			// Cast into the scene now:
-			if(!Physics.Raycast(cam.ScreenPointToRay(new Vector2(x,y)),out worldUIHit)){
+			Ray ray=cam.ScreenPointToRay(new Vector2(x,ScreenInfo.ScreenY-1-y));
+			
+			if(!Physics.Raycast(ray,out worldUIHit)){
 				
 				// Nothing hit.
 				
@@ -621,6 +623,83 @@ namespace PowerUI{
 			
 			// Pull an element from that worldUI:
 			return worldUI.document.elementFromPointOnScreen(x,y);
+			
+		}
+		
+		/// <summary>Maps a raycast hit to a suitable 2D surface location.
+		/// Supports sphere, box and mesh colliders.</summary>
+		public static Vector2 HitToSurfacePoint(RaycastHit hit){
+			
+			if(hit.collider is BoxCollider){
+				
+				// Get the local point:
+				Vector3 localPoint=hit.transform.InverseTransformPoint(hit.point);
+				
+				// Reduce by collider size:
+				Vector3 colliderSize = (hit.collider as BoxCollider).size;
+				localPoint.x=localPoint.x / colliderSize.x;
+				localPoint.y=localPoint.y / colliderSize.y;
+				localPoint.z=localPoint.z / colliderSize.z;
+				
+				// Map it to a suitable 2D surface point:
+				const float maxBox = 0.5f - 0.0001f;
+				const float minBox = 0.0001f - 0.5f;
+				
+				// Which side are we on?
+				if(localPoint.z>=maxBox){
+					
+					// Positive z
+					return new Vector2(-localPoint.x,localPoint.y);
+					
+				}else if(localPoint.z<=minBox){
+				
+					// Negative z
+					return new Vector2(-localPoint.x,-localPoint.y);
+					
+				}else if(localPoint.y>=maxBox){
+					
+					// Positive y
+					return new Vector2(-localPoint.x,-localPoint.z);
+					
+				}else if(localPoint.y<=minBox){
+				
+					// Negative y
+					return new Vector2(-localPoint.x,localPoint.z);
+					
+				}else if(localPoint.x>=maxBox){
+					
+					// Positive x
+					return new Vector2(localPoint.z,localPoint.y);
+					
+				}
+				
+				// Negative x
+				return new Vector2(-localPoint.z,localPoint.y);
+				
+			
+			}
+			
+			if(hit.collider is SphereCollider){
+				
+				// Get the local point:
+				Vector3 localPoint=hit.transform.InverseTransformPoint(hit.point);
+				
+				// Reduce by collider size:
+				float radius = (hit.collider as SphereCollider).radius;
+				localPoint.x=localPoint.x / radius;
+				localPoint.y=localPoint.y / radius;
+				localPoint.z=localPoint.z / radius;
+				
+				// Map via lat/long:
+				float lat = (float)Math.Atan2(localPoint.z,Math.Sqrt(localPoint.x*localPoint.x+localPoint.y*localPoint.y));
+				float lng = (float)Math.Atan2(localPoint.y,localPoint.x);
+				
+				return new Vector2(lng / ((float)Math.PI * 2f),lat / (float)Math.PI);
+			}
+			
+			// Assume mesh collider otherwise
+			// (It's highly unlikely someone will use a capsule collider for this).
+			return hit.textureCoord;
 			
 		}
 		

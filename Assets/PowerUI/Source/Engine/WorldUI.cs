@@ -109,10 +109,6 @@ namespace PowerUI{
 			return null;
 		}
 		
-		/// <summary>True if the point resolve y axis (or z if ResolveOnZ is true) should be inverted.</summary>
-		public bool ResolveInverted;
-		/// <summary>True if the point resolve should use the z axis.</summary>
-		public bool ResolveOnZ;
 		/// <summary>True if this UI is rendering flat.</summary>
 		public bool Flat;
 		/// <summary>The width/height ratio.</summary>
@@ -129,6 +125,8 @@ namespace PowerUI{
 		public GameObject gameObject;
 		
 		
+		/// <summary>True if the input resolve should be inverted on x/y.</summary>
+		public bool InvertResolve;
 		/// <summary>The name of this WorldUI. Use WorldUI.Find to obtain a WorldUI by name.</summary>
 		public string Name;
 		/// <summary>Does this WorldUI expire?
@@ -221,42 +219,15 @@ namespace PowerUI{
 		/// Note that x and y are 'relative' in the -0.5 to +0.5 range.</summary>
 		public virtual void ResolvePoint(RaycastHit hit,out float x,out float y){
 			
-			// Get it as a box collider:
-			BoxCollider bc = (hit.collider as BoxCollider);
+			// Map the hit to a surface point:
+			Vector2 point = Input.HitToSurfacePoint(hit);
 			
-			if(bc==null){
-				
-				// Assuming mesh colliders in here.
-				
-				// Get the point in UV space as the collider could be anything:
-				Vector2 point=hit.textureCoord;
-				
-				// Great - this time the point is from 0-1 in x and y.
-				if(ResolveInverted){
-					x=0.5f-point.x;
-					y=0.5f-point.y;
-				}else{
-					x=point.x-0.5f;
-					y=point.y-0.5f;
-				}
-				
+			if(InvertResolve){
+				x=-point.x;
+				y=point.y;
 			}else{
-				// Next, we need to map the location on the front of the box to our 2D point.
-				// First, what's the point relative to the box collider?
-				Vector3 point=hit.transform.InverseTransformPoint(hit.point);
-				x=point.x / bc.size.x;
-				
-				if(ResolveOnZ){
-					y=point.z / bc.size.z;
-				}else{
-					y=point.y / bc.size.y;
-				}
-				
-				if(ResolveInverted){
-					// Invert y:
-					y=-y;
-				}
-				
+				x=point.x;
+				y=-point.y;
 			}
 			
 			// Clip:
