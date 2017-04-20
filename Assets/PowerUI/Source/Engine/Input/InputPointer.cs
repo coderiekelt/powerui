@@ -465,12 +465,21 @@ namespace PowerUI{
 					ActivePressedTarget=null;
 					
 					if(oldActivePressed!=null){
-						// Refresh CSS (active):
-						IRenderableNode irn = (oldActivePressed as IRenderableNode);
+						// Refresh CSS (active; applies to parents too):
+						EventTarget current = oldActivePressed;
 						
-						if(irn!=null){
-							irn.ComputedStyle.RefreshLocal();
+						while(current!=null){
+							
+							// Get it as a renderable node:
+							IRenderableNode irn = (current as IRenderableNode);
+							
+							if(irn!=null){
+								irn.ComputedStyle.RefreshLocal();
+							}
+							
+							current=current.eventTargetParentNode;
 						}
+						
 					}
 					
 					// Trigger up event.
@@ -498,12 +507,10 @@ namespace PowerUI{
 							Input.Unhandled.dispatchEvent(e);
 						}else if(oldActivePressed.dispatchEvent(e)){
 							
-							// Perform the default:
+							// Clear the selection if necessary:
 							HtmlElement h=(oldActivePressed as HtmlElement);
 							
 							if(h!=null){
-								h.OnClickEvent(e);
-								
 								// Clear selection if there is one:
 								(h.document as HtmlDocument).clearSelection();
 							}
@@ -584,12 +591,22 @@ namespace PowerUI{
 				// Trigger down event.
 				
 				if(ActivePressedTarget!=null){
-					// Refresh CSS (active):
-					IRenderableNode irn = (ActivePressedTarget as IRenderableNode);
+					// Refresh CSS (active; applies to parents too):
 					
-					if(irn!=null){
-						irn.ComputedStyle.RefreshLocal();
+					EventTarget current = ActivePressedTarget;
+					
+					while(current!=null){
+						
+						// Get it as a renderable node:
+						IRenderableNode irn = (current as IRenderableNode);
+						
+						if(irn!=null){
+							irn.ComputedStyle.RefreshLocal();
+						}
+						
+						current=current.eventTargetParentNode;
 					}
+					
 				}
 				
 				// Trigger down event.

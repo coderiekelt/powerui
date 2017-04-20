@@ -61,7 +61,7 @@ namespace PowerUI{
 			return false;
 		}
 		
-		/// <summary>Clicks this element (mousedown and a mouseup).
+		/// <summary>Clicks this element (mousedown and a mouseup).</summary>
 		public void click(){
 			
 			// Coords:
@@ -74,10 +74,7 @@ namespace PowerUI{
 			me.EventType="click";
 			
 			// Trigger:
-			if(dispatchEvent(me)){
-				// Perform the default:
-				OnClickEvent(me);
-			}
+			dispatchEvent(me);
 			
 		}
 		

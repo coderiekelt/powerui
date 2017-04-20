@@ -700,6 +700,11 @@ namespace PowerUI{
 		
 		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
+			if(base.HandleLocalEvent(e,bubblePhase)){
+				// It was blocked. Don't run the default.
+				return true;
+			}
+			
 			if(e.type=="mousedown" && bubblePhase){
 				
 				if(Dropped){
@@ -710,9 +715,7 @@ namespace PowerUI{
 				
 			}
 			
-			// Handle locally:
-			return base.HandleLocalEvent(e,bubblePhase);
-			
+			return false;
 		}
 		
 		/// <summary>Gets or sets the value of this element. Input/Select elements only.</summary>

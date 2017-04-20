@@ -55,6 +55,11 @@ namespace PowerUI{
 		
 		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
+			if(base.HandleLocalEvent(e,bubblePhase)){
+				// It was blocked. Don't run the default.
+				return true;
+			}
+			
 			if(e.type=="mousedown"){
 				
 				// Get the scroll bar:
@@ -65,9 +70,7 @@ namespace PowerUI{
 				
 			}
 			
-			// Handle locally:
-			return base.HandleLocalEvent(e,bubblePhase);
-			
+			return false;
 		}
 		
 	}

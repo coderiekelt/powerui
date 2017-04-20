@@ -367,30 +367,29 @@ namespace PowerUI{
 			
 			// Handle locally:
 			if(base.HandleLocalEvent(e,bubblePhase)){
+				// It was blocked. Don't run the default.
+				return true;
+			}
+			
+			if(e is ClipboardEvent && IsTextInput() && e.type=="paste"){
 				
-				if(e is ClipboardEvent && IsTextInput() && e.type=="paste"){
+				// Paste the data at the caret index (must be text only).
+				string textToPaste=(e as ClipboardEvent).text;
+				
+				if(textToPaste!=null){
 					
-					// Paste the data at the caret index (must be text only).
-					string textToPaste=(e as ClipboardEvent).text;
+					string value=Value;
 					
-					if(textToPaste!=null){
-						
-						string value=Value;
-						
-						if(value==null){
-							value=""+textToPaste;
-						}else{
-							value=value.Substring(0,CaretIndex)+textToPaste+value.Substring(CaretIndex,value.Length-CaretIndex);
-						}
-						
-						SetValue(value);
-						MoveCaret(CaretIndex+textToPaste.Length);
-						
+					if(value==null){
+						value=""+textToPaste;
+					}else{
+						value=value.Substring(0,CaretIndex)+textToPaste+value.Substring(CaretIndex,value.Length-CaretIndex);
 					}
 					
+					SetValue(value);
+					MoveCaret(CaretIndex+textToPaste.Length);
+					
 				}
-				
-				return true;
 				
 			}
 			
@@ -950,7 +949,7 @@ namespace PowerUI{
 		}
 		
 		public override void OnClickEvent(MouseEvent clickEvent){
-		
+			
 			// Focus it:
 			focus();
 			

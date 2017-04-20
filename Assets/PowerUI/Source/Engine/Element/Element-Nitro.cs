@@ -44,8 +44,17 @@ namespace PowerUI{
 				
 			}
 			
-			return base.HandleLocalEvent(e,bubblePhase);
+			if(base.HandleLocalEvent(e,bubblePhase)){
+				// Blocked it - stop there.
+				return true;
+			}
 			
+			// Main defaults occur in here:
+			if(bubblePhase && e is MouseEvent && e.type=="click"){
+				OnClickEvent((MouseEvent)e);
+			}
+			
+			return false;
 		}
 		
 		/// <summary>Runs a nitro function whos name is held in the given attribute.</summary>

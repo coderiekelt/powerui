@@ -208,37 +208,34 @@ namespace PowerUI{
 		/// <summary>Looks out for paste events.</summary>
 		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
-			// Handle locally:
 			if(base.HandleLocalEvent(e,bubblePhase)){
+				// It was blocked. Don't run the default.
+				return true;
+			}
+			
+			if(e is ClipboardEvent && bubblePhase && e.type=="paste"){
 				
-				if(e is ClipboardEvent && e.type=="paste"){
+				// Paste the data at the caret index (must be text only).
+				string textToPaste=(e as ClipboardEvent).text;
+				
+				if(textToPaste!=null){
 					
-					// Paste the data at the caret index (must be text only).
-					string textToPaste=(e as ClipboardEvent).text;
+					string value=this.value;
 					
-					if(textToPaste!=null){
-						
-						string value=this.value;
-						
-						if(value==null){
-							value=""+textToPaste;
-						}else{
-							value=value.Substring(0,CaretIndex)+textToPaste+value.Substring(CaretIndex,value.Length-CaretIndex);
-						}
-						
-						SetValue(value);
-						MoveCaret(CaretIndex+textToPaste.Length,true);
-						
+					if(value==null){
+						value=""+textToPaste;
+					}else{
+						value=value.Substring(0,CaretIndex)+textToPaste+value.Substring(CaretIndex,value.Length-CaretIndex);
 					}
 					
+					SetValue(value);
+					MoveCaret(CaretIndex+textToPaste.Length,true);
+					
 				}
-				
-				return true;
 				
 			}
 			
 			return false;
-			
 		}
 		
 		/// <summary>Called when this node has been created and is being added to the given lexer.</summary>

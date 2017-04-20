@@ -230,7 +230,7 @@ namespace PowerUI{
 		protected override bool HandleLocalEvent(Dom.Event e,bool bubblePhase){
 			
 			// Handle locally:
-			if(base.HandleLocalEvent(e,bubblePhase)){
+			if(!base.HandleLocalEvent(e,bubblePhase)){
 				
 				// Fire it in if it's got coords:
 				FireIntoScene(e as UIEvent);
