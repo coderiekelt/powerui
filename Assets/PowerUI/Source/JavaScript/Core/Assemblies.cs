@@ -38,9 +38,7 @@ namespace JavaScript{
 		/// <summary>Gets all available assemblies.</summary>
 		public static Assembly[] GetAll(){
 			#if NETFX_CORE
-			
-			return null;
-			
+			return new Assembly[]{Current};
 			#else
 			return System.AppDomain.CurrentDomain.GetAssemblies();
 			#endif

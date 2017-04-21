@@ -11,7 +11,6 @@
 
 using System;
 using Dom;
-using Nitro;
 
 
 namespace PowerUI{

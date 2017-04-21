@@ -11,7 +11,6 @@
 
 using System;
 using Dom;
-using Nitro;
 using System.Text;
 using UnityEngine;
 
@@ -74,12 +73,12 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Sets an interval.</summary>
-		public UITimer setInterval(Nitro.DynamicMethod<Nitro.Void> method,int ms){
+		public UITimer setInterval(OnUITimer method,int ms){
 			return new UITimer(false,ms,method);
 		}
 		
 		/// <summary>Sets a timeout.</summary>
-		public UITimer setTimeout(Nitro.DynamicMethod<Nitro.Void> method,int ms){
+		public UITimer setTimeout(OnUITimer method,int ms){
 			return new UITimer(true,ms,method);
 		}
 		

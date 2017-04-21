@@ -11,13 +11,12 @@
 
 using System;
 using System.Threading;
-using Nitro;
 using Dom;
 
 
 namespace PowerUI{
 	
-	/// <summary> Used as an alternative to Nitro for UI timer events.</summary>
+	/// <summary>A delegate used when a timer ticks.</summary>
 	public delegate void OnUITimer();
 	
 	/// <summary>
@@ -111,18 +110,7 @@ namespace PowerUI{
 		public Document Document;
 		/// <summary>An alternative to the callback. A delegate called when the time is up.</summary>
 		public event OnUITimer OnComplete;
-		/// <summary>The callback (A nitro method) to run when the time is up.</summary>
-		public DynamicMethod<Nitro.Void> Callback;
 		
-		
-		/// <summary>Creates a new timer defining how long to wait, the callback to run and if its an interval or not.</summary>
-		/// <param name="oneOff">True if this timer is a single event. False will result in the callback being run until it's stopped.</param>
-		/// <param name="interval">The time in milliseconds between callbacks.</param>
-		/// <param name="callback">The callback (A nitro method) to run when the time is up.</param>
-		public UITimer(bool oneOff,int interval,DynamicMethod<Nitro.Void> callback){
-			Callback=callback;
-			Setup(oneOff,interval);
-		}
 		
 		/// <summary>Creates a new timer defining how long to wait, the callback to run and if its an interval or not.</summary>
 		/// <param name="oneOff">True if this timer is a single event. False will result in the callback being run until it's stopped.</param>
@@ -140,7 +128,7 @@ namespace PowerUI{
 			
 			Interval=interval;
 			
-			if(Callback==null && OnComplete==null){
+			if(OnComplete==null){
 				throw new Exception("A callback must be provided for timer methods.");
 			}
 			
@@ -220,9 +208,6 @@ namespace PowerUI{
 			try{
 				if(OneOff){
 					Stop();
-				}
-				if(Callback!=null){
-					Callback.Run();
 				}
 				if(OnComplete!=null){
 					OnComplete();

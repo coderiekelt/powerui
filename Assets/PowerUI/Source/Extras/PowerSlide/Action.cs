@@ -13,8 +13,8 @@ using System;
 using UnityEngine;
 using PowerUI;
 using Json;
+using JavaScript;
 using System.Reflection;
-using Nitro;
 
 
 namespace PowerSlide{

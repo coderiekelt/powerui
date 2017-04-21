@@ -14,7 +14,6 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using Dom;
-using Nitro;
 
 namespace PowerUI{
 	

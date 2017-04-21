@@ -95,15 +95,18 @@ function animateMe(e:UIEvent){
 	// Position required for left etc to work:
 	e.htmlTarget.style.position="relative";
 	
-	e.htmlTarget.animate("left:40px;opacity:0;",1f).ondone(doneAnimation);
+	e.htmlTarget.animate("left:40px;opacity:0;",1f); //.ondone(doneAnimation); 
+	// ondone is no longer supported; use OnDone from C# or new JS instead (Transition to new JavaScript engine)
 
 }
 
+/*
 function doneAnimation(a:UIAnimation){
 	
 	console.log("done playing the animation!");
 	
 }
+*/
 
 function runGameCode(e:UIEvent){
 	// Nitro can call your games functions directly for excellent flexibility.
