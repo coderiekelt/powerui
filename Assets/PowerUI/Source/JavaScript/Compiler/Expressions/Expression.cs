@@ -5,7 +5,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Represents the base class of all javascript expressions.
 	/// </summary>
-	internal abstract class Expression : AstNode
+	public abstract class Expression : AstNode
 	{
 		/// <summary>
 		/// Evaluates the expression, if possible.

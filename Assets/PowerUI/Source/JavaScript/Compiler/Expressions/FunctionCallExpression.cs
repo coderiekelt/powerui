@@ -9,7 +9,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Represents a function call expression.
 	/// </summary>
-	internal class FunctionCallExpression : OperatorExpression
+	public class FunctionCallExpression : OperatorExpression
 	{
 		
 		/// <summary>

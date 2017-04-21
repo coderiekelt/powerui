@@ -6,7 +6,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Represents the base class of all tokens.
 	/// </summary>
-	internal abstract class Token
+	public abstract class Token
 	{
 		/// <summary>
 		/// Gets a string that represents the token in a parseable form.

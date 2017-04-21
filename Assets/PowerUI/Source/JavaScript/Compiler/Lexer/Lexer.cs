@@ -9,7 +9,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Represents the current expression state of the parser.
 	/// </summary>
-	internal enum ParserExpressionState
+	public enum ParserExpressionState
 	{
 		/// <summary>
 		/// Indicates the context is not known.  The lexer will guess.
@@ -35,7 +35,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Converts a JavaScript source file into a series of tokens.
 	/// </summary>
-	internal class Lexer : IDisposable
+	public class Lexer : IDisposable
 	{
 		private ScriptEngine engine;
 		private TextReader reader;

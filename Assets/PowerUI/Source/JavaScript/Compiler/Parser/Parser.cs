@@ -7,7 +7,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Converts a series of tokens into an abstract syntax tree.
 	/// </summary>
-	internal sealed class Parser
+	public sealed class Parser
 	{
 		internal ScriptEngine engine;
 		internal Lexer lexer;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace JavaScript.Compiler
 {
 
-	internal enum OperatorAssociativity
+	public enum OperatorAssociativity
 	{
 		/// <summary>
 		/// Indicates that multiple operators of this type are grouped left-to-right.
@@ -18,7 +18,7 @@ namespace JavaScript.Compiler
 	}
 
 	[Flags]
-	internal enum OperatorPlacement
+	public enum OperatorPlacement
 	{
 		/// <summary>
 		/// Indicates that a value is consumed to the left of the primary token.
@@ -56,7 +56,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Represents the type of operator.
 	/// </summary>
-	internal enum OperatorType
+	public enum OperatorType
 	{
 		// Special operators.
 		Grouping,
@@ -123,7 +123,7 @@ namespace JavaScript.Compiler
 	/// <summary>
 	/// Represents a JavaScript operator.
 	/// </summary>
-	internal sealed class Operator
+	public sealed class Operator
 	{
 		
 		//	 INITIALIZATION

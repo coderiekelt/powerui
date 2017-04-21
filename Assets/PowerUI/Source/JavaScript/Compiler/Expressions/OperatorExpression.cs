@@ -7,7 +7,7 @@ namespace JavaScript.Compiler
 	/// Represents a mutable operator expression.  Once all the operands are determined, the
 	/// expression is converted into a real operator expression.
 	/// </summary>
-	internal abstract class OperatorExpression : Expression
+	public abstract class OperatorExpression : Expression
 	{
 		
 		/// <summary>
