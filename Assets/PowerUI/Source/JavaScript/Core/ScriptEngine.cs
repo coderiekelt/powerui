@@ -287,14 +287,14 @@ namespace JavaScript{
 		/// *must* include your 'this' override as the first one.
 		/// Pass null if you don't want to override the 'this' value.</param>
 		/// <returns> The return value from the function. </returns>
-		public object CallGlobalFunction(string functionName, params object[] argumentValues)
+		public object CallGlobalFunction(string functionName,bool optional,params object[] argumentValues)
 		{
 			if (functionName == null)
 				throw new ArgumentNullException("functionName");
 			if (argumentValues == null)
 				throw new ArgumentNullException("argumentValues");
 				
-			return GlobalPrototype.CallMemberFunctionOn(null,functionName,argumentValues);
+			return GlobalPrototype.CallMemberFunctionOn(null,functionName,optional,argumentValues);
 			
 		}
 		
@@ -307,9 +307,9 @@ namespace JavaScript{
 		/// *must* include your 'this' override as the first one.
 		/// Pass null if you don't want to override the 'this' value.</param>
 		/// <returns> The return value from the function, coerced to the given type. </returns>
-		public T CallGlobalFunction<T>(string functionName,params object[] argumentValues)
+		public T CallGlobalFunction<T>(string functionName,bool optional,params object[] argumentValues)
 		{
-			return TypeConverter.ConvertTo<T>(this, CallGlobalFunction(functionName, argumentValues));
+			return TypeConverter.ConvertTo<T>(this, CallGlobalFunction(functionName,optional, argumentValues));
 		}
 		
 		/// <summary>

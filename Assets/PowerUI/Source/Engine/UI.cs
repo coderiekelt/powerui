@@ -45,7 +45,7 @@ public static class UI{
 	/// <summary>The minor version number of PowerUI.</summary>
 	public const int Minor=0;
 	/// <summary>The revision number.</summary>
-	public const int Revision=720;
+	public const int Revision=950;
 	
 	/// <summary>The user agent that PowerUI uses.</summary>
 	public static string UserAgent{
@@ -245,6 +245,7 @@ public static class UI{
 		#if !NoNitroRuntime
 		// Link up the text/nitro type by creating the engine:
 		ScriptEngines.Add(new NitroScriptEngine());
+		ScriptEngines.Add(new JavaScriptEngine());
 		
 		// Setup the compiler:
 		NitroCode.Setup();

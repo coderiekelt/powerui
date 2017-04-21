@@ -152,6 +152,7 @@ namespace JavaScript{
 			
 			// Engine.SetGlobal("JSON",new JSON());
 			Engine.SetGlobal("console",new console(Engine));
+			Engine.SetGlobal("window",Engine.GlobalScopeType);
 			Engine.SetGlobal("Math",new MathObject());
 			
 			if(imports==null){

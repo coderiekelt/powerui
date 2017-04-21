@@ -268,6 +268,7 @@ namespace PowerUI{
 				HtmlElement root=createElement("html") as HtmlElement ;
 				root.innerHTML="<head></head><body></body>";
 				appendChild(root);
+				bd=root.childNodes[1] as HtmlElement;
 				
 			}
 			
