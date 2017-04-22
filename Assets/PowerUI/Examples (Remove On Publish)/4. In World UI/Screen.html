@@ -30,6 +30,10 @@ body{
 
 <script type='text/nitro'>
 
+/*
+Nitro is now obsolete (it's being replaced)
+*/
+
 // The current message:
 var messageID=1;
 
@@ -45,7 +49,7 @@ fadedOut(null);
 function fadeIn(){
 	
 	// Fades the screen in. When it's done, it pauses.
-	content.animate("color-overlay:white;",1.4f).onDone(pause);
+	content.animate("color-overlay:white;",1.4f); //.onDone(pause);
 	
 }
 
@@ -59,7 +63,7 @@ function pause(a:UIAnimation){
 function fadeOut(){
 	
 	// Fades the screen out. When it's done, it flips the message.
-	content.animate("color-overlay:black;",1.4f).onDone(fadedOut);
+	content.animate("color-overlay:black;",1.4f); //.onDone(fadedOut);
 	
 }
 

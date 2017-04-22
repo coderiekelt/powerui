@@ -49,6 +49,9 @@ namespace PowerUI{
 		
 		public override void OnEnable () {
 			
+			// Watch for any file changes:
+			Watch();
+			
 			// Get the UnityUI image panel from the GO:
 			UnityEngine.UI.RawImage img=GetComponent<UnityEngine.UI.RawImage>();
 			

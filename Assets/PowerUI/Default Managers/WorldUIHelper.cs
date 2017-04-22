@@ -34,6 +34,9 @@ namespace PowerUI{
 		
 		public override void OnEnable () {
 			
+			// Watch for any file changes:
+			Watch();
+			
 			// Dump renderer/filter, unless it's flat:
 			MeshRenderer mr=gameObject.GetComponent<MeshRenderer>();
 			

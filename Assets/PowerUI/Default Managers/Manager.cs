@@ -115,8 +115,8 @@ namespace PowerUI{
 		}
 		#endif
 		
-		// OnEnable is called when the game starts, or when the manager script component is enabled.
-		public virtual void OnEnable () {
+		/// <summary>Watches for changes if necessary.</summary>
+		protected void Watch(){
 			
 			#if UNITY_EDITOR && !UNITY_WEBPLAYER
 			
@@ -138,6 +138,13 @@ namespace PowerUI{
 			}
 			
 			#endif
+		}
+		
+		// OnEnable is called when the game starts, or when the manager script component is enabled.
+		public virtual void OnEnable () {
+			
+			// Watch for changes:
+			Watch();
 			
 			// Start:
 			UI.Start();
