@@ -289,11 +289,17 @@ namespace WebAssembly{
 			if(opcode.AllowedInInit){
 				
 				// Read its immediates:
-				return opcode.ReadImmediates(this);
+				object imms=opcode.ReadImmediates(this);
+				
+				if(ReadByte() != 0x0b){
+					throw new Exception("Init expr did not end with the 'end' opcode.");
+				}
+				
+				return imms;
 				
 			}
 			
-			throw new Exception("unexpected opcode in initializer expression.");
+			throw new Exception("unexpected opcode in initializer expression ("+opcode.Code+").");
 		}
 		
 		/// <summary>Reads a value_type converted to a suitable system type.</summary>

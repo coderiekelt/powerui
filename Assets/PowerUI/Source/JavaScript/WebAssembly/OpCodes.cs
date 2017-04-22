@@ -327,6 +327,7 @@ namespace WebAssembly{
 				);
 				
 			Get_global = Create(0x23).
+				CanInit().
 				OnImmediates(
 					delegate(Reader reader){
 						
@@ -613,6 +614,7 @@ namespace WebAssembly{
 			
 			I64_const = Create(0x42).
 				Returns(typeof(long)).
+				CanInit().
 				OnImmediates(ImmediatesType.VarInt64).
 				OnOutput(
 					delegate(ILGenerator gen){
@@ -622,6 +624,7 @@ namespace WebAssembly{
 			
 			F32_const = Create(0x43).
 				Returns(typeof(float)).
+				CanInit().
 				OnImmediates(ImmediatesType.Single).
 				OnOutput(
 					delegate(ILGenerator gen){
@@ -631,6 +634,7 @@ namespace WebAssembly{
 			
 			F64_const = Create(0x44).
 				Returns(typeof(double)).
+				CanInit().
 				OnImmediates(ImmediatesType.Double).
 				OnOutput(
 					delegate(ILGenerator gen){

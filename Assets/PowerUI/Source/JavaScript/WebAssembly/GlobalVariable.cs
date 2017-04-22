@@ -32,6 +32,8 @@ namespace WebAssembly{
 		public GlobalVariable(){}
 		
 		public GlobalVariable(Reader reader,int index){
+			
+			reader.VarUInt1(); // Mutability
 			Type = reader.ValueTypeConverted();
 			Init = reader.InitExpression();
 			Index = index;

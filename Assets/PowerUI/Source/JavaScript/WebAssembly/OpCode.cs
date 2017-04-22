@@ -62,6 +62,12 @@ namespace WebAssembly{
 			return this;
 		}
 		
+		/// <summary>May be used in initialisers.</summary>
+		public OpCode CanInit(){
+			AllowedInInit=true;
+			return this;
+		}
+		
 		/// <summary>Ignores this opcode.
 		/// It's parsed but isn't added to the instruction stack.</summary>
 		public OpCode Ignore(){
