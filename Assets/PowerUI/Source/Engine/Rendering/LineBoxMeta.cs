@@ -756,21 +756,9 @@ namespace PowerUI{
 				// Is the nearest block parent a table cell?
 				bool tableCell=(CurrentBox.DisplayMode==DisplayMode.TableCell);
 				
-				if(tableCell && (verticalAlignMode&VerticalAlignMode.TopMiddleBottom)!=0){
-					
-					// Adjust the meaning of valign on this element:
-					switch(verticalAlignMode){
-						case VerticalAlignMode.Top:
-							verticalAlignMode=VerticalAlignMode.TableTop;
-						break;
-						case VerticalAlignMode.Middle:
-							verticalAlignMode=VerticalAlignMode.TableMiddle;
-						break;
-						case VerticalAlignMode.Bottom:
-							verticalAlignMode=VerticalAlignMode.TableBottom;
-						break;
-					}
-					
+				if(tableCell){
+					// Don't apply any v-align yet:
+					verticalAlignMode=0;
 				}
 				
 				while(currentBox!=null){
@@ -875,31 +863,6 @@ namespace PowerUI{
 							
 						}
 						
-					}else if((verticalAlignMode & VerticalAlignMode.TableMode)!=0){
-						
-						// Aligning vertically (tables):
-						
-						// Vertical alignment:
-						switch(verticalAlignMode){
-							
-							case VerticalAlignMode.TableMiddle:
-								
-								// Similar to below - we find the gap, then add *half* of that onto OffsetTop.
-								delta+=(CurrentBox.InnerHeight-currentBox.Height) / 2f;
-								
-							break;
-							case VerticalAlignMode.TableBottom:
-							
-								// Find the gap - parent height-contentHeight.
-								// Then simply add that onto delta.
-								delta+=CurrentBox.InnerHeight-currentBox.Height;
-								
-							break;
-							// case VerticalAlignMode.TableTop:
-								// Default - do nothing
-							// break;
-						}
-						
 					}
 					
 					elementCount++;
@@ -946,6 +909,76 @@ namespace PowerUI{
 						AlignHorizontally(first,last,MaxX-LineStart,elementCount,lineLength,hAlign);
 					}
 					
+					// If this is the last line and vAlign is a table mode..
+					if(
+						(settings & LineBreakMode.Last)!=0 && 
+						(settings & LineBreakMode.Break)==0 && 
+						(tableCell || (verticalAlignMode & VerticalAlignMode.TableMode)!=0) 
+					){
+						
+						if(tableCell){
+							
+							// Adjust the meaning of valign on this element:
+							switch(VerticalAlign){
+								case VerticalAlignMode.Top:
+									verticalAlignMode=VerticalAlignMode.TableTop;
+								break;
+								case VerticalAlignMode.Middle:
+									verticalAlignMode=VerticalAlignMode.TableMiddle;
+								break;
+								case VerticalAlignMode.Bottom:
+									verticalAlignMode=VerticalAlignMode.TableBottom;
+								break;
+							}
+							
+						}
+						
+						// Aligning everything vertically (tables):
+						float vDelta=0;
+						
+						// Vertical alignment:
+						switch(verticalAlignMode){
+							
+							case VerticalAlignMode.TableMiddle:
+								
+								// Similar to below - we find the gap, then add *half* of that onto OffsetTop.
+								vDelta=(CurrentBox.InnerHeight-(PenY+lineHeight)) / 2f;
+								
+							break;
+							case VerticalAlignMode.TableBottom:
+							
+								// Find the gap; it's parent height-contentHeight.
+								vDelta=CurrentBox.InnerHeight-(PenY+lineHeight);
+								
+							break;
+							// case VerticalAlignMode.TableTop:
+								// Default - do nothing
+							// break;
+						}
+						
+						if(vDelta!=0){
+							// Move everything down by vDelta.
+							
+							// For each line..
+							LayoutBox currentLine = FirstLineStart;
+							
+							while(currentLine!=null){
+								// For each box on the line..
+								LayoutBox currentOnLine = currentLine;
+								
+								while(currentOnLine!=null){
+									// Move it:
+									currentOnLine.ParentOffsetTop+=vDelta;
+									currentOnLine=currentOnLine.NextOnLine;
+								}
+								
+								currentLine = currentLine.NextLineStart;
+							}
+							
+						}
+						
+					}
+				
 				}
 				
 				// Got bidi text and the bidi algo is enabled:

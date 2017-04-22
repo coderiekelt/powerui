@@ -118,7 +118,7 @@ namespace PowerUI{
 				}
 				
 				// Emit UTF8:
-				writer.WriteString(pieces[0].ToLower());
+				writer.WriteString(pieces[0]);
 				writer.WriteString(character);
 				
 				// Advance:
