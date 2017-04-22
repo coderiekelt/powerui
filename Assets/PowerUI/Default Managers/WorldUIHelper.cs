@@ -73,7 +73,7 @@ namespace PowerUI{
 				
 				// Grab the texture and apply it to the material:
 				if(mr!=null){
-					Material mat = new Material(Shader.Find("Diffuse"));
+					Material mat = new Material(mr.material.shader);
 					mat.mainTexture = fwUI.texture;
 					mr.material=mat;
 					
