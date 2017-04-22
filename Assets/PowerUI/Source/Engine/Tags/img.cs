@@ -349,7 +349,7 @@ namespace PowerUI{
 			if(fullHeight == -1f){
 				
 				// Using the image width:
-				min=RawWidth;
+				min=RawWidth * Style.Computed.RenderData.ValueScale;
 				
 			}else{
 				
@@ -375,7 +375,9 @@ namespace PowerUI{
 					if(Style.Computed.ShouldClipHeight()){
 						
 						// Height priority. Clip by min/max-height:
-						box.InnerHeight=Style.Computed.ClipHeight(box.DisplayMode,RawHeight);
+						box.InnerHeight=Style.Computed.ClipHeight(
+							box.DisplayMode,RawHeight * Style.Computed.RenderData.ValueScale
+						);
 						
 						// Derive height from the aspect ratio:
 						box.InnerWidth=box.InnerHeight * AspectRatio;
@@ -383,7 +385,9 @@ namespace PowerUI{
 					}else{
 						
 						// Width priority. Clip by min/max-width:
-						box.InnerWidth=Style.Computed.ClipWidth(box.DisplayMode,RawWidth);
+						box.InnerWidth=Style.Computed.ClipWidth(
+							box.DisplayMode,RawWidth * Style.Computed.RenderData.ValueScale
+						);
 						
 						// Derive height from the aspect ratio:
 						box.InnerHeight=box.InnerWidth * InverseAspectRatio;

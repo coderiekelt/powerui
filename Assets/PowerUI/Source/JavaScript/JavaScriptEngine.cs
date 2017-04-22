@@ -40,6 +40,8 @@ namespace PowerUI{
 			Engine.FullAccess = safeHost;
 			Engine.ImportGlobals(window);
 			
+			UnityEngine.Debug.Log("Nitrassic is not fully linked with PowerUI yet - many PowerUI DOM API's are currently unavailable (but they'll be with you shortly!)");
+			
 		}
 		
 		/// <summary>Gets or sets script variable values.</summary>
