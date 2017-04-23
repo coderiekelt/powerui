@@ -41,30 +41,8 @@ namespace PowerUI{
 			// Get the current mouse position:
 			Vector2 position=UnityEngine.Input.mousePosition;
 			
-			// MousePosition's Y value is inverted, so flip it:
-			position.y=ScreenInfo.ScreenY-1f-position.y;
-			
-			// Moved?
-			if(position.x==ScreenX && position.y==ScreenY){
-				
-				// Nope!
-				delta=Vector2.zero;
-				return false;
-				
-			}
-			
-			// Delta:
-			delta=new Vector2(
-				position.x - ScreenX,
-				position.y - ScreenY
-			);
-			
-			// Update position:
-			ScreenX=position.x;
-			ScreenY=position.y;
-			
-			return true;
-			
+			// Change the position:
+			return TryChangePosition(position,true,out delta);
 		}
 		
 	}

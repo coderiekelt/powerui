@@ -15,28 +15,6 @@ namespace PowerUI{
 		private Camera Camera_;
 		/// <summary>The transform it's connected to.
 		private Transform Transform_;
-		/// <summary>True if the position was updated.</summary>
-		private bool Invalidated_;
-		/// <summary>The screen-space coordinates, in pixels.
-		/// The top left corner is 0,0.</summary>
-		private Vector2 Position_;
-		
-		/// <summary>The screen-space coordinates, in pixels.
-		/// The top left corner is 0,0.</summary>
-		public Vector2 Position{
-			get{
-				return Position_;
-			}
-			set{
-				Position_=value;
-				Invalidated_=true;
-			}
-		}
-		
-		/// <summary>Force the pointer to invalidate itself (which makes it recompute which element is under it).</summary>
-		public void ForceInvalidate(){
-			Invalidated_=true;
-		}
 		
 		/// <summary>The camera doing the pointing.</summary>
 		public Camera Camera{
@@ -79,34 +57,16 @@ namespace PowerUI{
 		
 		public override bool Relocate(out Vector2 delta){
 			
-			if(Invalidated_){
-				// Reset:
-				Invalidated_=false;
-				
-				delta=new Vector2(
-					Position.x - ScreenX,
-					Position.y - ScreenY
-				);
-				
-				// Update position:
-				ScreenX=Position.x;
-				ScreenY=Position.y;
-				
-				return true;
-			}
-			
 			// Camera moved?
 			if(Transform_!=null && Transform_.hasChanged){
 				// Reset:
 				Transform_.hasChanged=false;
-				delta=Vector2.zero;
+				base.Relocate(out delta);
 				return true;
 			}
 			
-			// No change.
-			delta=Vector2.zero;
-			return false;
-			
+			// Default otherwise:
+			return base.Relocate(out delta);
 		}
 		
 	}

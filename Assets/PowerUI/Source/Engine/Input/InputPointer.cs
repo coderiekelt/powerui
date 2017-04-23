@@ -1,6 +1,7 @@
 using Dom;
 using System;
 using Css;
+using UnityEngine;
 
 
 namespace PowerUI{
@@ -275,9 +276,38 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>True if this pointers position has changed.
+		/// On the next input update it will recompute the element it's over.</summary>
+		protected bool HasMoved;
+		/// <summary>The next position to move to.</summary>
+		private Vector2 NextPosition_;
+		
+		/// <summary>Sets the ScreenX/ScreenY coordinates.
+		/// If it has changed then on the next input update 
+		/// it will recompute the element it's over. Top left corner is 0,0.</summary>
+		public Vector2 Position{
+			get{
+				return new Vector2(ScreenX,ScreenY);
+			}
+			set{
+				NextPosition_=value;
+				
+				if(value.x==ScreenX && value.y==ScreenY){
+					return;
+				}
+				
+				HasMoved=true;
+			}
+		}
+		
 		
 		public InputPointer(){
 			pointerId=GlobalID++;
+		}
+		
+		/// <summary>Makes it so this pointer will get removed on the next input update.</summary>
+		public void Remove(){
+			Removed=true;
 		}
 		
 		/// <summary>Adds this pointer to the available set so it'll get updated.
@@ -293,6 +323,40 @@ namespace PowerUI{
 			// Add it:
 			AllRaw[PointerCount++]=this;
 			
+		}
+		
+		/// <summary>Best used from the Relocate method. Sets ScreenX/ScreenY to the given position
+		/// and returns true if it changed.</summary>
+		public bool TryChangePosition(Vector2 position,out Vector2 delta){
+			return TryChangePosition(position,false,out delta);
+		}
+		
+		/// <summary>Best used from the Relocate method. Sets ScreenX/ScreenY to the given position
+		/// and returns true if it changed. Optionally invert the y coordinate.</summary>
+		public bool TryChangePosition(Vector2 position, bool invertY,out Vector2 delta){
+			if(invertY){
+				// Invert the y value:
+				position.y=ScreenInfo.ScreenY-1f-position.y;
+			}
+			
+			// Moved?
+			if(position.x==ScreenX && position.y==ScreenY){
+				// Nope!
+				delta=Vector2.zero;
+				return false;
+			}
+			
+			// Delta:
+			delta=new Vector2(
+				position.x - ScreenX,
+				position.y - ScreenY
+			);
+			
+			// Apply the new position:
+			ScreenX=position.x;
+			ScreenY=position.y;
+			
+			return true;
 		}
 		
 		/// <summary>Finds the minimum drag distance. Always greater than zero.</summary>
@@ -358,10 +422,32 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Force the pointer to invalidate itself (which makes it recompute which element is under it).</summary>
+		public void ForceInvalidate(){
+			HasMoved=true;
+		}
+		
 		/// <summary>Update ScreenX/ScreenY.</summary>
 		/// <returns>True if it moved.</returns>
 		public virtual bool Relocate(out UnityEngine.Vector2 delta){
-			delta=UnityEngine.Vector2.zero;
+			
+			if(HasMoved){
+				// Reset:
+				HasMoved=false;
+				
+				delta=new Vector2(
+					NextPosition_.x - ScreenX,
+					NextPosition_.y - ScreenY
+				);
+				
+				// Update position:
+				ScreenX=NextPosition_.x;
+				ScreenY=NextPosition_.y;
+				
+				return true;
+			}
+			
+			delta=Vector2.zero;
 			return false;
 		}
 		
