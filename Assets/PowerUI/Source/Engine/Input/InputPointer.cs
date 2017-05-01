@@ -325,6 +325,16 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>Called when the input system wants to fire a raycast to figure out if this pointer is
+		/// 'over' any WorldUI's.</summary>
+		public virtual bool Raycast(out RaycastHit hit,Camera cam,Vector2 screenPoint){
+			
+			// Cast into the scene now:
+			Ray ray=cam.ScreenPointToRay(screenPoint);
+			return Physics.Raycast(ray,out hit);
+			
+		}
+		
 		/// <summary>Best used from the Relocate method. Sets ScreenX/ScreenY to the given position
 		/// and returns true if it changed.</summary>
 		public bool TryChangePosition(Vector2 position,out Vector2 delta){

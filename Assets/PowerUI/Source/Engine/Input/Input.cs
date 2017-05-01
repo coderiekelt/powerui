@@ -576,17 +576,23 @@ namespace PowerUI{
 				return null;
 			}
 			
-			// Cast into the scene now:
-			Ray ray=cam.ScreenPointToRay(new Vector2(x,ScreenInfo.ScreenY-1-y));
+			Vector2 screenPoint = new Vector2(x,ScreenInfo.ScreenY-1-y);
 			
-			if(!Physics.Raycast(ray,out worldUIHit)){
+			if(pointer == null){
 				
-				// Nothing hit.
-				
-				if(pointer!=null){
-					pointer.LatestHitSuccess=false;
+				// Cast into the scene now:
+				Ray ray=cam.ScreenPointToRay(screenPoint);
+				if(!Physics.Raycast(ray,out worldUIHit)){
+					
+					// Nothing hit.
+					return null;
+					
 				}
 				
+			}else if(!pointer.Raycast(out worldUIHit,cam,screenPoint)){
+				
+				// Nothing hit.
+				pointer.LatestHitSuccess=false;
 				return null;
 				
 			}
