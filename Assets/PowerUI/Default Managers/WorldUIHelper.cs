@@ -137,7 +137,7 @@ namespace PowerUI{
 				// The y scale is accounted for by the computed pixel height (we don't want to distort it).
 				float scaleFactor=(10f * scale.x) / (float)PixelWidth;
 				
-				WorldUI.transform.localScale=new Vector3(scaleFactor,scaleFactor,scale.y);
+				WorldUI.transform.localScale=new Vector3(scaleFactor,scaleFactor,scaleFactor);
 				
 				// Optionally accept input:
 				WorldUI.AcceptInput=InputEnabled;

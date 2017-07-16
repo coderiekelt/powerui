@@ -196,10 +196,10 @@ namespace PowerUI{
 			
 			transform=gameObject.transform;
 			Renderer=new Renderman(this);
-			SetDepthResolution(0.01f);
+			SetDepthResolution(1f);
 			
 			// Apply the default scale:
-			transform.localScale=new Vector3(1/100f,1/100f,1f);
+			transform.localScale=new Vector3(1/100f,1/100f,1/100f);
 			
 			document=Renderer.RootDocument as HtmlDocument;
 			
@@ -380,7 +380,7 @@ namespace PowerUI{
 		/// The amount of pixels and pixels per world unit (resolution).</summary>
 		/// <param name="ppw">Pixels per world unit to use for both x and y.</param>
 		public virtual void SetResolution(float ppw){
-			transform.localScale=new Vector3(1f/ppw,1f/ppw,1f);
+			transform.localScale=new Vector3(1f/ppw,1f/ppw,1f/ppw);
 		}
 		
 		/// <summary>Sets how many Pixels Per World unit this renderer uses, allowing for distortion. Maps directly to applying a scale.
@@ -389,7 +389,7 @@ namespace PowerUI{
 		/// <param name="ppwW">Pixels per world unit to use for the x axis.</param>
 		/// <param name="ppwH">Pixels per world unit to use for the y axis.</param>
 		public virtual void SetResolution(int ppwW,int ppwH){
-			transform.localScale=new Vector3(1f/ppwW,1f/ppwH,1f);
+			transform.localScale=new Vector3(1f/ppwW,1f/ppwH,1f/ppwW);
 		}
 		
 		/// <summary>The amount of world units per pixel. This is just the transform scale.</summary>
@@ -640,8 +640,9 @@ namespace PowerUI{
 				// Thus making the scale new Vector3(spaceTakenX,spaceTakenY,1f).
 				
 				
-				// Apply the proportions:
-				transform.localScale=new Vector3(depth*ScreenSpaceProportion,depth*ScreenSpaceProportion,1f);
+				// Apply the proportions (must be consistent):
+				float scale = depth*ScreenSpaceProportion;
+				transform.localScale=new Vector3(scale,scale,scale);
 				
 			}
 			
