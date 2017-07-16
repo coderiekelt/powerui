@@ -242,26 +242,6 @@ namespace JavaScript{
 		}
 		
 		/// <summary>
-		/// Gets or creates the prototype for the given type.
-		/// </summary>
-		public Prototype Get(string typeName){
-			return Get(typeName,null);
-		}
-		
-		/// <summary>
-		/// Gets or creates the prototype for the given type.
-		/// </summary>
-		public Prototype Get(string typeName,Prototype parentProto){
-			
-			// Get the type:
-			Type type=CodeReference.GetFirstType(typeName);
-			
-			// Resolve the prototype:
-			return Get(type,parentProto);
-			
-		}
-		
-		/// <summary>
 		/// Gets or creates the prototype for the given object.
 		/// </summary>
 		public Prototype Get(object forObject){
@@ -291,6 +271,26 @@ namespace JavaScript{
 				kvp.Value.Complete();
 				
 			}
+			
+		}
+		
+		/// <summary>Check if the given type is a kind of array (It's IEnumerable).</summary>
+		private bool IsArrayType(Type type){
+			
+			if(type==null){
+				return false;
+			}
+			
+			if(type.IsArray){
+				return true;
+			}
+			
+			// Collections should be treated as arrays too:
+			#if NETFX_CORE
+			return typeof(ICollection).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo());
+			#else
+			return typeof(ICollection).IsAssignableFrom(type);
+			#endif
 			
 		}
 		
@@ -340,6 +340,11 @@ namespace JavaScript{
 				#else
 				Type baseType=type.BaseType;
 				#endif
+				
+				if(baseType == typeof(object) && IsArrayType(type)){
+					baseType = typeof(JSArray);
+					UnityEngine.Debug.Log("Array type: "+type);
+				}
 				
 				if(baseType==typeof(object) || baseType==null){
 					

@@ -21,7 +21,8 @@ namespace PowerUI{
 	/// The default script handler for text/javascript-x.
 	/// </summary>
 	
-	public class JavaScriptEngine : ScriptEngine{
+	[JSProperties(Hidden=true)]
+	public class JavaScriptEngine : PowerUI.ScriptEngine{
 		
 		/// <summary>An instance of the ScriptEngine on this page.</summary>
 		public JavaScript.ScriptEngine Engine;
@@ -33,12 +34,14 @@ namespace PowerUI{
 		
 		public JavaScriptEngine(){}
 		
-		public JavaScriptEngine(bool safeHost,object window){
+		public JavaScriptEngine(bool safeHost,HtmlDocument doc,object window){
 			
 			// Setup the engine:
-			Engine = new JavaScript.ScriptEngine();
+			Engine = new JavaScript.ScriptEngine(doc.SecurityDomain);
 			Engine.FullAccess = safeHost;
 			Engine.ImportGlobals(window);
+			JavaScript.ScriptEngine.EnableILAnalysis=true;
+			Document=doc;
 			
 			UnityEngine.Debug.Log("Nitrassic is not fully linked with PowerUI yet - many PowerUI DOM API's are currently unavailable (but they'll be with you shortly!)");
 			
@@ -111,17 +114,27 @@ namespace PowerUI{
 				
 			}
 			
-			return new JavaScriptEngine(safeHost,doc.window);
+			return new JavaScriptEngine(safeHost,doc,doc.window);
 		}
 		
 		protected override void Compile(string source){
 			
 			try{
 				
-				// Compile it:
-				CompiledCode cc = Engine.Compile(source,null);
+				// Get the location:
+				string location=null;
 				
-				// Trigger an event to say Nitro is about to start:
+				if(Document.location!=null){
+					location = Document.location.absoluteNoHash;
+				}
+				
+				// Get the cache seed:
+				string cacheSeed = location == null ? null : JavaScript.Cache.GetSeed(source,location);
+				
+				// Compile it:
+				CompiledCode cc = Engine.Compile(cacheSeed,source);
+				
+				// Trigger an event to say the engine is about to start:
 				Dom.Event e=new Dom.Event("scriptenginestart");
 				htmlDocument.dispatchEvent(e);
 				

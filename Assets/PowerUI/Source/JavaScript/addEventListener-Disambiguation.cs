@@ -27,28 +27,30 @@ namespace Dom{
 		/// <summary>
 		/// Helps the JS compiler optimise addEventListener calls.
 		/// </summary>
-		public MethodBase AddEventListenerDisambiguation(MethodGroup group,FunctionCallExpression fce){
+		public static MethodBase AddEventListenerDisambiguation(MethodGroup group,FunctionCallExpression fce){
 			
 			// Get the first arg:
 			string firstArg = fce.Arg(0) as string;
 			
-			if(firstArg == null){
-				// Generic Dom.Event form:
-				return group.Match(new Type[]{typeof(string), typeof(Dom.Event)});
+			if(firstArg != null){
+				
+				// We can potentially optimize this! Use the event map to find what
+				// type of event firstArg is.
+				var eInfo = EventMap.Get(firstArg);
+				
+				if(eInfo != null){
+					// Match for that event:
+					MethodBase mtd = group.ExactMatch(new Type[]{typeof(string), eInfo.ActionType});
+					
+					if(mtd!=null){
+						return mtd;
+					}
+				}
+				
 			}
 			
-			// We can potentially optimize this! Use the event map to find what
-			// type of event firstArg is.
-			var eInfo = EventMap.Get(firstArg);
-			
-			if(eInfo == null){
-				// Generic Dom.Event form:
-				return group.Match(new Type[]{typeof(string), typeof(Dom.Event)});
-			}
-			
-			// Match for that event:
-			return group.Match(new Type[]{typeof(string), eInfo.Type});
-			
+			// Generic Dom.Event form:
+			return group.ExactMatch(new Type[]{typeof(string), typeof(Action<Dom.Event>)});
 		}
 		
 	}

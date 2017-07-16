@@ -19,6 +19,7 @@ namespace PowerUI{
 	/// A particular script engine. Derive from this if you wish to create your own.
 	/// </summary>
 	
+	[JavaScript.JSProperties(Hidden=true)]
 	public class ScriptEngine{
 		
 		/// <summary>All code in script tags is buffered and compiled in one go. This is the buffer.</summary>

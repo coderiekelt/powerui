@@ -266,7 +266,7 @@ namespace JavaScript
 			get{
 				
 				// Get the constructor:
-				PropertyVariable property=GetProperty("constructor");
+				PropertyVariable property=GetSelfProperty("constructor");
 				
 				if(property==null)
 				{
@@ -462,13 +462,37 @@ namespace JavaScript
 		/// <param name="name"> The name of the property. </param>
 		/// <returns> A structure containing the zero-based index of the property, or <c>-1</c> if a property with the
 		/// given name does not exist. </returns>
-		public PropertyVariable GetProperty(string name)
-		{
-			if(Properties==null)
+		public PropertyVariable GetSelfProperty(string name){
+			if(Properties==null){
 				return null;
+			}
 			
 			PropertyVariable propertyInfo;
 			Properties.TryGetValue(name, out propertyInfo);
+			return propertyInfo;
+		}
+		
+		/// <summary>
+		/// Gets the zero-based index of the property with the given name and the attributes
+		/// associated with the property.
+		/// </summary>
+		/// <param name="name"> The name of the property. </param>
+		/// <returns> A structure containing the zero-based index of the property, or <c>-1</c> if a property with the
+		/// given name does not exist. </returns>
+		public PropertyVariable GetProperty(string name){
+			if(Properties==null){
+				return null;
+			}
+			
+			PropertyVariable propertyInfo;
+			if(!Properties.TryGetValue(name, out propertyInfo)){
+			
+				if(BasePrototype!=null){
+					return BasePrototype.GetProperty(name);
+				}
+				
+			}
+			
 			return propertyInfo;
 		}
 		
@@ -895,7 +919,7 @@ namespace JavaScript
 				descriptorAttributes |= PropertyAttributes.Writable;
 				
 			// Already defined this property?
-			PropertyVariable property=GetProperty(name);
+			PropertyVariable property=GetSelfProperty(name);
 			
 			MethodInfo disambig=null;
 			

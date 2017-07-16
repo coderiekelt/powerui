@@ -905,22 +905,17 @@ namespace JavaScript.Compiler
 				if(expression==null)
 				{
 					// Emit whatever the default is for the parameters type:
-					if(defaultValue!=null)
-					{
+					if(defaultValue!=DBNull.Value){
 						// Emit the default value:
 						EmitHelpers.EmitValue(generator,defaultValue);
-					}
 					#if NETFX_CORE
-					else if(paramType.GetTypeInfo().IsValueType)
+					}else if(paramType.GetTypeInfo().IsValueType){
 					#else
-					else if(paramType.IsValueType)
+					}else if(paramType.IsValueType){
 					#endif
-					{
 						// E.g. an integer 0
 						EmitHelpers.EmitValue(generator,Activator.CreateInstance(paramType));
-					}
-					else
-					{
+					}else{
 						// Just a null (a real one):
 						generator.LoadNull();
 					}

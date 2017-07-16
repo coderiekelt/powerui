@@ -140,11 +140,24 @@ namespace PowerUI{
 		public string Name;
 		/// <summary>The argument type. E.g. UIEvent.</summary>
 		public Type Type;
+		/// <summary>The same as Action<Type>.</summary>
+		private Type ActionType_;
 		
 		
 		public EventInfo(string name,Type type){
 			Name=name;
 			Type=type;
+		}
+		
+		/// <summary>The same as Action<Type>.</summary>
+		public Type ActionType{
+			get{
+				if(ActionType_ == null){
+					ActionType_ = typeof(Action<>).MakeGenericType(Type);
+				}
+				
+				return ActionType_;
+			}
 		}
 		
 	}

@@ -72,6 +72,38 @@ namespace JavaScript
 			return Methods[0];
 		}
 		
+		/// <summary>Finds an exact match overload.</summary>
+		public MethodBase ExactMatch(Type[] types){
+			
+			for(int i=Methods.Count-1;i>=0;i--){
+				MethodBase mInfo=Methods[i];
+				
+				// Get parameters:
+				ParameterInfo[] pInfo = mInfo.GetParameters();
+				
+				if(types.Length!=pInfo.Length){
+					continue;
+				}
+				
+				// Compare each one:
+				int p;
+				
+				for(p=0;p<types.Length;p++){
+					if(types[p]!=pInfo[p].ParameterType){
+						break;
+					}
+				}
+				
+				if(p==types.Length){
+					// Successful match!
+					return mInfo;
+				}
+				
+			}
+			
+			return null;
+		}
+		
 		public MethodBase Match(Type[] types)
 		{
 			return GetOverload(Methods,null,types,false,true);

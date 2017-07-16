@@ -261,7 +261,7 @@ namespace JavaScript.Compiler
 		/// <summary>Create a global.</summary>
 		public override FieldInfo CreateGlobal(Type type){
 			GlobalID++;
-			return Define(MainBuilder_.UnderlyingBuilder,"__global_"+GlobalID,type);
+			return Define("__global_"+GlobalID,type);
 		}
 		
 		public override void CreateMainType(string uniqueID){
@@ -376,6 +376,30 @@ namespace JavaScript.Compiler
 				GlobalImports_.SetValue(null,imports);
 			}
 			
+		}
+		
+		/// <summary>
+		/// Defines a static field on the main type builder.
+		/// </summary>
+		public FieldInfo Define(string field,Type fieldType){
+			return MainBuilder_.UnderlyingBuilder.DefineField(field,fieldType,FieldAttributes.Static | FieldAttributes.Public);
+		}
+		
+		/// <summary>
+		/// Defines a constant field on the main type builder with the given value.
+		/// </summary>
+		public override FieldInfo DefineConst(string field,object constValue){
+			
+			// Attributes:
+			FieldAttributes attribs = FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal;
+			
+			// Define it:
+			FieldBuilder fb = MainBuilder_.UnderlyingBuilder.DefineField(field,constValue.GetType(),attribs);
+			
+			// Set the constant:
+			fb.SetConstant(constValue);
+			
+			return fb;
 		}
 		
 		/// <summary>
@@ -1874,30 +1898,43 @@ namespace JavaScript{
 		/// Executes the given source code.  Execution is bound to the global scope.
 		/// </summary>
 		/// <param name="source"> The javascript source code to execute. </param>
-		/// <exception cref="ArgumentNullException"> <paramref name="source"/> is a <c>null</c> reference. </exception>
 		public object Execute(string source,string uniqueID){
-			return Compile(source,uniqueID).Execute();
+			return Compile(source,uniqueID,null).Execute();
 		}
 		
 		/// <summary>
 		/// Executes the given source code.  Execution is bound to the global scope.
 		/// </summary>
 		/// <param name="source"> The javascript source code to execute. </param>
-		/// <exception cref="ArgumentNullException"> <paramref name="source"/> is a <c>null</c> reference. </exception>
-		public object Execute(string source){
-			return Compile(source,null).Execute();
+		public object Execute(string source,string uniqueID,string location){
+			return Compile(source,uniqueID,location).Execute();
 		}
 		
 		/// <summary>
-		/// Compiles the given source code and returns it in a form that can be executed many
-		/// times.
+		/// Executes the given source code.  Execution is bound to the global scope.
+		/// </summary>
+		/// <param name="source"> The javascript source code to execute. </param>
+		public object Execute(string source){
+			return Compile(source,null,null).Execute();
+		}
+		
+		/// <summary>
+		/// Compiles the given source code and returns it in a form that can be executed many times.
 		/// </summary>
 		/// <param name="source"> The javascript source code to execute. </param>
 		/// <returns> A CompiledCode instance, which can be executed as many times as needed. </returns>
-		/// <exception cref="ArgumentNullException"> <paramref name="source"/> is a <c>null</c> reference. </exception>
 		public CompiledCode Compile(string source,string uniqueID)
 		{
-			
+			return Compile(source,uniqueID,null);
+		}
+		
+		/// <summary>
+		/// Compiles the given source code and returns it in a form that can be executed many times.
+		/// </summary>
+		/// <param name="source"> The javascript source code to execute. </param>
+		/// <returns> A CompiledCode instance, which can be executed as many times as needed. </returns>
+		public CompiledCode Compile(string source,string uniqueID,string location)
+		{
 			// First time?
 			bool firstTime = (Prototypes == null);
 			
@@ -1919,6 +1956,9 @@ namespace JavaScript{
 			
 			// Create the new main type:
 			ModuleInfo.CreateMainType(uniqueID);
+			
+			// Define the location field:
+			ModuleInfo.DefineConst("Location",location);
 			
 			if(firstTime){
 				

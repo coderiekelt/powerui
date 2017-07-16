@@ -63,6 +63,23 @@ namespace JavaScript{
 		/// <summary>The global scope.</summary>
 		internal Compiler.ObjectScope GlobalScope;
 		
+		/// <summary>The security domain for this engine which allows/ blocks certain types.
+		/// This can only be set whilst creating a script engine.</summary>
+		private SecurityDomain SecurityDomain_;
+		
+		
+		/// <summary>The current security domain applied to this engine.</summary>
+		public SecurityDomain SecurityDomain{
+			get{
+				if(SecurityDomain_==null){
+					// Use the default (permits nothing):
+					return SecurityDomain.GetDefaultManager();
+				}
+				
+				return SecurityDomain_;
+			}
+		}
+		
 		/// <summary>The type of the global scope.
 		/// Globals are typically created as a group of static fields.</summary>
 		public Type GlobalScopeType{
@@ -81,6 +98,14 @@ namespace JavaScript{
 			Engine=this;
 		}
 		
+		/// <summary>
+		/// Initializes a new scripting environment with a given security domain
+		/// which defines what types this engine can access (when a global wasn't found).
+		/// </summary>
+		public ScriptEngine(SecurityDomain domain):this(){
+			SecurityDomain_=domain;
+		}
+		
 		/// <summary>Imports the given object as a global scope.
 		/// Note that you can only import one object and it must be the 
 		/// same type if your code is cached.</summary>
@@ -97,8 +122,8 @@ namespace JavaScript{
 			
 			if(FullAccess){
 				
-				// Search now:
-				Prototype proto=Prototypes.Get(name,null);
+				// Search now via the security domain:
+				Prototype proto=Prototypes.Get(SecurityDomain.Find(name));
 				
 				if(proto==null){
 					return null;
@@ -117,10 +142,10 @@ namespace JavaScript{
 			
 		}
 		
-		/// <summary>The engine name. Either 'Nitro' for JavaScript or 'WebAssembly'.</summary>
+		/// <summary>The engine name. Either 'Nitrassic' for JavaScript or 'WebAssembly'.</summary>
 		public override string EngineName{
 			get{
-				return "Nitro";
+				return "Nitrassic";
 			}
 		}
 		

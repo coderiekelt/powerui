@@ -1,16 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace JavaScript
-{
+namespace JavaScript{
 	
 	internal delegate double OnCompare(object a,object b);
 	
 	/// <summary>
 	/// Represents an instance of the JavaScript JSArray object.
 	/// </summary>
-	public partial class JSArray
-	{
+	public partial class JSArray{
+		
 		// The array, if it is dense.
 		private object[] dense;
 		
@@ -1335,8 +1335,7 @@ namespace JavaScript
 		/// <param name="callbackFunction"> A user-defined function that is called for each element in the
 		/// array.  This function is called with three arguments: the value of the element, the
 		/// index of the element, and the array that is being operated on. </param>
-		/// <param name="context"> The value of <c>this</c> in the context of the callback function. </param>
-		public static void ForEach(ScriptEngine engine,JSArray thisObj, FunctionInstance callbackFunction, object context)
+		public static void ForEach(ScriptEngine engine,JSArray thisObj,Action<object,int> callbackFunction)
 		{
 			// callbackFunction must be a valid function.
 			if (callbackFunction == null)
@@ -1358,7 +1357,7 @@ namespace JavaScript
 				if (elementValue != null)
 				{
 					// Call the callback function.
-					callbackFunction.CallLateBound(engine,context, elementValue, i, thisObj);
+					callbackFunction(elementValue,i);
 				}
 			}
 		}
@@ -1372,10 +1371,9 @@ namespace JavaScript
 		/// in the array.  This function is called with three arguments: the value of the element,
 		/// the index of the element, and the array that is being operated on.  The value that is
 		/// returned from this function is stored in the resulting array. </param>
-		/// <param name="context"> The value of <c>this</c> in the context of the callback function. </param>
 		/// <returns> A new array with the results of calling the given function on every element
 		/// in the array. </returns>
-		public static JSArray Map(ScriptEngine engine,JSArray thisObj, FunctionInstance callbackFunction, object context)
+		public static JSArray Map(ScriptEngine engine,JSArray thisObj, Func<object,int,object> callbackFunction)
 		{
 			// callbackFunction must be a valid function.
 			if (callbackFunction == null)
@@ -1401,7 +1399,7 @@ namespace JavaScript
 				if (elementValue != null)
 				{
 					// Call the callback function.
-					object result = callbackFunction.CallLateBound(engine,context, elementValue, i, thisObj);
+					object result = callbackFunction(elementValue,i);
 
 					// Store the result.
 					resultArray[(uint)i] = result;

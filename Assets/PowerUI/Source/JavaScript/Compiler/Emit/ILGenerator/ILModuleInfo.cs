@@ -36,6 +36,9 @@ namespace JavaScript.Compiler
 		/// <summary>Create a global.</summary>
 		public abstract FieldInfo CreateGlobal(Type type);
 		
+		/// <summary>Define a constant field in the main type.</summary>
+		public abstract FieldInfo DefineConst(string name,object constValue);
+		
 		/// <summary>Creates the main global type.</summary>
 		public abstract void CreateMainType(string uniqueID);
 		
