@@ -193,6 +193,7 @@ namespace Css{
 				
 				// Create the FWUI now:
 				Renderer=new FlatWorldUI("#Internal-PowerUI-Raster-"+RasterID,(int)width,(int)height);
+				Renderer.Renderer.AllowLayout = false;
 				RasterID++;
 				
 				// Add the listener:
