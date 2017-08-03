@@ -15,6 +15,7 @@ namespace Modular{
 	/// Metadata about a starter method.
 	/// Typically used to define the order in which they load if there's multiple modules around.
 	/// </summary>
+	[Values.Preserve]
 	public class Meta : Attribute{
 		
 		public int Priority;

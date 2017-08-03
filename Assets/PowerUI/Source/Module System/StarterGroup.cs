@@ -15,6 +15,7 @@ namespace Modular{
 	/// <summary>
 	/// A group of modules with the same starter priority.
 	/// </summary>
+	[Values.Preserve]
 	public class StarterGroup{
 		
 		/// <summary>The methods in this group.</summary>

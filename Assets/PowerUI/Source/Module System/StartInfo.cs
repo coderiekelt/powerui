@@ -16,6 +16,7 @@ namespace Modular{
 	/// A starter info class.
 	/// Passed to all starting modules.
 	/// </summary>
+	[Values.Preserve]
 	public class StartInfo{
 		
 		/// <summary>A globally shared scanner.</summary>

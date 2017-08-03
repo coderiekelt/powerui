@@ -26,6 +26,7 @@ namespace Modular{
 	/// Scans all the types in an assembly, checking if they're any of the types we're after.
 	/// </summary>
 	
+	[Values.Preserve]
 	public class AssemblyScanner{
 		
 		/// <summary>Finds all subtypes and registers the handler 

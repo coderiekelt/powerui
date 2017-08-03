@@ -20,6 +20,7 @@ namespace Modular{
 	/// which is then used to e.g. discover custom tags etc.
 	/// </summary>
 	
+	[Values.Preserve]
 	public static class Start{
 		
 		/// <summary>
