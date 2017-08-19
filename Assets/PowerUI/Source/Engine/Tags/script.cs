@@ -15,7 +15,7 @@ using System.Text;
 namespace PowerUI{
 	
 	/// <summary>
-	/// Handles script tags. They should have type="text/nitro" to be handled by PowerUI; Javascript is ignored by default.
+	/// Handles script tags. They should have type="text/javascript" to be handled by PowerUI.
 	/// The src="" attribute is also supported if you wish to reuse script by loading it externally.
 	/// </summary>
 	

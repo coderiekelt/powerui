@@ -75,6 +75,16 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The type attribute.</summary>
+		public string type{
+			get{
+				return this["type"];
+			}
+			set{
+				this["type"]=value;
+			}
+		}
+		
 		/// <summary>The accept attribute.</summary>
 		public string accept{
 			get{

@@ -77,6 +77,19 @@ namespace PowerUI{
 				return null;
 			}
 			
+			if(methodName.IndexOf('(') != -1 || methodName.IndexOf('=') != -1){
+				// Eval it.
+				var engine = (document as HtmlDocument).JavascriptEngine;
+				if(engine == null){
+					throw new Exception("The Javascript engine is unavailable.");
+				}
+				var method = engine.Compile("(function(event){\r\n" + methodName + "\r\n})") as Jint.Native.JsValue;
+				if(method == null){
+					return null;
+				}
+				return method.Invoke(engine.Map(this), engine.Map(args));
+			}
+			
 			int index=methodName.LastIndexOf('.');
 			
 			if(index!=-1){

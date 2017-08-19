@@ -391,13 +391,31 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>Sets a timeout.</summary>
+		public UITimer setTimeout(object method, object time){
+			int ms = time == null ? 1 : (int)time;
+			var engine = document.JavascriptEngine;
+			return new UITimer(true,ms,delegate() {
+				engine.Invoke(method, null, null);
+			});
+		}
+		
+		/// <summary>Sets a timeout.</summary>
+		public UITimer setInterval(object method, object time){
+			int ms = time == null ? 1 : (int)time;
+			var engine = document.JavascriptEngine;
+			return new UITimer(false,ms,delegate() {
+				engine.Invoke(method, null, null);
+			});
+		}
+		
 		/// <summary>Sets an interval.</summary>
-		public UITimer setInterval(OnUITimer method,int ms){
+		public UITimer setInterval(OnUITimer method,int ms = 1){
 			return new UITimer(false,ms,method);
 		}
 		
 		/// <summary>Sets a timeout.</summary>
-		public UITimer setTimeout(OnUITimer method,int ms){
+		public UITimer setTimeout(OnUITimer method,int ms = 1){
 			return new UITimer(true,ms,method);
 		}
 		

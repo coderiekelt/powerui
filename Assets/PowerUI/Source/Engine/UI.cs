@@ -42,9 +42,9 @@ public static class UI{
 	/// <summary>The major version number of PowerUI.</summary>
 	public const int Major=2;
 	/// <summary>The minor version number of PowerUI.</summary>
-	public const int Minor=0;
+	public const int Minor=5;
 	/// <summary>The revision number.</summary>
-	public const int Revision=950;
+	public const int Revision=0;
 	
 	/// <summary>The user agent that PowerUI uses.</summary>
 	public static string UserAgent{
@@ -238,7 +238,7 @@ public static class UI{
 		SetRate(DefaultRate);
 		
 		#if !NoNitroRuntime
-		// Link up the text/nitro type by creating the engine:
+		// Link up the text/javascript type by creating the engine:
 		ScriptEngines.Add(new JavaScriptEngine());
 		#endif
 		

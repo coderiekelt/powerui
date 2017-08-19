@@ -56,7 +56,7 @@ namespace PowerUI{
 			
 			if(engine==null){
 				// Don't know how to handle this type of script.
-				Dom.Log.Add("Warning: Some script has been ignored due to its type ('"+type+"'). Did you mean 'text/nitro'?");
+				Dom.Log.Add("Warning: Some script has been ignored due to its type ('"+type+"'). Did you mean 'text/javascript'?");
 				return null;
 			}
 			
@@ -119,7 +119,7 @@ namespace PowerUI{
 				
 				ScriptEngine engine;
 				
-				if(Engines.TryGetValue("text/nitro",out engine)){
+				if(Engines.TryGetValue("text/javascript",out engine)){
 					return engine as JavaScriptEngine;
 				}
 				
@@ -203,7 +203,14 @@ namespace PowerUI{
 			JavaScriptEngine jse=JavascriptEngine;
 			
 			if(jse!=null){
-				// return jse.RunLiteral(name,context,args,optional);
+				var obj = jse[name] as Jint.Native.JsValue;
+				if(obj == null){
+					if(optional){
+						return null;
+					}
+					throw new Exception("The method '"+name+"' does not exist in your Javascript global scope.");
+				}
+				return jse.Run(obj,context,args);
 			}
 			
 			return null;
@@ -231,7 +238,7 @@ namespace PowerUI{
 		/// <summary>Attempts to execute the given code segment.</summary>
 		public object Execute(string code, object scope){
 			JavaScriptEngine nse=JavascriptEngine;
-			return nse.Compile(code, scope);
+			return nse.Compile(code);
 		}
 		
 	}

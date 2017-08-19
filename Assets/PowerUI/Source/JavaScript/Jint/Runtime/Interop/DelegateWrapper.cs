@@ -14,17 +14,18 @@ namespace Jint.Runtime.Interop
     public sealed class DelegateWrapper : FunctionInstance
     {
         private readonly Delegate _d;
-
+        private readonly ParameterInfo[] parameterInfos;
+		
+		
         public DelegateWrapper(Engine engine, Delegate d) : base(engine, null, null, false)
         {
             _d = d;
+			parameterInfos = _d.GetMethodInfo().GetParameters();
             Prototype = engine.Function.PrototypeObject;
         }
 
         public override JsValue Call(JsValue thisObject, JsValue[] jsArguments)
         {
-            var parameterInfos = _d.GetMethodInfo().GetParameters();
-
             bool delegateContainsParamsArgument = parameterInfos.Any(p => p.HasAttribute<ParamArrayAttribute>());
             int delegateArgumentsCount = parameterInfos.Length;
             int delegateNonParamsArgumentsCount = delegateContainsParamsArgument ? delegateArgumentsCount - 1 : delegateArgumentsCount;

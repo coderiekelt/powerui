@@ -231,6 +231,12 @@ namespace Jint
             return executionContext;
         }
 
+        public Engine SetValue(string name, DelegateWrapper value)
+        {
+            Global.FastAddProperty(name, value, true, false, true);
+            return this;
+        }
+
         public Engine SetValue(string name, Delegate value)
         {
             Global.FastAddProperty(name, new DelegateWrapper(this, value), true, false, true);

@@ -94,7 +94,7 @@ namespace PowerUI{
 		
 		/// <summary>Loads the given textual code for the given document. PowerUI ensures order for you 
 		/// including when scripts are downloaded from the internet.</summary>
-		public virtual object Compile(string code, object scope){
+		public virtual object Compile(string code){
 			return null;
 		}
 		
@@ -138,7 +138,7 @@ namespace PowerUI{
 			
 			CodeBuffer=null;
 			
-			Compile(codeToCompile, (Document as HtmlDocument).window);
+			Compile(codeToCompile);
 			
 			// We attempted the compilation - all ok:
 			return true;
