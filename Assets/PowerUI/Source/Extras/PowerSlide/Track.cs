@@ -164,6 +164,13 @@ namespace PowerSlide{
 		
 		internal virtual void onStart(){}
 		
+		/// <summary>The document that this target belongs to.</summary>
+		internal override Document eventTargetDocument{
+			get{
+				return timeline.document;
+			}
+		}
+		
 		/// <summary>The defined duration.</summary>
 		internal float definedDuration{
 			get{

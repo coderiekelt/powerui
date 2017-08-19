@@ -7,34 +7,73 @@ using System.Reflection;
 using Jint.Native;
 using Jint.Native.Array;
 using Jint.Native.Function;
+using JavaScript;
 
 namespace Jint.Runtime.Interop
 {
     public sealed class MethodInfoFunctionInstance : FunctionInstance
     {
+		private readonly MethodInfo[] _sourceMethods;
         private readonly MethodInfo[] _methods;
+		private readonly MethodInfo _paramsMethod;
 
+		
         public MethodInfoFunctionInstance(Engine engine, MethodInfo[] methods)
             : base(engine, null, null, false)
         {
-            _methods = methods;
+            _sourceMethods = methods;
+			_methods = methods;
+			
+			foreach (var methodInfo in _sourceMethods)
+            {
+				// Find the params method (if there is one):
+				if(_paramsMethod == null)
+				{
+					var parameters = methodInfo.GetParameters();
+					if (parameters.Any(p => p.HasAttribute<ParamArrayAttribute>()))
+					{
+						_paramsMethod = methodInfo;
+					}
+				}
+				
+				// If any are explicitly tagged as the JS method to use, use that:
+				#if NETFX_CORE
+				var attribute = (JavaScriptAttribute)methodInfo.GetCustomAttribute(typeof(JavaScriptAttribute),false);
+				#else
+				var attribute = (JavaScriptAttribute)Attribute.GetCustomAttribute(methodInfo,typeof(JavaScriptAttribute),false);
+				#endif
+				
+				if(attribute != null){
+					_methods = new MethodInfo[]{methodInfo};
+					break;
+				}
+				
+			}
+			
             Prototype = engine.Function.PrototypeObject;
         }
 
         public override JsValue Call(JsValue thisObject, JsValue[] arguments)
         {
-            return Invoke(_methods, thisObject, arguments);
+            return Invoke(thisObject, arguments);
         }
 
-        public JsValue Invoke(MethodInfo[] methodInfos, JsValue thisObject, JsValue[] jsArguments)
+        private JsValue Invoke(JsValue thisObject, JsValue[] jsArguments)
         {
-            var arguments = ProcessParamsArrays(jsArguments, methodInfos);
-            var methods = TypeConverter.FindBestMatch(Engine, methodInfos, arguments).ToList();
+            JsValue[] arguments;
+			if(_paramsMethod == null) {
+				arguments = jsArguments;
+			} else {
+				arguments = ProcessParamsArrays(jsArguments);
+			}
+			
+            var methods = TypeConverter.FindBestMatch(Engine, _methods, arguments).ToList();
             var converter = Engine.ClrTypeConverter;
-
+			var parameters = new object[arguments.Length];
+			
             foreach (var method in methods)
             {
-                var parameters = new object[arguments.Length];
+                
                 var argumentsMatch = true;
 
                 for (var i = 0; i < arguments.Length; i++)
@@ -88,8 +127,12 @@ namespace Jint.Runtime.Interop
                 {
                     return JsValue.FromObject(Engine, method.Invoke(thisObject.ToObject(), parameters.ToArray()));
                 }
-                catch (TargetInvocationException exception)
+                catch (Exception exception)
                 {
+					for(var i=0;i<parameters.Length;i++){
+						UnityEngine.Debug.Log(parameters[i].ToString());
+					}
+					UnityEngine.Debug.Log("CAUGHT! " + thisObject.ToObject().ToString() + ", " + parameters.Length);
                     var meaningfulException = exception.InnerException ?? exception;
                     var handler = Engine.Options._ClrExceptionsHandler;
 
@@ -104,36 +147,29 @@ namespace Jint.Runtime.Interop
 
             throw new JavaScriptException(Engine.TypeError, "No public methods with the specified arguments were found.");
         }
-
+		
         /// <summary>
         /// Reduces a flat list of parameters to a params array
         /// </summary>
-        private JsValue[] ProcessParamsArrays(JsValue[] jsArguments, IEnumerable<MethodInfo> methodInfos)
+        private JsValue[] ProcessParamsArrays(JsValue[] jsArguments)
         {
-            foreach (var methodInfo in methodInfos)
-            {
-                var parameters = methodInfo.GetParameters();
-                if (!parameters.Any(p => p.HasAttribute<ParamArrayAttribute>()))
-                    continue;
+			var parameters = _paramsMethod.GetParameters();
+			
+			var nonParamsArgumentsCount = parameters.Length - 1;
+			if (jsArguments.Length < nonParamsArgumentsCount)
+				return jsArguments;
 
-                var nonParamsArgumentsCount = parameters.Length - 1;
-                if (jsArguments.Length < nonParamsArgumentsCount)
-                    continue;
+			var newArgumentsCollection = jsArguments.Take(nonParamsArgumentsCount).ToList();
+			var argsToTransform = jsArguments.Skip(nonParamsArgumentsCount).ToList();
 
-                var newArgumentsCollection = jsArguments.Take(nonParamsArgumentsCount).ToList();
-                var argsToTransform = jsArguments.Skip(nonParamsArgumentsCount).ToList();
+			if (argsToTransform.Count == 1 && argsToTransform.FirstOrDefault().IsArray())
+				return jsArguments;
 
-                if (argsToTransform.Count == 1 && argsToTransform.FirstOrDefault().IsArray())
-                    continue;
+			var jsArray = Engine.Array.Construct(Arguments.Empty);
+			Engine.Array.PrototypeObject.Push(jsArray, argsToTransform.ToArray());
 
-                var jsArray = Engine.Array.Construct(Arguments.Empty);
-                Engine.Array.PrototypeObject.Push(jsArray, argsToTransform.ToArray());
-
-                newArgumentsCollection.Add(new JsValue(jsArray));
-                return newArgumentsCollection.ToArray();
-            }
-
-            return jsArguments;
+			newArgumentsCollection.Add(new JsValue(jsArray));
+			return newArgumentsCollection.ToArray();
         }
 
     }

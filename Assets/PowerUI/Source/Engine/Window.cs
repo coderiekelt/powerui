@@ -71,6 +71,13 @@ namespace PowerUI{
 			
 		}
 		
+		/// <summary>The document that this target belongs to.</summary>
+		internal override Document eventTargetDocument{
+			get{
+				return document_;
+			}
+		}
+		
 		/// <summary>Posts a message to this document.</summary>
 		public void postMessage(object message,string targetOrigin){
 			

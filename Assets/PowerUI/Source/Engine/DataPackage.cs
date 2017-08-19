@@ -193,6 +193,13 @@ namespace PowerUI{
 			}
 		}
 		
+		/// <summary>The document that this target belongs to.</summary>
+		internal override Document eventTargetDocument{
+			get{
+				return hostDocument;
+			}
+		}
+		
 		/// <summary>All available headers, parsed as soon as they become available. Status line is indexed as the empty string.</summary>
 		public Headers responseHeaders{
 			get{

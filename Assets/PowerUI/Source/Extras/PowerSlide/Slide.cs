@@ -79,6 +79,13 @@ namespace PowerSlide{
 			}
 		}
 		
+		/// <summary>The document that this target belongs to.</summary>
+		internal override Document eventTargetDocument{
+			get{
+				return track.eventTargetDocument;
+			}
+		}
+		
 		public Slide(){
 			uniqueID=UniqueID_++;
 		}

@@ -138,8 +138,12 @@ namespace PowerUI{
 			
 			CodeBuffer=null;
 			
+			var readyState = Document.readyState_;
+			Document.readyState_ = 0;
 			Compile(codeToCompile);
-			
+			if(Document.readyState_ == 0){
+				Document.readyState_ = readyState;
+			}
 			// We attempted the compilation - all ok:
 			return true;
 		}

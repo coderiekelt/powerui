@@ -48,6 +48,9 @@ namespace PowerUI{
 			
 			if(coreWindow!=null){
 				Engine.SetValue("location", coreWindow.location)
+					.SetValue("addEventListener", new Action<string, object>((string evt, object method) => coreWindow.addEventListener(evt, method)))
+					.SetValue("removeEventListener", new Action<string, object>((string evt, object method) => coreWindow.removeEventListener(evt, method)))
+					.SetValue("dispatchEvent", new Action<UIEvent>((UIEvent e) => coreWindow.dispatchEvent(e)))
 					.SetValue("clearInterval", new Action<UITimer>((UITimer obj) => coreWindow.clearInterval(obj)))
 					.SetValue("alert", new Action<object>((object obj) => coreWindow.alert(obj)))
 					.SetValue("prompt", new Action<object>((object obj) => coreWindow.prompt(obj)))
