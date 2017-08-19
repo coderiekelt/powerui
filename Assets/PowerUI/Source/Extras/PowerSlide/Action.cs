@@ -13,7 +13,6 @@ using System;
 using UnityEngine;
 using PowerUI;
 using Json;
-using JavaScript;
 using System.Reflection;
 
 
@@ -61,7 +60,7 @@ namespace PowerSlide{
 			string className=methodName.Substring(0,index);
 			
 			// Get the type:
-			Type type=CodeReference.GetFirstType(className);
+			Type type=JavaScript.CodeReference.GetFirstType(className);
 			
 			if(type==null){
 				throw new Exception("Slide action method type not found: "+className);

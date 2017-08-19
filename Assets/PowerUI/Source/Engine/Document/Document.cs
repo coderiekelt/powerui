@@ -65,11 +65,6 @@ namespace PowerUI{
 		/// Allows hooking up of various events.</summary>
 		public Action<Dom.Event> AfterClearBeforeSet;
 		
-		/// <summary>The security domain this document uses. NOTE: Once code has been compiled at least once, changing this does nothing
-		/// (as that could lead to an easy exploit).</summary>
-		[JavaScript.JSProperties(Hidden=true)]
-		internal JavaScript.SecurityDomain SecurityDomain;
-		
 		/// <summary>Don't use this directly; use location instead.</summary>
 		internal override void SetLocation(Location value,bool addHistory){
 			

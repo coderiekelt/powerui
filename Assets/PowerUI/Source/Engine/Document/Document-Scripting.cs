@@ -110,7 +110,7 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Gets the existing JS engine for this document.</summary>
-		public NitroScriptEngine NitroEngine{
+		public JavaScriptEngine JavascriptEngine{
 			get{
 				
 				if(Engines==null){
@@ -120,7 +120,7 @@ namespace PowerUI{
 				ScriptEngine engine;
 				
 				if(Engines.TryGetValue("text/nitro",out engine)){
-					return engine as NitroScriptEngine;
+					return engine as JavaScriptEngine;
 				}
 				
 				return null;
@@ -132,7 +132,7 @@ namespace PowerUI{
 		/// <param name="index">The name of the variable.</param>
 		/// <returns>The variable value.</returns>
 		public object getJsVariable(string global){
-			NitroScriptEngine nse=NitroEngine;
+			JavaScriptEngine nse=JavascriptEngine;
 			
 			if(nse!=null){
 				return nse[global];
@@ -145,7 +145,7 @@ namespace PowerUI{
 		/// <param name="index">The name of the variable.</param>
 		/// <returns>The variable value.</returns>
 		public void setJsVariable(string global,object value){
-			NitroScriptEngine nse=NitroEngine;
+			JavaScriptEngine nse=JavascriptEngine;
 			
 			if(nse!=null){
 				nse[global]=value;
@@ -200,10 +200,10 @@ namespace PowerUI{
 		/// <param name="optional">True if the method call is optional. No exception is thrown if not found.</param>
 		/// <returns>The value that the called function returned, if any.</returns>
 		public object RunLiteral(string name,object context,object[] args,bool optional){
-			NitroScriptEngine nse=NitroEngine;
+			JavaScriptEngine jse=JavascriptEngine;
 			
-			if(nse!=null){
-				return nse.RunLiteral(name,context,args,optional);
+			if(jse!=null){
+				// return jse.RunLiteral(name,context,args,optional);
 			}
 			
 			return null;
@@ -226,6 +226,12 @@ namespace PowerUI{
 		/// <returns>The value that the called function returned, if any.</returns>
 		public object RunOptionally(string name,params object[] args){
 			return RunLiteral(name,GlobalScope,args,true);
+		}
+		
+		/// <summary>Attempts to execute the given code segment.</summary>
+		public object Execute(string code, object scope){
+			JavaScriptEngine nse=JavascriptEngine;
+			return nse.Compile(code, scope);
 		}
 		
 	}

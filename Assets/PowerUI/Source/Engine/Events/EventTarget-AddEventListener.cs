@@ -11,7 +11,6 @@
 
 using System;
 using PowerUI;
-using JavaScript;
 
 
 namespace Dom{
@@ -25,7 +24,6 @@ namespace Dom{
 		// All event-specific addEventListener overloads (except for SVG).
 		// This avoids needing to manually create e.g. a EventListener<KeyboardEvent> object.
 		
-		[JSProperties(Disambiguation="AddEventListenerDisambiguation")]
 		public void addEventListener(string name,Action<Dom.Event> method){
 			addEventListener(name,new EventListener<Dom.Event>(method));
 		}

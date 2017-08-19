@@ -11,7 +11,6 @@
 
 using System;
 using System.Reflection;
-using JavaScript;
 using Dom;
 
 
@@ -88,7 +87,7 @@ namespace PowerUI{
 				string className=methodName.Substring(0,index);
 				
 				// Go get the type:
-				Type type=CodeReference.GetFirstType(className);
+				Type type=JavaScript.CodeReference.GetFirstType(className);
 				
 				if(type==null){
 					Dom.Log.Add("Type not found: "+className);

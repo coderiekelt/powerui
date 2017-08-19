@@ -33,8 +33,8 @@ namespace WebAssembly{
 		
 		public GlobalVariable(Reader reader,int index){
 			
-			reader.VarUInt1(); // Mutability
 			Type = reader.ValueTypeConverted();
+			reader.VarUInt1(); // Mutability
 			Init = reader.InitExpression();
 			Index = index;
 		}

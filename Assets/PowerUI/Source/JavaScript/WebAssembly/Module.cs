@@ -3,13 +3,15 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
-using JavaScript;
 
 
 namespace WebAssembly{
 	
 	/// <summary>A WebAssembly module.</summary>
-	public partial class Module : JavaScript.Runtime{
+	public partial class Module : Runtime{
+		
+		/// <summary>True if IL should be visible when compiling.</summary>
+		public static bool EnableILAnalysis;
 		
 		/// <summary>The current reader. Used only during loading.</summary>
 		internal Reader Reader;
@@ -20,13 +22,17 @@ namespace WebAssembly{
 		
 		
 		/// <summary>Minimum module.</summary>
-		public Module(ScriptEngine engine){
+		public Module(){
 			
 			// Setup section list:
 			Sections=new List<Section>();
-			Engine = engine;
 			Version = 0xd;
 			
+		}
+		
+		/// <summary>Logs messages.</summary>
+		public static void Log(string message){
+			Console.WriteLine(message);
 		}
 		
 		/// <summary>Queries the current memory size in WebAssembly pages (64kb).</summary>
@@ -39,13 +45,15 @@ namespace WebAssembly{
 			return Memory.Grow(pages);
 		}
 		
+		/// <summary>Loads a module from the file path.</summary>
+		public Module(string path) : this(new Reader(File.ReadAllBytes(path))){}
+		
 		/// <summary>Loads a module from the given bytes.</summary>
-		public Module(ScriptEngine engine, byte[] data) : this(engine, new Reader(data)){}
+		public Module(byte[] data) : this(new Reader(data)){}
 		
 		/// <summary>Loads a module from the given reader.</summary>
-		public Module(ScriptEngine engine, Reader reader){
+		public Module(Reader reader){
 			
-			Engine = engine;
 			reader.Module = this;
 			Reader = reader;
 			
@@ -242,7 +250,7 @@ namespace WebAssembly{
 			
 		}
 		
-		/// <summary>The engine name. Either 'Nitro' for JavaScript or 'WebAssembly'.</summary>
+		/// <summary>The engine name.</summary>
 		public override string EngineName{
 			get{
 				return "WebAssembly";

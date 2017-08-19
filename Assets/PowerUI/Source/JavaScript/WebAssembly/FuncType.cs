@@ -19,7 +19,7 @@ namespace WebAssembly{
 		/// <summary>The compiling signature if it's available.</summary>
 		internal MethodInfo Signature_;
 		/// <summary>The generator for this methods signature.</summary>
-		internal JavaScript.Compiler.ILGenerator Generator;
+		internal ILGenerator Generator;
 		/// <summary>Parameters.Length or 0.</summary>
 		public int ParameterCount;
 		/// <summary>Cached return type.</summary>
@@ -78,7 +78,7 @@ namespace WebAssembly{
 		}
 		
 		/// <summary>Get the method builder (or creates it).</summary>
-		internal JavaScript.Compiler.ILGenerator GetGenerator(Module module){
+		internal ILGenerator GetGenerator(Module module){
 			
 			if(Generator==null){
 				// Get sig:

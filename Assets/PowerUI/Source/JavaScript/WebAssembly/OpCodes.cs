@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
-using JavaScript.Compiler;
 
 
 namespace WebAssembly{

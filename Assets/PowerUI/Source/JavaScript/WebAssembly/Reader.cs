@@ -105,7 +105,7 @@ namespace WebAssembly{
 		}
 		
 		/// <summary>Reads a memory_immediate and emits the offset straight away.</summary>
-		public void MemoryAddress(JavaScript.Compiler.ILGenerator gen,int logNaturalSize){
+		public void MemoryAddress(ILGenerator gen,int logNaturalSize){
 			
 			// Read the memory_immediate:
 			uint flags = VarUInt32();

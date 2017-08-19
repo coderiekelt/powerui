@@ -67,7 +67,7 @@ namespace WebAssembly{
 			// Control/ mem
 			Imports_GetMemory = GetStaticMethod(typeof(Imports), "GetMemory");
 			IntPtr_NativePointer = GetInstanceMethod(typeof(IntPtr), "ToPointer");
-			Runtime_Trap = GetStaticMethod(typeof(JavaScript.Runtime), "Trap");
+			Runtime_Trap = GetStaticMethod(typeof(Runtime), "Trap");
 			Module_QueryMemory = GetInstanceMethod(typeof(Module), "QueryMemory");
 			Module_GrowMemory = GetInstanceMethod(typeof(Module), "GrowMemory",typeof(int));
 			
@@ -119,14 +119,25 @@ namespace WebAssembly{
 		/// Gets an instance or static field.
 		/// </summary>
 		public static FieldInfo GetField(Type type,string name){
-			return JavaScript.ReflectionHelpers.GetField(type,name);
+			FieldInfo result = type.GetField(name);
+			if (result == null)
+				throw new InvalidOperationException(string.Format("The field '{1}' does not exist on type '{0}'.", type, name));
+			return result;
 		}
 		
 		/// <summary>
 		/// Gets a constructor.
 		/// </summary>
 		public static ConstructorInfo GetConstructor(Type type,params Type[] parameterTypes){
-			return JavaScript.ReflectionHelpers.GetConstructor(type,parameterTypes);
+			#if NETFX_CORE
+			ConstructorInfo result = type.GetConstructor(parameterTypes);
+			#else
+			var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+			ConstructorInfo result = type.GetConstructor(flags,null,parameterTypes,null);
+			#endif
+			if (result == null)
+				throw new InvalidOperationException(string.Format("The constructor {0} does not exist.", type.FullName));
+			return result;
 		}
 		
 		/// <summary>
@@ -137,7 +148,15 @@ namespace WebAssembly{
 		/// <param name="parameterTypes"> The types of the parameters accepted by the method. </param>
 		/// <returns> The MethodInfo for the method. </returns>
 		public static MethodInfo GetInstanceMethod(Type type, string name, params Type[] parameterTypes){
-			return JavaScript.ReflectionHelpers.GetInstanceMethod(type,name,parameterTypes);
+			#if NETFX_CORE
+			MethodInfo result = type.GetMethod(name,parameterTypes);
+			#else
+			var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+			MethodInfo result = type.GetMethod(name, flags, null, parameterTypes, null);
+			#endif
+			if (result == null)
+				throw new InvalidOperationException(string.Format("The instance method {0}.{1} does not exist.", type.FullName, name));
+			return result;
 		}
 		
 		/// <summary>
@@ -148,7 +167,15 @@ namespace WebAssembly{
 		/// <param name="parameterTypes"> The types of the parameters accepted by the method. </param>
 		/// <returns> The MethodInfo for the method. </returns>
 		public static MethodInfo GetStaticMethod(Type type, string name, params Type[] parameterTypes){
-			return JavaScript.ReflectionHelpers.GetStaticMethod(type,name,parameterTypes);
+			#if NETFX_CORE
+			MethodInfo result = type.GetMethod(name,parameterTypes);
+			#else
+			var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
+			MethodInfo result = type.GetMethod(name, flags, null, parameterTypes, null);
+			#endif
+			if (result == null)
+				throw new InvalidOperationException(string.Format("The static method {0}.{1} does not exist.", type.FullName, name));
+			return result;
 		}
 		
 	}

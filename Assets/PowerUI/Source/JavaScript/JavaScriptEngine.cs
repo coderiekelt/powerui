@@ -12,7 +12,7 @@
 using System;
 using UnityEngine;
 using Dom;
-using JavaScript;
+using Jint.Runtime.Interop;
 
 
 namespace PowerUI{
@@ -21,29 +21,30 @@ namespace PowerUI{
 	/// The default script handler for text/javascript-x.
 	/// </summary>
 	
-	[JSProperties(Hidden=true)]
 	public class JavaScriptEngine : PowerUI.ScriptEngine{
-		
-		/// <summary>An instance of the ScriptEngine on this page.</summary>
-		public JavaScript.ScriptEngine Engine;
 		
 		/// <summary>The meta types that your engine will handle. E.g. "text/javascript".</summary>
 		public override string[] GetTypes(){
-			return new string[]{"text/javascript-x"};
+			return new string[]{"text/javascript"};
 		}
+		
+		/// <summary>An instance of the ScriptEngine on this page.</summary>
+		public Jint.Engine Engine;
 		
 		public JavaScriptEngine(){}
 		
 		public JavaScriptEngine(bool safeHost,HtmlDocument doc,object window){
 			
-			// Setup the engine:
-			Engine = new JavaScript.ScriptEngine(doc.SecurityDomain);
-			Engine.FullAccess = safeHost;
-			Engine.ImportGlobals(window);
-			JavaScript.ScriptEngine.EnableILAnalysis=true;
-			Document=doc;
+			Engine = new Jint.Engine(cfg => cfg.AllowClr());
 			
-			UnityEngine.Debug.Log("Nitrassic is not fully linked with PowerUI yet - many PowerUI DOM API's are currently unavailable (but they'll be with you shortly!)");
+			Engine.SetValue("document", doc)
+				.SetValue("window", window)
+				.SetValue("Promise", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Promise)))
+				.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.XMLHttpRequest)))
+				.SetValue("Module", TypeReference.CreateTypeReference(Engine, typeof(WebAssembly.Module)))
+				.SetValue("console", new JavaScript.console());
+			
+			Document=doc;
 			
 		}
 		
@@ -56,41 +57,15 @@ namespace PowerUI{
 					return null;
 				}
 				
-				return Engine.GetGlobal(global);
+				return Engine.GetValue(global);
 			}
 			set{
 				if(Engine==null){
 					return;
 				}
 				
-				Engine.SetGlobal(global,value);
+				Engine.SetValue(global,value);
 			}
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments only if the method exists.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="context">The context to use for the 'this' value.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <param name="optional">True if the method call is optional. No exception is thrown if not found.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public override object RunLiteral(string name,object context,object[] args,bool optional){
-			if(string.IsNullOrEmpty(name)||Engine==null){
-				return null;
-			}
-			
-			// Args incl. our context:
-			object[] argsWithThis = new object[args==null ? 1 : args.Length + 1];
-			
-			argsWithThis[0] = context;
-			
-			if(args!=null){
-				for(int i=0;i<args.Length;i++){
-					argsWithThis[i+1]=args[i];
-				}
-			}
-			
-			return Engine.CallGlobalFunction(name,optional,argsWithThis);
-			
 		}
 		
 		public override PowerUI.ScriptEngine Instance(Document document){
@@ -117,29 +92,15 @@ namespace PowerUI{
 			return new JavaScriptEngine(safeHost,doc,doc.window);
 		}
 		
-		protected override void Compile(string source){
+		public override object Compile(string source, object scope){
 			
 			try{
-				
-				// Get the location:
-				string location=null;
-				
-				if(Document.location!=null){
-					location = Document.location.absoluteNoHash;
-				}
-				
-				// Get the cache seed:
-				string cacheSeed = location == null ? null : JavaScript.Cache.GetSeed(source,location);
-				
-				// Compile it:
-				CompiledCode cc = Engine.Compile(cacheSeed,source);
-				
 				// Trigger an event to say the engine is about to start:
 				Dom.Event e=new Dom.Event("scriptenginestart");
 				htmlDocument.dispatchEvent(e);
 				
 				// Run it now:
-				cc.Execute();
+				return Engine.Execute(source);
 				
 			}catch(Exception e){
 				
@@ -154,7 +115,8 @@ namespace PowerUI{
 					scriptLocation=" (At "+scriptLocation+")";
 				}
 				
-				Dom.Log.Add("JavaScript compile error"+scriptLocation+": "+e);
+				Dom.Log.Add("JavaScript compile error "+scriptLocation+": "+e);
+				return Jint.Native.Undefined.Instance;
 			}
 			
 		}

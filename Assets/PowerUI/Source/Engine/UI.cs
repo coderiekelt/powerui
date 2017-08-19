@@ -21,7 +21,6 @@ using System;
 using UnityEngine;
 using PowerUI;
 using Css;
-using Nitro;
 using Dom;
 using PowerUI.Http;
 using InfiniText;
@@ -106,12 +105,8 @@ public static class UI{
 	public static int CameraDepth=100;
 	/// <summary>Updates the UI globally. Note that this is setup automatically for you.</summary>
 	private static StandardUpdater GlobalUpdater;
-	/// <summary>The type that all code derives from. Must be UICode or something that inherits UICode.</summary>
-	public static Type BaseCodeType=typeof(UICode);
 	/// <summary>This event is fired when PowerUI generates a new camera. This is the best way to apply custom rendering to the main UI.</summary>
 	public static event CameraCreated OnCameraCreated;
-	/// <summary>Called when a document wants the default security domain. Set with a custom method to provide your own.</summary>
-	public static GetSecurityDomain OnGetSecurityDomain;
 	/// <summary>The current camera mode PowerUI is using. The default is Orthographic. See UI.CameraMode to change this.</summary>
 	private static CameraMode CurrentCameraMode=CameraMode.Orthographic;
 	
@@ -206,7 +201,7 @@ public static class UI{
 		if(Variables==null){
 			Variables=new FullVariableSet();
 			
-			if(!nitroAot){
+			if(!nitroAot) {
 				// Sign up to the variable on change event - whenever a custom var is changed, we need to refresh the screen.
 				Variables.OnChange+=OnVariableChange;
 				// Sign on to the event that occurs when the language changes.
@@ -244,14 +239,7 @@ public static class UI{
 		
 		#if !NoNitroRuntime
 		// Link up the text/nitro type by creating the engine:
-		ScriptEngines.Add(new NitroScriptEngine());
 		ScriptEngines.Add(new JavaScriptEngine());
-		
-		// Setup the compiler:
-		NitroCode.Setup();
-		
-		// Setup extra aliases:
-		PowerUI.TypeAliases.Setup();
 		#endif
 		
 		if(nitroAot){
@@ -698,16 +686,6 @@ public static class UI{
 		
 		// Let the atlases know:
 		AtlasStacks.SetRate(fps);
-	}
-	
-	/// <summary>Gets the default security domain for Nitro scripts.</summary>
-	public static NitroDomainManager DefaultSecurityDomain{
-		get{
-			if(OnGetSecurityDomain!=null){
-				return OnGetSecurityDomain();
-			}
-			return new UIScriptDomainManager();
-		}
 	}
 	
 	/// <summary>Gets/sets if the UI should log messages to the console. Default is true.</summary>

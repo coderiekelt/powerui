@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using JavaScript.Compiler;
 
 
 namespace WebAssembly{
@@ -18,9 +17,9 @@ namespace WebAssembly{
 		public Type ReturnType;
 		/// <summary>Used when compiling this opcode to .NET.
 		/// Directly maps it through rather than going via e.g. a set of instructions.</summary>
-		public Action<JavaScript.Compiler.ILGenerator> OnOutputIL;
+		public Action<ILGenerator> OnOutputIL;
 		/// <summary>Used just before outputting an instructions inputs.</summary>
-		public Action<JavaScript.Compiler.ILGenerator> OnBeforeOutputIL;
+		public Action<ILGenerator> OnBeforeOutputIL;
 		/// <summary>Used when reading this opcode from the bytestream.</summary>
 		public ImmediateReader OnReadImmediates;
 		
@@ -45,13 +44,13 @@ namespace WebAssembly{
 		}
 		
 		/// <summary>Sets the output action.</summary>
-		public OpCode OnOutput(Action<JavaScript.Compiler.ILGenerator> action){
+		public OpCode OnOutput(Action<ILGenerator> action){
 			OnOutputIL = action;
 			return this;
 		}
 		
 		/// <summary>Sets the before output action.</summary>
-		public OpCode OnBeforeOutput(Action<JavaScript.Compiler.ILGenerator> action){
+		public OpCode OnBeforeOutput(Action<ILGenerator> action){
 			OnBeforeOutputIL = action;
 			return this;
 		}

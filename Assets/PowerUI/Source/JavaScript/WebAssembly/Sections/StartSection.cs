@@ -61,7 +61,7 @@ namespace WebAssembly{
 			}
 			
 			// Done!
-			main.Complete("__.main",null,typeof(void));
+			main.Complete("__.main",null,typeof(void),true);
 			
 		}
 		

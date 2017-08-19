@@ -19,7 +19,6 @@ namespace PowerUI{
 	/// A particular script engine. Derive from this if you wish to create your own.
 	/// </summary>
 	
-	[JavaScript.JSProperties(Hidden=true)]
 	public class ScriptEngine{
 		
 		/// <summary>All code in script tags is buffered and compiled in one go. This is the buffer.</summary>
@@ -95,8 +94,8 @@ namespace PowerUI{
 		
 		/// <summary>Loads the given textual code for the given document. PowerUI ensures order for you 
 		/// including when scripts are downloaded from the internet.</summary>
-		protected virtual void Compile(string code){
-			
+		public virtual object Compile(string code, object scope){
+			return null;
 		}
 		
 		/// <summary>Gets or sets script variable values.</summary>
@@ -109,69 +108,6 @@ namespace PowerUI{
 			set{
 				throw new NotImplementedException("This script engine doesn't support editing globals.");
 			}
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments only if the method exists.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="context">The context to use for the 'this' value.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <param name="optional">True if the method call is optional. No exception is thrown if not found.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public virtual object RunLiteral(string name,object context,object[] args,bool optional){
-			throw new NotImplementedException("This script engine doesn't support calling methods.");
-		}
-		
-		/// <summary>Runs a nitro function by name with optional arguments.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="args">Optional arguments to use when calling the function.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public object Run(string name,params object[] args){
-			return RunLiteral(name,GlobalScope,args,false);
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public object RunLiteral(string name,object[] args){
-			return RunLiteral(name,GlobalScope,args,false);
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="context">The context to use for the 'this' value.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public object RunLiteral(string name,object context,object[] args){
-			return RunLiteral(name,context,args,false);
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments only if the method exists.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <param name="optional">True if the method call is optional. No exception is thrown if not found.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public object RunLiteral(string name,object[] args,bool optional){
-			return RunLiteral(name,GlobalScope,args,optional);
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments only if the method exists.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="context">The context to use for the 'this' value.</param>
-		/// <param name="optional">True if the method call is optional. No exception is thrown if not found.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public object RunOptionally(string name,object context,params object[] args){
-			return RunLiteral(name,context,args,true);
-		}
-		
-		/// <summary>Runs a nitro function by name with a set of arguments only if the method exists.</summary>
-		/// <param name="name">The name of the function in lowercase.</param>
-		/// <param name="optional">True if the method call is optional. No exception is thrown if not found.</param>
-		/// <param name="args">The set of arguments to use when calling the function.</param>
-		/// <returns>The value that the called function returned, if any.</returns>
-		public object RunOptionally(string name,params object[] args){
-			return RunLiteral(name,GlobalScope,args,true);
 		}
 		
 		/// <summary>Attempts to compile the code. It's only successful if there are no nulls in the code buffer.</summary>
@@ -202,7 +138,7 @@ namespace PowerUI{
 			
 			CodeBuffer=null;
 			
-			Compile(codeToCompile);
+			Compile(codeToCompile, (Document as HtmlDocument).window);
 			
 			// We attempted the compilation - all ok:
 			return true;
