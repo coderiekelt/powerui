@@ -354,16 +354,6 @@ namespace PowerSlide{
 			
 		}
 		
-		/// <summary>Reads from the JSON. Specify custom values with this.</summary>
-		public JSObject this[string index]{
-			get{
-				if(rawJson==null){
-					return null;
-				}
-				return rawJson[index];
-			}
-		}
-		
 		/// <summary>Sets up an action at the given index in the Actions set.</summary>
 		internal void loadAction(int index,JSObject data){
 			
