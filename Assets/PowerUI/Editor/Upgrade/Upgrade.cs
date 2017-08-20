@@ -34,7 +34,7 @@ namespace PowerUI{
 
 	public class Upgrade : EditorWindow{
 		
-		// Add menu item named "Input Settings" to the PowerUI menu:
+		// Add menu item named "Upgrading" to the PowerUI menu:
 		[MenuItem("Window/PowerUI/Upgrading")]
 		public static void ShowWindow(){
 			

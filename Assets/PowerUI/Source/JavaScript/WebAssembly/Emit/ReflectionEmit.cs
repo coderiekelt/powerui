@@ -1733,7 +1733,7 @@ namespace WebAssembly{
 			get{
 				if (moduleGenerationInfo == null)
 				{
-					#if !RuntimeOnly
+					#if AbleToCompile
 					moduleGenerationInfo = new ReflectionEmitModuleInfo(this);
 					#else
 					moduleGenerationInfo = null;
