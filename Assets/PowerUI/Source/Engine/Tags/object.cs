@@ -24,100 +24,100 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
 		/// <summary>The archive attribute.</summary>
 		public string archive{
 			get{
-				return this["archive"];
+				return getAttribute("archive");
 			}
 			set{
-				this["archive"]=value;
+				setAttribute("archive", value);
 			}
 		}
 		
 		/// <summary>The border attribute.</summary>
 		public string border{
 			get{
-				return this["border"];
+				return getAttribute("border");
 			}
 			set{
-				this["border"]=value;
+				setAttribute("border", value);
 			}
 		}
 		
 		/// <summary>The codebase attribute.</summary>
 		public string codeBase{
 			get{
-				return this["codebase"];
+				return getAttribute("codebase");
 			}
 			set{
-				this["codebase"]=value;
+				setAttribute("codebase", value);
 			}
 		}
 		
 		/// <summary>The codetype attribute.</summary>
 		public string codeType{
 			get{
-				return this["codetype"];
+				return getAttribute("codetype");
 			}
 			set{
-				this["codetype"]=value;
+				setAttribute("codetype", value);
 			}
 		}
 		
 		/// <summary>The data attribute.</summary>
 		public string data{
 			get{
-				return this["data"];
+				return getAttribute("data");
 			}
 			set{
-				this["data"]=value;
+				setAttribute("data", value);
 			}
 		}
 		
 		/// <summary>The declare attribute.</summary>
 		public string declare{
 			get{
-				return this["declare"];
+				return getAttribute("declare");
 			}
 			set{
-				this["declare"]=value;
+				setAttribute("declare", value);
 			}
 		}
 		
 		/// <summary>The height attribute.</summary>
 		public string height{
 			get{
-				return this["height"];
+				return getAttribute("height");
 			}
 			set{
-				this["height"]=value;
+				setAttribute("height", value);
 			}
 		}
 		
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
 		/// <summary>The standby attribute.</summary>
 		public string standby{
 			get{
-				return this["standby"];
+				return getAttribute("standby");
 			}
 			set{
-				this["standby"]=value;
+				setAttribute("standby", value);
 			}
 		}
 		
@@ -134,10 +134,10 @@ namespace PowerUI{
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
@@ -154,20 +154,20 @@ namespace PowerUI{
 		/// <summary>The useMap attribute.</summary>
 		public string useMap{
 			get{
-				return this["usemap"];
+				return getAttribute("usemap");
 			}
 			set{
-				this["usemap"]=value;
+				setAttribute("usemap", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -251,7 +251,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="border"){
-				Style.Computed.ChangeTagProperty("border-width",NormalizeSize(this["border"]));
+				Style.Computed.ChangeTagProperty("border-width",NormalizeSize(getAttribute("border")));
 			}else{
 				return false;
 			}

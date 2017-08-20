@@ -24,10 +24,10 @@ namespace PowerUI{
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		

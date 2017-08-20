@@ -383,7 +383,7 @@ namespace PowerUI{
 			
 			if(distance==0f){
 				// Default, (after checking for a mindrag attribute):
-				string minDrag=draggable["mindrag"];
+				string minDrag=draggable.getAttribute("mindrag");
 				
 				if(minDrag==null){
 					

@@ -30,40 +30,40 @@ namespace PowerUI{
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
 		/// <summary>The value attribute.</summary>
 		public string Value{
 			get{
-				return this["value"];
+				return getAttribute("value");
 			}
 			set{
-				this["value"]=value;
+				setAttribute("value", value);
 			}
 		}
 		
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
 		/// <summary>The valuetype attribute.</summary>
 		public string valueType{
 			get{
-				return this["valuetype"];
+				return getAttribute("valuetype");
 			}
 			set{
-				this["valuetype"]=value;
+				setAttribute("valuetype", value);
 			}
 		}
 		

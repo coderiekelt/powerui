@@ -41,10 +41,10 @@ namespace PowerUI{
 		/// <summary>The clear attribute.</summary>
 		public string clear{
 			get{
-				return this["clear"];
+				return getAttribute("clear");
 			}
 			set{
-				this["clear"]=value;
+				setAttribute("clear", value);
 			}
 		}
 		
@@ -54,7 +54,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="clear"){
-				Style.Computed.ChangeTagProperty("clear",this["clear"]);
+				Style.Computed.ChangeTagProperty("clear", getAttribute("clear"));
 				return true;
 			}
 			

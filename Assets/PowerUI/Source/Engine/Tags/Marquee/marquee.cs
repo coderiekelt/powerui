@@ -383,7 +383,7 @@ namespace PowerUI{
 			
 			if(property=="loop"){
 				
-				Loop=int.Parse(this["loop"]);
+				Loop=int.Parse(getAttribute("loop"));
 				
 				if(Loop==0){
 					Loop=1;
@@ -393,11 +393,11 @@ namespace PowerUI{
 				
 			}else if(property=="scrollamount"){
 				
-				ScrollAmount=int.Parse(this["scrollamount"]);
+				ScrollAmount=int.Parse(getAttribute("scrollamount"));
 				
 			}else if(property=="scrolldelay"){
 				
-				ScrollDelay=int.Parse(this["scrolldelay"]);
+				ScrollDelay=int.Parse(getAttribute("scrolldelay"));
 				
 				if(ScrollDelay<50){
 					
@@ -409,16 +409,16 @@ namespace PowerUI{
 				
 			}else if(property=="behaviour"){
 				
-				ApplyBehaviour(this["behaviour"]);
+				ApplyBehaviour(getAttribute("behaviour"));
 				
 			}else if(property=="behavior"){
 				
-				ApplyBehaviour(this["behavior"]);
+				ApplyBehaviour(getAttribute("behavior"));
 				
 			}else if(property=="direction"){
 				
 				// Grab the direction:
-				string direction=this["direction"];
+				string direction=getAttribute("direction");
 				
 				switch(direction){
 					

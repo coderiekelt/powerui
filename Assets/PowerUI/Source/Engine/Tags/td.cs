@@ -40,11 +40,11 @@ namespace PowerUI{
 		public ulong colSpan{
 			get{
 				ulong v;
-				ulong.TryParse(this["colspan"],out v);
+				ulong.TryParse(getAttribute("colspan"),out v);
 				return v;
 			}
 			set{
-				this["colspan"]=value.ToString();
+				setAttribute("colspan", value.ToString());
 			}
 		}
 		
@@ -52,11 +52,11 @@ namespace PowerUI{
 		public ulong rowSpan{
 			get{
 				ulong v;
-				ulong.TryParse(this["rowspan"],out v);
+				ulong.TryParse(getAttribute("rowspan"),out v);
 				return v;
 			}
 			set{
-				this["rowspan"]=value.ToString();
+				setAttribute("rowspan", value.ToString());
 			}
 		}
 		
@@ -81,50 +81,50 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
 		/// <summary>The bgcolor attribute.</summary>
 		public string bgColor{
 			get{
-				return this["bgcolor"];
+				return getAttribute("bgcolor");
 			}
 			set{
-				this["bgcolor"]=value;
+				setAttribute("bgcolor", value);
 			}
 		}
 		
 		/// <summary>The axis attribute.</summary>
 		public string axis{
 			get{
-				return this["axis"];
+				return getAttribute("axis");
 			}
 			set{
-				this["axis"]=value;
+				setAttribute("axis", value);
 			}
 		}
 		
 		/// <summary>The height attribute.</summary>
 		public string height{
 			get{
-				return this["height"];
+				return getAttribute("height");
 			}
 			set{
-				this["height"]=value;
+				setAttribute("height", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -141,10 +141,10 @@ namespace PowerUI{
 		/// <summary>The valign attribute.</summary>
 		public string vAlign{
 			get{
-				return this["valign"];
+				return getAttribute("valign");
 			}
 			set{
-				this["valign"]=value;
+				setAttribute("valign", value);
 			}
 		}
 		

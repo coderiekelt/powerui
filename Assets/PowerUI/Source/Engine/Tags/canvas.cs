@@ -31,13 +31,13 @@ namespace PowerUI{
 		public int width{
 			get{
 				int w;
-				if(!int.TryParse(this["width"],out w) || w<0){
+				if(!int.TryParse(getAttribute("width"),out w) || w<0){
 					w=300;
 				}
 				return w;
 			}
 			set{
-				this["width"]=value.ToString();
+				setAttribute("width", value.ToString());
 			}
 		}
 		
@@ -45,13 +45,13 @@ namespace PowerUI{
 		public int height{
 			get{
 				int h;
-				if(!int.TryParse(this["height"],out h) || h<0){
+				if(!int.TryParse(getAttribute("height"),out h) || h<0){
 					h=150;
 				}
 				return h;
 			}
 			set{
-				this["height"]=value.ToString();
+				setAttribute("height", value.ToString());
 			}
 		}
 		

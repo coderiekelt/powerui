@@ -31,10 +31,10 @@ namespace PowerUI{
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
@@ -44,7 +44,7 @@ namespace PowerUI{
 				return Start_;
 			}
 			set{
-				this["start"]=value.ToString();
+				setAttribute("start", value.ToString());
 			}
 		}
 		
@@ -181,11 +181,11 @@ namespace PowerUI{
 				
 				Style.Computed.ChangeTagProperty(
 					"list-style-type",
-					GetListStyleMode(this["type"])
+					GetListStyleMode(getAttribute("type"))
 				);
 				
 			}else if(property=="start"){
-				int.TryParse(this["start"],out Start_);
+				int.TryParse(getAttribute("start"),out Start_);
 			}else if(property=="reversed"){
 				Reversed_=GetBoolAttribute("reversed");
 			}else{

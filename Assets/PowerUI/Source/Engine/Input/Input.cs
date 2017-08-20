@@ -720,7 +720,7 @@ namespace PowerUI{
 			while(current!=null){
 				
 				// Got the attribute?
-				if(current["draggable"]!=null){
+				if(current.getAttribute("draggable")!=null){
 					return current;
 				}
 				

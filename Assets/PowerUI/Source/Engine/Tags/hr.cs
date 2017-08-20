@@ -24,20 +24,20 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
 		/// <summary>The color attribute.</summary>
 		public string color{
 			get{
-				return this["color"];
+				return getAttribute("color");
 			}
 			set{
-				this["color"]=value;
+				setAttribute("color", value);
 			}
 		}
 		
@@ -54,20 +54,20 @@ namespace PowerUI{
 		/// <summary>The size attribute.</summary>
 		public string size{
 			get{
-				return this["size"];
+				return getAttribute("size");
 			}
 			set{
-				this["size"]=value;
+				setAttribute("size", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -118,7 +118,7 @@ namespace PowerUI{
 				);
 			
 			}else if(property=="size"){
-				Style.Computed.ChangeTagProperty("height",NormalizeSize(this["size"]));
+				Style.Computed.ChangeTagProperty("height",NormalizeSize(getAttribute("size")));
 			}else{
 				return false;
 			}

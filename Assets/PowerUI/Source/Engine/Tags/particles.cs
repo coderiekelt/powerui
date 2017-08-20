@@ -60,7 +60,7 @@ namespace PowerUI{
 				Destroy();
 				
 				// Grab the path itself:
-				string path=this["path"];
+				string path=getAttribute("path");
 				
 				// Get it:
 				GameObject gameObject=GameObject.Find(path);
@@ -79,7 +79,7 @@ namespace PowerUI{
 				Destroy();
 				
 				// Get the system from Resources and instance it:
-				GameObject gameObject=GameObject.Instantiate(Resources.Load(this["src"])) as GameObject;
+				GameObject gameObject=GameObject.Instantiate(Resources.Load(getAttribute("src"))) as GameObject;
 				
 				if(gameObject!=null){
 					

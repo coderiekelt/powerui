@@ -27,50 +27,50 @@ namespace PowerUI{
 		/// <summary>The sizes attribute.</summary>
 		public string sizes{
 			get{
-				return this["sizes"];
+				return getAttribute("sizes");
 			}
 			set{
-				this["sizes"]=value;
+				setAttribute("sizes", value);
 			}
 		}
 		
 		/// <summary>The media attribute.</summary>
 		public string media{
 			get{
-				return this["media"];
+				return getAttribute("media");
 			}
 			set{
-				this["media"]=value;
+				setAttribute("media", value);
 			}
 		}
 		
 		/// <summary>The src attribute.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The srcset attribute.</summary>
 		public string srcset{
 			get{
-				return this["srcset"];
+				return getAttribute("srcset");
 			}
 			set{
-				this["srcset"]=value;
+				setAttribute("srcset", value);
 			}
 		}
 		
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		

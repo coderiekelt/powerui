@@ -33,7 +33,7 @@ namespace PowerUI{
 			}
 			
 			// The target:
-			string href=this["href"];
+			string href=getAttribute("href");
 			
 			if(href==null){
 				// Refresh.
@@ -47,30 +47,30 @@ namespace PowerUI{
 		/// <summary>The accessKey attribute.</summary>
 		public string accessKey{
 			get{
-				return this["accesskey"];
+				return getAttribute("accesskey");
 			}
 			set{
-				this["accesskey"]=value;
+				setAttribute("accesskey", value);
 			}
 		}
 		
 		/// <summary>The alt attribute.</summary>
 		public string alt{
 			get{
-				return this["alt"];
+				return getAttribute("alt");
 			}
 			set{
-				this["alt"]=value;
+				setAttribute("alt", value);
 			}
 		}
 		
 		/// <summary>The coords attribute.</summary>
 		public string coords{
 			get{
-				return this["coords"];
+				return getAttribute("coords");
 			}
 			set{
-				this["coords"]=value;
+				setAttribute("coords", value);
 			}
 		}
 		
@@ -107,30 +107,30 @@ namespace PowerUI{
 		/// <summary>The href attribute.</summary>
 		public string href{
 			get{
-				return this["href"];
+				return getAttribute("href");
 			}
 			set{
-				this["href"]=value;
+				setAttribute("href", value);
 			}
 		}
 		
 		/// <summary>The hreflang attribute.</summary>
 		public string hreflang{
 			get{
-				return this["hreflang"];
+				return getAttribute("hreflang");
 			}
 			set{
-				this["hreflang"]=value;
+				setAttribute("hreflang", value);
 			}
 		}
 		
 		/// <summary>The media attribute.</summary>
 		public string media{
 			get{
-				return this["media"];
+				return getAttribute("media");
 			}
 			set{
-				this["media"]=value;
+				setAttribute("media", value);
 			}
 		}
 		
@@ -184,20 +184,20 @@ namespace PowerUI{
 		/// <summary>The referrerpolicy attribute.</summary>
 		public string referrerPolicy{
 			get{
-				return this["referrerpolicy"];
+				return getAttribute("referrerpolicy");
 			}
 			set{
-				this["referrerpolicy"]=value;
+				setAttribute("referrerpolicy", value);
 			}
 		}
 		
 		/// <summary>The rel attribute.</summary>
 		public string rel{
 			get{
-				return this["rel"];
+				return getAttribute("rel");
 			}
 			set{
-				this["rel"]=value;
+				setAttribute("rel", value);
 			}
 		}
 		
@@ -221,30 +221,30 @@ namespace PowerUI{
 		/// <summary>The shape attribute.</summary>
 		public string shape{
 			get{
-				return this["shape"];
+				return getAttribute("shape");
 			}
 			set{
-				this["shape"]=value;
+				setAttribute("shape", value);
 			}
 		}
 		
 		/// <summary>The target attribute.</summary>
 		public string target{
 			get{
-				return this["target"];
+				return getAttribute("target");
 			}
 			set{
-				this["target"]=value;
+				setAttribute("target", value);
 			}
 		}
 		
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		

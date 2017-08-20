@@ -102,7 +102,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="selected"){
-				string isSelected=this["selected"];
+				string isSelected=getAttribute("selected");
 				Selected=(string.IsNullOrEmpty(isSelected) || isSelected=="1" || isSelected=="true" || isSelected=="yes");
 				
 				if(Dropdown!=null){
@@ -114,7 +114,7 @@ namespace PowerUI{
 			}else if(property=="text"){
 				
 				// Write the innerHTML:
-				innerHTML=this["text"];
+				innerHTML=getAttribute("text");
 				
 				return true;
 			}
@@ -157,7 +157,7 @@ namespace PowerUI{
 		/// <summary>A label for the group.</summary>
 		public string label{
 			get{
-				string l=this["label"];
+				string l=getAttribute("label");
 				
 				if(l==null){
 					return text;
@@ -166,7 +166,7 @@ namespace PowerUI{
 				return l;
 			}
 			set{
-				this["label"]=value;
+				setAttribute("label", value);
 			}
 		}
 		
@@ -205,10 +205,10 @@ namespace PowerUI{
 		/// <summary>The text of an option element.</summary>
 		public string text{
 			get{
-				return this["text"];
+				return getAttribute("text");
 			}
 			set{
-				this["text"]=value;
+				setAttribute("text", value);
 			}
 		}
 		

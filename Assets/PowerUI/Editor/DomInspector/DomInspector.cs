@@ -254,7 +254,7 @@ namespace PowerUI{
 				// Double check it's not some evil iframe twin:
 				if(htmlElement!=null){
 					
-					string src=htmlElement["src"];
+					string src=htmlElement.getAttribute("src");
 					
 					// Search content doc:
 					Search(htmlElement.contentDocument,src,results);
@@ -313,7 +313,7 @@ namespace PowerUI{
 				name="(Unnamed node)";
 			}
 			
-			string idAttr=node["id"];
+			string idAttr=node.getAttribute("id");
 			
 			if(idAttr!=null){
 				name+=" id='"+idAttr+"'";

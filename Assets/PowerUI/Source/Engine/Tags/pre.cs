@@ -26,11 +26,11 @@ namespace PowerUI{
 		public long width{
 			get{
 				long v;
-				long.TryParse(this["width"],out v);
+				long.TryParse(getAttribute("width"),out v);
 				return v;
 			}
 			set{
-				this["width"]=value.ToString();
+				setAttribute("width", value.ToString());
 			}
 		}
 		

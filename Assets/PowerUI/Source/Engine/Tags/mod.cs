@@ -20,20 +20,20 @@ namespace PowerUI{
 		/// <summary>The cite attribute.</summary>
 		public string cite{
 			get{
-				return this["cite"];
+				return getAttribute("cite");
 			}
 			set{
-				this["cite"]=value;
+				setAttribute("cite", value);
 			}
 		}
 		
 		/// <summary>The datetime attribute.</summary>
 		public string datetime{
 			get{
-				return this["datetime"];
+				return getAttribute("datetime");
 			}
 			set{
-				this["datetime"]=value;
+				setAttribute("datetime", value);
 			}
 		}
 		

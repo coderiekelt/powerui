@@ -26,7 +26,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"display",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;

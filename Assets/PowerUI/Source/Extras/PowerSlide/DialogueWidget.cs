@@ -76,7 +76,7 @@ namespace Widgets{
 			
 			// Get the unique ID:
 			int uniqueId;
-			if(!int.TryParse(targetNode["unique-id"],out uniqueId)){
+			if(!int.TryParse(targetNode.getAttribute("unique-id"),out uniqueId)){
 				Dom.Log.Add("A dialogue option did not have an unique-id attribute.");
 				return;
 			}

@@ -35,10 +35,10 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
@@ -52,10 +52,10 @@ namespace PowerUI{
 		/// <summary>The valign attribute.</summary>
 		public string vAlign{
 			get{
-				return this["valign"];
+				return getAttribute("valign");
 			}
 			set{
-				this["valign"]=value;
+				setAttribute("valign", value);
 			}
 		}
 		

@@ -71,7 +71,7 @@ namespace Dom{
 				int characterCount=characters==null ? 0 : characters.Length;
 				
 				// If it's already a 'letter' just re-add it:
-				if(child.parentNode!=null && child.parentNode["letter"]=="1"){
+				if(child.parentNode!=null && child.parentNode.getAttribute("letter")=="1"){
 					appendChild(text);
 					continue;
 				}
@@ -107,7 +107,7 @@ namespace Dom{
 					
 					// Create a new span:
 					Element span=document.createElement("span");
-					span["letter"]="1";
+					span.setAttribute("letter", "1");
 					
 					if(charString==" "){
 						// NBSP:
@@ -132,7 +132,7 @@ namespace Dom{
 				foreach(Dom.TextNode text in allText){
 					
 					// Already got a letter?
-					if(text.parentNode["letter"]!="1"){
+					if(text.parentNode.getAttribute("letter")!="1"){
 						return false;
 					}
 				}

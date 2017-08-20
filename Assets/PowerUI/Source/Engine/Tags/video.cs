@@ -47,20 +47,20 @@ namespace PowerUI{
 		/// <summary>The height attribute.</summary>
 		public string height{
 			get{
-				return this["height"];
+				return getAttribute("height");
 			}
 			set{
-				this["height"]=value;
+				setAttribute("height", value);
 			}
 		}
 		
 		/// <summary>The poster attribute.</summary>
 		public string poster{
 			get{
-				return this["poster"];
+				return getAttribute("poster");
 			}
 			set{
-				this["poster"]=value;
+				setAttribute("poster", value);
 			}
 		}
 		
@@ -91,10 +91,10 @@ namespace PowerUI{
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -104,7 +104,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="src"){
-				style.backgroundImage="url(\""+this["src"].Replace("\"","\\\"")+"\")";
+				style.backgroundImage="url(\""+getAttribute("src").Replace("\"","\\\"")+"\")";
 				return true;
 			}
 			
@@ -113,7 +113,7 @@ namespace PowerUI{
 		
 		public override void OnChildrenLoaded(){
 			// Does this video tag have <source> elements as kids?
-			string src=this["src"];
+			string src=getAttribute("src");
 			
 			if(src!=null){
 				
@@ -138,7 +138,7 @@ namespace PowerUI{
 			
 			foreach(Node child in kids){
 				// Grab the src:
-				string childSrc=child["src"];
+				string childSrc=child.getAttribute("src");
 				
 				if(childSrc==null){
 					continue;

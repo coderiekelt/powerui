@@ -62,7 +62,7 @@ namespace PowerUI{
 			HtmlElement.CachedFullscreenStyle=null;
 			
 			// Clear attrib:
-			fullscreenElement["fullscreen"]=null;
+			fullscreenElement.removeAttribute("fullscreen");
 			
 			// Update local style:
 			fullscreenElement.style.Computed.RefreshLocal();

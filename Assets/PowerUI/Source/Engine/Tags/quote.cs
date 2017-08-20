@@ -21,10 +21,10 @@ namespace PowerUI{
 		/// <summary>The cite attribute.</summary>
 		public string cite{
 			get{
-				return this["cite"];
+				return getAttribute("cite");
 			}
 			set{
-				this["cite"]=value;
+				setAttribute("cite", value);
 			}
 		}
 		

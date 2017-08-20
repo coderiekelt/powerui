@@ -95,7 +95,12 @@ namespace Jint.Runtime.Descriptors.Specialized
                 }
 
                 object[] parameters = { _key, value != null ? value.ToObject() : null };
-                setter.Invoke(_item, parameters);
+				try{
+					setter.Invoke(_item, parameters);
+				}catch(Exception e){
+					UnityEngine.Debug.Log("Indexer failure: Can't assign " + value.ToObject().GetType() + " to " + _indexer.DeclaringType);
+					throw e;
+				}
             }
         }
     }

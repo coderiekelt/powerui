@@ -37,17 +37,17 @@ namespace Dom{
 		public Element ownerElement;
 		
 		
-		public AttributeNode(Element owner,string name,string val){
+		public AttributeNode(Node owner,string name,string val){
 			UnprefixedName=name;
-			ownerElement=owner;
+			ownerElement=owner as Element;
 			specified=(val!=null);
 			value=val;
 		}
 		
-		public AttributeNode(Element owner,string name,string val,string ns){
+		public AttributeNode(Node owner,string name,string val,string ns){
 			UnprefixedName=name;
 			Namespace=MLNamespaces.GetPrefix(ns);
-			ownerElement=owner;
+			ownerElement=owner as Element;
 			specified=(val!=null);
 			value=val;
 		}

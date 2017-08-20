@@ -24,20 +24,20 @@ namespace PowerUI{
 		/// <summary>The href attribute.</summary>
 		public string href{
 			get{
-				return this["href"];
+				return getAttribute("href");
 			}
 			set{
-				this["href"]=value;
+				setAttribute("href", value);
 			}
 		}
 		
 		/// <summary>The target attribute.</summary>
 		public string target{
 			get{
-				return this["target"];
+				return getAttribute("target");
 			}
 			set{
-				this["target"]=value;
+				setAttribute("target", value);
 			}
 		}
 		
@@ -84,14 +84,14 @@ namespace PowerUI{
 			}
 			
 			if(property=="href"){
-				string href=this["href"];
+				string href=getAttribute("href");
 				
 				// Change the documents base path:
 				document.basepath=new Location(href,document.location);
 				
 				return true;
 			}else if(property=="target"){
-				string target=this["href"];
+				string target=getAttribute("target");
 				
 				// Change the document's target override:
 				htmlDocument.baseTarget=target;

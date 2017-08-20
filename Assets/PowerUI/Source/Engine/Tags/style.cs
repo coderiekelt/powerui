@@ -34,20 +34,20 @@ namespace PowerUI{
 		/// <summary>The media attribute.</summary>
 		public string media{
 			get{
-				return this["media"];
+				return getAttribute("media");
 			}
 			set{
-				this["media"]=value;
+				setAttribute("media", value);
 			}
 		}
 		
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		

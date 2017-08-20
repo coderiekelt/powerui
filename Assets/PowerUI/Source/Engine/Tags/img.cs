@@ -42,27 +42,27 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
 		/// <summary>The alt attribute.</summary>
 		public string alt{
 			get{
-				return this["alt"];
+				return getAttribute("alt");
 			}
 			set{
-				this["alt"]=value;
+				setAttribute("alt", value);
 			}
 		}
 		
 		/// <summary>True if this image is ready.</summary>
 		public bool complete{
 			get{
-				return ((Image!=null && Image.Contents!=null && Image.Contents.Loaded) || this["src"]==null);
+				return ((Image!=null && Image.Contents!=null && Image.Contents.Loaded) || getAttribute("src")==null);
 			}
 		}
 		
@@ -82,10 +82,10 @@ namespace PowerUI{
 		/// <summary>The height attribute.</summary>
 		public string height{
 			get{
-				return this["height"];
+				return getAttribute("height");
 			}
 			set{
-				this["height"]=value;
+				setAttribute("height", value);
 			}
 		}
 		
@@ -102,10 +102,10 @@ namespace PowerUI{
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
@@ -134,60 +134,60 @@ namespace PowerUI{
 		/// <summary>The referrerpolicy attribute.</summary>
 		public string referrerPolicy{
 			get{
-				return this["referrerpolicy"];
+				return getAttribute("referrerpolicy");
 			}
 			set{
-				this["referrerpolicy"]=value;
+				setAttribute("referrerpolicy", value);
 			}
 		}
 		
 		/// <summary>The src attribute.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The sizes attribute.</summary>
 		public string sizes{
 			get{
-				return this["sizes"];
+				return getAttribute("sizes");
 			}
 			set{
-				this["sizes"]=value;
+				setAttribute("sizes", value);
 			}
 		}
 		
 		/// <summary>The srcset attribute.</summary>
 		public string srcset{
 			get{
-				return this["srcset"];
+				return getAttribute("srcset");
 			}
 			set{
-				this["srcset"]=value;
+				setAttribute("srcset", value);
 			}
 		}
 		
-		/// <summary>The useMap attribute.</summary>
+		/// <summary>The usemap attribute.</summary>
 		public string useMap{
 			get{
-				return this["usemap"];
+				return getAttribute("usemap");
 			}
 			set{
-				this["usemap"]=value;
+				setAttribute("usemap", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -241,7 +241,7 @@ namespace PowerUI{
 			}else{
 				
 				// Use src:
-				src=this["src"];
+				src=getAttribute("src");
 				
 			}
 			
@@ -265,7 +265,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="src"){
-				string src=this["src"];
+				string src=getAttribute("src");
 				
 				if(src==null){
 					src="";
@@ -285,7 +285,7 @@ namespace PowerUI{
 				return true;
 			}else if(property=="srcset"){
 				
-				string srcset=this["srcset"];
+				string srcset=getAttribute("srcset");
 				
 				if(string.IsNullOrEmpty(srcset)){
 					SrcSet=null;
@@ -295,7 +295,7 @@ namespace PowerUI{
 					SrcSet=new ContentGroup();
 					
 					// Add 'src'
-					string srcValue=this["src"];
+					string srcValue=getAttribute("src");
 					
 					if(srcValue!=null){
 						SrcSet.AddSrc(srcValue);

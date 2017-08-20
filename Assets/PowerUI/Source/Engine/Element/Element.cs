@@ -64,7 +64,7 @@ namespace PowerUI{
 		/// <summary>An enumerated version of the contenteditable attribute.</summary>
 		public string contentEditable{
 			get{
-				string rawValue=this["contenteditable"];
+				string rawValue=getAttribute("contenteditable");
 				if(rawValue=="inherit"){
 					return rawValue;
 				}
@@ -76,7 +76,7 @@ namespace PowerUI{
 				return "false";
 			}
 			set{
-				this["contenteditable"]=value;
+				setAttribute("contenteditable", value);
 			}
 		}
 		
@@ -1040,7 +1040,7 @@ namespace PowerUI{
 		/// <summary>This elements tab index.</summary>
 		public int tabIndex{
 			get{
-				string value=this["tabindex"];
+				string value=getAttribute("tabindex");
 				int v;
 				
 				if(value==null || !int.TryParse(value, out v)){
@@ -1050,7 +1050,7 @@ namespace PowerUI{
 				return v;
 			}
 			set{
-				this["tabindex"]=value.ToString();
+				setAttribute("tabindex", value.ToString());
 			}
 		}
 		

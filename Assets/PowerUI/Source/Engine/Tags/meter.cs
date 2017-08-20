@@ -69,7 +69,8 @@ namespace PowerUI{
 				return High_;
 			}
 			set{
-				this["high"]=value.ToString();
+				High_=value;
+				setAttribute("high", value.ToString());
 			}
 		}
 		
@@ -82,7 +83,8 @@ namespace PowerUI{
 				return Low_;
 			}
 			set{
-				this["low"]=value.ToString();
+				Low_=value;
+				setAttribute("low", value.ToString());
 			}
 		}
 		
@@ -92,7 +94,8 @@ namespace PowerUI{
 				return Min_;
 			}
 			set{
-				this["min"]=value.ToString();
+				Min_=value;
+				setAttribute("min", value.ToString());
 			}
 		}
 		
@@ -102,7 +105,8 @@ namespace PowerUI{
 				return Max_;
 			}
 			set{
-				this["max"]=value.ToString();
+				Max_=value;
+				setAttribute("max", value.ToString());
 			}
 		}
 		
@@ -112,19 +116,20 @@ namespace PowerUI{
 				return Value_;
 			}
 			set{
-				this["value"]=value.ToString();
+				Value_=value;
+				setAttribute("value", value.ToString());
 			}
 		}
 		
-		/// <summary>The optimium numeric value.</summary>
+		/// <summary>The optimum numeric value.</summary>
 		public double optimum{
 			get{
 				double v;
-				double.TryParse(this["optimium"],out v);
+				double.TryParse(getAttribute("optimum"),out v);
 				return v;
 			}
 			set{
-				this["optimium"]=value.ToString();
+				setAttribute("optimum", value.ToString());
 			}
 		}
 		
@@ -166,7 +171,7 @@ namespace PowerUI{
 			
 			if(property=="min"){
 			
-				if(!double.TryParse(this["min"],out Min_)){
+				if(!double.TryParse(getAttribute("min"),out Min_)){
 					Min_=0;
 				}
 				
@@ -177,7 +182,7 @@ namespace PowerUI{
 				
 			}else if(property=="max"){
 				
-				if(!double.TryParse(this["max"],out Max_)){
+				if(!double.TryParse(getAttribute("max"),out Max_)){
 					Max_=1.0;
 				}
 				
@@ -188,7 +193,7 @@ namespace PowerUI{
 				
 			}else if(property=="high"){
 				
-				if(!double.TryParse(this["high"],out High_)){
+				if(!double.TryParse(getAttribute("high"),out High_)){
 					High_=double.MaxValue;
 				}
 				
@@ -199,7 +204,7 @@ namespace PowerUI{
 				
 			}else if(property=="low"){
 				
-				if(!double.TryParse(this["low"],out Low_)){
+				if(!double.TryParse(getAttribute("low"),out Low_)){
 					Low_=double.MinValue;
 				}
 				
@@ -210,7 +215,7 @@ namespace PowerUI{
 				
 			}else if(property=="value"){
 				
-				if(!double.TryParse(this["value"],out Value_)){
+				if(!double.TryParse(getAttribute("value"),out Value_)){
 					Value_=0;
 				}
 				

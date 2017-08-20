@@ -28,7 +28,7 @@ namespace PowerUI{
 		public Widgets.Widget widget{
 			get{
 				// Go up the dom looking for the first element with a '-spark-widget-id' attribute:
-				string widgetID=this["-spark-widget-id"];
+				string widgetID=getAttribute("-spark-widget-id");
 				
 				if(widgetID==null){
 					

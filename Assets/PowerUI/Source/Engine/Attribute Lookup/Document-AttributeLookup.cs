@@ -40,7 +40,7 @@ namespace Dom{
 				AttributeLookup lookup=kvp.Value;
 				
 				// Got this attribute?
-				string value=ele[attribute];
+				string value=ele.getAttribute(attribute);
 				
 				if(value==null){
 					continue;

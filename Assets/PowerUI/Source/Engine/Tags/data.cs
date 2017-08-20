@@ -21,10 +21,10 @@ namespace PowerUI{
 		/// <summary>The value attribute.</summary>
 		public string Value{
 			get{
-				return this["value"];
+				return getAttribute("value");
 			}
 			set{
-				this["value"]=value;
+				setAttribute("value", value);
 			}
 		}
 		

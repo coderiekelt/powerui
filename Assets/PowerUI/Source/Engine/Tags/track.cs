@@ -27,40 +27,40 @@ namespace PowerUI{
 		/// <summary>The kind attribute.</summary>
 		public string kind{
 			get{
-				return this["kind"];
+				return getAttribute("kind");
 			}
 			set{
-				this["kind"]=value;
+				setAttribute("kind", value);
 			}
 		}
 		
 		/// <summary>The src attribute.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The srclang attribute.</summary>
 		public string srclang{
 			get{
-				return this["srclang"];
+				return getAttribute("srclang");
 			}
 			set{
-				this["srclang"]=value;
+				setAttribute("srclang", value);
 			}
 		}
 		
 		/// <summary>The label attribute.</summary>
 		public string label{
 			get{
-				return this["label"];
+				return getAttribute("label");
 			}
 			set{
-				this["label"]=value;
+				setAttribute("label", value);
 			}
 		}
 		

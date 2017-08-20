@@ -24,10 +24,10 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
@@ -35,31 +35,31 @@ namespace PowerUI{
 		public ulong span{
 			get{
 				ulong v;
-				ulong.TryParse(this["span"],out v);
+				ulong.TryParse(getAttribute("span"),out v);
 				return v;
 			}
 			set{
-				this["span"]=value.ToString();
+				setAttribute("span", value.ToString());
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
 		/// <summary>The valign attribute.</summary>
 		public string vAlign{
 			get{
-				return this["valign"];
+				return getAttribute("valign");
 			}
 			set{
-				this["valign"]=value;
+				setAttribute("valign", value);
 			}
 		}
 		

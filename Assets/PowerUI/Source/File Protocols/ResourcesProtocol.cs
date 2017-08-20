@@ -164,7 +164,7 @@ namespace PowerUI{
 		}
 		
 		public override void OnFollowLink(HtmlElement linkElement,Location path){
-			string target=linkElement["target"];
+			string target=linkElement.getAttribute("target");
 			
 			if(target!=null && target=="_blank"){
 				// Open the given url.

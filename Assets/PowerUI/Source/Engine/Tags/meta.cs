@@ -24,20 +24,20 @@ namespace PowerUI{
 		/// <summary>The meta-data attribute.</summary>
 		public string content{
 			get{
-				return this["meta-data"];
+				return getAttribute("meta-data");
 			}
 			set{
-				this["meta-data"]=value;
+				setAttribute("meta-data", value);
 			}
 		}
 		
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
@@ -56,7 +56,7 @@ namespace PowerUI{
 		
 		public override void OnTagLoaded(){
 			
-			string name=this["name"];
+			string name=getAttribute("name");
 			string content;
 			
 			if(name=="languages"){
@@ -67,14 +67,14 @@ namespace PowerUI{
 				Languages languages=htmlDocument.languages;
 				
 				// Got a custom location?
-				string location=this["src"];
+				string location=getAttribute("src");
 				
 				if(location!=null){
 					languages.location=location;
 				}
 				
 				// Available languages:
-				content=this["content"];
+				content=getAttribute("content");
 				
 				if(content!=null){
 					

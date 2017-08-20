@@ -21,10 +21,10 @@ namespace PowerUI{
 		/// <summary>The datetime text, if any.</summary>
 		public string datetime{
 			get{
-				return this["datetime"];
+				return getAttribute("datetime");
 			}
 			set{
-				this["datetime"]=value;
+				setAttribute("datetime", value);
 			}
 		}
 		

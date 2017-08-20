@@ -25,30 +25,30 @@ namespace PowerUI{
 		/// <summary>The color attribute.</summary>
 		public string color{
 			get{
-				return this["color"];
+				return getAttribute("color");
 			}
 			set{
-				this["color"]=value;
+				setAttribute("color", value);
 			}
 		}
 		
 		/// <summary>The size attribute.</summary>
 		public string size{
 			get{
-				return this["size"];
+				return getAttribute("size");
 			}
 			set{
-				this["size"]=value;
+				setAttribute("size", value);
 			}
 		}
 		
 		/// <summary>The face attribute.</summary>
 		public string face{
 			get{
-				return this["face"];
+				return getAttribute("face");
 			}
 			set{
-				this["face"]=value;
+				setAttribute("face", value);
 			}
 		}
 		
@@ -93,7 +93,7 @@ namespace PowerUI{
 			
 			ComputedStyle computed=Style.Computed;
 			
-			string value=this[property];
+			string value=getAttribute(property);
 			if(value==null){
 				value="";
 			}

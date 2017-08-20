@@ -71,7 +71,7 @@ namespace PowerUI{
 		/// <returns>The value returned by the function.</returns>
 		/// <exception cref="NullReferenceException">Thrown if the function does not exist.</exception>
 		public object RunLiteral(string attribute,object[] args){
-			string methodName=this[attribute];
+			string methodName=getAttribute(attribute);
 			
 			if(methodName==null){
 				return null;

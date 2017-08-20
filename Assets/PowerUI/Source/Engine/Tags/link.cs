@@ -45,40 +45,40 @@ namespace PowerUI{
 		/// <summary>The href attribute.</summary>
 		public string href{
 			get{
-				return this["href"];
+				return getAttribute("href");
 			}
 			set{
-				this["href"]=value;
+				setAttribute("href", value);
 			}
 		}
 		
 		/// <summary>The media attribute.</summary>
 		public string media{
 			get{
-				return this["media"];
+				return getAttribute("media");
 			}
 			set{
-				this["media"]=value;
+				setAttribute("media", value);
 			}
 		}
 		
 		/// <summary>The referrerpolicy attribute.</summary>
 		public string referrerPolicy{
 			get{
-				return this["referrerpolicy"];
+				return getAttribute("referrerpolicy");
 			}
 			set{
-				this["referrerpolicy"]=value;
+				setAttribute("referrerpolicy", value);
 			}
 		}
 		
 		/// <summary>The rel attribute.</summary>
 		public string rel{
 			get{
-				return this["rel"];
+				return getAttribute("rel");
 			}
 			set{
-				this["rel"]=value;
+				setAttribute("rel", value);
 			}
 		}
 		
@@ -107,20 +107,20 @@ namespace PowerUI{
 		/// <summary>The target attribute.</summary>
 		public string target{
 			get{
-				return this["target"];
+				return getAttribute("target");
 			}
 			set{
-				this["target"]=value;
+				setAttribute("target", value);
 			}
 		}
 		
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
@@ -167,7 +167,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="rel"){
-				string rel=this["rel"];
+				string rel=getAttribute("rel");
 				if(rel!=null){
 					if((rel.Trim().ToLower())=="stylesheet"){
 						IsCSS=true;
@@ -175,7 +175,7 @@ namespace PowerUI{
 				}
 				LoadContent();
 			}else if(property=="type"){
-				string type=this["type"];
+				string type=getAttribute("type");
 				if(type!=null){
 					if((type.Trim().ToLower())=="text/css"){
 						IsCSS=true;
@@ -183,7 +183,7 @@ namespace PowerUI{
 				}
 				LoadContent();
 			}else if(property=="href"){
-				Href=this["href"];
+				Href=getAttribute("href");
 				if(!IsCSS){
 					IsCSS=Href.ToLower().EndsWith(".css");
 				}

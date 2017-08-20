@@ -28,20 +28,20 @@ namespace PowerUI{
 		/// <summary>The src attribute.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The mediagroup attribute.</summary>
 		public string mediaGroup{
 			get{
-				return this["mediagroup"];
+				return getAttribute("mediagroup");
 			}
 			set{
-				this["mediagroup"]=value;
+				setAttribute("mediagroup", value);
 			}
 		}
 		

@@ -36,30 +36,30 @@ namespace PowerUI{
 		/// <summary>The charset.</summary>
 		public string charset{
 			get{
-				return this["charset"];
+				return getAttribute("charset");
 			}
 			set{
-				this["charset"]=value;
+				setAttribute("charset", value);
 			}
 		}
 		
 		/// <summary>The src of the script.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The type of the script.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
@@ -130,7 +130,7 @@ namespace PowerUI{
 		public override void OnChildrenLoaded(){
 			
 			// Add to the Document's code but only if this tag shouldn't be dumped:
-			string type=this["type"];
+			string type=getAttribute("type");
 			
 			if(string.IsNullOrEmpty(type)){
 				// JS is the default.
@@ -165,7 +165,7 @@ namespace PowerUI{
 			if(property=="type"){
 				return true;
 			}else if(property=="src"){
-				Src=this["src"];
+				Src=getAttribute("src");
 				
 				if(Engine!=null){
 					LoadContent();

@@ -36,7 +36,7 @@ namespace ContextMenus{
 			// Get the optindex:
 			int index;
 			
-			if(!int.TryParse(e.srcElement["optindex"],out index)){
+			if(!int.TryParse(e.srcElement.getAttribute("optindex"),out index)){
 				return;
 			}
 			

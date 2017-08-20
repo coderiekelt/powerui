@@ -68,30 +68,30 @@ namespace PowerUI{
 		/// <summary>The alt attribute.</summary>
 		public string alt{
 			get{
-				return this["alt"];
+				return getAttribute("alt");
 			}
 			set{
-				this["alt"]=value;
+				setAttribute("alt", value);
 			}
 		}
 		
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
 		/// <summary>The accept attribute.</summary>
 		public string accept{
 			get{
-				return this["accept"];
+				return getAttribute("accept");
 			}
 			set{
-				this["accept"]=value;
+				setAttribute("accept", value);
 			}
 		}
 		
@@ -120,30 +120,30 @@ namespace PowerUI{
 		/// <summary>Overrides the action of the host form.</summary>
 		public string formAction{
 			get{
-				return this["formaction"];
+				return getAttribute("formaction");
 			}
 			set{
-				this["formaction"]=value;
+				setAttribute("formaction", value);
 			}
 		}
 		
 		/// <summary>Overrides the enctype of the host form.</summary>
 		public string formEncType{
 			get{
-				return this["formenctype"];
+				return getAttribute("formenctype");
 			}
 			set{
-				this["formenctype"]=value;
+				setAttribute("formenctype", value);
 			}
 		}
 		
 		/// <summary>Overrides the method of the host form.</summary>
 		public string formMethod{
 			get{
-				return this["formmethod"];
+				return getAttribute("formmethod");
 			}
 			set{
-				this["formmethod"]=value;
+				setAttribute("formmethod", value);
 			}
 		}
 		
@@ -160,20 +160,20 @@ namespace PowerUI{
 		/// <summary>Overrides the method of the host form.</summary>
 		public string formTarget{
 			get{
-				return this["formtarget"];
+				return getAttribute("formtarget");
 			}
 			set{
-				this["formtarget"]=value;
+				setAttribute("formtarget", value);
 			}
 		}
 		
 		/// <summary>The placeholder text, if any.</summary>
 		public string placeholder{
 			get{
-				return this["placeholder"];
+				return getAttribute("placeholder");
 			}
 			set{
-				this["placeholder"]=value;
+				setAttribute("placeholder", value);
 			}
 		}
 		
@@ -227,40 +227,40 @@ namespace PowerUI{
 		/// <summary>The height attribute.</summary>
 		public string height{
 			get{
-				return this["height"];
+				return getAttribute("height");
 			}
 			set{
-				this["height"]=value;
+				setAttribute("height", value);
 			}
 		}
 		
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
 		/// <summary>The src attribute.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -317,7 +317,7 @@ namespace PowerUI{
 			
 			if(Type==InputType.Undefined){
 				// Specify as text:
-				this["type"]="text";
+				setAttribute("type", "text");
 			}
 			
 		}
@@ -368,7 +368,7 @@ namespace PowerUI{
 				return MaxLength;
 			}
 			set{
-				this["maxlength"]=value.ToString();
+				setAttribute("maxlength", value.ToString());
 			}
 		}
 		
@@ -419,7 +419,7 @@ namespace PowerUI{
 				lexer.Push(this,false);
 				
 				
-				string type=this["type"];
+				string type=getAttribute("type");
 				
 				if(type==null || type=="hidden"){
 					
@@ -429,7 +429,7 @@ namespace PowerUI{
 				
 			}else if(mode==HtmlTreeMode.InTable){
 				
-				string type=this["type"];
+				string type=getAttribute("type");
 				
 				if(type==null || type=="hidden"){
 					
@@ -463,7 +463,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="type"){
-				string type=this["type"];
+				string type=getAttribute("type");
 				if(type==null){
 					type="text";
 				}
@@ -493,7 +493,7 @@ namespace PowerUI{
 			
 			}else if(property=="placeholder"){
 				
-				Placeholder_=this["placeholder"];
+				Placeholder_=getAttribute("placeholder");
 				innerHTML=Placeholder_;
 				
 				return true;
@@ -502,7 +502,7 @@ namespace PowerUI{
 				
 				// A rough font size based width:
 				int size;
-				if(int.TryParse(this["size"],out size)){
+				if(int.TryParse(getAttribute("size"),out size)){
 					
 					// Don't apply if it's a button:
 					if(Type!=InputType.Submit && Type!=InputType.Button){
@@ -513,7 +513,7 @@ namespace PowerUI{
 				
 			}else if(property=="maxlength"){
 				
-				string value=this["maxlength"];
+				string value=getAttribute("maxlength");
 				
 				if(string.IsNullOrEmpty(value)){
 					// It's blank - set it to the default.
@@ -540,7 +540,7 @@ namespace PowerUI{
 			}else if(property=="checked"){
 				
 				// Get the checked state:
-				string state=this["checked"];
+				string state=getAttribute("checked");
 				
 				// Awkwardly, null/ empty is checked.
 				// 0 or false are not checked, anything else is!
@@ -585,10 +585,10 @@ namespace PowerUI{
 				RequestLayout();
 				return true;
 			}else if(property=="value"){
-				SetValue(this["value"]);
+				SetValue(getAttribute("value"));
 				return true;
 			}else if(property=="content"){
-				SetValue(this["content"],true);
+				SetValue(getAttribute("content"),true);
 				return true;
 			}
 			return false;
@@ -635,7 +635,7 @@ namespace PowerUI{
 			Checked_=false;
 			
 			// Clear checked:
-			this["checked"]="0";
+			setAttribute("checked", "0");
 			
 			if(Type==InputType.Checkbox){
 				SetValue(null);
@@ -651,11 +651,11 @@ namespace PowerUI{
 			Checked_=true;
 			
 			// Set checked:
-			this["checked"]="1";
+			setAttribute("checked", "1");
 			
 			if(Type==InputType.Radio){
 				// Firstly, unselect all other radio elements with this same name:
-				string name=this["name"];
+				string name=getAttribute("name");
 				
 				HTMLCollection allInputs;
 				
@@ -679,7 +679,7 @@ namespace PowerUI{
 							continue;
 						}
 						
-						if(element["type"]=="radio" && element["name"]==name){
+						if(element.getAttribute("type")=="radio" && element.getAttribute("name")==name){
 							// Yep; unselect it.
 							((HtmlInputElement)element).Unselect();
 						}
@@ -733,7 +733,7 @@ namespace PowerUI{
 			}
 			
 			// Update the value:
-			this["value"]=Value=value;
+			setAttribute("value", Value=value);
 			
 			if(!IsBoolInput()){
 				if(Hidden){
@@ -774,7 +774,7 @@ namespace PowerUI{
 		
 		public override void OnKeyPress(KeyboardEvent pressEvent){
 			
-			if(this["readonly"]!=null){
+			if(readOnly){
 				return;
 			}
 			
@@ -1011,20 +1011,20 @@ namespace PowerUI{
 		/// <summary>Gets or sets the value of this element. Input/Select/Textarea elements only.</summary>
 		public virtual string value{
 			get{
-				return this["value"];
+				return getAttribute("value");
 			}
 			set{
-				this["value"]=value;
+				setAttribute("value", value);
 			}
 		}
 		
 		/// <summary>Gets or sets the value as html for this element. Input/Select elements only.</summary>
 		public virtual string htmlValue{
 			get{
-				return this["content"];
+				return getAttribute("content");
 			}
 			set{
-				this["content"]=value;
+				setAttribute("content", value);
 			}
 		}
 		

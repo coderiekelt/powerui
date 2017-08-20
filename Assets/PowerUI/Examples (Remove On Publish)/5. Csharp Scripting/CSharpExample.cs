@@ -115,8 +115,7 @@ public class CSharpExample : MonoBehaviour {
 		// (<h1 thisIsAn="attribute"... note that they are always lowercase from C#!):
 		
 		// Grab its category=".." value:
-		// (Or use the standard attribute API's)
-		Debug.Log("Its 'category' attribute is "+target["category"]);
+		Debug.Log("Its 'category' attribute is "+target.getAttribute("category"));
 		
 	}
 	

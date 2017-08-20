@@ -39,80 +39,80 @@ namespace PowerUI{
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
 		/// <summary>The method attribute.</summary>
 		public string method{
 			get{
-				return this["method"];
+				return getAttribute("method");
 			}
 			set{
-				this["method"]=value;
+				setAttribute("method", value);
 			}
 		}
 		
 		/// <summary>The target attribute.</summary>
 		public string target{
 			get{
-				return this["target"];
+				return getAttribute("target");
 			}
 			set{
-				this["target"]=value;
+				setAttribute("target", value);
 			}
 		}
 		
 		/// <summary>The action attribute.</summary>
 		public string action{
 			get{
-				return this["action"];
+				return getAttribute("action");
 			}
 			set{
-				this["action"]=value;
+				setAttribute("action", value);
 			}
 		}
 		
-		/// <summary>The enctype attribute.</summary>
+		/// <summary>The encoding attribute.</summary>
 		public string encoding{
 			get{
-				return this["enctype"];
+				return getAttribute("encoding");
 			}
 			set{
-				this["enctype"]=value;
+				setAttribute("encoding", value);
 			}
 		}
 		
 		/// <summary>The enctype attribute.</summary>
 		public string enctype{
 			get{
-				return this["enctype"];
+				return getAttribute("enctype");
 			}
 			set{
-				this["enctype"]=value;
+				setAttribute("enctype", value);
 			}
 		}
 		
 		/// <summary>The accept-charset attribute.</summary>
 		public string acceptCharset{
 			get{
-				return this["accept-charset"];
+				return getAttribute("accept-charset");
 			}
 			set{
-				this["accept-charset"]=value;
+				setAttribute("accept-charset", value);
 			}
 		}
 		
 		/// <summary>The autocomplete attribute.</summary>
 		public string autocomplete{
 			get{
-				return this["autocomplete"];
+				return getAttribute("autocomplete");
 			}
 			set{
-				this["autocomplete"]=value;
+				setAttribute("autocomplete", value);
 			}
 		}
 		
@@ -234,7 +234,7 @@ namespace PowerUI{
 			
 			if(property=="onsubmit"){
 			}else if(property=="action"){
-				Action=this["action"];
+				Action=getAttribute("action");
 			}else{
 				return false;
 			}
@@ -347,7 +347,7 @@ namespace PowerUI{
 			
 			// Are any a submit?
 			foreach(Element element in allInputs){
-				if(element["type"]=="submit"){
+				if(element.getAttribute("type")=="submit"){
 					return element as HtmlElement;
 				}
 			}
@@ -390,11 +390,11 @@ namespace PowerUI{
 		private string GetOverriden(string name,HtmlElement button){
 			
 			// Get from this element:
-			string current=this[name];
+			string current=getAttribute(name);
 			
 			// Got an override?
 			if(button!=null){
-				string overriden=button["form"+name];
+				string overriden=button.getAttribute("form"+name);
 				
 				if(overriden!=null){
 					return overriden;
@@ -423,13 +423,13 @@ namespace PowerUI{
 					continue;
 				}
 				
-				string type=element["type"];
+				string type=element.getAttribute("type");
 				if(type=="submit"){
 					// No submit either.
 					continue;
 				}
 				
-				string name=element["name"];
+				string name=element.getAttribute("name");
 				if(name==null){
 					name="";
 				}

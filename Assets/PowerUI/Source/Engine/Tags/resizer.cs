@@ -75,7 +75,7 @@ namespace PowerUI{
 					while(ToResize_!=null){
 						
 						// Get the target attrib:
-						string attr=ToResize_["resize-target"];
+						string attr=ToResize_.getAttribute("resize-target");
 						
 						if(attr!=null){
 							
@@ -148,7 +148,7 @@ namespace PowerUI{
 		public override void OnChildrenLoaded(){
 			
 			// We're always draggable:
-			this["draggable"]="1";
+			setAttribute("draggable", "1");
 			
 		}
 		

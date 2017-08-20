@@ -395,20 +395,20 @@ namespace PowerUI{
 		/// <summary>The document background color.</summary>
 		public string bgColor{
 			get{
-				return body["bgcolor"];
+				return body.bgColor;
 			}
 			set{
-				body["bgcolor"]=value;
+				body.bgColor=value;
 			}
 		}
 		
 		/// <summary>The document foreground (font) color.</summary>
-		public string ggColor{
+		public string fgColor{
 			get{
-				return body["fgcolor"];
+				return body.fgColor;
 			}
 			set{
-				body["fgcolor"]=value;
+				body.fgColor=value;
 			}
 		}
 		
@@ -512,7 +512,7 @@ namespace PowerUI{
 		/// <summary>Document directionality.</summary>
 		public string dir{
 			get{
-				string dirValue=html["dir"];
+				string dirValue=html.getAttribute("dir");
 				
 				if(string.IsNullOrEmpty(dirValue)){
 					return "ltr";
@@ -521,20 +521,20 @@ namespace PowerUI{
 				return dirValue;
 			}
 			set{
-				html["dir"]=value;
+				html.setAttribute("dir", value);
 			}
 		}
 		
 		/// <summary>Gets or sets design mode (content editable) on the whole document.</summary>
 		public bool designMode{
 			get{
-				return html["contenteditable"]=="";
+				return html.contentEditable=="";
 			}
 			set{
 				if(value){
-					html["contenteditable"]="";
+					html.contentEditable="";
 				}else{
-					html["contenteditable"]=null;
+					html.removeAttribute("contenteditable");
 				}
 			}
 		}

@@ -23,7 +23,7 @@ namespace PowerUI{
 		
 		/// <summary>Resolves the target attribute to a document.</summary>
 		public HtmlDocument ResolveTarget(){
-			return ResolveTarget(this["target"]);
+			return ResolveTarget(getAttribute("target"));
 		}
 		
 		/// <summary>Resolves the given target to a document.</summary>

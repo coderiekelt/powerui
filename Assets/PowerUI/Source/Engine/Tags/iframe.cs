@@ -34,10 +34,10 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
@@ -51,80 +51,80 @@ namespace PowerUI{
 		/// <summary>The height attribute.</summary>
 		public string height{
 			get{
-				return this["height"];
+				return getAttribute("height");
 			}
 			set{
-				this["height"]=value;
+				setAttribute("height", value);
 			}
 		}
 		
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
 		/// <summary>The frameborder attribute.</summary>
 		public string frameBorder{
 			get{
-				return this["frameborder"];
+				return getAttribute("frameborder");
 			}
 			set{
-				this["frameborder"]=value;
+				setAttribute("frameborder", value);
 			}
 		}
 		
 		/// <summary>The marginheight attribute.</summary>
 		public string marginHeight{
 			get{
-				return this["marginheight"];
+				return getAttribute("marginheight");
 			}
 			set{
-				this["marginheight"]=value;
+				setAttribute("marginheight", value);
 			}
 		}
 		
 		/// <summary>The marginwidth attribute.</summary>
 		public string marginWidth{
 			get{
-				return this["marginwidth"];
+				return getAttribute("marginwidth");
 			}
 			set{
-				this["marginwidth"]=value;
+				setAttribute("marginwidth", value);
 			}
 		}
 		
 		/// <summary>The referrerpolicy attribute.</summary>
 		public string referrerPolicy{
 			get{
-				return this["referrerpolicy"];
+				return getAttribute("referrerpolicy");
 			}
 			set{
-				this["referrerpolicy"]=value;
+				setAttribute("referrerpolicy", value);
 			}
 		}
 		
 		/// <summary>The src attribute.</summary>
 		public string src{
 			get{
-				return this["src"];
+				return getAttribute("src");
 			}
 			set{
-				this["src"]=value;
+				setAttribute("src", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -195,7 +195,7 @@ namespace PowerUI{
 			}
 			
 			if(property=="src"){
-				Src=this["src"];
+				Src=getAttribute("src");
 				LoadContent();
 			}else{
 				return false;

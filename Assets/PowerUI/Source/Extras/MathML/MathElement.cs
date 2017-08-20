@@ -270,7 +270,7 @@ namespace MathML{
 		public override bool OnAttributeChange(string property){
 			
 			if(property=="style"){
-				Style.cssText=this["style"];
+				Style.cssText=getAttribute("style");
 				return true;
 			}
 			
@@ -303,7 +303,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"font-style",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -312,7 +312,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"font-weight",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -321,7 +321,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"-spark-math-variant",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -330,7 +330,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"-spark-script-size-multiplier",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -339,7 +339,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"-spark-script-min-size",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -348,7 +348,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"-spark-script-level",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -357,7 +357,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"font-family",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -367,7 +367,7 @@ namespace MathML{
 				Style.Computed.ChangeTagProperty(
 					"background-color",
 					new Css.Units.ColourUnit(
-						Css.ColourMap.ToSpecialColour(this[property])
+						Css.ColourMap.ToSpecialColour(getAttribute(property))
 					)
 				);
 				
@@ -378,7 +378,7 @@ namespace MathML{
 				Style.Computed.ChangeTagProperty(
 					"color",
 					new Css.Units.ColourUnit(
-						Css.ColourMap.ToSpecialColour(this[property])
+						Css.ColourMap.ToSpecialColour(getAttribute(property))
 					)
 				);
 				
@@ -388,7 +388,7 @@ namespace MathML{
 				
 				Style.Computed.ChangeTagProperty(
 					"font-size",
-					this[property]
+					getAttribute(property)
 				);
 				
 				return true;
@@ -402,14 +402,14 @@ namespace MathML{
 			}else if(property=="onkeyup"){
 				return true;
 			}else if(property=="height"){
-				string height=this["height"];
+				string height=getAttribute("height");
 				if(height.IndexOf("%")==-1 && height.IndexOf("px")==-1 && height.IndexOf("em")==-1){
 					height+="px";
 				}
 				style.height=height;
 				return true;
 			}else if(property=="width"){	
-				string width=this["width"];
+				string width=getAttribute("width");
 				if(width.IndexOf("%")==-1 && width.IndexOf("px")==-1 && width.IndexOf("em")==-1){
 					width+="px";
 				}

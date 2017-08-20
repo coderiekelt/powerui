@@ -33,7 +33,7 @@ namespace PowerUI{
 			IsStart=(this==parentNode.firstChild);
 			
 			// Set attribs for CSS:
-			this["part"]=IsStart?"start":"end";
+			setAttribute("part", IsStart ? "start" : "end");
 			
 			HtmlScrollbarElement bar=parentElement as HtmlScrollbarElement;
 			
@@ -49,7 +49,7 @@ namespace PowerUI{
 				
 			}
 			
-			this["orient"]=type;
+			setAttribute("orient",type);
 			
 		}
 		

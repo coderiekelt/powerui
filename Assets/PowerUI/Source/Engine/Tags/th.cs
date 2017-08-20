@@ -25,10 +25,10 @@ namespace PowerUI{
 		/// <summary>The abbr attribute.</summary>
 		public string abbr{
 			get{
-				return this["abbr"];
+				return getAttribute("abbr");
 			}
 			set{
-				this["abbr"]=value;
+				setAttribute("abbr", value);
 			}
 		}
 		

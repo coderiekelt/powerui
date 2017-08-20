@@ -71,7 +71,7 @@ namespace PowerUI{
 				Callback.MainThread(delegate(){
 					
 					// Grab the path itself:
-					string path=this["path"];
+					string path=getAttribute("path");
 					
 					// Get it:
 					GameObject gameObject=GameObject.Find(path);
@@ -110,13 +110,13 @@ namespace PowerUI{
 			}else if(property=="noresize"){
 				
 				// Can't resize if noresize is not null:
-				CanResize=(this["noresize"]==null);
+				CanResize=(getAttribute("noresize")==null);
 				
 			}else if(property=="mask"){
 				// We've got a mask!
 				
 				// Grab the file path:
-				string maskFile=this["mask"];
+				string maskFile=getAttribute("mask");
 				
 				if(maskFile==null){
 					

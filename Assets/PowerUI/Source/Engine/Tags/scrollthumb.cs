@@ -266,7 +266,7 @@ namespace PowerUI{
 		public override void OnChildrenLoaded(){
 			
 			// We're always draggable:
-			this["draggable"]="1";
+			setAttribute("draggable", "1");
 			
 			// Get the scroll bar:
 			ScrollBar=parentElement as HtmlScrollbarElement;
@@ -276,7 +276,7 @@ namespace PowerUI{
 			}
 			
 			// Set orient attrib for CSS:
-			this["orient"]=ScrollBar["orient"];
+			setAttribute("orient", ScrollBar.getAttribute("orient"));
 			
 			IsVertical=(ScrollBar.IsVertical);
 			

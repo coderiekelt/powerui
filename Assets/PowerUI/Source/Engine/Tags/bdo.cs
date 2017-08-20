@@ -27,7 +27,7 @@ namespace PowerUI{
 			
 			if(property=="dir"){
 				// Grab the direction:
-				string direction=this["dir"];
+				string direction=getAttribute("dir");
 				
 				// Grab the computed style:
 				ComputedStyle computed=Style.Computed;

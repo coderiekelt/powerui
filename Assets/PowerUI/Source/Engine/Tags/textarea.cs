@@ -55,10 +55,10 @@ namespace PowerUI{
 		/// <summary>The placeholder text, if any.</summary>
 		public string placeholder{
 			get{
-				return this["placeholder"];
+				return getAttribute("placeholder");
 			}
 			set{
-				this["placeholder"]=value;
+				setAttribute("placeholder", value);
 			}
 		}
 		
@@ -75,10 +75,10 @@ namespace PowerUI{
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
@@ -103,7 +103,7 @@ namespace PowerUI{
 				return MaxLength;
 			}
 			set{
-				this["maxlength"]=value.ToString();
+				setAttribute("maxlength", value.ToString());
 			}
 		}
 		
@@ -159,10 +159,10 @@ namespace PowerUI{
 		/// <summary>The wrap attribute.</summary>
 		public string wrap{
 			get{
-				return this["wrap"];
+				return getAttribute("wrap");
 			}
 			set{
-				this["wrap"]=value;
+				setAttribute("wrap", value);
 			}
 		}
 		
@@ -293,14 +293,14 @@ namespace PowerUI{
 			
 			if(property=="placeholder"){
 				
-				Placeholder_=this["placeholder"];
+				Placeholder_=getAttribute("placeholder");
 				innerHTML=Placeholder_;
 				
 				return true;
 				
 			}else if(property=="maxlength"){
 				
-				string value=this["maxlength"];
+				string value=getAttribute("maxlength");
 				
 				if(string.IsNullOrEmpty(value)){
 					// It's blank - set it to the default.
@@ -371,7 +371,7 @@ namespace PowerUI{
 		
 		public override void OnKeyPress(KeyboardEvent pressEvent){
 			
-			if(this["readonly"]!=null){
+			if(readOnly){
 				return;
 			}
 			

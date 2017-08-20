@@ -28,20 +28,20 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
 		/// <summary>The bgcolor attribute.</summary>
 		public string bgColor{
 			get{
-				return this["bgcolor"];
+				return getAttribute("bgcolor");
 			}
 			set{
-				this["bgcolor"]=value;
+				setAttribute("bgcolor", value);
 			}
 		}
 		
@@ -80,10 +80,10 @@ namespace PowerUI{
 		/// <summary>The valign attribute.</summary>
 		public string vAlign{
 			get{
-				return this["valign"];
+				return getAttribute("valign");
 			}
 			set{
-				this["valign"]=value;
+				setAttribute("valign", value);
 			}
 		}
 		

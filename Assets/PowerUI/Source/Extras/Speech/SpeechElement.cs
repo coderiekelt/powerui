@@ -201,7 +201,7 @@ namespace Speech{
 		public override bool OnAttributeChange(string property){
 			
 			if(property=="style"){
-				Style.cssText=this["style"];
+				Style.cssText=getAttribute("style");
 				return true;
 			}
 			

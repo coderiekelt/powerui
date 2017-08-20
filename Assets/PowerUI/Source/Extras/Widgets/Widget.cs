@@ -49,7 +49,7 @@ namespace Widgets{
 				
 				// Update the attribute:
 				if(element!=null){
-					element["-spark-widget-id"]=value.ToString();
+					element.setAttribute("-spark-widget-id", value.ToString());
 				}
 				
 			}
@@ -545,8 +545,8 @@ namespace Widgets{
 				HtmlElement he=hostDoc.createElement("link") as HtmlElement;
 				
 				// Setup (causes it to load now):
-				he["type"]="text/css";
-				he["href"]=stylePath;
+				he.setAttribute("type", "text/css");
+				he.setAttribute("href", stylePath);
 				
 				// Append it (not actually required):
 				// element.appendChild(he);
@@ -596,7 +596,7 @@ namespace Widgets{
 			}
 			
 			// Update the attribute:
-			element["-spark-widget-id"]=Index.ToString();
+			element.setAttribute("-spark-widget-id", Index.ToString());
 			
 		}
 		

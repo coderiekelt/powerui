@@ -71,20 +71,20 @@ namespace PowerUI{
 		/// <summary>The href attribute.</summary>
 		public string href{
 			get{
-				return this["href"];
+				return getAttribute("href");
 			}
 			set{
-				this["href"]=value;
+				setAttribute("href", value);
 			}
 		}
 		
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
@@ -138,10 +138,10 @@ namespace PowerUI{
 		/// <summary>The rel attribute.</summary>
 		public string rel{
 			get{
-				return this["rel"];
+				return getAttribute("rel");
 			}
 			set{
-				this["rel"]=value;
+				setAttribute("rel", value);
 			}
 		}
 		
@@ -175,10 +175,10 @@ namespace PowerUI{
 		/// <summary>The target attribute.</summary>
 		public string target{
 			get{
-				return this["target"];
+				return getAttribute("target");
 			}
 			set{
-				this["target"]=value;
+				setAttribute("target", value);
 			}
 		}
 		
@@ -195,10 +195,10 @@ namespace PowerUI{
 		/// <summary>The type attribute.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
@@ -279,7 +279,7 @@ namespace PowerUI{
 			}
 			
 			// The target:
-			string href=this["href"];
+			string href=getAttribute("href");
 			
 			#if MOBILE || UNITY_METRO
 			// First, look for <source> elements.

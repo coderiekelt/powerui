@@ -33,10 +33,10 @@ namespace PowerUI{
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
@@ -133,10 +133,10 @@ namespace PowerUI{
 			}
 			
 			if(property=="value"){
-				SetValue(this["value"]);
+				SetValue(getAttribute("value"));
 				return true;
 			}else if(property=="content"){
-				SetValue(this["content"],true);
+				SetValue(getAttribute("content"),true);
 				return true;
 			}
 			
@@ -154,7 +154,7 @@ namespace PowerUI{
 		/// <param name="html">True if the value can safely contain html.</param>
 		public void SetValue(string value,bool html){
 			
-			this["value"]=Value=value;
+			setAttribute("value", Value=value);
 			
 			if(html){
 				innerHTML=value;

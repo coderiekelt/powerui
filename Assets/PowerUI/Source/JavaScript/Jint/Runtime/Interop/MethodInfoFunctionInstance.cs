@@ -23,6 +23,7 @@ namespace Jint.Runtime.Interop
         {
             _sourceMethods = methods;
 			_methods = methods;
+			List<MethodInfo> jsSpecificMethods = null;
 			
 			foreach (var methodInfo in _sourceMethods)
             {
@@ -44,10 +45,16 @@ namespace Jint.Runtime.Interop
 				#endif
 				
 				if(attribute != null){
-					_methods = new MethodInfo[]{methodInfo};
-					break;
+					if(jsSpecificMethods == null){
+						jsSpecificMethods = new List<MethodInfo>();
+					}
+					jsSpecificMethods.Add(methodInfo);
 				}
 				
+			}
+			
+			if(jsSpecificMethods != null){
+				_methods = jsSpecificMethods.ToArray();
 			}
 			
             Prototype = engine.Function.PrototypeObject;
@@ -129,10 +136,7 @@ namespace Jint.Runtime.Interop
                 }
                 catch (Exception exception)
                 {
-					for(var i=0;i<parameters.Length;i++){
-						UnityEngine.Debug.Log(parameters[i].ToString());
-					}
-					UnityEngine.Debug.Log("CAUGHT! " + thisObject.ToObject().ToString() + ", " + parameters.Length);
+					UnityEngine.Debug.Log("Conversion fail for method " + method.Name);
                     var meaningfulException = exception.InnerException ?? exception;
                     var handler = Engine.Options._ClrExceptionsHandler;
 

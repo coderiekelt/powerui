@@ -116,17 +116,17 @@ namespace PowerUI{
 		/// <summary>The control type.</summary>
 		public string type{
 			get{
-				return this["type"];
+				return getAttribute("type");
 			}
 			set{
-				this["type"]=value;
+				setAttribute("type", value);
 			}
 		}
 		
 		/// <summary>The size attribute.</summary>
 		public long size{
 			get{
-				string v=this["size"];
+				string v=getAttribute("size");
 				
 				if(v==null){
 					if(multiple){
@@ -142,17 +142,17 @@ namespace PowerUI{
 				
 			}
 			set{
-				this["size"]=value.ToString();
+				setAttribute("size", value.ToString());
 			}
 		}
 		
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		
@@ -617,7 +617,7 @@ namespace PowerUI{
 				return "";
 			}
 			
-			return SelectedNode_["value"];
+			return SelectedNode_.getAttribute("value");
 		}
 		
 		/// <summary>Sets the given element as the selected option.</summary>
@@ -867,7 +867,7 @@ namespace Dom{
 			
 			for(int i=0;i<values.Count;i++){
 				
-				if(values[i]["name"]==name){
+				if(values[i].getAttribute("name")==name){
 					return values[i];
 				}
 				

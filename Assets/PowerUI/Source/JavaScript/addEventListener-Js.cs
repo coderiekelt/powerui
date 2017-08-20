@@ -33,6 +33,14 @@ namespace Dom{
 			addEventListener(name, new JsEventListener(jsMethod, thisObj, engine));
 		}
 		
+		/// <summary>Adds an event listener to this document.</summary>
+		[JavaScript]
+		public void addEventListener(string name, object jsMethod, bool capture){
+			var engine = (eventTargetDocument as HtmlDocument).JavascriptEngine.Engine;
+			var thisObj = JsValue.FromObject(engine, this);
+			addEventListener(name, new JsEventListener(jsMethod, thisObj, engine));
+		}
+		
 	}
 	
 }

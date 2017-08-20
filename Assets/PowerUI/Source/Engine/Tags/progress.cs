@@ -61,7 +61,8 @@ namespace PowerUI{
 				return Max_;
 			}
 			set{
-				this["max"]=value.ToString();
+				Max_ = value;
+				setAttribute("max", value.ToString());
 			}
 		}
 		
@@ -71,7 +72,8 @@ namespace PowerUI{
 				return Value_;
 			}
 			set{
-				this["value"]=value.ToString();
+				Value_ = value;
+				setAttribute("value", value.ToString());
 			}
 		}
 		
@@ -110,7 +112,7 @@ namespace PowerUI{
 			
 			if(property=="max"){
 				
-				if(!double.TryParse(this["max"],out Max_)){
+				if(!double.TryParse(getAttribute("max"),out Max_)){
 					Max_=1.0;
 				}
 				
@@ -121,7 +123,7 @@ namespace PowerUI{
 				
 			}else if(property=="value"){
 				
-				if(!double.TryParse(this["value"],out Value_)){
+				if(!double.TryParse(getAttribute("value"),out Value_)){
 					Value_=0;
 				}
 				

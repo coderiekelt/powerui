@@ -73,7 +73,7 @@ namespace PowerUI{
 		public override bool OnAttributeChange(string property){
 			
 			if(property=="style"){
-				Style.cssText=this["style"];
+				Style.cssText=getAttribute("style");
 				return true;
 			}
 			
@@ -100,14 +100,14 @@ namespace PowerUI{
 			}else if(property=="onkeyup"){
 				return true;
 			}else if(property=="height"){
-				string height=this["height"];
+				string height=getAttribute("height");
 				if(height.IndexOf("%")==-1 && height.IndexOf("px")==-1 && height.IndexOf("em")==-1){
 					height+="px";
 				}
 				style.height=height;
 				return true;
 			}else if(property=="width"){	
-				string width=this["width"];
+				string width=getAttribute("width");
 				if(width.IndexOf("%")==-1 && width.IndexOf("px")==-1 && width.IndexOf("em")==-1){
 					width+="px";
 				}
@@ -115,7 +115,7 @@ namespace PowerUI{
 				return true;
 			}else if(property=="align"){
 				
-				string align=this["align"].ToLower();
+				string align=getAttribute("align").ToLower();
 				
 				if(align=="center"){
 					align="-moz-center";
@@ -124,7 +124,7 @@ namespace PowerUI{
 				style.textAlign=align;
 				return true;
 			}else if(property=="valign"){
-				style.verticalAlign=this["valign"];
+				style.verticalAlign=getAttribute("valign");
 				return true;
 			}
 			

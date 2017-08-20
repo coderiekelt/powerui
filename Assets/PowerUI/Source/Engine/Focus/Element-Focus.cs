@@ -26,7 +26,7 @@ namespace PowerUI{
 		/// <summary>True if this element is focusable.</summary>
 		public bool focusable{
 			get{
-				return ( (IsFocusable || this["focusable"]!=null || this["tabindex"]!=null) && (this["disabled"]==null) );
+				return ( (IsFocusable || getAttribute("focusable")!=null || getAttribute("tabindex")!=null) && (getAttribute("disabled")==null) );
 			}
 		}
 		
@@ -270,7 +270,7 @@ namespace PowerUI{
 		/// <param name="direction">The direction to look for an override in.</param>
 		/// <returns>The overriding element, if found. Null otherwise.</returns>
 		private HtmlElement GetFocusableOverride(string direction){
-			string definedTarget=this["focus-"+direction];
+			string definedTarget=getAttribute("focus-"+direction);
 			
 			if(definedTarget!=null){
 				HtmlElement result=document.getElementById(definedTarget) as HtmlElement ;

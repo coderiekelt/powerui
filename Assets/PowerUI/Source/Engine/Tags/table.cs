@@ -73,90 +73,90 @@ namespace PowerUI{
 		/// <summary>The align attribute.</summary>
 		public string align{
 			get{
-				return this["align"];
+				return getAttribute("align");
 			}
 			set{
-				this["align"]=value;
+				setAttribute("align", value);
 			}
 		}
 		
 		/// <summary>The bgcolor attribute.</summary>
 		public string bgColor{
 			get{
-				return this["bgcolor"];
+				return getAttribute("bgcolor");
 			}
 			set{
-				this["bgcolor"]=value;
+				setAttribute("bgcolor", value);
 			}
 		}
 		
 		/// <summary>The border attribute.</summary>
 		public string border{
 			get{
-				return this["border"];
+				return getAttribute("border");
 			}
 			set{
-				this["border"]=value;
+				setAttribute("border", value);
 			}
 		}
 		
 		/// <summary>The cellpadding attribute.</summary>
 		public string cellPadding{
 			get{
-				return this["cellpadding"];
+				return getAttribute("cellpadding");
 			}
 			set{
-				this["cellpadding"]=value;
+				setAttribute("cellpadding", value);
 			}
 		}
 		
 		/// <summary>The cellspacing attribute.</summary>
 		public string cellSpacing{
 			get{
-				return this["cellspacing"];
+				return getAttribute("cellspacing");
 			}
 			set{
-				this["cellspacing"]=value;
+				setAttribute("cellspacing", value);
 			}
 		}
 		
 		/// <summary>The frame attribute.</summary>
 		public string frame{
 			get{
-				return this["frame"];
+				return getAttribute("frame");
 			}
 			set{
-				this["frame"]=value;
+				setAttribute("frame", value);
 			}
 		}
 		
 		/// <summary>The rules attribute.</summary>
 		public string rules{
 			get{
-				return this["rules"];
+				return getAttribute("rules");
 			}
 			set{
-				this["rules"]=value;
+				setAttribute("rules", value);
 			}
 		}
 		
 		/// <summary>The summary attribute.</summary>
 		public string summary{
 			get{
-				return this["summary"];
+				return getAttribute("summary");
 			}
 			set{
-				this["summary"]=value;
+				setAttribute("summary", value);
 			}
 		}
 		
 		/// <summary>The width attribute.</summary>
 		public string width{
 			get{
-				return this["width"];
+				return getAttribute("width");
 			}
 			set{
-				this["width"]=value;
+				setAttribute("width", value);
 			}
 		}
 		
@@ -299,7 +299,7 @@ namespace PowerUI{
 		/// <summary>Removes the sortable attribute from all th nodes.</summary>
 		public void stopSorting(){
 			foreach(Element e in getElementsByTagName("th")){
-				e["sortable"]=null;
+				e.removeAttribute("sortable");
 			}
 		}
 		

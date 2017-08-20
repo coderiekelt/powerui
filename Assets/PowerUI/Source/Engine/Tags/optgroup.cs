@@ -24,10 +24,10 @@ namespace PowerUI{
 		/// <summary>A label for the group.</summary>
 		public string label{
 			get{
-				return this["label"];
+				return getAttribute("label");
 			}
 			set{
-				this["label"]=value;
+				setAttribute("label", value);
 			}
 		}
 		

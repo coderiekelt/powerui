@@ -56,10 +56,10 @@ namespace PowerUI{
 		/// <summary>The ID of a labelable form-related element.</summary>
 		public string htmlFor{
 			get{
-				return this["for"];
+				return getAttribute("for");
 			}
 			set{
-				this["for"]=value;
+				setAttribute("for", value);
 			}
 		}
 		
@@ -75,7 +75,7 @@ namespace PowerUI{
 				return true;
 			}
 			if(property=="for"){
-				ForElement=this["for"];
+				ForElement=getAttribute("for");
 				return true;
 			}
 			return false;

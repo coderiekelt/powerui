@@ -24,10 +24,20 @@ namespace PowerUI{
 		/// <summary>The bgcolor attribute.</summary>
 		public string bgColor{
 			get{
-				return this["bgcolor"];
+				return getAttribute("bgcolor");
 			}
 			set{
-				this["bgcolor"]=value;
+				setAttribute("bgcolor", value);
+			}
+		}
+		
+		/// <summary>The fgcolor attribute.</summary>
+		public string fgColor{
+			get{
+				return getAttribute("fgcolor");
+			}
+			set{
+				setAttribute("fgcolor", value);
 			}
 		}
 		
@@ -152,7 +162,7 @@ namespace PowerUI{
 				Style.Computed.ChangeTagProperty(
 					"background-color",
 					new Css.Units.ColourUnit(
-						Css.ColourMap.ToSpecialColour(this[property])
+						Css.ColourMap.ToSpecialColour(getAttribute(property))
 					)
 				);
 				
@@ -162,7 +172,7 @@ namespace PowerUI{
 				Style.Computed.ChangeTagProperty(
 					"color",
 					new Css.Units.ColourUnit(
-						Css.ColourMap.ToSpecialColour(this[property])
+						Css.ColourMap.ToSpecialColour(getAttribute(property))
 					)
 				);
 				

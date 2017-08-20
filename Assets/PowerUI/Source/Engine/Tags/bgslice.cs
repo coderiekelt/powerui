@@ -37,7 +37,7 @@ namespace PowerUI{
 			if(property=="src"){
 				
 				// Image src to use.
-				string src=this["src"];
+				string src=getAttribute("src");
 				
 				if(src==null){
 					src="";

@@ -151,7 +151,7 @@ namespace PowerUI{
 				
 				int os=OrientState;
 				
-				if(this["orient"]=="vertical"){
+				if(getAttribute("orient")=="vertical"){
 					OrientState=2;
 				}else{
 					OrientState=1;
@@ -166,7 +166,7 @@ namespace PowerUI{
 			
 			}else if(property=="target"){
 				
-				TargetID=this["target"];
+				TargetID=getAttribute("target");
 				Target=null;
 				
 			}

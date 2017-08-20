@@ -34,10 +34,10 @@ namespace PowerUI{
 		/// <summary>The challenge attribute.</summary>
 		public string challenge{
 			get{
-				return this["challenge"];
+				return getAttribute("challenge");
 			}
 			set{
-				this["challenge"]=value;
+				setAttribute("challenge", value);
 			}
 		}
 		
@@ -54,10 +54,10 @@ namespace PowerUI{
 		/// <summary>The keytype attribute.</summary>
 		public string keytype{
 			get{
-				return this["keytype"];
+				return getAttribute("keytype");
 			}
 			set{
-				this["keytype"]=value;
+				setAttribute("keytype", value);
 			}
 		}
 		
@@ -71,10 +71,10 @@ namespace PowerUI{
 		/// <summary>The name attribute.</summary>
 		public string name{
 			get{
-				return this["name"];
+				return getAttribute("name");
 			}
 			set{
-				this["name"]=value;
+				setAttribute("name", value);
 			}
 		}
 		

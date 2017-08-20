@@ -35,11 +35,11 @@ namespace PowerUI{
 		public long Value{
 			get{
 				long v;
-				long.TryParse(this["value"],out v);
+				long.TryParse(getAttribute("value"),out v);
 				return v;
 			}
 			set{
-				this["value"]=value.ToString();
+				setAttribute("value", value.ToString());
 			}
 		}
 		
