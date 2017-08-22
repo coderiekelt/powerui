@@ -299,14 +299,14 @@ namespace PowerUI{
 					}
 					
 					// Grab the src:
-					string childSrc=el["src"];
+					string childSrc=el.getAttribute("src");
 					
 					if(childSrc==null){
 						continue;
 					}
 					
 					// Get the optional type - it can be Android,W8,IOS,Blackberry:
-					string type=el["type"];
+					string type=el.getAttribute("type");
 					
 					if(type!=null){
 						type=type.Trim().ToLower();

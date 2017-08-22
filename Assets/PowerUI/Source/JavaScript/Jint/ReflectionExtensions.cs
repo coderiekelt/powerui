@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD1_3
+﻿#if NETFX_CORE
 using System;
 using System.Linq;
 using System.Reflection;

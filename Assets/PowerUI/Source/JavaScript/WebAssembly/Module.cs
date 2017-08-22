@@ -32,7 +32,7 @@ namespace WebAssembly{
 		
 		/// <summary>Logs messages.</summary>
 		public static void Log(string message){
-			Console.WriteLine(message);
+			UnityEngine.Debug.Log(message);
 		}
 		
 		/// <summary>Queries the current memory size in WebAssembly pages (64kb).</summary>
