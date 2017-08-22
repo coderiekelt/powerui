@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 Shader "PowerUI/StandardUI Cull/Normal" {
 	Properties {
 		_Font ("Font Texture", 2D) = "white" {}
@@ -40,7 +38,7 @@ Shader "PowerUI/StandardUI Cull/Normal" {
 			uniform float4 _MainTex_ST;
 			
 			appdata_t vert (appdata_t v) {
-				v.vertex = UnityObjectToClipPos( v.vertex );
+				v.vertex = mul( UNITY_MATRIX_MVP, v.vertex );
 				return v;
 			}
 			

@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 /*
 This shader is used by the Blaze rasteriser. It's mainly used to draw the SDF distance map for letters.
 The distance maps then get used by PowerUI to display letters on a UI.
@@ -35,7 +33,7 @@ Shader "Blaze Raster Draw" {
 			
 			appdata_t vert (appdata_t v)
 			{
-				v.vertex = UnityObjectToClipPos(v.vertex);
+				v.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
 				return v;
 			}
 			
