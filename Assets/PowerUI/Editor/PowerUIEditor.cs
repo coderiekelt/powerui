@@ -55,10 +55,15 @@ namespace PowerUI{
 			#endif
 		}
 		
+		private static string _PowerUIPath;
+		
 		/// <summary>Finds where the PowerUI tree is.</summary>
 		public static string GetPowerUIPath(){
-			// Let's go looking for it!
-			return FindPowerUIIn("Assets");
+			if(_PowerUIPath == null){
+				// Let's go looking for it!
+				_PowerUIPath = FindPowerUIIn("Assets");
+			}
+			return _PowerUIPath;
 		}
 		
 		/// <summary>Looks for PowerUI in the given folder.</summary>
