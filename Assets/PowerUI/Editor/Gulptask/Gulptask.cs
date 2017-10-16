@@ -91,6 +91,21 @@ namespace PowerUI{
 			
 		}
 		
+		public void RunTask(){
+			RunTask("");
+		}
+		
+		public void RunTask(string name){
+			NodeJS tasks = new NodeJS();
+			
+			tasks.addEventListener("exit", delegate(Dom.Event e){
+				TaskList = (e as NodeEvent).stdOutput;
+			});
+			
+			// Run the task by its name (blank runs default task):
+			tasks.run("gulp", name);
+		}
+		
 		public void ListTasks(){
 			
 			NodeJS tasks = new NodeJS();

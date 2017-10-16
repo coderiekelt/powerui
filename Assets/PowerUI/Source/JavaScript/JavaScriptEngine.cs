@@ -36,7 +36,7 @@ namespace PowerUI{
 		
 		public JavaScriptEngine(bool safeHost,HtmlDocument doc,object window){
 			
-			Engine = new Jint.Engine(cfg => cfg.AllowClr());
+			Engine = new Jint.Engine(cfg => cfg.AllowClr().AllowClr(typeof(GameObject).Assembly));
 			
 			Engine.SetValue("document", doc)
 				.SetValue("Promise", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Promise)))

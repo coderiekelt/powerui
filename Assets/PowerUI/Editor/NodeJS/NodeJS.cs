@@ -73,7 +73,7 @@ namespace PowerUI {
 					_WorkingDirectory = Directory.GetCurrentDirectory() + "/NodeJS/";
 					
 					if(!Directory.Exists(_WorkingDirectory)){
-						Directory.CreateDirectory(_WorkingDirectory);
+						Directory.CreateDirectory(_WorkingDirectory + "Source");
 						File.WriteAllText(_WorkingDirectory + "package.json", DefaultPackageJson);
 					}
 				}
