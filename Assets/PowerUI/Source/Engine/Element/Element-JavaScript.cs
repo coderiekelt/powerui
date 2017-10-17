@@ -81,7 +81,8 @@ namespace PowerUI{
 				// Eval it.
 				var engine = (document as HtmlDocument).JavascriptEngine;
 				if(engine == null){
-					throw new Exception("The Javascript engine is unavailable.");
+					// Silent ignore
+					return null;
 				}
 				var method = engine.Compile("(function(event){\r\n" + methodName + "\r\n})") as Jint.Native.JsValue;
 				if(method == null){

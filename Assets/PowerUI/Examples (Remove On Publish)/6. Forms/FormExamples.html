@@ -28,25 +28,25 @@ body{
 	<br>
 	Forms can be used to gather information from the player.
 	<br>
-	They can be submitted to a nitro function, a C# function or to a url which in turn can handle them in a custom way if it wants to.
+	They can be submitted to a JavaScript function, a C# function or to a url which in turn can handle them in a custom way if it wants to.
 	<br>
 	<br>
 	<form>
-		<input type='radio' name='exampleVisible' onchange='ChangeExample' value='1' checked /> Nitro Example  
-		<input type='radio' name='exampleVisible' onchange='ChangeExample' value='2'/> Web Example    
-		<input type='radio' name='exampleVisible' onchange='ChangeExample' value='3'/> C# Example
+		<input type='radio' name='exampleVisible' onchange='ChangeExample(event)' value='1' checked /> JavaScript Example  
+		<input type='radio' name='exampleVisible' onchange='ChangeExample(event)' value='2'/> Web Example    
+		<input type='radio' name='exampleVisible' onchange='ChangeExample(event)' value='3'/> C# Example
 	</form>
 	<br>
 	<br>
-	<div id='nitroExample'>
+	<div id='JavaScriptExample'>
 		<b>
 			<u>
-				Nitro Example
+				JavaScript Example
 			</u>
 		</b>
 		<br>
 		<br>
-		<form onsubmit='HandleWithNitro'>
+		<form onsubmit='HandleWithJs(event)'>
 			Your name: <input type='text' name='yourName'/>
 			<br>
 			<br>
@@ -79,7 +79,7 @@ body{
 			<textarea name='myBio' style='width:300px;height:100px;'></textarea>
 			<br>
 			<br>
-			<input type='submit' value='Send!'/> <span id='nitroMessage'></span>
+			<input type='submit' value='Send!'/> <span id='JavaScriptMessage'></span>
 		</form>
 	</div>
 	
@@ -112,7 +112,7 @@ body{
 			</u>
 		</b>
 		<br>
-		Alternative to Nitro. You can call any C# function from within Nitro too, but this avoids Nitro all together. See FormExampleHandler.cs.
+		Alternative to JavaScript. You can call any C# function from within JavaScript too, but this avoids JavaScript all together. See FormExampleHandler.cs.
 		<br>
 		<br>
 		<form onsubmit='FormExampleHandler.OnSubmit'>
@@ -148,139 +148,136 @@ body{
 	</div>
 </div>
 
-<script type='text/nitro'>
+<script type='text/JavaScript'>
 	
-	/*
-	--- This version of Nitro is now depreciated ---
+/*
+ Javascript is totally optional - everything it can do, C# can do too (see also UI.document, a static reference)
+*/
 
-	Use C# instead, or request the new JavaScript engine.
-
-	*/
-
-	function ChangeExample(){
-		var examples=new string[]{"nitro","web","cs"};
-		
-		var current=int.parse(this.value)-1;
-		
-		for(var i=0;i<examples.Length;i++){
-			
-			// Get the example element:
-			var ex=((document.getElementById(examples[i]+"Example")):HtmlElement);
-			
-			if(i==current){
-				// Display it.
-				ex.style.display='block';
-			}else{
-				// Hide it.
-				ex.style.display='none';
-			}
-			
-		}
-		
-	}
-
-	// Nitro example:
-
-	function HandleWithNitro(form:FormEvent){
-		// This function gets called when the form is submitted.
-		// The form's fields are provided as a neat object
-		// so you don't have to go hunting for values.
-		
-		// Quit the default (so the form doesn't submit):
-		form.preventDefault();
-		// (It's an ordinary event object).
-		
-		// Usage is simply form["fieldName"], or form.checked("fieldName") for easily checking if a checkbox is ticked.
-		// You can alternatively use e.g. document.getElementById("aFieldsID").value and manage radio inputs manually.
-		
-		debug.log("handling a form with nitro.");
-		
-		// Give a feedback message to show something's happened:
-		((document.getElementById("nitroMessage")):HtmlElement).innerHTML="Please check the console.";
-		
-		// And simply log all the fields of the form:
-		debug.log("Your name: "+form["yourName"]);
-		debug.log("Awesome? "+form.checked("awesome"));
-		debug.log("Epic? "+form.checked("epic"));
-		debug.log("Pretty? "+form.checked("purdy"));
-		debug.log("Unique? "+form.checked("unique"));
-		debug.log("Wonderful? "+form.checked("wonderful"));
-		debug.log("Your dropdown selection: "+form["favourite"]);
-		debug.log("Your Bio: "+form["myBio"]);
-		
-	}
+function ChangeExample(e){
+	var examples=["JavaScript","web","cs"];
 	
+	var current=parseInt(e.target.value)-1;
 	
-	// Web example:
-	
-	// This small switch value prevents double clicking/ multi-sending:
-	var sending=false;
-	
-	function OnSendingToWeb(form:FormEvent){
+	for(var i=0;i<examples.length;i++){
 		
-		// This function is called when the form is submitted.
+		// Get the example element:
+		var ex=document.getElementById(examples[i]+"Example");
 		
-		// The form's fields are provided as a neat object
-		// so you don't have to go hunting for values.
-		
-		// To prevent submitting the form, use form.preventDefault().
-		// (It's an ordinary event object).
-		
-		// Usage is simply form["fieldName"], or form.checked("fieldName") for easily checking if a checkbox is ticked.
-		// You can alternatively use e.g. document.getElementById("aFieldsID").value and manage radio inputs manually.
-		
-		if(sending){
-			// Prevent it from getting submitted again:
-			form.preventDefault();
-			return;
-		}
-		
-		if(form["yourName"]==""){
-			((document.getElementById("nameMessage")):HtmlElement).innerHTML="Name missing!";
-			
-			// Prevent it from getting submitted:
-			form.preventDefault();
-			return;
-			
-		}
-		
-		// Yep, it's alright to go!
-		sending=true;
-		// Clear out the response message:
-		((document.getElementById("webMessage")):HtmlElement).innerHTML="";
-		// Clear out the name missing field:
-		((document.getElementById("nameMessage")):HtmlElement).innerHTML="";
-		// Give some form of feedback that this message is going - we'll just stick it straight on the button:
-		((document.getElementById("webSubmitButton")):HtmlElement).value="Sending..";
-		
-	}
-	
-	function OnFinishedSending(e:FormEvent){ 
-		
-		// No longer sending:
-		sending=false;
-		
-		// A useful callback which is run when a web form finished submitting and the server has responded.
-		
-		// Restore the button:
-		((document.getElementById("webSubmitButton")):HtmlElement).value="Send!";
-		// And give out a small message to say where the response is at (notice the debug.log's below).
-		((document.getElementById("webMessage")):HtmlElement).innerHTML="Please check the console.";
-		
-		// If the server has something to say, e.response.Text is the servers response.
-		
-		// It may not be present though if e.g. the internet dropped or is unavailable.
-		// so it's adviseable to always check e.response.OK first:
-		
-		if(e.status==200){
-			debug.log("Success! The site responded with: "+e.responseText);
+		if(i==current){
+			// Display it.
+			ex.style.display='block';
 		}else{
-			debug.log("Error with request. Status code: "+e.status);
+			// Hide it.
+			ex.style.display='none';
 		}
-		
-		// Prevent the default to avoid navigating:
-		e.preventDefault();
 		
 	}
 	
+}
+
+// JavaScript example:
+
+function HandleWithJs(form){
+	// This function gets called when the form is submitted.
+	// The form's fields are provided as a neat object
+	// so you don't have to go hunting for values.
+	
+	// Quit the default (so the form doesn't submit):
+	form.preventDefault();
+	// (It's an ordinary event object).
+	
+	// Usage is simply form["fieldName"], or form.checked("fieldName") for easily checking if a checkbox is ticked.
+	// You can alternatively use e.g. document.getElementById("aFieldsID").value and manage radio inputs manually.
+	
+	console.log("handling a form with JavaScript.");
+	
+	// Give a feedback message to show something's happened:
+	document.getElementById("JavaScriptMessage").innerHTML="Please check the console.";
+	
+	// And simply log all the fields of the form:
+	console.log("Your name: "+form["yourName"]);
+	console.log("Awesome? "+form.checked("awesome"));
+	console.log("Epic? "+form.checked("epic"));
+	console.log("Pretty? "+form.checked("purdy"));
+	console.log("Unique? "+form.checked("unique"));
+	console.log("Wonderful? "+form.checked("wonderful"));
+	console.log("Your dropdown selection: "+form["favourite"]);
+	console.log("Your Bio: "+form["myBio"]);
+	
+}
+
+
+// Web example:
+
+// This small switch value prevents double clicking/ multi-sending:
+var sending=false;
+
+function OnSendingToWeb(form){
+	
+	// This function is called when the form is submitted.
+	
+	// The form's fields are provided as a neat object
+	// so you don't have to go hunting for values.
+	
+	// To prevent submitting the form, use form.preventDefault().
+	// (It's an ordinary event object).
+	
+	// Usage is simply form["fieldName"], or form.checked("fieldName") for easily checking if a checkbox is ticked.
+	// You can alternatively use e.g. document.getElementById("aFieldsID").value and manage radio inputs manually.
+	
+	if(sending){
+		// Prevent it from getting submitted again:
+		form.preventDefault();
+		return;
+	}
+	
+	if(form["yourName"]==""){
+		document.getElementById("nameMessage").innerHTML="Name missing!";
+		
+		// Prevent it from getting submitted:
+		form.preventDefault();
+		return;
+		
+	}
+	
+	// Yep, it's alright to go!
+	sending=true;
+	// Clear out the response message:
+	document.getElementById("webMessage").innerHTML="";
+	// Clear out the name missing field:
+	document.getElementById("nameMessage").innerHTML="";
+	// Give some form of feedback that this message is going - we'll just stick it straight on the button:
+	document.getElementById("webSubmitButton").value="Sending..";
+	
+}
+
+function OnFinishedSending(e){ 
+	
+	// No longer sending:
+	sending=false;
+	
+	// A useful callback which is run when a web form finished submitting and the server has responded.
+	
+	// Restore the button:
+	document.getElementById("webSubmitButton").value="Send!";
+	// And give out a small message to say where the response is at (notice the console.log's below).
+	document.getElementById("webMessage").innerHTML="Please check the console.";
+	
+	// If the server has something to say, e.response.Text is the servers response.
+	
+	// It may not be present though if e.g. the internet dropped or is unavailable.
+	// so it's adviseable to always check e.response.OK first:
+	
+	if(e.status==200){
+		console.log("Success! The site responded with: "+e.responseText);
+	}else{
+		console.log("Error with request. Status code: "+e.status);
+	}
+	
+	// Prevent the default to avoid navigating:
+	e.preventDefault();
+	
+}
+
 </script>
