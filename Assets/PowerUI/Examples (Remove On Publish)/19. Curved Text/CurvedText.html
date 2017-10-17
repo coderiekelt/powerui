@@ -22,16 +22,16 @@ body{
 
 <div id='title'>Curved Text Can Be Animated Too</div>
 
-<script type='text/nitro'>
+<script type='text/javascript'>
 
 // NOTE: foreach(var letter in title.letters){} is generally better than the below.
 
 // Arch settings:
-var maxHeight=50f;
-var maxAngle=25f;
+var maxHeight=50;
+var maxAngle=25;
 
 // Grab the title:
-var title=(document.getElementById("title")):HtmlElement;
+var title=document.getElementById("title");
 
 // Split it up into its individual letters (so each one is its own element):
 title.lettering();
@@ -39,28 +39,28 @@ title.lettering();
 // How many letters?
 var letterCount=title.letterCount;
 
-var angle=0f;
+var angle=0;
 
-var deltaAngle=(2f * Mathf.PI)/(letterCount-1):float;
+var deltaAngle=(2 * Math.PI)/(letterCount-1);
 
 // Arch each one individually:
 for(var i=0;i<letterCount;i++){
 	
 	// Grab the letter:
-	var ele=(title.childNodes[i]):HtmlElement;
+	var ele=title.childNodes[i];
 	
 	// Tell them to rotate around their midpoint:
 	ele.style.transformOrigin="50% 50%";
 	ele.style.position="relative";
 	
 	// Get the rotation as a string in degrees:
-	var rotation=(mathf.Cos(angle)*maxAngle)+"deg";
+	var rotation=(Math.cos(angle)*maxAngle)+"deg";
 	
 	// Get the top offset as a string in degrees:
-	var top=(mathf.Sin(angle)*maxHeight)+"px";
+	var top=(Math.sin(angle)*maxHeight)+"px";
 	
 	// Animate there now (using the "ease" CSS function):
-	ele.animate("top:"+top+";transform:rotate("+rotation+")",2f,"ease");
+	ele.animate("top:"+top+";transform:rotate("+rotation+")",2,"ease");
 	
 	// Increase the angle:
 	angle+=deltaAngle;
