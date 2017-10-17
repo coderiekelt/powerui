@@ -8,6 +8,8 @@ namespace PowerUI{
 	/// <summray>A simple delegate for use by Promise.
 	/// They can optionally return a Promise which will be passed on to the next handler in the chain.</summary>
 	public delegate object PromiseDelegate(object info);
+	/// <summray>Used when constructing a promise.</summary>
+	public delegate object PromiseSetupDelegate(object reject, object resolve);
 	/// <summary>A delegate void which returns nothing.</summary>
 	public delegate void PromiseDelegateVoid(object info);
 	
@@ -27,6 +29,19 @@ namespace PowerUI{
 		internal object latestMessage;
 		private List<PromiseFrame> eventsToRun;
 		
+		
+		public Promise(){}
+		
+		public Promise(PromiseSetupDelegate setup){
+			// Immediately call the setup method:
+			setup((PromiseDelegate)((object result) => {
+				resolve(result);
+				return null;
+			}), (PromiseDelegate)((object result) => {
+				reject(result);
+				return null;
+			}));
+		}
 		
 		/// <summary>The status of this promise.</summary>
 		public string statusText{

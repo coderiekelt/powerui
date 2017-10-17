@@ -46,6 +46,7 @@ namespace PowerUI{
 				.SetValue("PowerUI", new NamespaceReference(Engine, "PowerUI"));
 			
 			var coreWindow = (window as PowerUI.Window);
+			coreWindow.JsWindow = Engine.Global;
 			
 			if(coreWindow!=null){
 				Engine.SetValue("location", coreWindow.location)
@@ -61,8 +62,8 @@ namespace PowerUI{
 					.SetValue("prompt", new Func<object, string>((object obj) => {return coreWindow.prompt(obj);}))
 					.SetValue("confirm", new Func<object, bool>((object obj) => {return coreWindow.confirm(obj);}))
 					.SetValue("escapeHTML", new Func<string, string>((string obj) => {return coreWindow.escapeHTML(obj);}))
-					.SetValue("setInterval", new DelegateWrapper(Engine, new Func<object, object, UITimer>((object method, object time) => {return coreWindow.setInterval(method, time);})))
-					.SetValue("setTimeout", new DelegateWrapper(Engine, new Func<object, object, UITimer>((object method, object time) => {return coreWindow.setTimeout(method, time);})));
+					.SetValue("setInterval", new DelegateWrapper(Engine, new Func<JsValue, object, UITimer>((JsValue method, object time) => {return coreWindow.setInterval(method, time);})))
+					.SetValue("setTimeout", new DelegateWrapper(Engine, new Func<JsValue, object, UITimer>((JsValue method, object time) => {return coreWindow.setTimeout(method, time);})));
 			}
 			
 			Document=doc;

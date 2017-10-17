@@ -11,6 +11,8 @@
 
 using System;
 using Dom;
+using Jint.Native;
+using Jint.Native.Global;
 
 
 namespace PowerUI{
@@ -37,6 +39,8 @@ namespace PowerUI{
 		public HtmlElement iframe;
 		/// <summary>The document for the given window.</summary>
 		private HtmlDocument document_;
+		/// <summary>The global window object (JS global scope).</summary>
+		public GlobalObject JsWindow;
 		/// <summary>The document for the given window.</summary>
 		public HtmlDocument document{
 			get{
@@ -399,20 +403,20 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Sets a timeout.</summary>
-		public UITimer setTimeout(object method, object time){
-			int ms = time == null ? 1 : (int)time;
+		public UITimer setTimeout(JsValue method, object time){
+			int ms = time == null ? 1 : Convert.ToInt32(time);
 			var engine = document.JavascriptEngine;
 			return new UITimer(true,ms,delegate() {
-				engine.Invoke(method, null, null);
+				engine.Invoke(method, JsWindow, null);
 			});
 		}
 		
 		/// <summary>Sets a timeout.</summary>
-		public UITimer setInterval(object method, object time){
-			int ms = time == null ? 1 : (int)time;
+		public UITimer setInterval(JsValue method, object time){
+			int ms = time == null ? 1 : Convert.ToInt32(time);
 			var engine = document.JavascriptEngine;
 			return new UITimer(false,ms,delegate() {
-				engine.Invoke(method, null, null);
+				engine.Invoke(method, JsWindow, null);
 			});
 		}
 		
