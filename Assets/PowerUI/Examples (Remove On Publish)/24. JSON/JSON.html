@@ -38,17 +38,16 @@ html{
 		<br><b>Note!</b> Keys are case insensitive - uppercase is not preserved.
 </div>
 
-<script type='text/nitro'>
+<script type='text/javascript'>
 
 /*
---- This version of Nitro is now depreciated ---
-
-Use C# instead, or request the new JavaScript engine.
-
+ Javascript is totally optional - everything it can do, C# can do too (see also UI.document, a static reference)
 */
 
 // Load up the JSON (from Unity resources):
-var jsonString=Resources.Load("JSON-Example",TextAsset);
+var UnityEngine = importNamespace("UnityEngine");
+
+var jsonString=UnityEngine.Resources.Load("JSON-Example", UnityEngine.TextAsset);
 
 // Load it:
 var jsonObject=JSON.parse(jsonString);
@@ -57,25 +56,20 @@ var jsonObject=JSON.parse(jsonString);
 var gloss=jsonObject.glossary;
 
 // Let's log the glossary title:
-debug.log(gloss.title);
+console.log(gloss.title);
 
 // We can also access like this (note! C# JSON requires accessing like this):
-debug.log(gloss["title"]);
+console.log(gloss["title"]);
 
 // How about related entry 2:
-debug.log(gloss.GlossList.GlossEntry.Related[2]);
+console.log(gloss.GlossList.GlossEntry.Related[2]);
 
 // Back to a string, the "proper" way (Note! Case is *not* preserved):
-debug.log(JSON.stringify(gloss));
-
-// Singular values are supported too:
-jsonObject=JSON.parse("'hello!'");
-
-debug.log(jsonObject); // hello!
+console.log(JSON.stringify(gloss));
 
 // Null:
 jsonObject=JSON.parse("null");
 
-debug.log((jsonObject==null)); // True
+console.log((jsonObject==null)); // True
 
 </script>

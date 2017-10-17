@@ -32,11 +32,10 @@ body{
 	This widget resizes and moves too - Drag either the window itself or the bottom right corner.
 </center>
 
-<script type='text/nitro'>
+<script type='text/javascript'>
 
-/* 
-This version of Nitro is depreciated
-but it demonstrates a simple way of passing variables to a widget.
+/*
+Here's a simple way to pass in variables to an opening widget. Note that they can be accessed from C# too.
 
 Calling document.widgets.open or adding a query string to the widget URL
 will set global variables. They're available immediately!
@@ -44,14 +43,14 @@ will set global variables. They're available immediately!
 ------------------------
 E.g. The widget URL that loads up this content is..
 
-widget://floating/WindowExample/windowContent.html?hello=nitro
+widget://floating/WindowExample/windowContent.html?hello=javascript
 
-We'll get a global called 'hello' and it's value is 'nitro'.
+We'll get a global called 'hello' and it's value is 'javascript'.
 
 */
 
 // Show it:
-debug.log("The widget URL set the hello global to:");
-debug.log(hello);
+console.log("The widget URL set the hello global to:");
+console.log(hello);
 
 </script>
