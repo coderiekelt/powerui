@@ -63,7 +63,7 @@ namespace PowerUI{
 			Settings=new SettingTickbox[]{
 				new SettingTickbox("Hide the warning","ACCEPTED_DOM_NOTICE","I'm not upgrading or I've upgraded - hide the warning."),
 				new SettingTickbox("Show required changes","LEGACY_DOM_UPGRADE","Removes the new APIs such that code which requires upgrading will fail to compile. Convert to setAttribute and getAttribute."),
-				new SettingTickbox("Use the legacy mode","LEGACY_DOM","This will stop major javascript libraries jQuery from working properly but you won't have to upgrade anything."),
+				new SettingTickbox("Use the legacy mode","LEGACY_DOM","This will stop major javascript libraries like jQuery from working properly but you won't have to upgrade anything."),
 			};
 			
 		}

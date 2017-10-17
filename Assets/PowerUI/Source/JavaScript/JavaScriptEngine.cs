@@ -42,21 +42,27 @@ namespace PowerUI{
 				.SetValue("Promise", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Promise)))
 				.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.XMLHttpRequest)))
 				.SetValue("Module", TypeReference.CreateTypeReference(Engine, typeof(WebAssembly.Module)))
-				.SetValue("console", new JavaScript.console());
+				.SetValue("console", new JavaScript.console())
+				.SetValue("PowerUI", new NamespaceReference(Engine, "PowerUI"));
 			
 			var coreWindow = (window as PowerUI.Window);
 			
 			if(coreWindow!=null){
 				Engine.SetValue("location", coreWindow.location)
+					.SetValue("innerWidth", coreWindow.innerWidth)
+					.SetValue("innerHeight", coreWindow.innerHeight)
+					.SetValue("atob", new Func<string, string>((string obj) => { return coreWindow.atob(obj); }))
+					.SetValue("btoa", new Func<string, string>((string obj) => { return coreWindow.btoa(obj); }))
 					.SetValue("addEventListener", new Action<string, object>((string evt, object method) => coreWindow.addEventListener(evt, method)))
 					.SetValue("removeEventListener", new Action<string, object>((string evt, object method) => coreWindow.removeEventListener(evt, method)))
-					.SetValue("dispatchEvent", new Action<UIEvent>((UIEvent e) => coreWindow.dispatchEvent(e)))
+					.SetValue("dispatchEvent", new Func<UIEvent, bool>((UIEvent e) => {return coreWindow.dispatchEvent(e);}))
 					.SetValue("clearInterval", new Action<UITimer>((UITimer obj) => coreWindow.clearInterval(obj)))
 					.SetValue("alert", new Action<object>((object obj) => coreWindow.alert(obj)))
-					.SetValue("prompt", new Action<object>((object obj) => coreWindow.prompt(obj)))
-					.SetValue("confirm", new Action<object>((object obj) => coreWindow.confirm(obj)))
-					.SetValue("setInterval", new DelegateWrapper(Engine, new Action<object, object>((object method, object time) => coreWindow.setInterval(method, time))))
-					.SetValue("setTimeout", new DelegateWrapper(Engine, new Action<object, object>((object method, object time) => coreWindow.setTimeout(method, time))));
+					.SetValue("prompt", new Func<object, string>((object obj) => {return coreWindow.prompt(obj);}))
+					.SetValue("confirm", new Func<object, bool>((object obj) => {return coreWindow.confirm(obj);}))
+					.SetValue("escapeHTML", new Func<string, string>((string obj) => {return coreWindow.escapeHTML(obj);}))
+					.SetValue("setInterval", new DelegateWrapper(Engine, new Func<object, object, UITimer>((object method, object time) => {return coreWindow.setInterval(method, time);})))
+					.SetValue("setTimeout", new DelegateWrapper(Engine, new Func<object, object, UITimer>((object method, object time) => {return coreWindow.setTimeout(method, time);})));
 			}
 			
 			Document=doc;
