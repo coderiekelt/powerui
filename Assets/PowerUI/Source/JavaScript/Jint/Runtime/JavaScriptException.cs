@@ -7,7 +7,12 @@ namespace Jint.Runtime
     public class JavaScriptException : Exception
     {
         private readonly JsValue _errorObject;
-
+		
+		public JavaScriptException(string type, string message) : base("")
+		{
+			_errorObject = new JsValue(type+ " : " + message);
+		}
+		
         public JavaScriptException(ErrorConstructor errorConstructor) : base("")
         {
             _errorObject = errorConstructor.Construct(Arguments.Empty);

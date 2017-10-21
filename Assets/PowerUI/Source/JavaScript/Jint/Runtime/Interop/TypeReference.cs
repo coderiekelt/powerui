@@ -55,15 +55,16 @@ namespace Jint.Runtime.Interop
             var constructors = Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 
             var methods = TypeConverter.FindBestMatch(Engine, constructors, arguments).ToList();
+			var parameters = new object[arguments.Length];
 
             foreach (var method in methods)
             {
-                var parameters = new object[arguments.Length];
+				var _methodParams = method.GetParameters();
                 try
                 {
                     for (var i = 0; i < arguments.Length; i++)
                     {
-                        var parameterType =  method.GetParameters()[i].ParameterType;
+                        var parameterType =  _methodParams[i].ParameterType;
 
                         if (parameterType == typeof(JsValue))
                         {
@@ -77,21 +78,22 @@ namespace Jint.Runtime.Interop
                                 CultureInfo.InvariantCulture);
                         }
                     }
-
-                    var constructor = (ConstructorInfo)method;
-                    var instance = constructor.Invoke(parameters.ToArray());
-                    var result = TypeConverter.ToObject(Engine, JsValue.FromObject(Engine, instance));
-
-                    // todo: cache method info
-
-                    return result;
-                }
+				}
                 catch
                 {
                     // ignore method
+					continue;
                 }
-            }
+				
+				var constructor = (ConstructorInfo)method;
+				var instance = constructor.Invoke(parameters.ToArray());
+				var result = TypeConverter.ToObject(Engine, JsValue.FromObject(Engine, instance));
 
+				// todo: cache method info
+
+				return result;
+            }
+			
             throw new JavaScriptException(Engine.TypeError, "No public methods with the specified arguments were found.");
 
         }

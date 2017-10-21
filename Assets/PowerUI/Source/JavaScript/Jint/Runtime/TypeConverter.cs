@@ -219,6 +219,16 @@ namespace Jint.Runtime
         /// </summary>
         /// <param name="o"></param>
         /// <returns></returns>
+        public static short ToInt16(JsValue o)
+        {
+            return (short)(uint)ToNumber(o);
+        }
+
+        /// <summary>
+        /// http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
         public static int ToInt32(JsValue o)
         {
             return (int)(uint)ToNumber(o);
@@ -232,6 +242,26 @@ namespace Jint.Runtime
         public static uint ToUint32(JsValue o)
         {
             return (uint)ToNumber(o);
+        }
+
+        /// <summary>
+        /// http://www.ecma-international.org/ecma-262/5.1/#sec-9.7
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        public static sbyte ToInt8(JsValue o)
+        {
+            return (sbyte)(uint)ToNumber(o);
+        }
+
+        /// <summary>
+        /// http://www.ecma-international.org/ecma-262/5.1/#sec-9.7
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        public static byte ToUint8(JsValue o)
+        {
+            return (byte)(uint)ToNumber(o);
         }
 
         /// <summary>

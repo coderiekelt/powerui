@@ -40,9 +40,21 @@ namespace PowerUI{
 			
 			Engine.SetValue("document", doc)
 				.SetValue("Promise", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Promise)))
+				.SetValue("ArrayBuffer", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.ArrayBuffer)))
+				.SetValue("DataView", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.DataView)))
+				.SetValue("Float32Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Float32Array)))
+				.SetValue("Float64Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Float64Array)))
+				.SetValue("Int8Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Int8Array)))
+				.SetValue("Int16Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Int16Array)))
+				.SetValue("Int32Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Int32Array)))
+				.SetValue("Uint8ClampedArray", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Uint8ClampedArray)))
+				.SetValue("Uint8Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Uint8Array)))
+				.SetValue("Uint16Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Uint16Array)))
+				.SetValue("Uint32Array", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Uint32Array)))
 				.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.XMLHttpRequest)))
 				.SetValue("Module", TypeReference.CreateTypeReference(Engine, typeof(WebAssembly.Module)))
 				.SetValue("console", new JavaScript.console())
+				.SetValue("window", Engine.Global)
 				.SetValue("PowerUI", new NamespaceReference(Engine, "PowerUI"));
 			
 			var coreWindow = (window as PowerUI.Window);
