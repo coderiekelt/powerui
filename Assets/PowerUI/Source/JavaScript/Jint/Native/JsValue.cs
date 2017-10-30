@@ -353,7 +353,9 @@ namespace Jint.Native
             // if no known type could be guessed, wrap it as an ObjectInstance
             return new ObjectWrapper(engine, value);
         }
-
+		
+		private object _latestObject;
+		
         /// <summary>
         /// Converts a <see cref="JsValue"/> to its underlying CLR value.
         /// </summary>
@@ -461,15 +463,23 @@ namespace Jint.Native
 
                         case "Arguments":
                         case "Object":
-                            IDictionary<string, object> o = new Dictionary<string, object>();
-
+                            IDictionary<string, object> o = _latestObject as IDictionary<string, object>;
+							
+							// Self-referencing fix:
+							if(o != null){
+								return o;
+							}
+							
+							#warning TODO: Check if latestObject is stale
+							o = new Dictionary<string, object>();
+							_latestObject = o;
+							
                             foreach (var p in (_object as ObjectInstance).GetOwnProperties())
                             {
                                 if (!p.Value.Enumerable.HasValue || p.Value.Enumerable.Value == false)
                                 {
                                     continue;
                                 }
-
                                 o.Add(p.Key, (_object as ObjectInstance).Get(p.Key).ToObject());
                             }
 
