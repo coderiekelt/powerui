@@ -199,19 +199,14 @@ namespace PowerUI{
 		
 		/// <summary>Called by the file handler when the contents are available.</summary>
 		public override void ReceivedData(byte[] buffer,int offset,int count){
-			
-			if(Contents.LoadData(buffer,this)){
-				
-				// Base:
-				base.ReceivedData(buffer,offset,count);
-				
-			}else{
-				
+			ReceiveAllData(buffer, offset, count);
+		}
+		
+		public override void ReceivedAllData(byte[] buffer){
+			if(!Contents.LoadData(buffer, this)){
 				// Failed:
 				Failed(500);
-				
 			}
-			
 		}
 		
 		/// <summary>Called when this image is going to be displayed.</summary>

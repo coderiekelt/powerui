@@ -799,9 +799,6 @@ public static class UI{
 		// Update animations:
 		Spa.SPA.Update(deltaTime);
 		
-		// Update any Http requests:
-		Web.Update(deltaTime);
-		
 		if(WorldUI.LiveUpdatablesAvailable){
 			WorldUI.UpdateAll();
 		}
@@ -818,6 +815,9 @@ public static class UI{
 		if(GUICamera==null){
 			return;
 		}
+		
+		// Check for timeouts:
+		Web.Update(frameTime);
 		
 		// Atlases:
 		AtlasStacks.Update();

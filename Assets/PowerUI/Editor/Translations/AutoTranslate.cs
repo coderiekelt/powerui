@@ -129,11 +129,6 @@ namespace PowerUI{
 			
 		}
 		
-		public void OnInspectorUpdate(){	
-			// Update HTTP services:
-			Web.Flush();
-		}
-		
 		void OnGUI(){
 			
 			if(AvailableTargets==null){

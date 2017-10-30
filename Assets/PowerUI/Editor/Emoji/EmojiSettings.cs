@@ -73,9 +73,6 @@ namespace PowerUI{
 		}
 		
 		void Update(){
-			// Update HTTP services:
-			Web.Flush();
-			
 			RefreshTimer++;
 			
 			if(Status==2){
