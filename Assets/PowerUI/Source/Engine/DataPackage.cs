@@ -88,12 +88,11 @@ namespace PowerUI{
 		}
 		
 		/// <summary>Got data is called by the file handler when the response is received.</summary>
-		public override void ReceivedData(byte[] buffer,int offset,int count){
-			ReceiveAllData(buffer, offset, count);
-		}
-		
-		public override void ReceivedAllData(byte[] buffer){
-			this.responseBytes=buffer;
+		/// <param name="data">The data that was recieved, if any.</param>
+		/// <param name="status">The HTTP status code.</param>
+		public override void ReceivedData(byte[] data,int offset,int count){
+			this.responseBytes=data;
+			base.ReceivedData(data,offset,count);
 		}
 		
 	}
@@ -182,16 +181,7 @@ namespace PowerUI{
 		private Headers responseHeaders_;
 		/// <summary>An internal abortable object.</summary>
 		internal IAbortable abortableObject;
-		/// <summary>The method to use.</summary>
-		public string requestMethod=null;
 		
-		
-		/// <summary>True if the content should always be interpreted as a video.</summary>
-		public virtual bool ForceVideo{
-			get{
-				return false;
-			}
-		}
 		
 		/// <summary>The headers to send with this request. They're lowercase. Status line is indexed as the empty string.</summary>
 		public Headers requestHeaders{
@@ -459,6 +449,7 @@ namespace PowerUI{
 		
 		/// <summary>All headers are ready. Returns true if we're redirecting.</summary>
 		internal bool ReceivedHeaders(){
+			
 			if(LoadStatusAndLength()){
 				// Redirecting.
 				return true;
@@ -466,6 +457,7 @@ namespace PowerUI{
 			
 			readyState=2;
 			return false;
+			
 		}
 		
 		/// <summary>All headers are ready.</summary>
@@ -608,42 +600,6 @@ namespace PowerUI{
 				readyState=3;
 			}
 			
-		}
-		
-		private System.IO.MemoryStream _stream;
-		
-		/// <summary>Use this to combine all the data into one buffer.
-		/// Call it from RecieveData and override ReceivedAllData to get that single result.</summary>
-		public void ReceiveAllData(byte[] buffer, int offset, int count){
-			
-			if(readyState_==1){
-				// No headers received; trigger it anyway:
-				ReceivedHeaders();
-			}
-			
-			if(_stream == null){
-				_stream = new System.IO.MemoryStream();
-			}
-			
-			bytesReceived+=count;
-			
-			_stream.Write(buffer, offset, count);
-			
-			if(bytesReceived>=contentLength){
-				// Received all of the data!
-				byte[] data = _stream.ToArray();
-				_stream = null;
-				Callback.MainThread(delegate(){
-					ReceivedAllData(data);
-					readyState=4;
-				});
-			}else{
-				readyState=3;
-			}
-			
-		}
-		
-		public virtual void ReceivedAllData(byte[] buffer){
 		}
 		
 		#if !MOBILE && !UNITY_WEBGL

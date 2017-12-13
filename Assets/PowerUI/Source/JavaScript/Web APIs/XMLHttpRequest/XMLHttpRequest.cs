@@ -35,6 +35,8 @@ namespace PowerUI{
 		
 		/// <summary>The host document.</summary>
 		private HtmlDocument HostDocument;
+		/// <summary>The method to use.</summary>
+		private string Method="get";
 		
 		
 		/// <summary>Creates a request relative to the given document.</summary>
@@ -42,7 +44,6 @@ namespace PowerUI{
 			
 			// Apply document:
 			HostDocument=document;
-			requestMethod="get";
 			
 		}
 		
@@ -79,9 +80,9 @@ namespace PowerUI{
 				
 			}
 			
-			requestMethod=method.Trim().ToLower();
+			Method=method.Trim().ToLower();
 			
-			if(requestMethod=="get" || requestMethod=="post"){
+			if(Method=="get" || Method=="post"){
 				
 				// Apply the path:
 				location=new Location(
@@ -119,7 +120,7 @@ namespace PowerUI{
 		/// <summary>Send this request with the given post data.</summary>
 		public void send(byte[] data){
 			
-			if(requestMethod=="post"){
+			if(Method=="post"){
 				if(data==null){
 					request=new byte[0];
 				}else{
@@ -135,7 +136,7 @@ namespace PowerUI{
 		/// <summary>Send this request with the given post data.</summary>
 		public void send(JSObject data){
 			
-			if(requestMethod=="post"){
+			if(Method=="post"){
 				if(data==null){
 					request=new byte[0];
 				}else{
@@ -151,7 +152,7 @@ namespace PowerUI{
 		/// <summary>Send this request with the given post data.</summary>
 		public void send(HtmlDocument data){
 			
-			if(requestMethod=="post"){
+			if(Method=="post"){
 				if(data==null){
 					request=new byte[0];
 				}else{
@@ -167,7 +168,7 @@ namespace PowerUI{
 		/// <summary>Send this request with the given post data.</summary>
 		public void send(string data){
 			
-			if(requestMethod=="post"){
+			if(Method=="post"){
 				if(data==null){
 					request=new byte[0];
 				}else{
@@ -224,7 +225,7 @@ namespace PowerUI{
 		/// <summary>Send this request.</summary>
 		public override void send(){
 			
-			if(requestMethod=="post"){
+			if(Method=="post"){
 				request=new byte[0];
 			}
 			
