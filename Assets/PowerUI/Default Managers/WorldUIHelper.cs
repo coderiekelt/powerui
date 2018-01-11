@@ -102,7 +102,7 @@ namespace PowerUI{
 			}else{
 				
 				// Reset local scale:
-				transform.localScale=Vector3.one;
+				// transform.localScale=Vector3.one;
 				
 				// Generate a new UI (the name is optional).
 				// The two numbers are the dimensions of our virtual screen:
@@ -127,7 +127,7 @@ namespace PowerUI{
 				
 				if(hasGuide){
 					// Rotate it 90 degrees about x (to match up with the guide):
-					WorldUI.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
+					// WorldUI.transform.localRotation=Quaternion.AngleAxis(90f,new Vector3(1f,0f,0f));
 				}
 				
 				// Set the scale such that the width "fits".
