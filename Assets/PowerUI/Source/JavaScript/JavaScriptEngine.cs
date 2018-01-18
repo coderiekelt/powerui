@@ -11,6 +11,7 @@
 
 using System;
 using UnityEngine;
+using System.Reflection;
 using Dom;
 using Jint.Runtime.Interop;
 using Jint.Native;
@@ -36,7 +37,14 @@ namespace PowerUI{
 		
 		public JavaScriptEngine(bool safeHost,HtmlDocument doc,object window){
 			
-			Engine = new Jint.Engine(cfg => cfg.AllowClr().AllowClr(typeof(GameObject).Assembly));
+			Engine = new Jint.Engine(cfg => {
+				cfg.AllowClr()
+					#if NETFX_CORE
+					.AllowClr(typeof(GameObject).GetTypeInfo().Assembly);
+					#else
+					.AllowClr(typeof(GameObject).Assembly);
+					#endif
+			});
 			
 			Engine.SetValue("document", doc)
 				.SetValue("Promise", TypeReference.CreateTypeReference(Engine, typeof(PowerUI.Promise)))
