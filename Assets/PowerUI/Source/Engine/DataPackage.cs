@@ -602,7 +602,7 @@ namespace PowerUI{
 			
 		}
 		
-		#if !MOBILE && !UNITY_WEBGL
+		#if !MOBILE && !UNITY_WEBGL && !UNITY_TVOS
 		internal virtual void ReceivedMovieTexture(UnityEngine.MovieTexture tex){
 			
 			// Trigger a state 3:

@@ -168,7 +168,7 @@ namespace PowerUI{
 			
 		}
 		
-		#if !MOBILE && !UNITY_WEBGL
+		#if !MOBILE && !UNITY_WEBGL && !UNITY_TVOS
 		/// <summary>The source movie texture.</summary>
 		public override MovieTexture video{
 			get{
@@ -195,7 +195,7 @@ namespace PowerUI{
 		
 	}
 	
-	#if !MOBILE && !UNITY_WEBGL
+	#if !MOBILE && !UNITY_WEBGL && !UNITY_TVOS
 	/// <summary>
 	/// This class extends HtmlElement to include an easy to use element.video property (unavailable on mobile).
 	/// </summary>

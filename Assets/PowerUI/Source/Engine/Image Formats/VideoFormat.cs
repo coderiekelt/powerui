@@ -13,7 +13,7 @@
 	#define MOBILE
 #endif
 
-#if !MOBILE && !UNITY_WEBGL
+#if !MOBILE && !UNITY_WEBGL && !UNITY_TVOS
 
 using System;
 using Css;

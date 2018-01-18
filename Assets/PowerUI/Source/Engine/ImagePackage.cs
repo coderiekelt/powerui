@@ -185,7 +185,7 @@ namespace PowerUI{
 			
 		}
 		
-		#if !MOBILE && !UNITY_WEBGL
+		#if !MOBILE && !UNITY_WEBGL && !UNITY_TVOS
 		internal override void ReceivedMovieTexture(MovieTexture tex){
 			
 			// Apply it now:
