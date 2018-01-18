@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "PowerUI/Camera Mask" {
 	Properties {
 		_Mask  ("Mask", 2D) = "white" {}
@@ -40,7 +42,7 @@ Shader "PowerUI/Camera Mask" {
 			v2f vert (appdata_t v)
 			{
 				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = v.texcoord;
 				return o;
 			}

@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "PowerUI/StandardUI Cull/Extruded" {
 	Properties {
 		_MainTex  ("Texture", 2D) = "white" {}
@@ -34,7 +36,7 @@ Shader "PowerUI/StandardUI Cull/Extruded" {
 			
 			appdata_t vert (appdata_t v)
 			{
-				v.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				v.vertex = UnityObjectToClipPos(v.vertex);
 				v.texcoord = TRANSFORM_TEX(v.texcoord,_MainTex);
 				return v;
 			}
