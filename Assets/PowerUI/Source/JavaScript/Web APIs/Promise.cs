@@ -30,6 +30,14 @@ namespace PowerUI{
 		private List<PromiseFrame> eventsToRun;
 		
 		
+		/// <summary>An instant resolving promise.</summary>
+		public static Promise Resolve(object o){
+		   var promise = new Promise();
+		   promise.resolve(o);
+		   return promise;
+		}
+
+		
 		public Promise(){}
 		
 		public Promise(PromiseSetupDelegate setup){
@@ -295,14 +303,18 @@ namespace PowerUI{
 			
 			if(success){
 				return new PromiseDelegate(delegate(object info){
-					toAdd.resolve(info);
-					return null;
+					if(toAdd != null){
+						toAdd.resolve(info);
+					}
+					return info;
 				});
 			}
 			
 			return new PromiseDelegate(delegate(object info){
-				toAdd.reject(info);
-				return null;
+				if(toAdd != null){
+					toAdd.reject(info);
+				}
+				return info;
 			});
 			
 		}
