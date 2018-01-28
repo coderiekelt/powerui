@@ -94,8 +94,12 @@ namespace PowerUI{
 				// Get it:
 				HtmlElement child=parent.childNodes_[i] as HtmlElement;
 				
+				if(child == null){
+					continue;
+				}
+				
 				// Might be an optgroup containing it. Check if it is:
-				if(child!=null && child.IsFormLabelable){
+				if(child.IsFormLabelable){
 					return child;
 				}
 				
