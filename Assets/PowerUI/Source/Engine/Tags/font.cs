@@ -103,7 +103,7 @@ namespace PowerUI{
 				Style.Computed.ChangeTagProperty(
 					"color",
 					new Css.Units.ColourUnit(
-						Css.ColourMap.ToSpecialColour(value)
+						Css.ColourMap.ToSpecialColour(getAttribute("color"))
 					)
 				);
 				
