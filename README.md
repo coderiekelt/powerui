@@ -1,73 +1,19 @@
 # PowerUI 2
 
-Hello! Welcome to PowerUI 2. One does not simply make a web browser, *but let's do it anyway!*
+The HTML UI framework and much more for the Unity Game Engine.
 
-## Testing required
+# Getting started
+If you'd just like to explore PowerUI, [download the latest prebuilt package here](https://powerui.kulestar.com/download/). 
+Once you've imported it into your project, open up the example scenes to take a look around.
 
-These are parts of PowerUI which are currently under tested. Use at your own risk!
+If you'd like to grab PowerUI straight from this repository, make sure you do a recursive clone! 
+See [the guide on the wiki](http://powerui.kulestar.com/wiki/index.php?title=Source_Control_(GIT)#Checking_it_out) for more details on pulling.
 
-* Img tag additions
+# Licensing
 
-> Img tag gained srcset which replaces UI.Resolution (along with CSS zoom).
+Here's the TLDR of licensed components of PowerUI:
 
-* The new input system
-
-> Touch, VR and similar input modes
-
-The input system was rebuilt, but is currently under tested. Needs to be tested out on a multitouch screen and in VR with the new [VR camera modes](http://powerui.kulestar.com/wiki/index.php?title=Virtual_Reality_Cameras).
-
-## Features to be worked on post release
-
-These are all new in PowerUI 2.
-
-* Float edge cases
-
-> float has some complex inheritance behaviour
-
-* Writing modes
-
-> Vertical text
-
-Vertical text gained basic support but needs to be finished off.
-
-Float is now expected to work correctly in the general case but it has complex behaviour whenever floating objects extend beyond their parent. This isn't supported just yet but will be in the future.
-
-* Positioning edge cases
-
-> position:absolute;height:100%; where the ancestors height is defined by the normal flow.
-
-These edge cases require 2+ reflow passes to handle correctly. It needs to figure out the height of the ancestor first then revisit the positioned element. PowerUI has long avoided supporting this case for this double pass reason. Slightly related is stacking contexts; the two together make reflow considerably more complex and *much* slower. However, it's very clear that these do get used in the wild, so the plan is to implement them (post MVP) in a way that it can be turned off so you can know when you're using something that's excessively slow.
-
-* SVG
-
-> SVG imagery; not Loonim
-
-SVG is currently a work in progress. Loonim can currently draw the paths for us but the scaling is way off.
-
-* Woff
-
-> The WOFF and WOFF2 font formats
-
-PowerUI is now extremely close to supporting these. It's currently unknown what will happen if you try to load one though!
-
-## Modules
-
-Many of the modules present in PowerUI 2 are also present in PowerUI 1.9, however there are some important mentions:
-
-* Nitro
-
-> The Javascript engine
-
-Currently, PowerUI 2 contains the old Nitro engine. This is for backwards compatibility; the first stable version will also have this engine but it will be officially depreciated.
-
-* Wrench
-
-> The XML engine
-
-Wrench has been renamed and is now simply called 'Dom' as that better reflects what it actually does; it manages the DOM for a variety of different XML-structured languages (HTML, SVG, MathML, Language files).
-
-* Loonim
-
-> The new image generator
-
-Loonim generates imagery using the GPU and is one of the major gems of PowerUI 2; in short, it's best experienced from its own project: https://git.kulestar.com/Loonim/UnityProject.git 
+* Zlib under Microsoft Public License
+* GifLab under BSD
+* Jint under BSD-2-Clause
+* Everything else is under MIT-Unity, included [here](LICENSE).
