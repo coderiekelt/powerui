@@ -48,7 +48,7 @@ namespace PowerUI{
 			SerializedObject manager=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
 			
 			// Grab the first property:
-			#if UNITY_5
+			#if UNITY_5 || UNITY_5_3_OR_NEWER
 			
 			SerializedProperty property=manager.FindProperty("layers");
 			
