@@ -217,7 +217,7 @@ namespace PowerUI{
 				Push(!back,current);
 				
 				// Update current (don't dispatch just yet):
-				current=state;
+				// current=state;
 				
 			}
 			
