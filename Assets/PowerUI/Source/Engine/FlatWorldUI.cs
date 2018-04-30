@@ -49,13 +49,13 @@ namespace PowerUI{
 		/// <summary>Creates a new Flat World UI with 100x100 pixels of space and a name of "new World UI".
 		/// The gameobjects origin sits at the middle of the UI by default. See <see cref="PowerUI.WorldUI.SetOrigin"/>. 
 		/// By default, 100 pixels are 1 world unit. See <see cref="PowerUI.WorldUI.SetResolution"/>.</summary>
-		public FlatWorldUI():this("new World UI",0,0){}
+		public FlatWorldUI():this("new World UI",100,100){}
 		
 		/// <summary>Creates a new Flat World UI with 100x100 pixels of space and the given name.
 		/// The gameobjects origin sits at the middle of the UI by default. See <see cref="PowerUI.WorldUI.SetOrigin"/>. 
 		/// By default, 100 pixels are 1 world unit. See <see cref="PowerUI.WorldUI.SetResolution"/>.</summary>
 		/// <param name="name">The name for the UI's gameobject.</param>
-		public FlatWorldUI(string name):this(name,0,0){}
+		public FlatWorldUI(string name):this(name,100,100){}
 		
 		/// <summary>Creates a new Flat World UI with the given pixels of space and a name of "new World UI".
 		/// The gameobjects origin sits at the middle of the UI by default. See <see cref="PowerUI.WorldUI.SetOrigin"/>. 
