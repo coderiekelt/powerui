@@ -54,7 +54,3 @@
 	path = Assets/PowerUI/Source/Spark
 	url = https://git.kulestar.com/Spark/Engine.git
 	branch = master
-[submodule "Assets/PowerUI/Source/JavaScript/NitroV1"]
-	path = Assets/PowerUI/Source/JavaScript/NitroV1
-	url = https://git.kulestar.com/Nitrous/EngineV1.git
-	branch = master
